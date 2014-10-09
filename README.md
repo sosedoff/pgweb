@@ -18,6 +18,7 @@ CLI options:
 Go 1.3+ is required. To complire source execute:
 
 ```
+go get
 go build
 ```
 
