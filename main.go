@@ -15,8 +15,9 @@ import (
 )
 
 const (
-	SQL_GET_DATABASES = "SELECT * FROM pg_database WHERE datistemplate = false;"
-	SQL_GET_TABLES    = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name;"
+	SQL_DATABASES    = "SELECT * FROM pg_database WHERE datistemplate = false;"
+	SQL_TABLES       = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name;"
+	SQL_TABLE_SCHEMA = "SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = '%s';"
 )
 
 type Client struct {
@@ -124,11 +125,16 @@ func API_RunQuery(c *gin.Context) {
 }
 
 func API_GetDatabases(c *gin.Context) {
-	API_HandleQuery(SQL_GET_DATABASES, c)
+	API_HandleQuery(SQL_DATABASES, c)
 }
 
 func API_GetTables(c *gin.Context) {
-	API_HandleQuery(SQL_GET_TABLES, c)
+	API_HandleQuery(SQL_TABLES, c)
+}
+
+func API_GetTable(c *gin.Context) {
+	query := fmt.Sprintf(SQL_TABLE_SCHEMA, c.Params.ByName("name"))
+	API_HandleQuery(query, c)
 }
 
 func API_HandleQuery(query string, c *gin.Context) {
@@ -175,6 +181,7 @@ func main() {
 	router := gin.Default()
 	router.GET("/databases", API_GetDatabases)
 	router.GET("/tables", API_GetTables)
+	router.GET("/tables/:name", API_GetTable)
 	router.GET("/select", API_RunQuery)
 	router.POST("/select", API_RunQuery)
 
