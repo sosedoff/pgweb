@@ -26,7 +26,13 @@ This will produce `pgweb` binary in the current workdir.
 
 ## API
 
-Get database tables:
+Get databases:
+
+```
+GET /databases
+```
+
+Get current database tables:
 
 ```
 GET /tables
@@ -36,4 +42,5 @@ Execute select query:
 
 ```
 POST /query?query=SQL
+GET  /query?query=SQL
 ```
