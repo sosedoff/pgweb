@@ -13,6 +13,16 @@ CLI options:
 -d, --db=   Database name (postgres)
 ```
 
+## Compile
+
+Go 1.3+ is required. To complire source execute:
+
+```
+go build
+```
+
+This will product `pgweb` binary in the current workdir.
+
 ## API
 
 Get database tables:
