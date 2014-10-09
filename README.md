@@ -22,7 +22,7 @@ go get
 go build
 ```
 
-This will product `pgweb` binary in the current workdir.
+This will produce `pgweb` binary in the current workdir.
 
 ## API
 
