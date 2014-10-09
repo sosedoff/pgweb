@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	SQL_GET_TABLES = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name;"
+	SQL_GET_DATABASES = "SELECT * FROM pg_database WHERE datistemplate = false;"
+	SQL_GET_TABLES    = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name;"
 )
 
 type Client struct {
@@ -122,6 +123,10 @@ func API_RunQuery(c *gin.Context) {
 	API_HandleQuery(query, c)
 }
 
+func API_GetDatabases(c *gin.Context) {
+	API_HandleQuery(SQL_GET_DATABASES, c)
+}
+
 func API_GetTables(c *gin.Context) {
 	API_HandleQuery(SQL_GET_TABLES, c)
 }
@@ -168,6 +173,7 @@ func main() {
 	defer dbClient.db.Close()
 
 	router := gin.Default()
+	router.GET("/databases", API_GetDatabases)
 	router.GET("/tables", API_GetTables)
 	router.GET("/select", API_RunQuery)
 	router.POST("/select", API_RunQuery)
