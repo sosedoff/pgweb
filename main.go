@@ -67,6 +67,22 @@ func NewError(err error) Error {
 	return Error{err.Error()}
 }
 
+func (client *Client) Tables() ([]string, error) {
+	res, err := client.Query(SQL_TABLES)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var tables []string
+
+	for _, row := range res.Rows {
+		tables = append(tables, row[0].(string))
+	}
+
+	return tables, nil
+}
+
 func (client *Client) Query(query string) (*Result, error) {
 	rows, err := client.db.Queryx(query)
 
@@ -133,7 +149,14 @@ func API_GetDatabases(c *gin.Context) {
 }
 
 func API_GetTables(c *gin.Context) {
-	API_HandleQuery(SQL_TABLES, c)
+	names, err := dbClient.Tables()
+
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	c.JSON(200, names)
 }
 
 func API_GetTable(c *gin.Context) {
