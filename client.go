@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"encoding/csv"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"reflect"
 )
@@ -106,4 +109,31 @@ func (res *Result) Format() []map[string]interface{} {
 	}
 
 	return items
+}
+
+func (res *Result) CSV() string {
+	buff := &bytes.Buffer{}
+	writer := csv.NewWriter(buff)
+
+	for _, row := range res.Rows {
+		record := make([]string, len(res.Columns))
+
+		for i, item := range row {
+			if item != nil {
+				record[i] = fmt.Sprintf("%v", item)
+			} else {
+				record[i] = ""
+			}
+		}
+
+		err := writer.Write(record)
+
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+	}
+
+	writer.Flush()
+	return buff.String()
 }

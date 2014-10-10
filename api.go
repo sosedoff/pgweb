@@ -68,5 +68,17 @@ func API_HandleQuery(query string, c *gin.Context) {
 		return
 	}
 
+	q := c.Request.URL.Query()
+
+	format := q["format"][0]
+	if format == "" {
+		format = "json"
+	}
+
+	if format == "csv" {
+		c.String(200, result.CSV())
+		return
+	}
+
 	c.JSON(200, result)
 }
