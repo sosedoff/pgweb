@@ -15,7 +15,6 @@ import (
 )
 
 const (
-	SQL_DATABASES    = "SELECT * FROM pg_database WHERE datistemplate = false;"
 	SQL_TABLES       = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name;"
 	SQL_TABLE_SCHEMA = "SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = '%s';"
 )
@@ -125,27 +124,16 @@ func (client *Client) Query(query string) (*Result, error) {
 	return &result, nil
 }
 
-func jsonError(err error) string {
-	e := NewError(err)
-	buff, _ := json.Marshal(e)
-	return string(buff)
-}
-
 func API_RunQuery(c *gin.Context) {
 	query := strings.TrimSpace(c.Request.FormValue("query"))
 
 	if query == "" {
-		c.String(400, jsonError(errors.New("Query parameter is missing")))
+		c.JSON(400, errors.New("Query parameter is missing"))
 		return
 	}
 
 	history = append(history, query)
-
 	API_HandleQuery(query, c)
-}
-
-func API_GetDatabases(c *gin.Context) {
-	API_HandleQuery(SQL_DATABASES, c)
 }
 
 func API_GetTables(c *gin.Context) {
@@ -160,8 +148,26 @@ func API_GetTables(c *gin.Context) {
 }
 
 func API_GetTable(c *gin.Context) {
-	query := fmt.Sprintf(SQL_TABLE_SCHEMA, c.Params.ByName("name"))
-	API_HandleQuery(query, c)
+	var columns []map[string]interface{}
+
+	res, err := dbClient.Query(fmt.Sprintf(SQL_TABLE_SCHEMA, "users"))
+
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	for _, row := range res.Rows {
+		item := make(map[string]interface{})
+
+		for i, c := range res.Columns {
+			item[c] = row[i]
+		}
+
+		columns = append(columns, item)
+	}
+
+	c.JSON(200, columns)
 }
 
 func API_History(c *gin.Context) {
@@ -172,14 +178,14 @@ func API_HandleQuery(query string, c *gin.Context) {
 	result, err := dbClient.Query(query)
 
 	if err != nil {
-		c.String(400, jsonError(err))
+		c.JSON(400, NewError(err))
 		return
 	}
 
 	buff, err := json.Marshal(result)
 
 	if err != nil {
-		c.String(400, jsonError(err))
+		c.JSON(400, NewError(err))
 		return
 	}
 
@@ -211,7 +217,6 @@ func main() {
 
 	router := gin.Default()
 
-	router.GET("/databases", API_GetDatabases)
 	router.GET("/tables", API_GetTables)
 	router.GET("/tables/:name", API_GetTable)
 	router.GET("/select", API_RunQuery)
