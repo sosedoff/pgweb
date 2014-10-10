@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jessevdk/go-flags"
 	_ "github.com/lib/pq"
-	"log"
 	"os"
 )
 
@@ -38,13 +37,15 @@ func initClient() {
 	client, err := NewClient()
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Error:", err)
+		os.Exit(1)
 	}
 
 	_, err = client.Query(SQL_INFO)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Error:", err)
+		os.Exit(1)
 	}
 
 	dbClient = client
@@ -54,7 +55,7 @@ func initOptions() {
 	_, err := flags.ParseArgs(&options, os.Args)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("___")
 	}
 }
 
