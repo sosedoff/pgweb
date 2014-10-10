@@ -36,14 +36,20 @@ var dbClient *Client
 var history []string
 
 var options struct {
+	Url    string `long:"url" description:"Database connection string"`
 	Host   string `short:"h" long:"host" description:"Server hostname or IP" default:"localhost"`
 	Port   int    `short:"p" long:"port" description:"Server port" default:"5432"`
 	User   string `short:"u" long:"user" description:"Database user" default:"postgres"`
 	DbName string `short:"d" long:"db" description:"Database name" default:"postgres"`
+	Ssl    string `long:"ssl" description:"SSL option" default:"disable"`
 	Static string `short:"s" description:"Path to static assets" default:"./static"`
 }
 
 func getConnectionString() string {
+	if options.Url != "" {
+		return options.Url
+	}
+
 	return fmt.Sprintf(
 		"host=%s port=%d user=%s dbname=%s sslmode=disable",
 		options.Host, options.Port,
@@ -52,7 +58,6 @@ func getConnectionString() string {
 }
 
 func NewClient() (*Client, error) {
-	fmt.Println(getConnectionString())
 	db, err := sqlx.Open("postgres", getConnectionString())
 
 	if err != nil {
