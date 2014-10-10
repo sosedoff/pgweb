@@ -40,6 +40,7 @@ var options struct {
 	Port   int    `short:"p" long:"port" description:"Server port" default:"5432"`
 	User   string `short:"u" long:"user" description:"Database user" default:"postgres"`
 	DbName string `short:"d" long:"db" description:"Database name" default:"postgres"`
+	Static string `short:"s" description:"Path to static assets" default:"./static"`
 }
 
 func getConnectionString() string {
@@ -186,7 +187,7 @@ func main() {
 	router.GET("/select", API_RunQuery)
 	router.POST("/select", API_RunQuery)
 
-	router.Static("/app", "./static")
+	router.Static("/app", options.Static)
 
 	fmt.Println("Starting server at 0.0.0.0:8080")
 	router.Run(":8080")
