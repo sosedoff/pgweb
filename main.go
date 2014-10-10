@@ -34,6 +34,7 @@ type Error struct {
 }
 
 var dbClient *Client
+var history []string
 
 var options struct {
 	Host   string `short:"h" long:"host" description:"Server hostname or IP" default:"localhost"`
@@ -122,6 +123,8 @@ func API_RunQuery(c *gin.Context) {
 		return
 	}
 
+	history = append(history, query)
+
 	API_HandleQuery(query, c)
 }
 
@@ -136,6 +139,10 @@ func API_GetTables(c *gin.Context) {
 func API_GetTable(c *gin.Context) {
 	query := fmt.Sprintf(SQL_TABLE_SCHEMA, c.Params.ByName("name"))
 	API_HandleQuery(query, c)
+}
+
+func API_History(c *gin.Context) {
+	c.JSON(200, history)
 }
 
 func API_HandleQuery(query string, c *gin.Context) {
@@ -186,6 +193,7 @@ func main() {
 	router.GET("/tables/:name", API_GetTable)
 	router.GET("/select", API_RunQuery)
 	router.POST("/select", API_RunQuery)
+	router.GET("/history", API_History)
 
 	router.Static("/app", options.Static)
 
