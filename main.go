@@ -45,7 +45,7 @@ var options struct {
 	Static string `short:"s" description:"Path to static assets" default:"./static"`
 }
 
-func formatResult(res *Result) []map[string]interface{} {
+func (res *Result) Format() []map[string]interface{} {
 	var items []map[string]interface{}
 
 	for _, row := range res.Rows {
@@ -176,7 +176,7 @@ func API_GetTable(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, formatResult(res))
+	c.JSON(200, res.Format())
 }
 
 func API_History(c *gin.Context) {
@@ -191,7 +191,7 @@ func API_Info(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, formatResult(res)[0])
+	c.JSON(200, res.Format()[0])
 }
 
 func API_HandleQuery(query string, c *gin.Context) {
