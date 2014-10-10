@@ -154,7 +154,7 @@ func API_GetTables(c *gin.Context) {
 func API_GetTable(c *gin.Context) {
 	var columns []map[string]interface{}
 
-	res, err := dbClient.Query(fmt.Sprintf(SQL_TABLE_SCHEMA, "users"))
+	res, err := dbClient.Query(fmt.Sprintf(SQL_TABLE_SCHEMA, c.Params.ByName("name")))
 
 	if err != nil {
 		c.JSON(400, NewError(err))
