@@ -179,11 +179,14 @@ func main() {
 	defer dbClient.db.Close()
 
 	router := gin.Default()
+
 	router.GET("/databases", API_GetDatabases)
 	router.GET("/tables", API_GetTables)
 	router.GET("/tables/:name", API_GetTable)
 	router.GET("/select", API_RunQuery)
 	router.POST("/select", API_RunQuery)
+
+	router.Static("/app", "./static")
 
 	fmt.Println("Starting server at 0.0.0.0:8080")
 	router.Run(":8080")
