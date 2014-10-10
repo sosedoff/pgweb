@@ -3,3 +3,7 @@ build:
 
 deps:
 	go get github.com/mitchellh/gox
+
+clean:
+	rm -f ./pgweb
+	rm -f ./bin/*
