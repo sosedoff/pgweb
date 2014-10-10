@@ -212,6 +212,12 @@ func initClient() {
 		log.Fatal(err)
 	}
 
+	_, err = client.Query(SQL_INFO)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	dbClient = client
 }
 
