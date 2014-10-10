@@ -14,6 +14,7 @@ import (
 )
 
 const (
+	SQL_INFO         = "SELECT version(), user, current_database(), inet_client_addr(), inet_client_port(), inet_server_addr(), inet_server_port()"
 	SQL_TABLES       = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name;"
 	SQL_TABLE_SCHEMA = "SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = '%s';"
 )
@@ -42,6 +43,22 @@ var options struct {
 	DbName string `short:"d" long:"db" description:"Database name" default:"postgres"`
 	Ssl    string `long:"ssl" description:"SSL option" default:"disable"`
 	Static string `short:"s" description:"Path to static assets" default:"./static"`
+}
+
+func formatResult(res *Result) []map[string]interface{} {
+	var items []map[string]interface{}
+
+	for _, row := range res.Rows {
+		item := make(map[string]interface{})
+
+		for i, c := range res.Columns {
+			item[c] = row[i]
+		}
+
+		items = append(items, item)
+	}
+
+	return items
 }
 
 func getConnectionString() string {
@@ -152,8 +169,6 @@ func API_GetTables(c *gin.Context) {
 }
 
 func API_GetTable(c *gin.Context) {
-	var columns []map[string]interface{}
-
 	res, err := dbClient.Query(fmt.Sprintf(SQL_TABLE_SCHEMA, c.Params.ByName("name")))
 
 	if err != nil {
@@ -161,21 +176,22 @@ func API_GetTable(c *gin.Context) {
 		return
 	}
 
-	for _, row := range res.Rows {
-		item := make(map[string]interface{})
-
-		for i, c := range res.Columns {
-			item[c] = row[i]
-		}
-
-		columns = append(columns, item)
-	}
-
-	c.JSON(200, columns)
+	c.JSON(200, formatResult(res))
 }
 
 func API_History(c *gin.Context) {
 	c.JSON(200, history)
+}
+
+func API_Info(c *gin.Context) {
+	res, err := dbClient.Query(SQL_INFO)
+
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	c.JSON(200, formatResult(res)[0])
 }
 
 func API_HandleQuery(query string, c *gin.Context) {
@@ -214,6 +230,7 @@ func main() {
 
 	router := gin.Default()
 
+	router.GET("/info", API_Info)
 	router.GET("/tables", API_GetTables)
 	router.GET("/tables/:name", API_GetTable)
 	router.GET("/select", API_RunQuery)
