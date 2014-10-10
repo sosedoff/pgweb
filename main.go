@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -187,14 +186,7 @@ func API_HandleQuery(query string, c *gin.Context) {
 		return
 	}
 
-	buff, err := json.Marshal(result)
-
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.String(200, string(buff))
+	c.JSON(200, result)
 }
 
 func initClient() {
