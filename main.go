@@ -55,7 +55,7 @@ func initOptions() {
 	_, err := flags.ParseArgs(&options, os.Args)
 
 	if err != nil {
-		fmt.Println("___")
+		os.Exit(1)
 	}
 }
 
