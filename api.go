@@ -19,7 +19,6 @@ func API_RunQuery(c *gin.Context) {
 		return
 	}
 
-	history = append(history, query)
 	API_HandleQuery(query, c)
 }
 
@@ -46,7 +45,7 @@ func API_GetTable(c *gin.Context) {
 }
 
 func API_History(c *gin.Context) {
-	c.JSON(200, history)
+	c.JSON(200, dbClient.history)
 }
 
 func API_Info(c *gin.Context) {
@@ -70,14 +69,11 @@ func API_HandleQuery(query string, c *gin.Context) {
 
 	q := c.Request.URL.Query()
 
-	format := q["format"][0]
-	if format == "" {
-		format = "json"
-	}
-
-	if format == "csv" {
-		c.String(200, result.CSV())
-		return
+	if len(q["format"]) > 0 {
+		if q["format"][0] == "csv" {
+			c.String(200, result.CSV())
+			return
+		}
 	}
 
 	c.JSON(200, result)
