@@ -19,7 +19,6 @@ var options struct {
 }
 
 var dbClient *Client
-var history []string
 
 func getConnectionString() string {
 	if options.Url != "" {

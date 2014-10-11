@@ -19,7 +19,6 @@ func API_RunQuery(c *gin.Context) {
 		return
 	}
 
-	history = append(history, query)
 	API_HandleQuery(query, c)
 }
 
@@ -46,7 +45,7 @@ func API_GetTable(c *gin.Context) {
 }
 
 func API_History(c *gin.Context) {
-	c.JSON(200, history)
+	c.JSON(200, dbClient.history)
 }
 
 func API_Info(c *gin.Context) {

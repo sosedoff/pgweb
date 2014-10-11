@@ -15,7 +15,8 @@ const (
 )
 
 type Client struct {
-	db *sqlx.DB
+	db      *sqlx.DB
+	history []string
 }
 
 type Result struct {
@@ -37,6 +38,10 @@ func NewClient() (*Client, error) {
 	return &Client{db: db}, nil
 }
 
+func (client *Client) recordQuery(query string) {
+	client.history = append(client.history, query)
+}
+
 func (client *Client) Tables() ([]string, error) {
 	res, err := client.Query(SQL_TABLES)
 
@@ -55,6 +60,8 @@ func (client *Client) Tables() ([]string, error) {
 
 func (client *Client) Query(query string) (*Result, error) {
 	rows, err := client.db.Queryx(query)
+
+	client.recordQuery(query)
 
 	if err != nil {
 		return nil, err
