@@ -1,1 +1,145 @@
-HELLO
+<style>
+  #nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 49px;
+    background: #ccc;
+    border-bottom: 1px solid #aaa;
+  }
+
+  #sidebar {
+    width: 299px;
+    position: absolute;
+    left: 0;
+    top: 50;
+    bottom: 0;
+    background: #fff;
+    overflow: scroll;
+    border-right: 1px solid #aaa;
+  }
+
+  #body {
+    position: absolute;
+    top: 50px;
+    left: 300px;
+    bottom: 250px;
+    right: 0px;
+    overflow: scroll;
+  }
+
+  #input {
+    position: absolute;
+    border-top: 1px solid #aaa;
+    left: 300px;
+    right: 0px;
+    bottom: 0px;
+    height: 250px;
+  }
+
+  #results {
+    font-size: 13px;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  #results td {
+    max-width: 200px;
+    overflow: hidden;
+  }
+
+  #custom_query {
+    height: 150px;
+  }
+
+  ul {
+    padding: 0px;
+    margin: 0px;
+  }
+
+  ul li {
+    list-style: none;
+    list-style-type: none;
+    line-height: 25px;
+    padding: 0px 8px;
+    cursor: pointer;
+  }
+
+  ul li:hover {
+    background: #ddd;
+  }
+</style>
+
+<div id="nav"></div>
+
+<div id="sidebar"><ul id="tables"></ul></div>
+<div id="body">
+  <table id="results" class="table table-striped"></table>
+</div>
+<div id="input">
+  <textarea class="form-control" id="custom_query"></textarea>
+  <input type="button" value="Run" class="btn btn-sm btn-primary" id="run" />
+</div>
+
+<link rel="stylesheet" href="/app/css/bootstrap.min.css" />
+<script type="text/javascript"></script>
+<script type="text/javascript" src="/app/js/jquery.min.js"></script>
+
+<script type="text/javascript">
+function getTables(cb) {
+  $.getJSON("/tables", function(resp) {
+    cb(resp);
+  });
+}
+
+function executeQuery(query, cb) {
+  $.getJSON("/query", { format: "json", query: query }, function(resp) {
+    cb(resp);
+  });
+}
+
+function buildTable(results) {
+  $("#results").text("");
+
+  var cols = "";
+  var rows = ""
+
+  results.columns.forEach(function(col) {
+    cols += "<th>" + col + "</th>";
+  });
+
+  results.rows.forEach(function(row) {
+    var r = "";
+    for (i in row) { r += "<td>" + row[i] + "</td>"; }
+    rows += "<tr>" + r + "</tr>";
+  });
+
+  $("<thead>" + cols + "</thead><tbody>" + rows + "</tobdy>").appendTo("#results");
+}
+
+$(document).ready(function() {
+  $("#run").on("click", function() {
+    var query = $("#custom_query").val();
+
+    executeQuery(query, function(data) {
+      buildTable(data);
+    });
+  });
+
+  $("#tables").on("click", "li", function() {
+    var query = "SELECT * FROM " + $(this).text() + " ORDER BY id DESC LIMIT 100";
+
+    executeQuery(query, function(data) {
+      buildTable(data);
+    });
+  });
+
+  getTables(function(data) {
+    data.forEach(function(item) {
+      $("<li>" + item + "</li>").appendTo("#tables");
+    });
+  });
+});
+
+</script>
