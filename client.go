@@ -115,6 +115,8 @@ func (res *Result) CSV() string {
 	buff := &bytes.Buffer{}
 	writer := csv.NewWriter(buff)
 
+	writer.Write(res.Columns)
+
 	for _, row := range res.Rows {
 		record := make([]string, len(res.Columns))
 
