@@ -22,6 +22,17 @@ func API_RunQuery(c *gin.Context) {
 	API_HandleQuery(query, c)
 }
 
+func API_ExplainQuery(c *gin.Context) {
+	query := strings.TrimSpace(c.Request.FormValue("query"))
+
+	if query == "" {
+		c.JSON(400, errors.New("Query parameter is missing"))
+		return
+	}
+
+	API_HandleQuery(fmt.Sprintf("EXPLAIN %s", query), c)
+}
+
 func API_GetTables(c *gin.Context) {
 	names, err := dbClient.Tables()
 

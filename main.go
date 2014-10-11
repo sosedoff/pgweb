@@ -72,6 +72,8 @@ func main() {
 	router.GET("/tables/:table/indexes", API_TableIndexes)
 	router.GET("/query", API_RunQuery)
 	router.POST("/query", API_RunQuery)
+	router.GET("/explain", API_ExplainQuery)
+	router.POST("/explain", API_ExplainQuery)
 	router.GET("/history", API_History)
 	router.Static("/app", options.Static)
 
