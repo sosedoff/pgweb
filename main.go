@@ -47,6 +47,18 @@ func initClient() {
 		os.Exit(1)
 	}
 
+	tables, err := client.Tables()
+
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+
+	if len(tables) == 0 {
+		fmt.Println("Error: Database does not have any tables")
+		os.Exit(1)
+	}
+
 	dbClient = client
 }
 
