@@ -10,15 +10,20 @@ import (
 
 var options struct {
 	Url    string `long:"url" description:"Database connection string"`
-	Host   string `short:"h" long:"host" description:"Server hostname or IP" default:"localhost"`
-	Port   int    `short:"p" long:"port" description:"Server port" default:"5432"`
-	User   string `short:"u" long:"user" description:"Database user" default:"postgres"`
-	DbName string `short:"d" long:"db" description:"Database name" default:"postgres"`
+	Host   string `long:"host" description:"Server hostname or IP" default:"localhost"`
+	Port   int    `long:"port" description:"Server port" default:"5432"`
+	User   string `long:"user" description:"Database user" default:"postgres"`
+	DbName string `long:"db" description:"Database name" default:"postgres"`
 	Ssl    string `long:"ssl" description:"SSL option" default:"disable"`
 	Static string `short:"s" description:"Path to static assets" default:"./static"`
 }
 
 var dbClient *Client
+
+func exitWithMessage(message string) {
+	fmt.Println("Error:", message)
+	os.Exit(1)
+}
 
 func getConnectionString() string {
 	if options.Url != "" {
@@ -34,17 +39,24 @@ func getConnectionString() string {
 
 func initClient() {
 	client, err := NewClient()
-
 	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
+		exitWithMessage(err.Error())
 	}
 
-	_, err = client.Query(SQL_INFO)
-
+	fmt.Println("Connecting to server...")
+	err = client.Test()
 	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
+		exitWithMessage(err.Error())
+	}
+
+	fmt.Println("Checking tables...")
+	tables, err := client.Tables()
+	if err != nil {
+		exitWithMessage(err.Error())
+	}
+
+	if len(tables) == 0 {
+		exitWithMessage("Database does not have any tables")
 	}
 
 	dbClient = client
@@ -68,9 +80,12 @@ func main() {
 
 	router.GET("/info", API_Info)
 	router.GET("/tables", API_GetTables)
-	router.GET("/tables/:name", API_GetTable)
+	router.GET("/tables/:table", API_GetTable)
+	router.GET("/tables/:table/indexes", API_TableIndexes)
 	router.GET("/query", API_RunQuery)
 	router.POST("/query", API_RunQuery)
+	router.GET("/explain", API_ExplainQuery)
+	router.POST("/explain", API_ExplainQuery)
 	router.GET("/history", API_History)
 	router.Static("/app", options.Static)
 

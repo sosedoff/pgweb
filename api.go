@@ -22,6 +22,17 @@ func API_RunQuery(c *gin.Context) {
 	API_HandleQuery(query, c)
 }
 
+func API_ExplainQuery(c *gin.Context) {
+	query := strings.TrimSpace(c.Request.FormValue("query"))
+
+	if query == "" {
+		c.JSON(400, errors.New("Query parameter is missing"))
+		return
+	}
+
+	API_HandleQuery(fmt.Sprintf("EXPLAIN %s", query), c)
+}
+
 func API_GetTables(c *gin.Context) {
 	names, err := dbClient.Tables()
 
@@ -34,7 +45,7 @@ func API_GetTables(c *gin.Context) {
 }
 
 func API_GetTable(c *gin.Context) {
-	res, err := dbClient.Query(fmt.Sprintf(SQL_TABLE_SCHEMA, c.Params.ByName("name")))
+	res, err := dbClient.Query(fmt.Sprintf(SQL_TABLE_SCHEMA, c.Params.ByName("table")))
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -57,6 +68,17 @@ func API_Info(c *gin.Context) {
 	}
 
 	c.JSON(200, res.Format()[0])
+}
+
+func API_TableIndexes(c *gin.Context) {
+	res, err := dbClient.TableIndexes(c.Params.ByName("table"))
+
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	c.JSON(200, res)
 }
 
 func API_HandleQuery(query string, c *gin.Context) {

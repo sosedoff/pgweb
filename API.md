@@ -1,25 +1,20 @@
-## API
+# API
 
-Get current database tables:
-
-```
-GET /tables
-```
-
-Get table details:
+Current endpoint:
 
 ```
-GET /tables/:name
+ GET /info
+ GET /tables
+ GET /tables/:table
+ GET /tables/:table/indexes
+ GET /query
+POST /query
+ GET /explain
+POST /explain
+ GET /history
 ```
 
-Execute select query:
-
-```
-POST /select?query=SQL
- GET /select?query=SQL
-```
-
-### Response formats
+# Query Response
 
 Successful response:
 
