@@ -39,6 +39,10 @@ func NewClient() (*Client, error) {
 	return &Client{db: db}, nil
 }
 
+func (client *Client) Test() error {
+	return client.db.Ping()
+}
+
 func (client *Client) recordQuery(query string) {
 	client.history = append(client.history, query)
 }
