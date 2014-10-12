@@ -20,6 +20,11 @@ var options struct {
 
 var dbClient *Client
 
+func exitWithMessage(message string) {
+	fmt.Println("Error:", message)
+	os.Exit(1)
+}
+
 func getConnectionString() string {
 	if options.Url != "" {
 		return options.Url
@@ -36,27 +41,23 @@ func initClient() {
 	client, err := NewClient()
 
 	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
+		exitWithMessage(err.Error())
 	}
 
 	_, err = client.Query(SQL_INFO)
 
 	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
+		exitWithMessage(err.Error())
 	}
 
 	tables, err := client.Tables()
 
 	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
+		exitWithMessage(err.Error())
 	}
 
 	if len(tables) == 0 {
-		fmt.Println("Error: Database does not have any tables")
-		os.Exit(1)
+		exitWithMessage("Database does not have any tables")
 	}
 
 	dbClient = client
