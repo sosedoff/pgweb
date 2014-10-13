@@ -11,8 +11,27 @@ type Error struct {
 	Message string `json:"error"`
 }
 
+func assetContentType(name string) string {
+	if strings.Contains(name, ".css") {
+		return "text/css"
+	}
+
+	if strings.Contains(name, ".js") {
+		return "application/javascript"
+	}
+
+	return "text/plain"
+}
+
 func API_Home(c *gin.Context) {
-	c.File("./static/index.html")
+	data, err := Asset("static/index.html")
+
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+
+	c.Data(200, "text/html", data)
 }
 
 func API_RunQuery(c *gin.Context) {
@@ -103,4 +122,26 @@ func API_HandleQuery(query string, c *gin.Context) {
 	}
 
 	c.JSON(200, result)
+}
+
+func API_ServeAsset(c *gin.Context) {
+	file := fmt.Sprintf(
+		"static/%s/%s",
+		c.Params.ByName("type"),
+		c.Params.ByName("name"),
+	)
+
+	data, err := Asset(file)
+
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+
+	if len(data) == 0 {
+		c.String(404, "Asset is empty")
+		return
+	}
+
+	c.Data(200, assetContentType(file), data)
 }

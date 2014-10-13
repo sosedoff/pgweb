@@ -1,4 +1,6 @@
 build:
+	rm -f bindata.go
+	go-bindata static/...
 	gox -osarch="darwin/amd64" -output="./bin/pgweb_{{.OS}}_{{.Arch}}"
 
 deps:
