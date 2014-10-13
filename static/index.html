@@ -1,191 +1,34 @@
-<style>
-  #nav {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 39px;
-    background: #ccc;
-    border-bottom: 1px solid #aaa;
-  }
-
-  #sidebar {
-    width: 249px;
-    position: absolute;
-    left: 0;
-    top: 40;
-    bottom: 0;
-    background: #fff;
-    overflow: scroll;
-    border-right: 1px solid #aaa;
-    font-size: 13px;
-  }
-
-  #body {
-    position: absolute;
-    top: 40px;
-    left: 250px;
-    bottom: 0px;
-    right: 0px;
-    overflow: scroll;
-  }
-
-  #input {
-    position: absolute;
-    border-bottom: 1px solid #aaa;
-    left: 0px;
-    right: 0px;
-    top: 0px;
-    height: 249px;
-  }
-
-  #output {
-    position: absolute;
-    left: 0px;
-    top: 250px;
-    bottom: 0px;
-    right: 0px;
-    margin: 0px;
-    padding: 0px;
-    overflow: scroll;
-  }
-
-  #results {
-    font-size: 13px;
-  }
-
-  #results td {
-    max-width: 200px;
-    overflow: hidden;
-  }
-
-  #custom_query {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-  }
-
-  ul {
-    padding: 0px;
-    margin: 0px;
-  }
-
-  ul li {
-    list-style: none;
-    list-style-type: none;
-    line-height: 25px;
-    padding: 0px 8px;
-    cursor: pointer;
-  }
-
-  ul li:hover {
-    background: #ddd;
-  }
-</style>
-
-<div id="nav"></div>
-
-<div id="sidebar"><ul id="tables"></ul></div>
+<div id="nav">
+  <ul>
+    <li id="table_content">Content</li>
+    <li id="table_structure">Structure</li>
+    <li id="table_indexes">Indexes</li>
+    <li id="table_query" class="selected">Run Query</li>
+    <li id="table_history">History</li>
+  </ul>
+</div>
+<div id="sidebar">
+  <div class="wrapper"><ul id="tables"></ul></div>
+</div>
 <div id="body">
   <div id="input">
-    <textarea id="custom_query"></textarea>
-    <input type="button" value="Run" class="btn btn-sm btn-primary" id="run" />
-    <a href="#" class="btn btn-default btn-sm">Query History</a>
+    <div class="wrapper">
+      <div id="custom_query"></div>
+      <div class="actions">
+        <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
+      </div>
+    </div>
   </div>
   <div id="output">
-    <table id="results" class="table table-striped"></table>
+    <div class="wrapper">
+      <table id="results" class="table table-striped"></table>
+    </div>
   </div>
 </div>
 
-<link rel="stylesheet" href="/app/css/bootstrap.min.css" />
-<script type="text/javascript"></script>
-<script type="text/javascript" src="/app/js/jquery.min.js"></script>
-<script type="text/javascript" src="/app/js/ace.js"></script>
-<script type="text/javascript" src="/app/js/ace-pgsql.js"></script>
-
-<script type="text/javascript">
-function getTables(cb) {
-  $.getJSON("/tables", function(resp) {
-    cb(resp);
-  });
-}
-
-function executeQuery(query, cb) {
-  $.ajax({
-    url: "/query",
-    method: "post",
-    cache: false,
-    data: { query: query, format: "json" },
-    success: function(data) {
-      cb(data);
-    },
-    error: function(xhr, status, data) {
-      cb(jQuery.parseJSON(xhr.responseText));
-    }
-  });
-}
-
-function buildTable(results) {
-  $("#results").text("");
-
-  if (!results.rows) {
-    $("<tr><td>No records found</tr></tr>").appendTo("#results");
-    return;
-  }
-
-  if (results.error) {
-    $("<tr><td>ERROR: " + results.error + "</tr></tr>").appendTo("#results");
-    return;
-  }
-
-
-  var cols = "";
-  var rows = ""
-
-  results.columns.forEach(function(col) {
-    cols += "<th>" + col + "</th>";
-  });
-
-  results.rows.forEach(function(row) {
-    var r = "";
-    for (i in row) { r += "<td>" + row[i] + "</td>"; }
-    rows += "<tr>" + r + "</tr>";
-  });
-
-  $("<thead>" + cols + "</thead><tbody>" + rows + "</tobdy>").appendTo("#results");
-}
-
-$(document).ready(function() {
-  /*
-  var editor = ace.edit("custom_query");
-  editor.getSession().setMode("ace/mode/pgsql");
-  editor.getSession().setTabSize(2);
-  editor.getSession().setUseSoftTabs(true);
-  */
-
-  $("#run").on("click", function() {
-    var query = $("#custom_query").val();
-
-    executeQuery(query, function(data) {
-      buildTable(data);
-    });
-  });
-
-  $("#tables").on("click", "li", function() {
-    var query = "SELECT * FROM " + $(this).text() + " ORDER BY id DESC LIMIT 100";
-
-    executeQuery(query, function(data) {
-      buildTable(data);
-    });
-  });
-
-  getTables(function(data) {
-    data.forEach(function(item) {
-      $("<li>" + item + "</li>").appendTo("#tables");
-    });
-  });
-});
-
-</script>
+<link rel="stylesheet" href="/static/css/bootstrap.css" />
+<link rel="stylesheet" href="/static/css/app.css" />
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript" src="/static/js/ace.js"></script>
+<script type="text/javascript" src="/static/js/ace-pgsql.js"></script>
+<script type="text/javascript" src="/static/js/app.js"></script>

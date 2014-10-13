@@ -11,6 +11,10 @@ type Error struct {
 	Message string `json:"error"`
 }
 
+func API_Home(c *gin.Context) {
+	c.File("./static/index.html")
+}
+
 func API_RunQuery(c *gin.Context) {
 	query := strings.TrimSpace(c.Request.FormValue("query"))
 
@@ -52,7 +56,7 @@ func API_GetTable(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, res.Format())
+	c.JSON(200, res)
 }
 
 func API_History(c *gin.Context) {
