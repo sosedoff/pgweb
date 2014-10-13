@@ -90,6 +90,7 @@ func main() {
 	router.GET("/history", API_History)
 	router.GET("/static/:type/:name", API_ServeAsset)
 
-	fmt.Println("Starting server at 0.0.0.0:8080")
+	fmt.Println("Starting server...")
+	fmt.Println("Once started you can view application at http://localhost:8080")
 	router.Run(":8080")
 }
