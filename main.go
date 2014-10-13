@@ -9,6 +9,7 @@ import (
 )
 
 var options struct {
+	Debug  bool   `short:"d" description:"Enable debugging mode" default:"false"`
 	Url    string `long:"url" description:"Database connection string"`
 	Host   string `long:"host" description:"Server hostname or IP" default:"localhost"`
 	Port   int    `long:"port" description:"Server port" default:"5432"`
@@ -74,6 +75,10 @@ func main() {
 	initClient()
 
 	defer dbClient.db.Close()
+
+	if !options.Debug {
+		gin.SetMode("release")
+	}
 
 	router := gin.Default()
 
