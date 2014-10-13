@@ -88,7 +88,7 @@ func main() {
 	router.GET("/explain", API_ExplainQuery)
 	router.POST("/explain", API_ExplainQuery)
 	router.GET("/history", API_History)
-	router.Static("/app", options.Static)
+	router.Static("/static", options.Static)
 
 	fmt.Println("Starting server at 0.0.0.0:8080")
 	router.Run(":8080")
