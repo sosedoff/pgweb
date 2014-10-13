@@ -15,7 +15,6 @@ var options struct {
 	User   string `long:"user" description:"Database user" default:"postgres"`
 	DbName string `long:"db" description:"Database name" default:"postgres"`
 	Ssl    string `long:"ssl" description:"SSL option" default:"disable"`
-	Static string `short:"s" description:"Path to static assets" default:"./static"`
 }
 
 var dbClient *Client
