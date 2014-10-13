@@ -3,6 +3,7 @@ build:
 
 deps:
 	go get github.com/mitchellh/gox
+	go get github.com/jteeuwen/go-bindata/...
 
 clean:
 	rm -f ./pgweb
