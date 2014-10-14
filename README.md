@@ -26,14 +26,10 @@ Currently supported:
 Start server:
 
 ```
-pgweb
+pgweb --host localhost --user myuser --db mydb
 ```
 
-Application will try to connect to the local PostgreSQL server with `postgresql` 
-user and select `postgresql` database. You can specify connection flags, like 
-database, host or user. See `CLI` section of this readme.
-
-You can also specify a connection URI instead of settings individual connection settings:
+You can also specify a connection URI instead of individual flags:
 
 ```
 pgweb --url postgresql://user:password@host:port/database
@@ -81,7 +77,6 @@ This will produce `pgweb` binary in the current directory.
 
 - Dan Sosedoff - https://twitter.com/sosedoff
 - Masha Safina - https://twitter.com/mashasafina
-- Jeff Canty - https://twitter.com/cantyjeffrey
 
 ## License
 
