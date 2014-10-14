@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+const VERSION = "0.1.0"
+
 var options struct {
 	Debug  bool   `short:"d" description:"Enable debugging mode" default:"false"`
 	Url    string `long:"url" description:"Database connection string"`
