@@ -17,15 +17,21 @@ precompiled binary for your operating system.
 
 Currently supported:
 
-- OSX 64bit
+- Mac OSX 64bit
 - Linux 32/64bit
 - Windows 32/64bit
 
 ## Usage
 
-To start a server, type: `pgweb`. Application will try to connect to the local PostgreSQL
-server with `postgresql` user and select `postgresql` database. You can specify connection
-flags, like database, host or user. See `CLI` section of this readme.
+Start server:
+
+```
+pgweb
+```
+
+Application will try to connect to the local PostgreSQL server with `postgresql` 
+user and select `postgresql` database. You can specify connection flags, like 
+database, host or user. See `CLI` section of this readme.
 
 You can also specify a connection URI instead of settings individual connection settings:
 
