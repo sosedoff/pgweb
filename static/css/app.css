@@ -128,6 +128,16 @@
   border: none;
   box-shadow: none;
   background: #7eb54e;
+  float: left;
+}
+
+#input .actions #query_progress {
+  display: none;
+  float: left;
+  margin-left: 12px;
+  line-height: 30px;
+  height: 30px;
+  color: #aaa;
 }
 
 #input .actions .btn:focus {
@@ -202,7 +212,7 @@
 }
 
 #results td div {
-  max-width: 200px;
+  max-width: 350px;
   max-height: 51px;
   overflow: hidden;
   text-overflow: ellipsis;

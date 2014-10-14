@@ -143,8 +143,14 @@ function showTableStructure() {
 function runQuery() {
   setCurrentTab("table_query");
 
+  $("#run").attr("disabled", "disabled");
+  $("#query_progress").show();
+
   executeQuery(editor.getValue(), function(data) {
     buildTable(data);
+
+    $("#run").removeAttr("disabled");
+    $("#query_progress").hide();
     $("#input").show();
     $("#output").removeClass("full");
   });
