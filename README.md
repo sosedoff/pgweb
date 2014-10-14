@@ -10,6 +10,9 @@ is to utilize language's ability for cross-compile source code for multiple plat
 This project is an attempt to create a very simple and portable application to work with 
 PostgreSQL databases.
 
+<img src="screenshots/browse.png" width="345px" />
+<img src="screenshots/query.png" width="345px" />
+
 ## Installation
 
 Please visit [Github Releases](https://github.com/sosedoff/pgweb/releases) to download a 
