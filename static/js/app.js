@@ -30,6 +30,14 @@ function loadTables() {
   });
 }
 
+function escapeHtml(str) {
+  if (str != null || str != undefined) {
+    return jQuery("<div/>").text(str).html();
+  }
+
+  return "<span class='null'>null</span>";
+}
+
 function buildTable(results) {
   $("#results").text("").removeClass("empty");
 
@@ -54,7 +62,7 @@ function buildTable(results) {
 
   results.rows.forEach(function(row) {
     var r = "";
-    for (i in row) { r += "<td>" + row[i] + "</td>"; }
+    for (i in row) { r += "<td><div>" + escapeHtml(row[i]) + "</div></td>"; }
     rows += "<tr>" + r + "</tr>";
   });
 

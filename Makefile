@@ -5,7 +5,7 @@ build:
 
 dev:
 	rm -f bindata.go
-	go-bindata static/...
+	go-bindata -debug static/...
 	go build
 	@echo "You can now execute ./pgweb"
 

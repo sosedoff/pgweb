@@ -31,7 +31,7 @@ func API_Home(c *gin.Context) {
 		return
 	}
 
-	c.Data(200, "text/html", data)
+	c.Data(200, "text/html; charset=utf-8", data)
 }
 
 func API_RunQuery(c *gin.Context) {
