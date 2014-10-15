@@ -10,6 +10,7 @@ import (
 
 const (
 	PG_INFO          = "SELECT version(), user, current_database(), inet_client_addr(), inet_client_port(), inet_server_addr(), inet_server_port()"
+	PG_DATABASES     = "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname ASC;"
 	PG_TABLES        = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name;"
 	PG_TABLE_SCHEMA  = "SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = '%s';"
 	PG_TABLE_INDEXES = "SELECT indexname, indexdef FROM pg_indexes WHERE tablename = '%s';"
@@ -45,6 +46,22 @@ func (client *Client) Test() error {
 
 func (client *Client) recordQuery(query string) {
 	client.history = append(client.history, query)
+}
+
+func (client *Client) Databases() ([]string, error) {
+	res, err := client.Query(PG_DATABASES)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var tables []string
+
+	for _, row := range res.Rows {
+		tables = append(tables, row[0].(string))
+	}
+
+	return tables, nil
 }
 
 func (client *Client) Tables() ([]string, error) {

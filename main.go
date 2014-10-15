@@ -85,6 +85,7 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/", API_Home)
+	router.GET("/databases", API_GetDatabases)
 	router.GET("/info", API_Info)
 	router.GET("/tables", API_GetTables)
 	router.GET("/tables/:table", API_GetTable)

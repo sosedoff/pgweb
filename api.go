@@ -34,6 +34,17 @@ func API_Home(c *gin.Context) {
 	c.Data(200, "text/html; charset=utf-8", data)
 }
 
+func API_GetDatabases(c *gin.Context) {
+	names, err := dbClient.Databases()
+
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	c.JSON(200, names)
+}
+
 func API_RunQuery(c *gin.Context) {
 	query := strings.TrimSpace(c.Request.FormValue("query"))
 
