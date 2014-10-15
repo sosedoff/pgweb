@@ -177,7 +177,7 @@ function runExplain() {
     return;
   }
 
-  query = "EXPLAIN " + query;
+  query = "EXPLAIN ANALYZE " + query;
 
   executeQuery(query, function(data) {
     buildTable(data);
