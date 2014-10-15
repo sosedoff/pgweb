@@ -68,7 +68,7 @@ func API_GetTables(c *gin.Context) {
 }
 
 func API_GetTable(c *gin.Context) {
-	res, err := dbClient.Query(fmt.Sprintf(SQL_TABLE_SCHEMA, c.Params.ByName("table")))
+	res, err := dbClient.Query(fmt.Sprintf(PG_TABLE_SCHEMA, c.Params.ByName("table")))
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -83,7 +83,7 @@ func API_History(c *gin.Context) {
 }
 
 func API_Info(c *gin.Context) {
-	res, err := dbClient.Query(SQL_INFO)
+	res, err := dbClient.Query(PG_INFO)
 
 	if err != nil {
 		c.JSON(400, NewError(err))

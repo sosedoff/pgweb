@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	SQL_INFO          = "SELECT version(), user, current_database(), inet_client_addr(), inet_client_port(), inet_server_addr(), inet_server_port()"
-	SQL_TABLES        = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name;"
-	SQL_TABLE_SCHEMA  = "SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = '%s';"
-	SQL_TABLE_INDEXES = "SELECT indexname, indexdef FROM pg_indexes WHERE tablename = '%s';"
+	PG_INFO          = "SELECT version(), user, current_database(), inet_client_addr(), inet_client_port(), inet_server_addr(), inet_server_port()"
+	PG_TABLES        = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name;"
+	PG_TABLE_SCHEMA  = "SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = '%s';"
+	PG_TABLE_INDEXES = "SELECT indexname, indexdef FROM pg_indexes WHERE tablename = '%s';"
 )
 
 type Client struct {
@@ -48,7 +48,7 @@ func (client *Client) recordQuery(query string) {
 }
 
 func (client *Client) Tables() ([]string, error) {
-	res, err := client.Query(SQL_TABLES)
+	res, err := client.Query(PG_TABLES)
 
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func (client *Client) Tables() ([]string, error) {
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
-	res, err := client.Query(fmt.Sprintf(SQL_TABLE_INDEXES, table))
+	res, err := client.Query(fmt.Sprintf(PG_TABLE_INDEXES, table))
 
 	if err != nil {
 		return nil, err
