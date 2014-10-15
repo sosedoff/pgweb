@@ -36,7 +36,7 @@
   margin-left: 0px;
 }
 
-#nav ul li:hover { 
+#nav ul li:hover {
   color: rgba(0,0,0,0.9);
 }
 
@@ -69,8 +69,7 @@
   left: 0;
   top: 0;
   bottom: 0;
-  background: #3a3633;
-  border-right: 1px solid #b4b4b4;
+  background: #31373d;
   font-size: 13px;
   overflow: scroll;
 }
@@ -84,12 +83,8 @@
   padding: 0px;
 }
 
-#sidebar ul li {
-  color: #000;
-}
-
 #sidebar ul li:hover {
-  color: #fff !important;
+  background: #272c30;
 }
 
 #body {
@@ -254,15 +249,17 @@
 #sidebar ul li {
   list-style: none;
   list-style-type: none;
-  line-height: 28px;
+  line-height: 33px;
+  height: 33px;
   padding: 0px 8px;
+  padding-left: 12px;
   cursor: pointer;
-  color: #a8a8a8 !important;
+  color: #95a7b7 !important;
 }
 
 #sidebar li.selected {
   color: #fff !important;
   font-weight: bold;
-  background: rgba(69,69,69,.6);
+  background: #272c30;
   -webkit-font-smoothing: antialiased;
 }
