@@ -144,12 +144,46 @@ function runQuery() {
   setCurrentTab("table_query");
 
   $("#run").attr("disabled", "disabled");
+  $("#explain").attr("disabled", "disabled");
   $("#query_progress").show();
 
-  executeQuery(editor.getValue(), function(data) {
+  var query = $.trim(editor.getValue());
+
+  if (query.length == 0) {
+    return;
+  }
+
+  executeQuery(query, function(data) {
     buildTable(data);
 
     $("#run").removeAttr("disabled");
+    $("#explain").removeAttr("disabled");
+    $("#query_progress").hide();
+    $("#input").show();
+    $("#output").removeClass("full");
+  });
+}
+
+function runExplain() {
+  setCurrentTab("table_query");
+
+  $("#run").attr("disabled", "disabled");
+  $("#explain").attr("disabled", "disabled");
+  $("#query_progress").show();
+
+  var query = $.trim(editor.getValue());
+
+  if (query.length == 0) {
+    return;
+  }
+
+  query = "EXPLAIN " + query;
+
+  executeQuery(query, function(data) {
+    buildTable(data);
+
+    $("#run").removeAttr("disabled");
+    $("#explain").removeAttr("disabled");
     $("#query_progress").hide();
     $("#input").show();
     $("#output").removeClass("full");
@@ -188,6 +222,10 @@ $(document).ready(function() {
 
   $("#run").on("click", function() {
     runQuery();
+  });
+
+  $("#explain").on("click", function() {
+    runExplain();
   });
 
   $("#results").on("click", "tr", function() {

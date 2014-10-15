@@ -129,12 +129,16 @@
   box-shadow: none;
   background: #7eb54e;
   float: left;
+  margin-right: 10px;
+}
+
+#input .actions .btn-default {
+  background: #aaa;
 }
 
 #input .actions #query_progress {
   display: none;
   float: left;
-  margin-left: 12px;
   line-height: 30px;
   height: 30px;
   color: #aaa;
@@ -144,8 +148,13 @@
   outline: 0 none;
   box-shadow: 0;
 }
+
 #input .actions .btn:hover {
   background: #7eb154;
+}
+
+#input .actions .btn-default:hover {
+  background: #bbb;
 }
 
 #output {
