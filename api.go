@@ -64,7 +64,7 @@ func API_ExplainQuery(c *gin.Context) {
 		return
 	}
 
-	API_HandleQuery(fmt.Sprintf("EXPLAIN %s", query), c)
+	API_HandleQuery(fmt.Sprintf("EXPLAIN ANALYZE %s", query), c)
 }
 
 func API_GetTables(c *gin.Context) {
