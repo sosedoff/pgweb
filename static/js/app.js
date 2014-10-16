@@ -1,18 +1,9 @@
-function apiCall(path, cb) {
-  $.getJSON(path, function(resp) { cb(resp); });
-}
-
-function getTables(cb)                { apiCall("/tables", cb); }
-function getTableStructure(table, cb) { apiCall("/tables/" + table, cb); }
-function getTableIndexes(table, cb)   { apiCall("/tables/" + table + "/indexes", cb); }
-function getHistory(cb)               { apiCall("/history", cb); }
-
-function executeQuery(query, cb) {
+function apiCall(method, path, params, cb) {
   $.ajax({
-    url: "/query",
-    method: "post",
+    url: path, 
+    method: method,
     cache: false,
-    data: { query: query, format: "json" },
+    data: params,
     success: function(data) {
       cb(data);
     },
@@ -20,6 +11,19 @@ function executeQuery(query, cb) {
       cb(jQuery.parseJSON(xhr.responseText));
     }
   });
+}
+
+function getTables(cb)                { apiCall("get", "/tables", {}, cb); }
+function getTableStructure(table, cb) { apiCall("get", "/tables/" + table, {}, cb); }
+function getTableIndexes(table, cb)   { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
+function getHistory(cb)               { apiCall("get", "/history", {}, cb); }
+
+function executeQuery(query, cb) {
+  apiCall("post", "/query", { query: query }, cb);
+}
+
+function explainQuery(query, cb) {
+  apiCall("post", "/explain", { query: query }, cb);
 }
 
 function loadTables() {
@@ -150,6 +154,9 @@ function runQuery() {
   var query = $.trim(editor.getValue());
 
   if (query.length == 0) {
+    $("#run").removeAttr("disabled");
+    $("#explain").removeAttr("disabled");
+    $("#query_progress").hide();
     return;
   }
 
@@ -174,12 +181,13 @@ function runExplain() {
   var query = $.trim(editor.getValue());
 
   if (query.length == 0) {
+    $("#run").removeAttr("disabled");
+    $("#explain").removeAttr("disabled");
+    $("#query_progress").hide();
     return;
   }
 
-  query = "EXPLAIN ANALYZE " + query;
-
-  executeQuery(query, function(data) {
+  explainQuery(query, function(data) {
     buildTable(data);
 
     $("#run").removeAttr("disabled");
