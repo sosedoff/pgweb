@@ -6,6 +6,8 @@ import (
 	"github.com/jessevdk/go-flags"
 	_ "github.com/lib/pq"
 	"os"
+	"os/exec"
+	"os/signal"
 )
 
 const VERSION = "0.1.0"
@@ -72,16 +74,7 @@ func initOptions() {
 	}
 }
 
-func main() {
-	initOptions()
-	initClient()
-
-	defer dbClient.db.Close()
-
-	if !options.Debug {
-		gin.SetMode("release")
-	}
-
+func startServer() {
 	router := gin.Default()
 
 	router.GET("/", API_Home)
@@ -98,6 +91,37 @@ func main() {
 	router.GET("/static/:type/:name", API_ServeAsset)
 
 	fmt.Println("Starting server...")
-	fmt.Println("Once started you can view application at http://localhost:8080")
-	router.Run(":8080")
+	go router.Run(":8080")
+}
+
+func handleSignals() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill)
+	<-c
+}
+
+func openPage() {
+	fmt.Println("To view database open http://localhost:8080 in browser")
+
+	_, err := exec.Command("which", "open").Output()
+	if err != nil {
+		return
+	}
+
+	exec.Command("open", "http://localhost:8080").Output()
+}
+
+func main() {
+	initOptions()
+	initClient()
+
+	defer dbClient.db.Close()
+
+	if !options.Debug {
+		gin.SetMode("release")
+	}
+
+	startServer()
+	openPage()
+	handleSignals()
 }
