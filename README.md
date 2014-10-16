@@ -24,6 +24,15 @@ Currently supported:
 - Linux 32/64bit
 - Windows 32/64bit
 
+Supported PostgreSQL versions:
+
+- 9.1
+- 9.2
+- 9.3
+
+Older versions of PostgreSQL might also work but this project is not tested on 
+8.x branches.
+
 ## Usage
 
 Start server:
