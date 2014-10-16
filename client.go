@@ -48,6 +48,10 @@ func (client *Client) recordQuery(query string) {
 	client.history = append(client.history, query)
 }
 
+func (client *Client) Info() (*Result, error) {
+	return client.Query(PG_INFO)
+}
+
 func (client *Client) Databases() ([]string, error) {
 	res, err := client.Query(PG_DATABASES)
 
@@ -78,6 +82,10 @@ func (client *Client) Tables() ([]string, error) {
 	}
 
 	return tables, nil
+}
+
+func (client *Client) Table(table string) (*Result, error) {
+	return client.Query(fmt.Sprintf(PG_TABLE_SCHEMA, table))
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
