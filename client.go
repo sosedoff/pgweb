@@ -80,6 +80,10 @@ func (client *Client) Tables() ([]string, error) {
 	return tables, nil
 }
 
+func (client *Client) Table(table string) (*Result, error) {
+	return client.Query(fmt.Sprintf(PG_TABLE_SCHEMA, table))
+}
+
 func (client *Client) TableIndexes(table string) (*Result, error) {
 	res, err := client.Query(fmt.Sprintf(PG_TABLE_INDEXES, table))
 
