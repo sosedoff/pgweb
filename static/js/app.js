@@ -198,21 +198,10 @@ $(document).ready(function() {
   editor.getSession().setTabSize(2);
   editor.getSession().setUseSoftTabs(true);
 
-  $("#table_content").on("click", function() {
-    showTableContent();
-  });
-
-  $("#table_structure").on("click", function() {
-    showTableStructure();
-  });
-
-  $("#table_indexes").on("click", function() {
-    showTableIndexes();
-  });
-
-  $("#table_history").on("click", function() {
-    showQueryHistory();
-  });
+  $("#table_content").on("click",   function() { showTableContent();   });
+  $("#table_structure").on("click", function() { showTableStructure(); });
+  $("#table_indexes").on("click",   function() { showTableIndexes();   });
+  $("#table_history").on("click",   function() { showQueryHistory();   });
 
   $("#table_query").on("click", function() {
     setCurrentTab("table_query");
