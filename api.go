@@ -94,7 +94,7 @@ func API_History(c *gin.Context) {
 }
 
 func API_Info(c *gin.Context) {
-	res, err := dbClient.Query(PG_INFO)
+	res, err := dbClient.Info()
 
 	if err != nil {
 		c.JSON(400, NewError(err))

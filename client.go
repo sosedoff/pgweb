@@ -48,6 +48,10 @@ func (client *Client) recordQuery(query string) {
 	client.history = append(client.history, query)
 }
 
+func (client *Client) Info() (*Result, error) {
+	return client.Query(PG_INFO)
+}
+
 func (client *Client) Databases() ([]string, error) {
 	res, err := client.Query(PG_DATABASES)
 
