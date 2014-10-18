@@ -61,7 +61,7 @@ function buildTable(results) {
   var rows = ""
 
   results.columns.forEach(function(col) {
-    cols += "<th>" + col + "</th>";
+    cols += "<th data='" + col + "'>" + col + "</th>";
   });
 
   results.rows.forEach(function(row) {
