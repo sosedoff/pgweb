@@ -42,8 +42,15 @@ function escapeHtml(str) {
   return "<span class='null'>null</span>";
 }
 
+function resetTable() {
+  $("#results").
+    attr("data-mode", "").
+    text("").
+    removeClass("empty");
+}
+
 function buildTable(results) {
-  $("#results").text("").removeClass("empty");
+  resetTable();
 
   if (results.error) {
     $("<tr><td>ERROR: " + results.error + "</tr></tr>").appendTo("#results");
@@ -141,6 +148,7 @@ function showTableContent() {
     buildTable(data);
     setCurrentTab("table_content");
 
+    $("#results").attr("data-mode", "browse");
     $("#input").hide();
     $("#output").addClass("full");
   });
