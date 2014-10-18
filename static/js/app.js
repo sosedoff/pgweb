@@ -173,6 +173,7 @@ function runQuery() {
 
   $("#run").attr("disabled", "disabled");
   $("#explain").attr("disabled", "disabled");
+  $("#csv").attr("disabled", "disabled");
   $("#query_progress").show();
 
   var query = $.trim(editor.getValue());
@@ -180,6 +181,7 @@ function runQuery() {
   if (query.length == 0) {
     $("#run").removeAttr("disabled");
     $("#explain").removeAttr("disabled");
+    $("#csv").removeAttr("disabled");
     $("#query_progress").hide();
     return;
   }
@@ -200,6 +202,7 @@ function runExplain() {
 
   $("#run").attr("disabled", "disabled");
   $("#explain").attr("disabled", "disabled");
+  $("#csv").attr("disabled", "disabled");
   $("#query_progress").show();
 
   var query = $.trim(editor.getValue());
@@ -207,6 +210,7 @@ function runExplain() {
   if (query.length == 0) {
     $("#run").removeAttr("disabled");
     $("#explain").removeAttr("disabled");
+    $("#csv").removeAttr("disabled");
     $("#query_progress").hide();
     return;
   }
@@ -216,10 +220,30 @@ function runExplain() {
 
     $("#run").removeAttr("disabled");
     $("#explain").removeAttr("disabled");
+    $("#csv").removeAttr("disabled");
     $("#query_progress").hide();
     $("#input").show();
     $("#output").removeClass("full");
   });
+}
+
+function exportToCSV() {
+  setCurrentTab("table_query");
+
+  $("#run").attr("disabled", "disabled");
+  $("#explain").attr("disabled", "disabled");
+  $("#csv").attr("disabled", "disabled");
+  $("#query_progress").show();
+
+  var query = $.trim(editor.getValue());
+
+  if (query.length == 0) {
+    $("#run").removeAttr("disabled");
+    $("#explain").removeAttr("disabled");
+    $("#csv").removeAttr("disabled");
+    $("#query_progress").hide();
+    return;
+  }
 }
 
 var editor;
@@ -248,6 +272,10 @@ $(document).ready(function() {
 
   $("#explain").on("click", function() {
     runExplain();
+  });
+
+  $("#csv").on("click", function() {
+    exportToCSV();
   });
 
   $("#results").on("click", "tr", function() {
