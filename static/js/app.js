@@ -111,6 +111,22 @@ function showTableIndexes() {
   });
 }
 
+function showTableInfo() {
+  var name = $("#tables li.selected").text();
+
+  if (name.length == 0) {
+    alert("Please select a table!");
+    return;
+  }
+
+  apiCall("get", "/tables/" + name + "/info", {}, function(data) {
+    buildTable(data);
+    setCurrentTab("table_info");
+    $("#input").hide();
+    $("#output").addClass("full");
+  });
+}
+
 function showTableContent() {
   var name = $("#tables li.selected").text();
 
@@ -208,6 +224,7 @@ $(document).ready(function() {
 
   $("#table_content").on("click",   function() { showTableContent();   });
   $("#table_structure").on("click", function() { showTableStructure(); });
+  $("#table_info").on("click",      function() { showTableInfo();      });
   $("#table_indexes").on("click",   function() { showTableIndexes();   });
   $("#table_history").on("click",   function() { showQueryHistory();   });
 
