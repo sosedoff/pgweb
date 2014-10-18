@@ -138,7 +138,7 @@ func API_HandleQuery(query string, c *gin.Context) {
 
 	if len(q["format"]) > 0 {
 		if q["format"][0] == "csv" {
-			c.String(200, result.CSV())
+			c.Data(200, "text/csv", result.CSV())
 			return
 		}
 	}

@@ -163,7 +163,7 @@ func (res *Result) Format() []map[string]interface{} {
 	return items
 }
 
-func (res *Result) CSV() string {
+func (res *Result) CSV() []byte {
 	buff := &bytes.Buffer{}
 	writer := csv.NewWriter(buff)
 
@@ -189,5 +189,5 @@ func (res *Result) CSV() string {
 	}
 
 	writer.Flush()
-	return buff.String()
+	return buff.Bytes()
 }
