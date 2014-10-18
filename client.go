@@ -14,6 +14,7 @@ const (
 	PG_TABLES        = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name;"
 	PG_TABLE_SCHEMA  = "SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = '%s';"
 	PG_TABLE_INDEXES = "SELECT indexname, indexdef FROM pg_indexes WHERE tablename = '%s';"
+	PG_TABLE_INFO    = "SELECT pg_size_pretty(pg_table_size('%s')) AS data_size, pg_size_pretty(pg_indexes_size('%s')) AS index_size, pg_size_pretty(pg_total_relation_size('%s')) AS total_size, (SELECT COUNT(*) FROM %s) AS rows_count"
 )
 
 type Client struct {
@@ -86,6 +87,10 @@ func (client *Client) Tables() ([]string, error) {
 
 func (client *Client) Table(table string) (*Result, error) {
 	return client.Query(fmt.Sprintf(PG_TABLE_SCHEMA, table))
+}
+
+func (client *Client) TableInfo(table string) (*Result, error) {
+	return client.Query(fmt.Sprintf(PG_TABLE_INFO, table, table, table, table))
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
