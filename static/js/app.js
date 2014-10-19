@@ -1,3 +1,5 @@
+var editor;
+
 function apiCall(method, path, params, cb) {
   $.ajax({
     url: path, 
@@ -247,13 +249,16 @@ function exportToCSV() {
   }
 }
 
-var editor;
-
-$(document).ready(function() {
+function initEditor() {
   editor = ace.edit("custom_query");
+
   editor.getSession().setMode("ace/mode/pgsql");
   editor.getSession().setTabSize(2);
   editor.getSession().setUseSoftTabs(true);
+}
+
+$(document).ready(function() {
+  initEditor();
 
   $("#table_content").on("click",   function() { showTableContent();   });
   $("#table_structure").on("click", function() { showTableStructure(); });
