@@ -191,6 +191,7 @@ function runQuery() {
 
     $("#run").removeAttr("disabled");
     $("#explain").removeAttr("disabled");
+    $("#csv").removeAttr("disabled");
     $("#query_progress").hide();
     $("#input").show();
     $("#output").removeClass("full");
