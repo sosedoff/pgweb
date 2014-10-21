@@ -231,22 +231,17 @@ function runExplain() {
 }
 
 function exportToCSV() {
-  setCurrentTab("table_query");
-
-  $("#run").attr("disabled", "disabled");
-  $("#explain").attr("disabled", "disabled");
-  $("#csv").attr("disabled", "disabled");
-  $("#query_progress").show();
-
   var query = $.trim(editor.getValue());
 
   if (query.length == 0) {
-    $("#run").removeAttr("disabled");
-    $("#explain").removeAttr("disabled");
-    $("#csv").removeAttr("disabled");
-    $("#query_progress").hide();
     return;
   }
+
+  setCurrentTab("table_query");
+
+  var url = "http://localhost:8080/query?format=csv&query=" + query;
+  var win = window.open(url, '_blank');
+  win.focus();
 }
 
 function initEditor() {
