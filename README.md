@@ -50,9 +50,7 @@ pgweb --url postgresql://user:password@host:port/database
 It works great with [Heroku Postgres](https://postgres.heroku.com) if you need 
 to troubleshoot production database or simply run a few queries.
 
-## CLI
-
-CLI options:
+Full CLI options:
 
 ```
 Usage:
@@ -84,6 +82,15 @@ make dev
 ```
 
 This will produce `pgweb` binary in the current directory.
+
+There's also a task to compile binaries for other operating systems:
+
+```
+make build
+```
+
+Under the hood it uses [gox](https://github.com/mitchellh/gox). Compiled binaries
+will be stored into `./bin` directory.
 
 ## Contributors
 
