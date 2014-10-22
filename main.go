@@ -13,13 +13,14 @@ import (
 const VERSION = "0.1.0"
 
 var options struct {
-	Debug  bool   `short:"d" description:"Enable debugging mode" default:"false"`
-	Url    string `long:"url" description:"Database connection string"`
-	Host   string `long:"host" description:"Server hostname or IP" default:"localhost"`
-	Port   int    `long:"port" description:"Server port" default:"5432"`
-	User   string `long:"user" description:"Database user" default:"postgres"`
-	DbName string `long:"db" description:"Database name" default:"postgres"`
-	Ssl    string `long:"ssl" description:"SSL option" default:"disable"`
+	Version bool   `short:"v" description:"Print version"`
+	Debug   bool   `short:"d" description:"Enable debugging mode" default:"false"`
+	Url     string `long:"url" description:"Database connection string"`
+	Host    string `long:"host" description:"Server hostname or IP" default:"localhost"`
+	Port    int    `long:"port" description:"Server port" default:"5432"`
+	User    string `long:"user" description:"Database user" default:"postgres"`
+	DbName  string `long:"db" description:"Database name" default:"postgres"`
+	Ssl     string `long:"ssl" description:"SSL option" default:"disable"`
 }
 
 var dbClient *Client
@@ -70,6 +71,11 @@ func initOptions() {
 	_, err := flags.ParseArgs(&options, os.Args)
 
 	if err != nil {
+		os.Exit(1)
+	}
+
+	if options.Version {
+		fmt.Printf("pgweb v%s\n", VERSION)
 		os.Exit(1)
 	}
 }
