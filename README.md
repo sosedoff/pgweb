@@ -57,6 +57,7 @@ Usage:
   pgweb [OPTIONS]
 
 Application Options:
+  -v          Print version
   -d          Enable debugging mode (false)
       --url=  Database connection string
       --host= Server hostname or IP (localhost)
