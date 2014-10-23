@@ -13,6 +13,15 @@ PostgreSQL databases.
 <img src="screenshots/browse.png" width="345px" />
 <img src="screenshots/query.png" width="345px" />
 
+Features:
+
+- Connect to local or remote server
+- Browse tables and table rows
+- Get table details: structure, size, indices, row count
+- Execute SQL query and run analyze on it
+- Export query results to CSV
+- View query history
+
 ## Installation
 
 Please visit [Github Releases](https://github.com/sosedoff/pgweb/releases) to download a 
