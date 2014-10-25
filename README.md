@@ -87,7 +87,7 @@ brew install go
 To compile source code run the following command:
 
 ```
-make deps
+make setup
 make dev
 ```
 
