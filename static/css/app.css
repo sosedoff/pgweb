@@ -231,6 +231,7 @@
 
 #results td div span.null {
   color: #bbb;
+  text-transform: uppercase;
 }
 
 #results th:first-child,
