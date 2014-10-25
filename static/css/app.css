@@ -78,6 +78,14 @@
   height: 100%;
 }
 
+#sidebar .wrapper div {
+  line-height: 33px;
+  height: 33px;
+  padding: 0px 8px;
+  padding-left: 12px;
+  color: #fff;
+}
+
 #sidebar ul {
   margin: 0px;
   padding: 0px;
