@@ -17,4 +17,4 @@ deps:
 clean:
 	rm -f ./pgweb
 	rm -f ./bin/*
-	rm -r bindata.go
+	rm -f bindata.go
