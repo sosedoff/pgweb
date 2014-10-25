@@ -48,7 +48,8 @@ function resetTable() {
   $("#results").
     attr("data-mode", "").
     text("").
-    removeClass("empty");
+    removeClass("empty").
+    removeClass("history");
 }
 
 function buildTable(results) {
@@ -67,7 +68,7 @@ function buildTable(results) {
   }
 
   var cols = "";
-  var rows = ""
+  var rows = "";
 
   results.columns.forEach(function(col) {
     cols += "<th data='" + col + "'>" + col + "</th>";
@@ -100,6 +101,7 @@ function showQueryHistory() {
     setCurrentTab("table_history");  
     $("#input").hide();
     $("#output").addClass("full");
+    $("#results").addClass("history");
   });
 }
 

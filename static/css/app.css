@@ -220,6 +220,7 @@
   max-height: 51px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: pre;
 
   /*
   -webkit-user-select: none;
@@ -235,6 +236,10 @@
 #results th:first-child,
 #results td:first-child {
   padding-left: 15px;
+}
+
+#results.history td div {
+  max-width: none;
 } 
 
 #custom_query {
