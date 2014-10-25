@@ -9,10 +9,11 @@ dev:
 	go build
 	@echo "You can now execute ./pgweb"
 
-deps:
-	go get
+setup:
 	go get github.com/mitchellh/gox
 	go get github.com/jteeuwen/go-bindata/...
+	go-bindata -debug -ignore=\\.gitignore -ignore=\\.DS_Store -ignore=\\.gitkeep static/...
+	go get
 
 clean:
 	rm -f ./pgweb
