@@ -2,3 +2,5 @@
 pgweb
 bin
 bindata.go
+*.iml
+.idea

@@ -238,8 +238,8 @@ function exportToCSV() {
   }
 
   setCurrentTab("table_query");
-
-  var url = "http://localhost:8080/query?format=csv&query=" + query;
+  var host = document.location.host;
+  var url = "http://" + host + "/query?format=csv&query=" + query;
   var win = window.open(url, '_blank');
   win.focus();
 }
