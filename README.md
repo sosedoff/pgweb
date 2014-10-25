@@ -53,7 +53,7 @@ pgweb --host localhost --user myuser --db mydb
 You can also specify a connection URI instead of individual flags:
 
 ```
-pgweb --url postgresql://user:password@host:port/database
+pgweb --url postgres://user:password@host:port/database
 ```
 
 It works great with [Heroku Postgres](https://postgres.heroku.com) if you need 
