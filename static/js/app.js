@@ -241,6 +241,9 @@ function exportToCSV() {
     return;
   }
 
+  // Replace line breaks with spaces
+  query = query.replace(/\n/g, " ");
+
   setCurrentTab("table_query");
 
   var url = "http://" + window.location.host + "/query?format=csv&query=" + query;
