@@ -222,7 +222,7 @@
 
 #results tr:nth-child(even) > td {
   border: none;
-  background: #f5f5f5;
+  background: #f8f8f8;
 }
 
 #results tr:nth-child(odd) > td {
