@@ -17,7 +17,6 @@
     <ul>
       <li id="table_content">Content</li>
       <li id="table_structure">Structure</li>
-      <li id="table_info">Info</li>
       <li id="table_indexes">Indexes</li>
       <li id="table_query" class="selected">SQL Query</li>
       <li id="table_history">History</li>
@@ -25,8 +24,19 @@
   </div>
   <div id="sidebar">
     <div class="wrapper">
-      <div>Database Tables</div>
-      <ul id="tables"></ul>
+      <div class="tables-list">
+        <div class="title">Database Tables</div>
+        <ul id="tables"></ul>
+      </div>
+      <div class="table-information">
+        <div class="title">Table Information</div>
+        <ul>
+          <li>Size: <span id="table_total_size"></span></li>
+          <li>Data size: <span id="table_data_size"></span></li>
+          <li>Index size: <span id="table_index_size"></span></li>
+          <li>Rows: <span id="table_rows_count"></span></li>
+        </ul>
+      </div>
     </div>
   </div>
   <div id="body">

@@ -66,24 +66,59 @@
 #sidebar {
   position: fixed;
   width: 250px;
-  left: 0;
-  top: 0;
-  bottom: 0;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
   background: #31373d;
   font-size: 13px;
-  overflow: scroll;
 }
 
 #sidebar .wrapper {
   height: 100%;
 }
 
-#sidebar .wrapper div {
+#sidebar .wrapper div.title {
   line-height: 33px;
   height: 33px;
   padding: 0px 8px;
   padding-left: 12px;
   color: #fff;
+}
+
+#sidebar div.tables-list {
+  position: absolute;
+  width: 250px;
+  top: 0px;
+  left: 0px;
+  bottom: 130px;
+  overflow: scroll;
+}
+
+#sidebar div.table-information {
+  border-top: 1px solid #272c30;
+  background: #272c30;
+  position: absolute;
+  width: 250px;
+  left: 0px;
+  bottom: 0px;
+  height: 130px;
+  overflow: scroll;
+}
+
+#sidebar div.table-information ul {
+  font-size: 12px;
+  display: none;
+}
+
+#sidebar div.table-information ul li {
+  line-height: 24px;
+  height: 24px;
+  cursor: default;
+  color: #637D94 !important;
+}
+
+#sidebar div.table-information ul li span {
+  color: #95a7b7;
 }
 
 #sidebar ul {

@@ -97,7 +97,7 @@ func API_GetTableInfo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, res)
+	c.JSON(200, res.Format()[0])
 }
 
 func API_History(c *gin.Context) {
