@@ -66,14 +66,15 @@ Usage:
   pgweb [OPTIONS]
 
 Application Options:
-  -v          Print version
-  -d          Enable debugging mode (false)
-      --url=  Database connection string
-      --host= Server hostname or IP (localhost)
-      --port= Server port (5432)
-      --user= Database user (postgres)
-      --db=   Database name (postgres)
-      --ssl=  SSL option (disable)
+  -v              Print version
+  -d              Enable debugging mode (false)
+      --url=      Database connection string
+      --host=     Server hostname or IP (localhost)
+      --port=     Server port (5432)
+      --user=     Database user (postgres)
+      --db=       Database name (postgres)
+      --ssl=      SSL option (disable)
+      --httpPort= HTTP server listen port (8080)
 ```
 
 ## Compile from source
