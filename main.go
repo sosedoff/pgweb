@@ -13,15 +13,15 @@ import (
 const VERSION = "0.2.0"
 
 var options struct {
-	Version bool   `short:"v" description:"Print version"`
-	Debug   bool   `short:"d" description:"Enable debugging mode" default:"false"`
-	Url     string `long:"url" description:"Database connection string"`
-	Host    string `long:"host" description:"Server hostname or IP" default:"localhost"`
-	Port    int    `long:"port" description:"Server port" default:"5432"`
-	User    string `long:"user" description:"Database user" default:"postgres"`
-	DbName  string `long:"db" description:"Database name" default:"postgres"`
-	Ssl     string `long:"ssl" description:"SSL option" default:"disable"`
-	HttpPort string `long:"httpPort" description:"http port option" default:"8080"`
+	Version  bool   `short:"v" description:"Print version"`
+	Debug    bool   `short:"d" description:"Enable debugging mode" default:"false"`
+	Url      string `long:"url" description:"Database connection string"`
+	Host     string `long:"host" description:"Server hostname or IP" default:"localhost"`
+	Port     int    `long:"port" description:"Server port" default:"5432"`
+	User     string `long:"user" description:"Database user" default:"postgres"`
+	DbName   string `long:"db" description:"Database name" default:"postgres"`
+	Ssl      string `long:"ssl" description:"SSL option" default:"disable"`
+	HttpPort string `long:"httpPort" description:"HTTP server listen port" default:"8080"`
 }
 
 var dbClient *Client
@@ -109,14 +109,15 @@ func handleSignals() {
 }
 
 func openPage() {
-	fmt.Println("To view database open http://localhost:" + options.HttpPort + " in browser")
+	url := "http://localhost:" + options.HttpPort
+	fmt.Println("To view database open", url, "in browser")
 
 	_, err := exec.Command("which", "open").Output()
 	if err != nil {
 		return
 	}
 
-	exec.Command("open", "http://localhost:" + options.HttpPort).Output()
+	exec.Command("open", url).Output()
 }
 
 func main() {
