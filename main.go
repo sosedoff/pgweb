@@ -77,7 +77,7 @@ func initOptions() {
 
 	if options.Version {
 		fmt.Printf("pgweb v%s\n", VERSION)
-		os.Exit(1)
+		os.Exit(0)
 	}
 }
 
