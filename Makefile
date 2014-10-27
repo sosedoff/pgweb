@@ -7,7 +7,7 @@ dev:
 build:
 	rm -f bindata.go
 	go-bindata -ignore=\\.gitignore -ignore=\\.DS_Store -ignore=\\.gitkeep static/...
-	gox -osarch="darwin/amd64 linux/amd64 linux/386 windows/amd64 windows/386" -output="./bin/pgweb_{{.OS}}_{{.Arch}}"
+	gox -osarch="darwin/amd64 darwin/386 linux/amd64 linux/386 windows/amd64 windows/386" -output="./bin/pgweb_{{.OS}}_{{.Arch}}"
 
 setup:
 	go get github.com/mitchellh/gox
