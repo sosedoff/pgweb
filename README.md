@@ -2,6 +2,8 @@
 
 Web-based PostgreSQL database browser written in Go.
 
+[![Build Status](https://travis-ci.org/sosedoff/pgweb.svg?branch=master)](https://travis-ci.org/sosedoff/pgweb)
+
 ## Overview
 
 This is a web-based browser for PostgreSQL database server. Its written in Go
