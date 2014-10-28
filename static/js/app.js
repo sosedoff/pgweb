@@ -174,6 +174,14 @@ function showTableStructure() {
   });
 }
 
+function showQueryPanel() {
+  setCurrentTab("table_query");
+  editor.focus();
+
+  $("#input").show();
+  $("#output").removeClass("full");
+}
+
 function runQuery() {
   setCurrentTab("table_query");
 
@@ -267,12 +275,7 @@ $(document).ready(function() {
   $("#table_structure").on("click", function() { showTableStructure(); });
   $("#table_indexes").on("click",   function() { showTableIndexes();   });
   $("#table_history").on("click",   function() { showQueryHistory();   });
-
-  $("#table_query").on("click", function() {
-    setCurrentTab("table_query");
-    $("#input").show();
-    $("#output").removeClass("full");
-  });
+  $("#table_query").on("click",     function() { showQueryPanel();     });
 
   $("#run").on("click", function() {
     runQuery();
