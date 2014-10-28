@@ -37,12 +37,16 @@ func getConnectionString() string {
 		return options.Url
 	}
 
-	return fmt.Sprintf(
-		"postgres://%s:%s@%s:%d/%s",
-		options.User, options.Pass,
-		options.Host, options.Port,
-		options.DbName,
+	var ret string
+	ret = fmt.Sprintf(
+		"user=%s host=%s port=%d dbname=%s sslmode=disable",
+		options.User, options.Host,
+		options.Port, options.DbName,
 	)
+	if options.Pass != ""{
+		ret += fmt.Sprintf(" password=%s", options.Pass)
+	}
+	return ret
 }
 
 func initClient() {
