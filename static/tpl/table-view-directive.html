@@ -1,0 +1,25 @@
+<div class="output">
+  <div class="wrapper">
+    <table class="table results">
+      <tr ng-if="results.error">
+        <td>ERROR: {{results.error}}</td>
+      </tr>
+      <tr ng-if="!results.rows">
+        <td>No records found</td>
+      </tr>
+      <thead ng-if="showResults()">
+        <tr>
+          <th data="{{col}}" ng-repeat="col in results.columns">{{col}}</th>
+        </tr>
+      </thead>
+      <tbody ng-if="showResults()">
+        <tr>
+          <td ng-repeat="row in results.rows">
+            <div ng-if="is_null(row)"><span class="null">null</span></div>
+            <div ng-if="!is_null(row)">{{row}}</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

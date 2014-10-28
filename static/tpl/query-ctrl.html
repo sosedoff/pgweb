@@ -1,0 +1,25 @@
+<div pg-content-navigation></div>
+<div>
+  <div id="custom_query"
+       ui-ace="{onLoad: aceLoaded}"
+       ng-model="query">
+  </div>
+  <div class="actions">
+    <input type="button" id="run" value="Run Query"
+           ng-click="doQuery(query)"
+           ng-disabled="loading"
+           class="btn btn-sm btn-primary" />
+    <input type="button" id="explain" value="Explain Query"
+           ng-click="doQuery(query, 'explain_please')"
+           ng-disabled="loading"
+           class="btn btn-sm btn-default" />
+    <input type="button" id="csv" value="Download CSV"
+           ng-click="downloadCsv(query)"
+           ng-disabled="loading"
+           class="btn btn-sm btn-default" />
+
+    <div id="query_progress" ng-show="loading">Please wait, query is executing...</div>
+  </div>
+
+  <div pg-table-view="results"></div>
+</div>

@@ -1,0 +1,17 @@
+<div id="nav">
+  <ul>
+    <li id="table_data"
+        ng-click="go('root.data')"
+        ng-class="{selected: active == 'root.data'}">Data</li>
+    <li id="table_structure"
+        ng-click="go('root.structure')"
+        ng-class="{selected: active == 'root.structure'}">Structure</li>
+    <!--li id="table_indexes" ng-class="{selected: active == 'data'}">Indexes</li-->
+    <li id="table_query"
+        ng-click="go('root.query')"
+        ng-class="{selected: active == 'root.query'}">SQL Query</li>
+    <li id="table_history"
+        ng-click="go('root.history')"
+        ng-class="{selected: active == 'root.history'}">History</li>
+  </ul>
+</div>

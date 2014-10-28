@@ -1,60 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" ng-app="pgweb">
 <head>
   <title>pgweb</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="Content-Language" content="en">
-  <link rel="stylesheet" href="/static/css/bootstrap.css"></link>
+  <link rel="stylesheet" href="/static/vendor/bootstrap-3.2.0.min.css"></link>
   <link rel="stylesheet" href="/static/css/app.css"></link>
-  <script type="text/javascript" src="/static/js/jquery.js"></script>
-  <script type="text/javascript" src="/static/js/ace.js"></script>
-  <script type="text/javascript" src="/static/js/ace-pgsql.js"></script>
+  <script type="text/javascript" src="/static/vendor/angular-1.2.26.min.js"></script>
+  <script type="text/javascript" src="/static/vendor/angular-ui-router-0.2.11.min.js"></script>
+  <script type="text/javascript" src="/static/vendor/ace.min.js"></script>
+  <script type="text/javascript" src="/static/vendor/ace-pgsql.min.js"></script>
+  <script type="text/javascript" src="/static/vendor/ui-ace-1.1.0.min.js"></script>
   <script type="text/javascript" src="/static/js/app.js"></script>
 </head>
+
 <body>
-  <div id="nav">
-    <ul>
-      <li id="table_content">Content</li>
-      <li id="table_structure">Structure</li>
-      <li id="table_indexes">Indexes</li>
-      <li id="table_query" class="selected">SQL Query</li>
-      <li id="table_history">History</li>
-    </ul>
+  <div data-ui-view="sidebar">
   </div>
-  <div id="sidebar">
-    <div class="wrapper">
-      <div class="tables-list">
-        <div class="title">Database Tables</div>
-        <ul id="tables"></ul>
-      </div>
-      <div class="table-information">
-        <div class="title">Table Information</div>
-        <ul>
-          <li>Size: <span id="table_total_size"></span></li>
-          <li>Data size: <span id="table_data_size"></span></li>
-          <li>Index size: <span id="table_index_size"></span></li>
-          <li>Rows: <span id="table_rows_count"></span></li>
-        </ul>
-      </div>
-    </div>
-  </div>
+
+
   <div id="body">
     <div id="input">
       <div class="wrapper">
-        <div id="custom_query"></div>
-        <div class="actions">
-          <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
-          <input type="button" id="explain" value="Explain Query" class="btn btn-sm btn-default" />
-          <input type="button" id="csv" value="Download CSV" class="btn btn-sm btn-default" />
 
-          <div id="query_progress">Please wait, query is executing...</div>
+        <div data-ui-view="content">
         </div>
-      </div>
-    </div>
-    <div id="output">
-      <div class="wrapper">
-        <table id="results" class="table"></table>
+
       </div>
     </div>
   </div>
