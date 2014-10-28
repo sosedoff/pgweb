@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('pgweb', ['ui.router.state', 'ui.router'])
+angular.module('pgweb', ['ui.router.state', 'ui.router', 'ui.ace'])
 .config(function($stateProvider, $urlRouterProvider) {
 
   $stateProvider.state('root', {
