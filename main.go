@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/jessevdk/go-flags"
 	_ "github.com/lib/pq"
@@ -19,6 +20,7 @@ var options struct {
 	Host     string `long:"host" description:"Server hostname or IP" default:"localhost"`
 	Port     int    `long:"port" description:"Server port" default:"5432"`
 	User     string `long:"user" description:"Database user" default:"postgres"`
+	Pass     string `long:"pass" description:"Password for user"`
 	DbName   string `long:"db" description:"Database name" default:"postgres"`
 	Ssl      string `long:"ssl" description:"SSL option" default:"disable"`
 	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8080"`
@@ -37,9 +39,10 @@ func getConnectionString() string {
 	}
 
 	return fmt.Sprintf(
-		"host=%s port=%d user=%s dbname=%s sslmode=disable",
-		options.Host, options.Port,
-		options.User, options.DbName,
+		"postgres://%s:%s@%s:%s/%s",
+		options.User, options.Pass,
+		options.Host, strconv.Itoa(options.Port),
+		options.DbName,
 	)
 }
 
