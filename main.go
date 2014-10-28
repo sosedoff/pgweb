@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/jessevdk/go-flags"
 	_ "github.com/lib/pq"
@@ -39,9 +38,9 @@ func getConnectionString() string {
 	}
 
 	return fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s",
+		"postgres://%s:%s@%s:%d/%s",
 		options.User, options.Pass,
-		options.Host, strconv.Itoa(options.Port),
+		options.Host, options.Port,
 		options.DbName,
 	)
 }
