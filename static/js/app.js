@@ -99,7 +99,7 @@ angular.module('pgweb', ['ui.router.state', 'ui.router', 'ui.ace'])
 .controller('DataCtrl', function($scope, $http, $stateParams) {
   $scope.results = {columns: [], rows: []};
   // WARNING: we need to escape "$stateParams.table" or use prepared statements!
-  $http.post('/query', {query: "SELECT * FROM " + $stateParams.table + " LIMIT 100"}).success(function(data, status) {
+  $http.post('/query', {query: "SELECT * FROM \"" + $stateParams.table + "\" LIMIT 100"}).success(function(data, status) {
     $scope.results = data;
   }).error(function(data, status) {
     alert("Error: " + data.error);
@@ -121,7 +121,7 @@ angular.module('pgweb', ['ui.router.state', 'ui.router', 'ui.ace'])
 
 
 .controller('QueryCtrl', function($scope, $http, $stateParams) {
-  $scope.query = "SELECT * FROM " + $stateParams.table + " LIMIT 10;";
+  $scope.query = "SELECT * FROM \"" + $stateParams.table + "\" LIMIT 10;";
   $scope.results = {columns: [], rows: []};
   $scope.loading = false;
 
