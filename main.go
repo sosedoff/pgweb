@@ -75,6 +75,10 @@ func initOptions() {
 		os.Exit(1)
 	}
 
+	if options.Url == "" {
+		options.Url = os.Getenv("DATABASE_URL")
+	}
+
 	if options.Version {
 		fmt.Printf("pgweb v%s\n", VERSION)
 		os.Exit(0)
