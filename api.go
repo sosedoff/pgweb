@@ -48,7 +48,8 @@ func API_GetDatabases(c *gin.Context) {
 
 func API_RunQuery(c *gin.Context) {
 	var data struct {
-		Query string
+		Query   string
+		Explain bool
 	}
 	c.Bind(&data)
 
@@ -57,18 +58,12 @@ func API_RunQuery(c *gin.Context) {
 		return
 	}
 
-	API_HandleQuery(strings.TrimSpace(data.Query), c)
-}
-
-func API_ExplainQuery(c *gin.Context) {
-	query := strings.TrimSpace(c.Request.FormValue("query"))
-
-	if query == "" {
-		c.JSON(400, errors.New("Query parameter is missing"))
-		return
+	query := strings.TrimSpace(data.Query)
+	if data.Explain {
+		query = fmt.Sprintf("EXPLAIN ANALYZE %s", query)
 	}
 
-	API_HandleQuery(fmt.Sprintf("EXPLAIN ANALYZE %s", query), c)
+	API_HandleQuery(query, c)
 }
 
 func API_GetTables(c *gin.Context) {

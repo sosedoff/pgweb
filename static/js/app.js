@@ -51,7 +51,7 @@ angular.module('pgweb', ['ui.router.state', 'ui.router'])
         templateUrl: '/static/tpl/history-ctrl.html',
         controller: 'HistoryCtrl',
         resolve: {"results": function($http) {
-          return $http.get('/history').$promise;
+          return $http.get('/history');
         }}
       }
     }
@@ -108,12 +108,12 @@ angular.module('pgweb', ['ui.router.state', 'ui.router'])
 
 
 .controller('StructureCtrl', function($scope, $http, $stateParams) {
-  $scope.structure = [];
+  $scope.structure = {columns: [], rows: []};
   $http.get('/tables/' + $stateParams.table).success(function(data, status) {
     $scope.structure = data;
   })
 
-  $scope.indexes = [];
+  $scope.indexes = {columns: [], rows: []};
   $http.get('/tables/' + $stateParams.table + '/indexes').success(function(data, status) {
     $scope.indexes = data;
   })
@@ -121,24 +121,21 @@ angular.module('pgweb', ['ui.router.state', 'ui.router'])
 
 
 .controller('QueryCtrl', function($scope, $http, $stateParams) {
-  console.log("BOO", $stateParams);
   $scope.query = "SELECT * FROM " + $stateParams.table + " LIMIT 10;";
   $scope.results = {columns: [], rows: []};
   $scope.loading = false;
 
   $scope.aceLoaded = function(_editor) {
-    editor.getSession().setMode("ace/mode/pgsql");
-    editor.getSession().setTabSize(2);
-    editor.getSession().setUseSoftTabs(true);
+    console.log("ACE LOADDDEEED");
+    _editor.getSession().setMode("ace/mode/pgsql");
+    _editor.getSession().setTabSize(2);
+    _editor.getSession().setUseSoftTabs(true);
   };
 
   $scope.doQuery = function(query, explain) {
-    var endpoint = '/query';
-    if (explain) {
-      endpoint = '/explain';
-    }
     $scope.loading = true;
-    $http.post(endpoint, {query: query}).success(function(data, status) {
+    explain = !!explain;
+    $http.post('/query', {query: query, explain: explain}).success(function(data, status) {
       $scope.results = data;
       $scope.loading = false;
     }).error(function(data, status) {
@@ -161,9 +158,15 @@ angular.module('pgweb', ['ui.router.state', 'ui.router'])
 .controller('HistoryCtrl', function($scope, $http, results) {
   // Fetch history from somewhere ?
   console.log("History endpoint: ", results);
+
+  var rows = [];
+  for(var i in results.data) {
+    rows.unshift([parseInt(i) + 1, results.data[i]]);
+  }
+
   $scope.results = {
     columns: ["id", "query"],
-    rows: results
+    rows: rows
   };
 })
 
@@ -183,13 +186,11 @@ angular.module('pgweb', ['ui.router.state', 'ui.router'])
 
 .directive('pgTableView', function() {
   return {
+    scope: {
+      results: "=pgTableView",
+    },
     templateUrl: "/static/tpl/table-view-directive.html",
     link: function($scope, $element, $attrs) {
-      // Use whatever `results` is provided in the attribute
-      if ($attrs.pgTableView) {
-        $scope.results = $scope[$attrs.pgTableView];
-      }
-
       $scope.showResults = function() {
         return !$scope.results.error && $scope.results.rows && $scope.results.rows.length;
       }

@@ -204,6 +204,10 @@
   overflow: scroll;
 }
 
+.inline-output {
+
+}
+
 .output.full {
   top: 0px;
 }
