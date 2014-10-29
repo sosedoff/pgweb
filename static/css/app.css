@@ -91,7 +91,7 @@
   top: 0px;
   left: 0px;
   bottom: 130px;
-  overflow: scroll;
+  overflow: auto;
 }
 
 #sidebar div.table-information {
@@ -102,7 +102,7 @@
   left: 0px;
   bottom: 0px;
   height: 130px;
-  overflow: scroll;
+  overflow: auto;
 }
 
 #sidebar div.table-information ul {
@@ -136,7 +136,7 @@
   left: 250px;
   bottom: 0px;
   right: 0px;
-  overflow: scroll;
+  overflow: auto;
 }
 
 #input {
@@ -203,7 +203,7 @@
   right: 0px;
   margin: 0px;
   padding: 0px;
-  overflow: scroll;
+  overflow: auto;
 }
 
 #output.full {
