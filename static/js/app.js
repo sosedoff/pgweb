@@ -141,6 +141,15 @@ angular.module('pgweb', ['ui.router.state', 'ui.router', 'ui.ace'])
     _editor.getSession().setMode("ace/mode/pgsql");
     _editor.getSession().setTabSize(2);
     _editor.getSession().setUseSoftTabs(true);
+    _editor.commands.addCommand({
+      name: "run_query",
+      bindKey: {win: "Ctrl-Enter", mac: "Command-Enter"},
+      exec: function(editor) {
+        $scope.$apply(function() {
+          $scope.doQuery($scope.query);
+        })
+      }
+    });
   };
 
   $scope.doQuery = function(query, explain) {
