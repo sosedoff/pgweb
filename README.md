@@ -44,6 +44,10 @@ Supported PostgreSQL versions:
 Older versions of PostgreSQL might also work but this project is not tested on 
 8.x branches.
 
+## Run on Heroku
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/sosedoff/pgweb)
+
 ## Usage
 
 Start server:
