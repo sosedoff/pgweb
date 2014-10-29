@@ -237,15 +237,13 @@ function exportToCSV() {
     return;
   }
 
-  // Replace line breaks with spaces
-  query = query.replace(/\n/g, " ");
-  setCurrentTab("table_query");
-
-  query = window.encodeURI(query)
+  // Replace line breaks with spaces and properly encode query
+  query = window.encodeURI(query.replace(/\n/g, " "));
 
   var url = "http://" + window.location.host + "/query?format=csv&query=" + query;
   var win = window.open(url, '_blank');
 
+  setCurrentTab("table_query");
   win.focus();
 }
 
