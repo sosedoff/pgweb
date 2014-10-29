@@ -1,0 +1,24 @@
+<div id="sidebar">
+  <div class="wrapper">
+    <div class="tables-list">
+      <div class="title">Database Tables</div>
+      <ul id="tables">
+        <li ng-repeat="table in tables"
+            ng-click="selectTable(table)"
+            ng-class="{selected: currentTable == table}">
+          {{table}}
+        </li>
+      </ul>
+    </div>
+
+    <div class="table-information" ng-hide="currentTable == null">
+      <div class="title">Table Information</div>
+      <ul>
+        <li>Size: <span>{{tableinfo.total_size}}</span></li>
+        <li>Data size: <span>{{tableinfo.data_size}}</span></li>
+        <li>Index size: <span>{{tableinfo.index_size}}</span></li>
+        <li>Rows: <span>{{tableinfo.rows_count}}</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
