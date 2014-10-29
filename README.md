@@ -74,6 +74,7 @@ Application Options:
       --host=    Server hostname or IP (localhost)
       --port=    Server port (5432)
       --user=    Database user (postgres)
+      --pass=    Password for user
       --db=      Database name (postgres)
       --ssl=     SSL option (disable)
       --listen=  HTTP server listen port (8080)
