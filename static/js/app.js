@@ -84,7 +84,6 @@ angular.module('pgweb', ['ui.router.state', 'ui.router', 'ui.ace'])
     $state.go(goToName, {table: table});
 
     $http.get('/tables/' + table + '/info').success(function(data, status) {
-      console.log(data, status);
       $scope.tableinfo = data;
     });
   };
@@ -98,12 +97,25 @@ angular.module('pgweb', ['ui.router.state', 'ui.router', 'ui.ace'])
 
 .controller('DataCtrl', function($scope, $http, $stateParams) {
   $scope.results = {columns: [], rows: []};
-  // WARNING: we need to escape "$stateParams.table" or use prepared statements!
-  $http.post('/query', {query: "SELECT * FROM \"" + $stateParams.table + "\" LIMIT 100"}).success(function(data, status) {
-    $scope.results = data;
-  }).error(function(data, status) {
-    alert("Error: " + data.error);
-  });
+
+  $scope.reloadData = function(col, reverse) {
+    // WARNING: we need to escape "$stateParams.table" or use prepared statements!
+    var query = 'SELECT * FROM "' + $stateParams.table + '"';
+    if (col) {
+      query += " ORDER BY " + col;
+      if (reverse) {
+        query += " DESC";
+      }
+    }
+    query += " LIMIT 100";
+    $http.post('/query', {query: query}).success(function(data, status) {
+      $scope.results = data;
+    }).error(function(data, status) {
+      alert("Error: " + data.error);
+    });
+  }
+
+  $scope.reloadData(null, null);
 })
 
 
@@ -126,7 +138,6 @@ angular.module('pgweb', ['ui.router.state', 'ui.router', 'ui.ace'])
   $scope.loading = false;
 
   $scope.aceLoaded = function(_editor) {
-    console.log("ACE LOADDDEEED");
     _editor.getSession().setMode("ace/mode/pgsql");
     _editor.getSession().setTabSize(2);
     _editor.getSession().setUseSoftTabs(true);
@@ -156,9 +167,6 @@ angular.module('pgweb', ['ui.router.state', 'ui.router', 'ui.ace'])
 
 
 .controller('HistoryCtrl', function($scope, $http, results) {
-  // Fetch history from somewhere ?
-  console.log("History endpoint: ", results);
-
   var rows = [];
   for(var i in results.data) {
     rows.unshift([parseInt(i) + 1, results.data[i]]);
@@ -188,9 +196,23 @@ angular.module('pgweb', ['ui.router.state', 'ui.router', 'ui.ace'])
   return {
     scope: {
       results: "=pgTableView",
+      sortMethod: "&sortMethod"
     },
     templateUrl: "/static/tpl/table-view-directive.html",
     link: function($scope, $element, $attrs) {
+      $scope.sortEnabled = ($attrs.sortMethod !== undefined);
+      $scope.sortReverse = false;
+      $scope.sortColumn = null;
+
+      $scope.doSortColumn = function(col) {
+        if ($scope.sortColumn == col) {
+          $scope.sortReverse = !$scope.sortReverse;
+        } else {
+          $scope.sortColumn = col;
+        }
+        $scope.sortMethod({col: $scope.sortColumn, reverse: $scope.sortReverse});
+      };
+
       $scope.showResults = function() {
         return !$scope.results.error && $scope.results.rows && $scope.results.rows.length;
       }
