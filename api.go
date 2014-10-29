@@ -3,8 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Error struct {
@@ -46,25 +47,23 @@ func API_GetDatabases(c *gin.Context) {
 }
 
 func API_RunQuery(c *gin.Context) {
-	query := strings.TrimSpace(c.Request.FormValue("query"))
+	var data struct {
+		Query   string
+		Explain bool
+	}
+	c.Bind(&data)
 
-	if query == "" {
+	if data.Query == "" {
 		c.JSON(400, errors.New("Query parameter is missing"))
 		return
+	}
+
+	query := strings.TrimSpace(data.Query)
+	if data.Explain {
+		query = fmt.Sprintf("EXPLAIN ANALYZE %s", query)
 	}
 
 	API_HandleQuery(query, c)
-}
-
-func API_ExplainQuery(c *gin.Context) {
-	query := strings.TrimSpace(c.Request.FormValue("query"))
-
-	if query == "" {
-		c.JSON(400, errors.New("Query parameter is missing"))
-		return
-	}
-
-	API_HandleQuery(fmt.Sprintf("EXPLAIN ANALYZE %s", query), c)
 }
 
 func API_GetTables(c *gin.Context) {
