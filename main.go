@@ -37,9 +37,10 @@ func getConnectionString() string {
 	}
 
 	return fmt.Sprintf(
-		"host=%s port=%d user=%s dbname=%s sslmode=disable",
+		"host=%s port=%d user=%s dbname=%s sslmode=%s",
 		options.Host, options.Port,
 		options.User, options.DbName,
+		options.Ssl,
 	)
 }
 
