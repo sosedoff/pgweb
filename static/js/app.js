@@ -12,7 +12,7 @@ angular.module('pgweb', ['ui.router.state', 'ui.router', 'ui.ace'])
         controller: 'SidebarCtrl'
       }
     }
-  }).state('root.login', {
+  }).state('root.home', {
     url: '/',
     views: {
       "content@": {
