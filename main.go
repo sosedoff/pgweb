@@ -10,7 +10,7 @@ import (
 	"os/signal"
 )
 
-const VERSION = "0.3.0"
+const VERSION = "0.3.1"
 
 var options struct {
 	Version  bool   `short:"v" long:"version" description:"Print version"`
