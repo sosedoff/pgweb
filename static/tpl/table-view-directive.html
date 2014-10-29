@@ -1,0 +1,32 @@
+<div class="wrapper">
+  <table class="table results">
+    <tr ng-if="results.error">
+      <td>ERROR: {{results.error}}</td>
+    </tr>
+
+    <tr ng-if="!results.rows">
+      <td>No records found</td>
+    </tr>
+
+    <thead ng-if="showResults()">
+      <tr>
+        <th data="{{col}}" ng-repeat="col in results.columns">
+          <a ng-show="sortEnabled" ng-click="doSortColumn(col)">
+            {{col}}
+            <span>{{sortReverse && sortColumn == col ? "&#x25B4;" : "&#x25BE;"}}</span>
+          </a>
+          <span ng-hide="sortEnabled">{{col}}</span>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody ng-if="showResults()">
+      <tr ng-repeat="row in results.rows">
+        <td ng-repeat="cell in row track by $index">
+          <div ng-if="is_null(cell)"><span class="null">null</span></div>
+          <div ng-if="!is_null(cell)">{{cell}}</div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
