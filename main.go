@@ -2,27 +2,29 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/jessevdk/go-flags"
-	_ "github.com/lib/pq"
 	"os"
 	"os/exec"
 	"os/signal"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jessevdk/go-flags"
+	_ "github.com/lib/pq"
 )
 
 const VERSION = "0.3.1"
 
 var options struct {
-	Version  bool   `short:"v" long:"version" description:"Print version"`
-	Debug    bool   `short:"d" long:"debug" description:"Enable debugging mode" default:"false"`
-	Url      string `long:"url" description:"Database connection string"`
-	Host     string `long:"host" description:"Server hostname or IP" default:"localhost"`
-	Port     int    `long:"port" description:"Server port" default:"5432"`
-	User     string `long:"user" description:"Database user" default:"postgres"`
-	Pass     string `long:"pass" description:"Password for user"`
-	DbName   string `long:"db" description:"Database name" default:"postgres"`
-	Ssl      string `long:"ssl" description:"SSL option" default:"disable"`
-	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8080"`
+	Version     bool   `short:"v" long:"version" description:"Print version"`
+	Debug       bool   `short:"d" long:"debug" description:"Enable debugging mode" default:"false"`
+	SkipBrowser bool   `short:"s" long:"skip-browser" description:"Skip opening the browser" default:"false"`
+	Url         string `long:"url" description:"Database connection string"`
+	Host        string `long:"host" description:"Server hostname or IP" default:"localhost"`
+	Port        int    `long:"port" description:"Server port" default:"5432"`
+	User        string `long:"user" description:"Database user" default:"postgres"`
+	Pass        string `long:"pass" description:"Password for user"`
+	DbName      string `long:"db" description:"Database name" default:"postgres"`
+	Ssl         string `long:"ssl" description:"SSL option" default:"disable"`
+	HttpPort    uint   `long:"listen" description:"HTTP server listen port" default:"8080"`
 }
 
 var dbClient *Client
@@ -143,6 +145,10 @@ func main() {
 	}
 
 	startServer()
-	openPage()
+
+	if !options.SkipBrowser {
+		openPage()
+	}
+
 	handleSignals()
 }
