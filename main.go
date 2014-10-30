@@ -14,15 +14,15 @@ const VERSION = "0.3.1"
 
 var options struct {
 	Version  bool   `short:"v" long:"version" description:"Print version"`
-	Debug    bool   `short:"d" long:"debug" description:"Enable debugging mode" default:"false"`
-	Url      string `long:"url" description:"Database connection string"`
-	Host     string `long:"host" description:"Server hostname or IP" default:"localhost"`
-	Port     int    `long:"port" description:"Server port" default:"5432"`
-	User     string `long:"user" description:"Database user" default:"postgres"`
-	Pass     string `long:"pass" description:"Password for user"`
-	DbName   string `long:"db" description:"Database name" default:"postgres"`
-	Ssl      string `long:"ssl" description:"SSL option" default:"disable"`
-	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8080"`
+	Debug    bool   `short:"d" long:"debug" env:"PGDEBUG" description:"Enable debugging mode" default:"false"`
+	Url      string `long:"url" env:"PGURL" description:"Database connection string"`
+	Host     string `long:"host" env:"PGHOST" description:"Server hostname or IP" default:"localhost"`
+	Port     int    `long:"port" env:"PGPORT" description:"Server port" default:"5432"`
+	User     string `long:"user" env:"PGUSER" description:"Database user" default:"postgres"`
+	Pass     string `long:"pass" env:"PGPASS" description:"Password for user"`
+	DbName   string `long:"db" env:"PGDB"description:"Database name" default:"postgres"`
+	Ssl      string `long:"ssl" env:"PGSSL" description:"SSL option" default:"disable"`
+	HttpPort uint   `long:"listen" env:"PGLISTEN" description:"HTTP server listen port" default:"8080"`
 }
 
 var dbClient *Client
