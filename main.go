@@ -23,6 +23,8 @@ var options struct {
 	DbName   string `long:"db" description:"Database name" default:"postgres"`
 	Ssl      string `long:"ssl" description:"SSL option" default:"disable"`
 	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8080"`
+	AuthUser string `long:"auth-user" description:"HTTP basic auth user"`
+	AuthPass string `long:"auth-pass" description:"HTTP basic auth password"`
 }
 
 var dbClient *Client
@@ -95,6 +97,12 @@ func initOptions() {
 
 func startServer() {
 	router := gin.Default()
+
+	// Enable HTTP basic authentication only if both user and password are set
+	if options.AuthUser != "" && options.AuthPass != "" {
+		auth := map[string]string{options.AuthUser: options.AuthPass}
+		router.Use(gin.BasicAuth(auth))
+	}
 
 	router.GET("/", API_Home)
 	router.GET("/databases", API_GetDatabases)
