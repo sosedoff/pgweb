@@ -80,6 +80,7 @@ Application Options:
       --listen=    HTTP server listen port (8080)
       --auth-user= HTTP basic auth user
       --auth-pass= HTTP basic auth password
+  -s, --skip-open  Skip browser open on start
 ```
 
 ## Compile from source

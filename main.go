@@ -25,6 +25,7 @@ var options struct {
 	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8080"`
 	AuthUser string `long:"auth-user" description:"HTTP basic auth user"`
 	AuthPass string `long:"auth-pass" description:"HTTP basic auth password"`
+	SkipOpen bool   `short:"s" long:"skip-open" description:"Skip browser open on start"`
 }
 
 var dbClient *Client
@@ -131,6 +132,10 @@ func handleSignals() {
 func openPage() {
 	url := fmt.Sprintf("http://localhost:%v", options.HttpPort)
 	fmt.Println("To view database open", url, "in browser")
+
+	if options.SkipOpen {
+		return
+	}
 
 	_, err := exec.Command("which", "open").Output()
 	if err != nil {
