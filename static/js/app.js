@@ -274,8 +274,20 @@ function initEditor() {
   }]);
 }
 
+function addShortcutTooltips() {
+  if (navigator.userAgent.indexOf("OS X") > 0) {
+    $("#run").attr("title", "Shortcut: ⌘+Enter");
+    $("#explain").attr("title", "Shortcut: ⌘+E");
+  }
+  else {
+    $("#run").attr("title", "Shortcut: Ctrl+Enter");
+    $("#explain").attr("title", "Shortcut: Ctrl+E");
+  }
+}
+
 $(document).ready(function() {
   initEditor();
+  addShortcutTooltips();
 
   $("#table_content").on("click",   function() { showTableContent();   });
   $("#table_structure").on("click", function() { showTableStructure(); });
