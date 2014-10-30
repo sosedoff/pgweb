@@ -253,8 +253,7 @@ function initEditor() {
   editor.getSession().setMode("ace/mode/pgsql");
   editor.getSession().setTabSize(2);
   editor.getSession().setUseSoftTabs(true);
-
-  editor.commands.addCommand({
+  editor.commands.addCommands([{
     name: "run_query",
     bindKey: {
       win: "Ctrl-Enter",
@@ -263,7 +262,16 @@ function initEditor() {
     exec: function(editor) {
       runQuery();
     }
-  });
+  }, {
+    name: "explain_query",
+    bindKey: {
+      win: "Ctrl-E",
+      mac: "Command-E"
+    },
+    exec: function(editor) {
+      runExplain();
+    }
+  }]);
 }
 
 $(document).ready(function() {
