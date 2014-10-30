@@ -22,6 +22,7 @@ var options struct {
 	Pass     string `long:"pass" description:"Password for user"`
 	DbName   string `long:"db" description:"Database name" default:"postgres"`
 	Ssl      string `long:"ssl" description:"SSL option" default:"disable"`
+	HttpHost string `long:"bind" description:"HTTP server host" default:"localhost"`
 	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8080"`
 	AuthUser string `long:"auth-user" description:"HTTP basic auth user"`
 	AuthPass string `long:"auth-pass" description:"HTTP basic auth password"`
@@ -120,7 +121,7 @@ func startServer() {
 	router.GET("/static/:type/:name", API_ServeAsset)
 
 	fmt.Println("Starting server...")
-	go router.Run(fmt.Sprintf(":%v", options.HttpPort))
+	go router.Run(fmt.Sprintf("%v:%v", options.HttpHost, options.HttpPort))
 }
 
 func handleSignals() {
@@ -130,7 +131,7 @@ func handleSignals() {
 }
 
 func openPage() {
-	url := fmt.Sprintf("http://localhost:%v", options.HttpPort)
+	url := fmt.Sprintf("http://%v:%v", options.HttpHost, options.HttpPort)
 	fmt.Println("To view database open", url, "in browser")
 
 	if options.SkipOpen {

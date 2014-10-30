@@ -77,6 +77,7 @@ Application Options:
       --pass=      Password for user
       --db=        Database name (postgres)
       --ssl=       SSL option (disable)
+      --bind=      HTTP server host (localhost)
       --listen=    HTTP server listen port (8080)
       --auth-user= HTTP basic auth user
       --auth-pass= HTTP basic auth password
