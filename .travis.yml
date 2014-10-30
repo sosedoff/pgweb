@@ -1,5 +1,8 @@
 language: go
-go: 1.3
+
+go:
+- 1.3
+- tip
 
 install: make setup
 script: make dev
