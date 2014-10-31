@@ -148,7 +148,7 @@ function showTableContent() {
     return;
   }
 
-  var query = "SELECT * FROM \"" + name + "\" LIMIT 100;";
+  var query = "SELECT * FROM " + name + " LIMIT 100;";
 
   executeQuery(query, function(data) {
     buildTable(data);
