@@ -1,7 +1,7 @@
 {
     "name": "pgweb",
     "description": "A web-based frontend to your Postgres database.",
-    "website": "https://github.com/pvh/pgweb",
+    "website": "https://github.com/sosedoff/pgweb",
     "repository": "https://github.com/pvh/pgweb",
     "logo": "https://avatars1.githubusercontent.com/u/71051?v=2&s=400",
     "success_url": "/",
@@ -14,6 +14,14 @@
         "heroku-postgresql"
     ],
     "env": {
-        "BUILDPACK_URL": "https://github.com/kr/heroku-buildpack-go"
+        "BUILDPACK_URL": "https://github.com/kr/heroku-buildpack-go",
+	"AUTH_USER": { 
+	  "description": "A username to log into pgweb.",
+          "value": "admin"
+ 	},
+	"AUTH_PASS": {
+	  "description": "The login password. Please change this.",
+	  "value": "pgweb"
+	}
     }
 }
