@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"strings"
 )
 
 const VERSION = "0.3.1"
@@ -38,7 +39,13 @@ func exitWithMessage(message string) {
 
 func getConnectionString() string {
 	if options.Url != "" {
-		return options.Url
+		url := options.Url
+
+		if options.Ssl != "" && !strings.Contains(url, "sslmode") {
+			url += fmt.Sprintf("?sslmode=%s", options.Ssl)
+		}
+
+		return url
 	}
 
 	str := fmt.Sprintf(
