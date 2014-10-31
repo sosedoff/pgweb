@@ -126,6 +126,24 @@
   padding: 0px;
 }
 
+#sidebar ul li {
+  list-style: none;
+  list-style-type: none;
+  line-height: 30px;
+  padding: 0px 8px;
+  padding-left: 12px;
+  cursor: pointer;
+  color: #95a7b7 !important;
+  white-space: nowrap;
+}
+
+#sidebar li.selected {
+  color: #fff !important;
+  font-weight: bold;
+  background: #272c30;
+  -webkit-font-smoothing: antialiased;
+}
+
 #sidebar ul li:hover {
   background: #272c30;
 }
@@ -288,27 +306,4 @@
 
 #custom_query {
   height: 205px;
-}
-
-#sidebar ul {
-  padding: 0px;
-  margin: 0px;
-}
-
-#sidebar ul li {
-  list-style: none;
-  list-style-type: none;
-  line-height: 33px;
-  height: 33px;
-  padding: 0px 8px;
-  padding-left: 12px;
-  cursor: pointer;
-  color: #95a7b7 !important;
-}
-
-#sidebar li.selected {
-  color: #fff !important;
-  font-weight: bold;
-  background: #272c30;
-  -webkit-font-smoothing: antialiased;
 }
