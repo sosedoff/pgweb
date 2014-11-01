@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"reflect"
+	"strings"
 )
 
 type Client struct {
@@ -79,15 +80,26 @@ func (client *Client) Tables() ([]string, error) {
 
 	var tables []string
 
+	schemasToSkip := map[string]bool {
+		"information_schema": true,
+		"pg_catalog": true,
+	}
+
 	for _, row := range res.Rows {
-		tables = append(tables, row[0].(string))
+		var schemaName = row[0].(string)
+		var tableName = row[1].(string)
+		if schemasToSkip[schemaName] {
+			continue
+		}
+		tables = append(tables, schemaName + "." + tableName)
 	}
 
 	return tables, nil
 }
 
 func (client *Client) Table(table string) (*Result, error) {
-	return client.Query(fmt.Sprintf(PG_TABLE_SCHEMA, table))
+	names := strings.Split(table, ".")
+	return client.Query(fmt.Sprintf(PG_TABLE_SCHEMA, names[0], names[1]))
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
@@ -95,7 +107,8 @@ func (client *Client) TableInfo(table string) (*Result, error) {
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
-	res, err := client.Query(fmt.Sprintf(PG_TABLE_INDEXES, table))
+	names := strings.Split(table, ".")
+	res, err := client.Query(fmt.Sprintf(PG_TABLE_INDEXES, names[0], names[1]))
 
 	if err != nil {
 		return nil, err
