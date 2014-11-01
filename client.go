@@ -32,6 +32,16 @@ func NewClient() (*Client, error) {
 	return &Client{db: db}, nil
 }
 
+func NewClientFromUrl(url string) (*Client, error) {
+	db, err := sqlx.Open("postgres", url)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &Client{db: db}, nil
+}
+
 func (client *Client) Test() error {
 	return client.db.Ping()
 }

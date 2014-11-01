@@ -34,6 +34,36 @@ func API_Home(c *gin.Context) {
 	c.Data(200, "text/html; charset=utf-8", data)
 }
 
+func API_Connect(c *gin.Context) {
+	url := c.Request.FormValue("url")
+
+	if url == "" {
+		c.JSON(400, Error{"Url parameter is required"})
+		return
+	}
+
+	client, err := NewClientFromUrl(url)
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	err = client.Test()
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	info, err := client.Info()
+
+	if err == nil {
+		dbClient.db.Close()
+		dbClient = client
+	}
+
+	c.JSON(200, info.Format()[0])
+}
+
 func API_GetDatabases(c *gin.Context) {
 	names, err := dbClient.Databases()
 
