@@ -148,7 +148,9 @@ function showTableContent() {
     return;
   }
 
-  var query = "SELECT * FROM " + name + " LIMIT 100;";
+  // The name will be of the form 'schema.table'.
+  var names = name.split('.', 2);
+  var query = "SELECT * FROM \"" + names[0] + "\".\"" + names[1] + "\" LIMIT 100;";
 
   executeQuery(query, function(data) {
     buildTable(data);
