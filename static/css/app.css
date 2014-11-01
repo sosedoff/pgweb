@@ -1,3 +1,7 @@
+#main {
+  display: none;
+}
+
 #nav {
   position: fixed;
   top: 0;
@@ -13,6 +17,7 @@
   padding: 0px;
   height: 50px;
   display: block;
+  width: 550px;
 }
 
 #nav ul li {
@@ -331,4 +336,40 @@
 
 #custom_query {
   height: 205px;
+}
+
+#connection_window {
+  z-index: 2;
+  position: fixed;
+  background: #ebeef0;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  display: none;
+}
+
+#connection_error {
+  display: none;
+}
+
+.connection-settings {
+  width: 500px;
+  margin: 0px auto;
+  margin-top: 50px;
+}
+
+.connection-settings h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #95A7B7;
+  font-weight: normal;
+}
+
+.connection-settings form {
+  background: #fff;
+  padding: 40px 25px;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
 }

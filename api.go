@@ -57,7 +57,10 @@ func API_Connect(c *gin.Context) {
 	info, err := client.Info()
 
 	if err == nil {
-		dbClient.db.Close()
+		if dbClient != nil {
+			dbClient.db.Close()
+		}
+
 		dbClient = client
 	}
 
@@ -135,6 +138,11 @@ func API_History(c *gin.Context) {
 }
 
 func API_Info(c *gin.Context) {
+	if dbClient == nil {
+		c.JSON(400, Error{"Not connected"})
+		return
+	}
+
 	res, err := dbClient.Info()
 
 	if err != nil {

@@ -29,6 +29,8 @@ function explainQuery(query, cb) {
 }
 
 function loadTables() {
+  $("#tables li").remove();
+
   getTables(function(data) {
     data.forEach(function(item) {
       $("<li><span>" + item + "</span></li>").appendTo("#tables");
@@ -306,9 +308,6 @@ function addShortcutTooltips() {
 }
 
 $(document).ready(function() {
-  initEditor();
-  addShortcutTooltips();
-
   $("#table_content").on("click",    function() { showTableContent();    });
   $("#table_structure").on("click",  function() { showTableStructure();  });
   $("#table_indexes").on("click",    function() { showTableIndexes();    });
@@ -340,5 +339,48 @@ $(document).ready(function() {
     showTableInfo();
   });
 
-  loadTables();
+  $("#connection_form").on("submit", function(e) {
+    e.preventDefault();
+
+    var button = $(this).children("button");
+    var url = $.trim($("#connection_url").val());
+    var ssl = $("#connection_ssl").val();
+
+    if (url.length == 0) {
+      return;
+    }
+
+    if (url.indexOf("sslmode") == -1) {
+      url += "?sslmode=" + ssl;
+    }
+
+    $("#connection_error").hide();
+    button.prop("disabled", true).text("Please wait...");
+
+    apiCall("post", "/connect", { url: url }, function(resp) {
+      button.prop("disabled", false).text("Connect");
+
+      if (resp.error) {
+        $("#connection_error").text(resp.error).show();
+      }
+      else {
+        $("#connection_window").hide();
+        loadTables();
+        $("#main").show();
+      }
+    });
+  });
+
+  initEditor();
+  addShortcutTooltips();
+  
+  apiCall("get", "/info", {}, function(resp) {
+    if (resp.error) {
+      $("#connection_window").show();
+    }
+    else {
+      loadTables();
+      $("#main").show();
+    }
+  });
 });

@@ -13,52 +13,79 @@
   <script type="text/javascript" src="/static/js/app.js"></script>
 </head>
 <body>
-  <div id="nav">
-    <ul>
-      <li id="table_content">Content</li>
-      <li id="table_structure">Structure</li>
-      <li id="table_indexes">Indexes</li>
-      <li id="table_query" class="selected">SQL Query</li>
-      <li id="table_history">History</li>
-      <li id="table_connection">Connection</li>
-    </ul>
-  </div>
-  <div id="sidebar">
-    <div class="tables-list">
-      <div class="wrap">
-        <div class="title">Database Tables</div>
-        <ul id="tables"></ul>
-      </div>
+  <div id="main">
+    <div id="nav">
+      <ul>
+        <li id="table_content">Content</li>
+        <li id="table_structure">Structure</li>
+        <li id="table_indexes">Indexes</li>
+        <li id="table_query" class="selected">SQL Query</li>
+        <li id="table_history">History</li>
+        <li id="table_connection">Connection</li>
+      </ul>
     </div>
-    <div class="table-information">
-      <div class="wrap">
-        <div class="title">Table Information</div>
-        <ul>
-          <li>Size: <span id="table_total_size"></span></li>
-          <li>Data size: <span id="table_data_size"></span></li>
-          <li>Index size: <span id="table_index_size"></span></li>
-          <li>Rows: <span id="table_rows_count"></span></li>
-        </ul>
+    <div id="sidebar">
+      <div class="tables-list">
+        <div class="wrap">
+          <div class="title">Database Tables</div>
+          <ul id="tables"></ul>
+        </div>
       </div>
-    </div>
-  </div>
-  <div id="body">
-    <div id="input">
-      <div class="wrapper">
-        <div id="custom_query"></div>
-        <div class="actions">
-          <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
-          <input type="button" id="explain" value="Explain Query" class="btn btn-sm btn-default" />
-          <input type="button" id="csv" value="Download CSV" class="btn btn-sm btn-default" />
-
-          <div id="query_progress">Please wait, query is executing...</div>
+      <div class="table-information">
+        <div class="wrap">
+          <div class="title">Table Information</div>
+          <ul>
+            <li>Size: <span id="table_total_size"></span></li>
+            <li>Data size: <span id="table_data_size"></span></li>
+            <li>Index size: <span id="table_index_size"></span></li>
+            <li>Rows: <span id="table_rows_count"></span></li>
+          </ul>
         </div>
       </div>
     </div>
-    <div id="output">
-      <div class="wrapper">
-        <table id="results" class="table"></table>
+    <div id="body">
+      <div id="input">
+        <div class="wrapper">
+          <div id="custom_query"></div>
+          <div class="actions">
+            <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
+            <input type="button" id="explain" value="Explain Query" class="btn btn-sm btn-default" />
+            <input type="button" id="csv" value="Download CSV" class="btn btn-sm btn-default" />
+
+            <div id="query_progress">Please wait, query is executing...</div>
+          </div>
+        </div>
       </div>
+      <div id="output">
+        <div class="wrapper">
+          <table id="results" class="table"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="connection_window">
+    <div class="connection-settings">
+      <h1>pgweb</h1>
+
+      <form role="form" id="connection_form">
+        <div class="form-group">
+          <label>Enter server URL scheme</label>
+          <input type="text" class="form-control" id="connection_url" placeholder="postgres://user:password@host:port/db">
+        </div>
+
+        <div class="form-group">
+          <label>SSL Mode</label>
+          <select class="form-control" id="connection_ssl">
+            <option value="disable">disable</option>
+            <option value="require" selected="selected">require</option>
+            <option value="verify-full">verify-full</option>
+          </select>
+        </div>
+
+        <div id="connection_error" class="alert alert-danger"></div>
+        <button type="submit" class="btn btn-primary">Connect</button>
+      </form>
     </div>
   </div>
 </body>

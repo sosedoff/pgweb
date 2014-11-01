@@ -17,11 +17,11 @@ var options struct {
 	Version  bool   `short:"v" long:"version" description:"Print version"`
 	Debug    bool   `short:"d" long:"debug" description:"Enable debugging mode" default:"false"`
 	Url      string `long:"url" description:"Database connection string"`
-	Host     string `long:"host" description:"Server hostname or IP" default:"localhost"`
+	Host     string `long:"host" description:"Server hostname or IP"`
 	Port     int    `long:"port" description:"Server port" default:"5432"`
-	User     string `long:"user" description:"Database user" default:"postgres"`
+	User     string `long:"user" description:"Database user"`
 	Pass     string `long:"pass" description:"Password for user"`
-	DbName   string `long:"db" description:"Database name" default:"postgres"`
+	DbName   string `long:"db" description:"Database name"`
 	Ssl      string `long:"ssl" description:"SSL option" default:"disable"`
 	HttpHost string `long:"bind" description:"HTTP server host" default:"localhost"`
 	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8080"`
@@ -62,7 +62,18 @@ func getConnectionString() string {
 	return str
 }
 
+func connectionSettingsBlank() bool {
+	return options.Host == "" &&
+		options.User == "" &&
+		options.DbName == "" &&
+		options.Url == ""
+}
+
 func initClient() {
+	if connectionSettingsBlank() {
+		return
+	}
+
 	client, err := NewClient()
 	if err != nil {
 		exitWithMessage(err.Error())
@@ -158,7 +169,9 @@ func main() {
 	initOptions()
 	initClient()
 
-	defer dbClient.db.Close()
+	if dbClient != nil {
+		defer dbClient.db.Close()
+	}
 
 	if !options.Debug {
 		gin.SetMode("release")
