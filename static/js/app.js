@@ -182,6 +182,26 @@ function showQueryPanel() {
   $("#output").removeClass("full");
 }
 
+function showConnectionPanel() {
+  setCurrentTab("table_connection");
+
+  apiCall("get", "/info", {}, function(data) {
+    var rows = [];
+
+    for(key in data) {
+      rows.push([key, data[key]]);
+    }
+
+    buildTable({
+      columns: ["attribute", "value"],
+      rows: rows
+    });
+
+    $("#input").hide();
+    $("#output").addClass("full");
+  });
+}
+
 function runQuery() {
   setCurrentTab("table_query");
 
@@ -289,11 +309,12 @@ $(document).ready(function() {
   initEditor();
   addShortcutTooltips();
 
-  $("#table_content").on("click",   function() { showTableContent();   });
-  $("#table_structure").on("click", function() { showTableStructure(); });
-  $("#table_indexes").on("click",   function() { showTableIndexes();   });
-  $("#table_history").on("click",   function() { showQueryHistory();   });
-  $("#table_query").on("click",     function() { showQueryPanel();     });
+  $("#table_content").on("click",    function() { showTableContent();    });
+  $("#table_structure").on("click",  function() { showTableStructure();  });
+  $("#table_indexes").on("click",    function() { showTableIndexes();    });
+  $("#table_history").on("click",    function() { showQueryHistory();    });
+  $("#table_query").on("click",      function() { showQueryPanel();      });
+  $("#table_connection").on("click", function() { showConnectionPanel(); });
 
   $("#run").on("click", function() {
     runQuery();
