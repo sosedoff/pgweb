@@ -31,7 +31,7 @@ function explainQuery(query, cb) {
 function loadTables() {
   getTables(function(data) {
     data.forEach(function(item) {
-      $("<li>" + item + "</li>").appendTo("#tables");
+      $("<li><span>" + item + "</span></li>").appendTo("#tables");
     });
   });
 }
