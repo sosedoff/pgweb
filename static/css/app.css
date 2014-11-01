@@ -368,8 +368,12 @@
 
 .connection-settings form {
   background: #fff;
-  padding: 40px 25px;
+  padding: 45px 25px;
   border-radius: 4px;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
+}
+
+.connection-settings form p.help-block {
+  font-size: 12px;
 }
