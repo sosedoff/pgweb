@@ -349,6 +349,16 @@
   display: none;
 }
 
+#edit_connection {
+  position: fixed;
+  right: 8px;
+  top: 10px;
+}
+
+#close_connection_window {
+  display: none;
+}
+
 #connection_error {
   display: none;
 }

@@ -1,4 +1,5 @@
 var editor;
+var connected = false;
 
 function apiCall(method, path, params, cb) {
   $.ajax({
@@ -307,6 +308,10 @@ function addShortcutTooltips() {
   }
 }
 
+function showConnectionSettings() {
+  $("#connection_window").show();
+}
+
 $(document).ready(function() {
   $("#table_content").on("click",    function() { showTableContent();    });
   $("#table_structure").on("click",  function() { showTableStructure();  });
@@ -339,6 +344,18 @@ $(document).ready(function() {
     showTableInfo();
   });
 
+  $("#edit_connection").on("click", function() {
+    if (connected) {
+      $("#close_connection_window").show();
+    }
+
+    showConnectionSettings();
+  });
+
+  $("#close_connection_window").on("click", function() {
+    $("#connection_window").hide();
+  })
+
   $("#connection_form").on("submit", function(e) {
     e.preventDefault();
 
@@ -361,9 +378,11 @@ $(document).ready(function() {
       button.prop("disabled", false).text("Connect");
 
       if (resp.error) {
+        connected = false;
         $("#connection_error").text(resp.error).show();
       }
       else {
+        connected = true;
         $("#connection_window").hide();
         loadTables();
         $("#main").show();
@@ -376,9 +395,11 @@ $(document).ready(function() {
   
   apiCall("get", "/info", {}, function(resp) {
     if (resp.error) {
-      $("#connection_window").show();
+      connected = false;
+      showConnectionSettings();
     }
     else {
+      connected = true;
       loadTables();
       $("#main").show();
     }

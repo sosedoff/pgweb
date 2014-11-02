@@ -23,6 +23,8 @@
         <li id="table_history">History</li>
         <li id="table_connection">Connection</li>
       </ul>
+
+      <a href="#" id="edit_connection" class="btn btn-primary btn-sm">Edit Connection</a>
     </div>
     <div id="sidebar">
       <div class="tables-list">
@@ -71,7 +73,7 @@
       <form role="form" id="connection_form">
         <div class="form-group">
           <label>Enter server URL scheme</label>
-          <input type="text" class="form-control" id="connection_url">
+          <input type="text" class="form-control" id="connection_url" name="url">
           <p class="help-block">URL format: postgres://user:password@host:port/db</p>
         </div>
 
@@ -86,6 +88,7 @@
 
         <div id="connection_error" class="alert alert-danger"></div>
         <button type="submit" class="btn btn-primary">Connect</button>
+        <a href="#" id="close_connection_window" class="btn btn-default">Cancel</a>
       </form>
     </div>
   </div>
