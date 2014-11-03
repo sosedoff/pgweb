@@ -52,7 +52,7 @@ function resetTable() {
     attr("data-mode", "").
     text("").
     removeClass("empty").
-    removeClass("history");
+    removeClass("no-crop");
 }
 
 function buildTable(results) {
@@ -104,7 +104,7 @@ function showQueryHistory() {
     setCurrentTab("table_history");  
     $("#input").hide();
     $("#output").addClass("full");
-    $("#results").addClass("history");
+    $("#results").addClass("no-crop");
   });
 }
 
@@ -250,6 +250,7 @@ function runExplain() {
     $("#query_progress").hide();
     $("#input").show();
     $("#output").removeClass("full");
+    $("#results").addClass("no-crop");
   });
 }
 

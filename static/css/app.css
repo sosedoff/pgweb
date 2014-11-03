@@ -330,9 +330,9 @@
   padding-left: 15px;
 }
 
-#results.history td div {
+#results.no-crop td div {
   max-width: none;
-} 
+}
 
 #custom_query {
   height: 205px;
