@@ -47,6 +47,12 @@ function escapeHtml(str) {
   return "<span class='null'>null</span>";
 }
 
+function unescapeHtml(str){
+  var e = document.createElement("div");
+  e.innerHTML = str;
+  return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+}
+
 function resetTable() {
   $("#results").
     attr("data-mode", "").
@@ -336,6 +342,26 @@ $(document).ready(function() {
   $("#results").on("click", "tr", function() {
     $("#results tr.selected").removeClass();
     $(this).addClass("selected");
+  });
+
+  $("#results").on("dblclick", "td > div", function() {
+    if ($(this).has("textarea").length > 0) {
+      return;
+    }
+
+    var value = unescapeHtml($(this).html());
+
+    if (!value) {
+      return;
+    }
+
+    var textarea = $("<textarea />").text(value).css("width", $(this).css("width"));
+
+    if (value.split("\n").length >= 3) {
+      textarea.css("height", "200px");
+    }
+
+    $(this).html(textarea).css("max-height", "200px");
   });
 
   $("#tables").on("click", "li", function() {

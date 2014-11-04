@@ -325,6 +325,10 @@
   text-transform: uppercase;
 }
 
+#results td textarea {
+  color: #000 !important;
+}
+
 #results th:first-child,
 #results td:first-child {
   padding-left: 15px;
@@ -339,7 +343,7 @@
 }
 
 #connection_window {
-  z-index: 2;
+  z-index: 3;
   position: fixed;
   background: #ebeef0;
   top: 0px;
