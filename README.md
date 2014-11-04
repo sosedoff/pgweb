@@ -132,7 +132,7 @@ docker run [OPTIONS of docker] your-username/pgweb [OPTIONS of pgweb]
 postgresql container:
 
 ```
-docker run	-d --name="postgresql" \
+docker run	-d --name="postgresql" 	\
 			-p 5432:5432 			\			
 			-e USER="testuser" 		\
 			-e DB="testdb" 			\
@@ -148,7 +148,7 @@ docker run -d -p 8082:8080 your-username/pgweb \
 			--bind 0.0.0.0
 
 ```
-Then open http://your-ip:8082 in your browser 
+Then open [http://your-ip:8082](#) in your browser 
 
 ## Contributors
 
