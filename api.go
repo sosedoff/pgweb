@@ -20,6 +20,10 @@ func assetContentType(name string) string {
 		return "application/javascript"
 	}
 
+	if strings.Contains(name, ".icon") {
+		return "image/x-icon"
+	}
+
 	return "text/plain"
 }
 
