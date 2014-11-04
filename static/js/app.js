@@ -350,12 +350,12 @@ $(document).ready(function() {
     }
 
     var value = unescapeHtml($(this).html());
+    if (!value) { return; }
 
-    if (!value) {
-      return;
-    }
-
-    var textarea = $("<textarea />").text(value).css("width", $(this).css("width"));
+    var textarea = $("<textarea />").
+      text(value).
+      addClass("form-control").
+      css("width", $(this).css("width"));
 
     if (value.split("\n").length >= 3) {
       textarea.css("height", "200px");
