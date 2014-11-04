@@ -232,6 +232,10 @@ function runQuery() {
     $("#query_progress").hide();
     $("#input").show();
     $("#output").removeClass("full");
+
+    if (query.toLowerCase().indexOf("explain") != -1) {
+      $("#results").addClass("no-crop");
+    }
   });
 }
 
