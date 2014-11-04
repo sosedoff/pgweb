@@ -381,7 +381,15 @@ $(document).ready(function() {
 
   $("#close_connection_window").on("click", function() {
     $("#connection_window").hide();
-  })
+  });
+
+  $("#connection_url").on("change", function() {
+    var url = $(this).val();
+
+    if (url.indexOf("localhost") != -1) {
+      $("#connection_ssl").val("disable");
+    }
+  });
 
   $("#connection_form").on("submit", function(e) {
     e.preventDefault();
