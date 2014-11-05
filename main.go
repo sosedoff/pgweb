@@ -86,14 +86,11 @@ func initClient() {
 	}
 
 	fmt.Println("Checking tables...")
-	tables, err := client.Tables()
+	_, err = client.Tables()
 	if err != nil {
 		exitWithMessage(err.Error())
 	}
 
-	if len(tables) == 0 {
-		exitWithMessage("Database does not have any tables")
-	}
 
 	dbClient = client
 }
