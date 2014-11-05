@@ -114,6 +114,46 @@ make build
 Under the hood it uses [gox](https://github.com/mitchellh/gox). Compiled binaries
 will be stored into `./bin` directory.
 
+
+## Use in Docker 
+
+
+
+Build the image. (Docker version 1.1)
+
+```
+docker build -t your-username/pgweb .
+```
+
+Run the container
+
+```
+docker run [OPTIONS of docker] your-username/pgweb [OPTIONS of pgweb]
+```
+
+#### demo:
+
+postgresql container:
+
+```
+docker run	-d --name="postgresql" 	\
+			-p 5432:5432 			\			
+			-e USER="testuser" 		\
+			-e DB="testdb" 			\
+			-e PASS="test123" 		\
+			paintedfox/postgresql
+
+```
+pgweb containers:
+
+```
+docker run -d -p 8082:8080 your-username/pgweb \
+			--url postgres://testuser:test123@your-ip:5432/testdb  \
+			--bind 0.0.0.0
+
+```
+Then open [http://your-ip:8082](#) in your browser 
+
 ## Contributors
 
 - Dan Sosedoff - https://twitter.com/sosedoff
