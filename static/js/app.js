@@ -323,6 +323,31 @@ function showConnectionSettings() {
   $("#connection_window").show();
 }
 
+function getConnectionString() {
+  var url = $.trim($("#connection_url").val());
+  var ssl = $("#connection_ssl").val();
+
+  if (url.length == 0) {
+    var host = $("#pg_host").val();
+    var port = $("#pg_port").val();
+    var user = $("#pg_user").val();
+    var pass = $("#pg_password").val();
+    var db   = $("#pg_db").val();
+
+    if (port.length == 0) {
+      port = "5432";
+    }
+
+    url = "postgres://" + user + ":" + pass + "@" + host + ":" + port + "/" + db;
+  }
+
+  if (url.indexOf("sslmode") == -1) {
+    url += "?sslmode=" + ssl;
+  }
+
+  return url;
+}
+
 $(document).ready(function() {
   $("#table_content").on("click",    function() { showTableContent();    });
   $("#table_structure").on("click",  function() { showTableStructure();  });
@@ -388,9 +413,13 @@ $(document).ready(function() {
   });
 
   $("#connection_url").on("change", function() {
-    var url = $(this).val();
+    if ($(this).val().indexOf("localhost") != -1) {
+      $("#connection_ssl").val("disable");
+    }
+  });
 
-    if (url.indexOf("localhost") != -1) {
+  $("#pg_host").on("change", function() {
+    if ($(this).val().indexOf("localhost") != -1) {
       $("#connection_ssl").val("disable");
     }
   });
@@ -399,15 +428,10 @@ $(document).ready(function() {
     e.preventDefault();
 
     var button = $(this).children("button");
-    var url = $.trim($("#connection_url").val());
-    var ssl = $("#connection_ssl").val();
-
+    var url = getConnectionString();
+   
     if (url.length == 0) {
       return;
-    }
-
-    if (url.indexOf("sslmode") == -1) {
-      url += "?sslmode=" + ssl;
     }
 
     $("#connection_error").hide();

@@ -71,25 +71,73 @@
     <div class="connection-settings">
       <h1>pgweb</h1>
 
-      <form role="form" id="connection_form">
+      <form role="form" class="form-horizontal" id="connection_form">
         <div class="form-group">
-          <label>Enter server URL scheme</label>
-          <input type="text" class="form-control" id="connection_url" name="url">
-          <p class="help-block">URL format: postgres://user:password@host:port/db</p>
+          <div class="col-sm-12">
+            <label>Enter server URL scheme</label>
+            <input type="text" class="form-control" id="connection_url" name="url">
+            <p class="help-block">URL format: postgres://user:password@host:port/db</p>
+          </div>
+        </div>
+
+        <hr/>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Host</label>
+          <div class="col-sm-10">
+            <input type="text" id="pg_host" class="form-control" />
+          </div>
         </div>
 
         <div class="form-group">
-          <label>SSL Mode</label>
-          <select class="form-control" id="connection_ssl">
-            <option value="disable">disable</option>
-            <option value="require" selected="selected">require</option>
-            <option value="verify-full">verify-full</option>
-          </select>
+          <label class="col-sm-2">Username</label>
+          <div class="col-sm-10">
+            <input type="text" id="pg_user" class="form-control" />
+          </div>
         </div>
+
+        <div class="form-group">
+          <label class="col-sm-2">Password</label>
+          <div class="col-sm-10">
+            <input type="text" id="pg_password" class="form-control" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2">Database</label>
+          <div class="col-sm-10">
+            <input type="text" id="pg_db" class="form-control" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2">Port</label>
+          <div class="col-sm-10">
+            <input type="text" id="pg_port" class="form-control" placeholder="5432" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2">SSL</label>
+          <div class="col-sm-10">
+            <select class="form-control" id="connection_ssl">
+              <option value="disable">disable</option>
+              <option value="require" selected="selected">require</option>
+              <option value="verify-full">verify-full</option>
+            </select>
+          </div>
+        </div>
+
+        <hr/>
 
         <div id="connection_error" class="alert alert-danger"></div>
-        <button type="submit" class="btn btn-primary">Connect</button>
-        <a href="#" id="close_connection_window" class="btn btn-default">Cancel</a>
+
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary">Connect</button>
+            <a href="#" id="close_connection_window" class="btn btn-default">Cancel</a>
+          </div>
+        </div>
       </form>
     </div>
   </div>
