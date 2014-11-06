@@ -14,9 +14,9 @@ build: build-assets
 	gox -osarch="darwin/amd64 darwin/386 linux/amd64 linux/386 windows/amd64 windows/386" -output="./bin/pgweb_{{.OS}}_{{.Arch}}"
 
 setup:
+	go get github.com/tools/godep
 	go get github.com/mitchellh/gox
 	go get github.com/jteeuwen/go-bindata/...
-	@$(MAKE) --no-print-directory build-dev-assets
 	go get
 
 clean:
