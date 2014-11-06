@@ -1,7 +1,7 @@
 BINDATA=
 
 dev: build-dev-assets
-	go build
+	godep go build
 	@echo "You can now execute ./pgweb"
 
 build-assets:
@@ -15,9 +15,9 @@ build: build-assets
 
 setup:
 	go get github.com/tools/godep
-	go get github.com/mitchellh/gox
-	go get github.com/jteeuwen/go-bindata/...
-	go get
+	godep get github.com/mitchellh/gox
+	godep get github.com/jteeuwen/go-bindata/...
+	godep restore
 
 clean:
 	rm -f ./pgweb
