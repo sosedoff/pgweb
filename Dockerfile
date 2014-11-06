@@ -3,8 +3,10 @@ FROM golang:1.3
 COPY . /go/src/pgweb
 WORKDIR /go/src/pgweb
 
-RUN touch Makefile
-RUN make setup
-RUN make dev
+RUN go get github.com/tools/godep
+
+RUN godep restore && \
+    godep go build && \
+    godep go install
 
 ENTRYPOINT ["pgweb"]
