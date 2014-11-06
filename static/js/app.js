@@ -424,6 +424,28 @@ $(document).ready(function() {
     }
   });
 
+  $(".connection-group-switch button").on("click", function() {
+    $(".connection-group-switch button").removeClass("active");
+    $(this).addClass("active");
+
+    switch($(this).attr("data")) {
+      case "scheme":
+        $(".connection-scheme-group").show();
+        $(".connection-standard-group").hide();
+        return;
+      case "standard":
+        $(".connection-scheme-group").hide();
+        $(".connection-standard-group").show();
+        $(".connection-ssh-group").hide();
+        return;
+      case "ssh":
+        $(".connection-scheme-group").hide();
+        $(".connection-standard-group").show();
+        $(".connection-ssh-group").show();
+        return;
+    }
+  });
+
   $("#connection_form").on("submit", function(e) {
     e.preventDefault();
 

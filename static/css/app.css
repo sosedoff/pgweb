@@ -370,13 +370,14 @@
 }
 
 .connection-settings {
-  width: 500px;
+  width: 600px;
   margin: 0px auto;
   margin-top: 50px;
 }
 
 .connection-settings h1 {
   text-align: center;
+  text-shadow: 0px 1px 0px #fff;
   margin-bottom: 25px;
   color: #95A7B7;
   font-weight: normal;
@@ -392,4 +393,12 @@
 
 .connection-settings form p.help-block {
   font-size: 12px;
+}
+
+.connection-scheme-group {
+  display: none;
+}
+
+.connection-ssh-group {
+  display: none;
 }

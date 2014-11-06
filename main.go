@@ -91,7 +91,6 @@ func initClient() {
 		exitWithMessage(err.Error())
 	}
 
-
 	dbClient = client
 }
 

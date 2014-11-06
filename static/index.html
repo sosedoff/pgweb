@@ -72,70 +72,110 @@
       <h1>pgweb</h1>
 
       <form role="form" class="form-horizontal" id="connection_form">
-        <div class="form-group">
-          <div class="col-sm-12">
-            <label>Enter server URL scheme</label>
-            <input type="text" class="form-control" id="connection_url" name="url">
-            <p class="help-block">URL format: postgres://user:password@host:port/db</p>
+        <div class="text-center">
+          <div class="btn-group btn-group-sm connection-group-switch">
+            <button type="button" data="scheme" class="btn btn-default">Scheme</button>
+            <button type="button" data="standard" class="btn btn-default active">Standard</button>
+            <!--<button type="button" data="ssh" class="btn btn-default">SSH</button>-->
           </div>
         </div>
 
         <hr/>
 
-        <div class="form-group">
-          <label class="col-sm-2 control-label">Host</label>
-          <div class="col-sm-10">
-            <input type="text" id="pg_host" class="form-control" />
+        <div class="connection-scheme-group">
+          <div class="form-group">
+            <div class="col-sm-12">
+              <label>Enter server URL scheme</label>
+              <input type="text" class="form-control" id="connection_url" name="url">
+              <p class="help-block">URL format: postgres://user:password@host:port/db?sslmode=mode</p>
+            </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="col-sm-2">Username</label>
-          <div class="col-sm-10">
-            <input type="text" id="pg_user" class="form-control" />
+        <div class="connection-standard-group">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Host</label>
+            <div class="col-sm-9">
+              <input type="text" id="pg_host" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Username</label>
+            <div class="col-sm-9">
+              <input type="text" id="pg_user" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Password</label>
+            <div class="col-sm-9">
+              <input type="text" id="pg_password" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Database</label>
+            <div class="col-sm-9">
+              <input type="text" id="pg_db" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Port</label>
+            <div class="col-sm-9">
+              <input type="text" id="pg_port" class="form-control" placeholder="5432" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">SSL</label>
+            <div class="col-sm-9">
+              <select class="form-control" id="connection_ssl">
+                <option value="disable">disable</option>
+                <option value="require" selected="selected">require</option>
+                <option value="verify-full">verify-full</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="col-sm-2">Password</label>
-          <div class="col-sm-10">
-            <input type="text" id="pg_password" class="form-control" />
+        <div class="connection-ssh-group">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">SSH Host</label>
+            <div class="col-sm-9">
+              <input type="text" id="ssh_host" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">SSH User</label>
+            <div class="col-sm-9">
+              <input type="text" id="ssh_user" class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">SSH Password</label>
+            <div class="col-sm-9">
+              <input type="text" id="ssh_password" class="form-control" placeholder="optional" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">SSH Port</label>
+            <div class="col-sm-9">
+              <input type="text" id="pg_host" class="form-control" placeholder="optional" />
+            </div>
           </div>
         </div>
-
-        <div class="form-group">
-          <label class="col-sm-2">Database</label>
-          <div class="col-sm-10">
-            <input type="text" id="pg_db" class="form-control" />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="col-sm-2">Port</label>
-          <div class="col-sm-10">
-            <input type="text" id="pg_port" class="form-control" placeholder="5432" />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="col-sm-2">SSL</label>
-          <div class="col-sm-10">
-            <select class="form-control" id="connection_ssl">
-              <option value="disable">disable</option>
-              <option value="require" selected="selected">require</option>
-              <option value="verify-full">verify-full</option>
-            </select>
-          </div>
-        </div>
-
-        <hr/>
 
         <div id="connection_error" class="alert alert-danger"></div>
 
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-primary">Connect</button>
-            <a href="#" id="close_connection_window" class="btn btn-default">Cancel</a>
+          <div class="col-sm-12">
+            <button type="submit" class="btn btn-block btn-primary">Connect</button>
+            <button type="reset" id="close_connection_window" class="btn btn-block btn-default">Cancel</button>
           </div>
         </div>
       </form>
