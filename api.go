@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"path/filepath"
 	"strings"
 )
 
@@ -12,19 +13,16 @@ type Error struct {
 }
 
 func assetContentType(name string) string {
-	if strings.Contains(name, ".css") {
+	switch filepath.Ext(name) {
+	case ".css":
 		return "text/css"
-	}
-
-	if strings.Contains(name, ".js") {
+	case ".js":
 		return "application/javascript"
-	}
-
-	if strings.Contains(name, ".icon") {
+	case ".icon":
 		return "image/x-icon"
+	default:
+		return "text/plain"
 	}
-
-	return "text/plain"
 }
 
 func API_Home(c *gin.Context) {
