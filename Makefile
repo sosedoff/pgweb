@@ -23,3 +23,6 @@ clean:
 	rm -f ./pgweb
 	rm -f ./bin/*
 	rm -f bindata.go
+
+docker:
+	docker build -t pgweb .
