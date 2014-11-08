@@ -53,19 +53,25 @@ Older versions of PostgreSQL might also work but this project is not tested on
 Start server:
 
 ```
+pgweb
+```
+
+You can also provide connection flags:
+
+```
 pgweb --host localhost --user myuser --db mydb
 ```
 
-You can also specify a connection URI instead of individual flags:
+Connection URL scheme is also supported:
 
 ```
-pgweb --url postgres://user:password@host:port/database
+pgweb --url postgres://user:password@host:port/database?sslmode=[mode]
 ```
 
 It works great with [Heroku Postgres](https://postgres.heroku.com) if you need 
 to troubleshoot production database or simply run a few queries.
 
-Full CLI options:
+### CLI options
 
 ```
 Usage:
@@ -74,6 +80,7 @@ Usage:
 Application Options:
   -v, --version    Print version
   -d, --debug      Enable debugging mode (false)
+  -s, --skip-open  Skip browser open on start
       --url=       Database connection string
       --host=      Server hostname or IP (localhost)
       --port=      Server port (5432)
@@ -85,10 +92,9 @@ Application Options:
       --listen=    HTTP server listen port (8080)
       --auth-user= HTTP basic auth user
       --auth-pass= HTTP basic auth password
-  -s, --skip-open  Skip browser open on start
 ```
 
-## Compile from source
+## Build from source
 
 Go 1.3+ is required. You can install Go with `homebrew`:
 
@@ -115,49 +121,57 @@ Under the hood it uses [gox](https://github.com/mitchellh/gox). Compiled binarie
 will be stored into `./bin` directory.
 
 
-## Use in Docker 
+## Use in Docker
 
-
-
-Build the image. (Docker version 1.1)
+Build the image:
 
 ```
-docker build -t your-username/pgweb .
+docker build -t pgweb .
 ```
 
-Run the container
+Start container:
 
 ```
-docker run [OPTIONS of docker] your-username/pgweb [OPTIONS of pgweb]
+docker run [OPTIONS of docker] pgweb [OPTIONS of pgweb]
 ```
 
-#### demo:
+### Example
 
-postgresql container:
-
-```
-docker run	-d --name="postgresql" 	\
-			-p 5432:5432 			\			
-			-e USER="testuser" 		\
-			-e DB="testdb" 			\
-			-e PASS="test123" 		\
-			paintedfox/postgresql
+Run postgresql container:
 
 ```
-pgweb containers:
+docker run -d \
+           --name="postgresql" \
+           -p 5432:5432 \     
+           -e USER="testuser" \
+           -e DB="testdb" \
+           -e PASS="test123" \
+           paintedfox/postgresql
+```
+
+Run pgweb container:
 
 ```
-docker run -d -p 8082:8080 your-username/pgweb \
-			--url postgres://testuser:test123@your-ip:5432/testdb  \
-			--bind 0.0.0.0
-
+docker run -d \
+           -p 8080:8080 pgweb \
+           --url postgres://testuser:test123@your-ip:5432/testdb \
+           --bind 0.0.0.0
 ```
-Then open [http://your-ip:8082](#) in your browser 
 
-## Contributors
+Then open [http://your-ip:8082](#) in your browser.
 
-- Dan Sosedoff - https://twitter.com/sosedoff
-- Masha Safina - https://twitter.com/mashasafina
+## Contributing
+
+- Fork repository
+- Create a feature or bugfix branch
+- Open a new pull request
+- Use github issues for any questions
+
+## Contact
+
+- Dan Sosedoff
+- [dan.sosedoff@gmail.com](mailto:dan.sosedoff@gmail.com)
+- [http://twitter.com/sosedoff](http://twitter.com/sosedoff)
 
 ## License
 
