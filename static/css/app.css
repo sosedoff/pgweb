@@ -143,6 +143,7 @@
 #sidebar div.table-information ul li span {
   color: #95a7b7;
   min-width: 0;
+  padding-left: 0px;
 }
 
 #sidebar ul {
