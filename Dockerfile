@@ -5,8 +5,7 @@ WORKDIR /go/src/pgweb
 
 RUN go get github.com/tools/godep
 
-RUN godep restore && \
-    godep go build && \
-    godep go install
+RUN godep restore
+RUN godep go build && godep go install
 
 ENTRYPOINT ["pgweb"]
