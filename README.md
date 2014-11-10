@@ -100,6 +100,9 @@ Go 1.3+ is required. You can install Go with `homebrew`:
 
 ```
 brew install go
+
+brew install mercurial (if need)
+yum install mercurial (on centos 6.5)
 ```
 
 To compile source code run the following command:
@@ -128,6 +131,11 @@ Build the image:
 ```
 docker build -t pgweb .
 ```
+Or using make to build images
+
+```
+make docker
+```
 
 Start container:
 
@@ -135,30 +143,51 @@ Start container:
 docker run [OPTIONS of docker] pgweb [OPTIONS of pgweb]
 ```
 
-### Example
+### Demo
 
-Run postgresql container:
+#### Run postgresql container:
 
 ```
 docker run -d \
            --name="postgresql" \
-           -p 5432:5432 \     
-           -e USER="testuser" \
+           -p 5432:5432 \
+           -e USER="super" \
            -e DB="testdb" \
-           -e PASS="test123" \
+           -e PASS="test123456" \
            paintedfox/postgresql
 ```
 
-Run pgweb container:
+#### Create tables in postgresql:
+
+##### 1. Create postgresql-client container:
+```
+docker run -ti --link postgresql:db ubuntu bash
+
+```
+##### 2. In the ubuntu container:
+
+```
+$ apt-get update
+$ apt-get install -y postgresql-client
+$ psql 	-U super	\
+		-h	your-ip	\
+		-p	5432	\
+		-d	testdb
+
+```
+Then you can create some tables in the postgresql
+
+
+#### Run pgweb container:
 
 ```
 docker run -d \
            -p 8080:8080 pgweb \
-           --url postgres://testuser:test123@your-ip:5432/testdb \
+           --url postgres://super:test123456@your-ip:5432/testdb \
            --bind 0.0.0.0
 ```
 
-Then open [http://your-ip:8082](#) in your browser.
+Then open [http://your-ip:8080](#) in your browser.
 
 ## Contributing
 

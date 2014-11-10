@@ -1,0 +1,4 @@
+.git
+bindata.go
+./pgweb
+./bin/*
