@@ -9,19 +9,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var MIME_TYPES = map[string]string{
+	".css":  "text/css",
+	".js":   "application/javascript",
+	".icon": "image-x-icon",
+}
+
 type Error struct {
 	Message string `json:"error"`
 }
 
 func assetContentType(name string) string {
-	switch filepath.Ext(name) {
-	case ".css":
-		return "text/css"
-	case ".js":
-		return "application/javascript"
-	case ".icon":
-		return "image/x-icon"
-	default:
+	mime := MIME_TYPES[filepath.Ext(name)]
+
+	if mime != "" {
+		return mime
+	} else {
 		return "text/plain"
 	}
 }
