@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/csv"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"reflect"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type Client struct {

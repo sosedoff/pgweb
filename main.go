@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/jessevdk/go-flags"
-	_ "github.com/lib/pq"
 	"os"
 	"os/exec"
 	"os/signal"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jessevdk/go-flags"
+	_ "github.com/lib/pq"
 )
 
 const VERSION = "0.3.1"
