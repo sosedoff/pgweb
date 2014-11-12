@@ -42,6 +42,11 @@ func getConnectionString() string {
 	if options.Url != "" {
 		url := options.Url
 
+		if strings.Contains(url, "postgresql://") {
+			fmt.Println("Invalid URL format. It should match: postgres://user:password@host:port/db?sslmode=mode")
+			os.Exit(1)
+		}
+
 		if options.Ssl != "" && !strings.Contains(url, "sslmode") {
 			url += fmt.Sprintf("?sslmode=%s", options.Ssl)
 		}
