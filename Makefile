@@ -1,16 +1,16 @@
 BINDATA=
 
-dev: build-dev-assets
+dev: dev-assets
 	godep go build
 	@echo "You can now execute ./pgweb"
 
-build-assets:
+assets:
 	go-bindata $(BINDATA) -ignore=\\.gitignore -ignore=\\.DS_Store -ignore=\\.gitkeep static/...
 
-build-dev-assets:
-	@$(MAKE) --no-print-directory build-assets BINDATA="-debug"
+dev-assets:
+	@$(MAKE) --no-print-directory assets BINDATA="-debug"
 
-build: build-assets
+build: assets
 	gox -osarch="darwin/amd64 darwin/386 linux/amd64 linux/386 windows/amd64 windows/386" -output="./bin/pgweb_{{.OS}}_{{.Arch}}"
 
 setup:
