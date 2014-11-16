@@ -163,7 +163,6 @@ func startServer() {
 	router.GET("/history", API_History)
 	router.GET("/static/:type/:name", API_ServeAsset)
 
-	fmt.Println("Pgweb version", VERSION)
 	fmt.Println("Starting server...")
 	go router.Run(fmt.Sprintf("%v:%v", options.HttpHost, options.HttpPort))
 }
@@ -192,6 +191,8 @@ func openPage() {
 
 func main() {
 	initOptions()
+
+	fmt.Println("Pgweb version", VERSION)
 	initClient()
 
 	if dbClient != nil {
