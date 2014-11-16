@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"os/user"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,7 @@ var options struct {
 	User     string `long:"user" description:"Database user"`
 	Pass     string `long:"pass" description:"Password for user"`
 	DbName   string `long:"db" description:"Database name"`
-	Ssl      string `long:"ssl" description:"SSL option" default:"disable"`
+	Ssl      string `long:"ssl" description:"SSL option"`
 	HttpHost string `long:"bind" description:"HTTP server host" default:"localhost"`
 	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8080"`
 	AuthUser string `long:"auth-user" description:"HTTP basic auth user"`
@@ -47,6 +48,8 @@ func getConnectionString() string {
 			os.Exit(1)
 		}
 
+		// Append sslmode parameter only if its defined as a flag and not present
+		// in the connection string.
 		if options.Ssl != "" && !strings.Contains(url, "sslmode") {
 			url += fmt.Sprintf("?sslmode=%s", options.Ssl)
 		}
@@ -54,12 +57,31 @@ func getConnectionString() string {
 		return url
 	}
 
+	// Try to detect user from current OS user
+	if options.User == "" {
+		user, err := user.Current()
+
+		if err == nil {
+			options.User = user.Username
+		}
+	}
+
 	str := fmt.Sprintf(
-		"host=%s port=%d user=%s dbname=%s sslmode=%s",
+		"host=%s port=%d user=%s dbname=%s",
 		options.Host, options.Port,
 		options.User, options.DbName,
-		options.Ssl,
 	)
+
+	if options.Ssl == "" {
+		// Disable ssl for localhost connections, most users have it disabled
+		if options.Host == "localhost" || options.Host == "127.0.0.1" {
+			options.Ssl = "disable"
+		}
+	}
+
+	if options.Ssl != "" {
+		str += fmt.Sprintf(" sslmode=%s", options.Ssl)
+	}
 
 	if options.Pass != "" {
 		str += fmt.Sprintf(" password=%s", options.Pass)
