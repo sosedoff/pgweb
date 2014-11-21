@@ -50,11 +50,15 @@ func (client *Client) recordQuery(query string) {
 }
 
 func (client *Client) Info() (*Result, error) {
-	return client.query(PG_INFO)
+	return client.query(`
+SELECT version(), user, current_database(), inet_client_addr(), inet_client_port(), inet_server_addr(), inet_server_port()`,
+	)
 }
 
 func (client *Client) Databases() ([]string, error) {
-	res, err := client.query(PG_DATABASES)
+	res, err := client.query(`
+SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname ASC`,
+	)
 
 	if err != nil {
 		return nil, err
@@ -70,7 +74,9 @@ func (client *Client) Databases() ([]string, error) {
 }
 
 func (client *Client) Tables() ([]string, error) {
-	res, err := client.query(PG_TABLES)
+	res, err := client.query(`
+SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name`,
+	)
 
 	if err != nil {
 		return nil, err
@@ -86,15 +92,24 @@ func (client *Client) Tables() ([]string, error) {
 }
 
 func (client *Client) Table(table string) (*Result, error) {
-	return client.query(fmt.Sprintf(PG_TABLE_SCHEMA, table))
+	return client.query(fmt.Sprintf(`
+SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = '%s'`,
+		table,
+	))
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
-	return client.query(fmt.Sprintf(PG_TABLE_INFO, table, table, table, table))
+	return client.query(fmt.Sprintf(`
+SELECT pg_size_pretty(pg_table_size('%s')) AS data_size, pg_size_pretty(pg_indexes_size('%s')) AS index_size, pg_size_pretty(pg_total_relation_size('%s')) AS total_size, (SELECT COUNT(*) FROM %s) AS rows_count`,
+		table, table, table, table,
+	))
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
-	res, err := client.query(fmt.Sprintf(PG_TABLE_INDEXES, table))
+	res, err := client.query(fmt.Sprintf(`
+SELECT indexname, indexdef FROM pg_indexes WHERE tablename = '%s'`,
+		table,
+	))
 
 	if err != nil {
 		return nil, err
