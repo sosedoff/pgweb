@@ -325,10 +325,11 @@ function showConnectionSettings() {
 }
 
 function getConnectionString() {
-  var url = $.trim($("#connection_url").val());
-  var ssl = $("#connection_ssl").val();
+  var url  = $.trim($("#connection_url").val());
+  var mode = $(".connection-group-switch button.active").attr("data");
+  var ssl  = $("#connection_ssl").val();
 
-  if (url.length == 0) {
+  if (mode == "standard") {
     var host = $("#pg_host").val();
     var port = $("#pg_port").val();
     var user = $("#pg_user").val();
@@ -339,11 +340,12 @@ function getConnectionString() {
       port = "5432";
     }
 
-    url = "postgres://" + user + ":" + pass + "@" + host + ":" + port + "/" + db;
+    url = "postgres://" + user + ":" + pass + "@" + host + ":" + port + "/" + db + "?sslmode=" + ssl;
   }
-
-  if (url.indexOf("sslmode") == -1) {
-    url += "?sslmode=" + ssl;
+  else {
+    if (url.indexOf("localhost") != -1 && url.indexOf("sslmode") == -1) {
+      url += "?sslmode=" + ssl;
+    }
   }
 
   return url;
