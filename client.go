@@ -51,7 +51,15 @@ func (client *Client) recordQuery(query string) {
 
 func (client *Client) Info() (*Result, error) {
 	return client.query(`
-SELECT version(), user, current_database(), inet_client_addr(), inet_client_port(), inet_server_addr(), inet_server_port()`,
+SELECT session_user
+, current_user
+, current_database()
+, current_schemas(false)
+, inet_client_addr()
+, inet_client_port()
+, inet_server_addr()
+, inet_server_port()
+, version()`,
 	)
 }
 
