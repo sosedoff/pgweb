@@ -128,6 +128,7 @@ function showTableIndexes() {
 
     $("#input").hide();
     $("#output").addClass("full");
+    $("#results").addClass("no-crop");
   });
 }
 
