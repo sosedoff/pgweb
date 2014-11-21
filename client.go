@@ -14,9 +14,11 @@ type Client struct {
 	history []string
 }
 
+type Row []interface{}
+
 type Result struct {
-	Columns []string        `json:"columns"`
-	Rows    [][]interface{} `json:"rows"`
+	Columns []string `json:"columns"`
+	Rows    []Row    `json:"rows"`
 }
 
 func NewClient() (*Client, error) {
