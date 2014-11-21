@@ -100,28 +100,28 @@ SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' O
 }
 
 func (client *Client) Table(table string) (*Result, error) {
-	return client.query(fmt.Sprintf(`
-SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = '%s'`,
+	return client.query(`
+SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = $1`,
 		table,
-	))
+	)
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
-	return client.query(fmt.Sprintf(`
+	return client.query(`
 SELECT
-  pg_size_pretty(pg_table_size('%s')) AS data_size
-, pg_size_pretty(pg_indexes_size('%s')) AS index_size
-, pg_size_pretty(pg_total_relation_size('%s')) AS total_size
-, (SELECT reltuples FROM pg_class WHERE oid = '%s'::regclass) AS rows_count`,
-		table, table, table, table,
-	))
+  pg_size_pretty(pg_table_size($1)) AS data_size
+, pg_size_pretty(pg_indexes_size($1)) AS index_size
+, pg_size_pretty(pg_total_relation_size($1)) AS total_size
+, (SELECT reltuples FROM pg_class WHERE oid = $1::regclass) AS rows_count`,
+		table,
+	)
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
-	res, err := client.query(fmt.Sprintf(`
-SELECT indexname, indexdef FROM pg_indexes WHERE tablename = '%s'`,
+	res, err := client.query(`
+SELECT indexname, indexdef FROM pg_indexes WHERE tablename = $1`,
 		table,
-	))
+	)
 
 	if err != nil {
 		return nil, err
@@ -135,8 +135,8 @@ func (client *Client) Query(query string) (*Result, error) {
 	return client.query(query)
 }
 
-func (client *Client) query(query string) (*Result, error) {
-	rows, err := client.db.Queryx(query)
+func (client *Client) query(query string, args ...interface{}) (*Result, error) {
+	rows, err := client.db.Queryx(query, args...)
 
 	if err != nil {
 		return nil, err
