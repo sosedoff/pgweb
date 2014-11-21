@@ -62,7 +62,7 @@ func (client *Client) Table(table string) (*Result, error) {
 }
 
 func (client *Client) TableContent(table string) (*Result, error) {
-	return client.query("SELECT * FROM \"" + table + "\" LIMIT 100")
+	return client.query("SELECT * FROM " + table + " LIMIT 100")
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
