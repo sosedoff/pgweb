@@ -45,44 +45,16 @@ func (client *Client) Test() error {
 	return client.db.Ping()
 }
 
-func (client *Client) recordQuery(query string) {
-	client.history = append(client.history, query)
-}
-
 func (client *Client) Info() (*Result, error) {
 	return client.query(PG_INFO)
 }
 
 func (client *Client) Databases() ([]string, error) {
-	res, err := client.query(PG_DATABASES)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var tables []string
-
-	for _, row := range res.Rows {
-		tables = append(tables, row[0].(string))
-	}
-
-	return tables, nil
+	return client.fetchRows(PG_DATABASES)
 }
 
 func (client *Client) Tables() ([]string, error) {
-	res, err := client.query(PG_TABLES)
-
-	if err != nil {
-		return nil, err
-	}
-
-	results := make([]string, 0)
-
-	for _, row := range res.Rows {
-		results = append(results, row[0].(string))
-	}
-
-	return results, nil
+	return client.fetchRows(PG_TABLES)
 }
 
 func (client *Client) Table(table string) (*Result, error) {
@@ -193,4 +165,26 @@ func (res *Result) CSV() []byte {
 
 	writer.Flush()
 	return buff.Bytes()
+}
+
+// Fetch all rows as strings for a single column
+func (client *Client) fetchRows(q string) ([]string, error) {
+	res, err := client.query(q)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Init empty slice so json.Marshal will encode it to "[]" instead of "null"
+	results := make([]string, 0)
+
+	for _, row := range res.Rows {
+		results = append(results, row[0].(string))
+	}
+
+	return results, nil
+}
+
+func (client *Client) recordQuery(query string) {
+	client.history = append(client.history, query)
 }
