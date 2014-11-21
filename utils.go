@@ -19,6 +19,6 @@ func startRuntimeProfiler() {
 		fmt.Println("Memory acquired:", m.Sys, "bytes,", m.Sys/MEGABYTE, "mb")
 		fmt.Println("Memory used:", m.Alloc, "bytes,", m.Alloc/MEGABYTE, "mb")
 
-		time.Sleep(time.Minute)
+		time.Sleep(time.Second * 30)
 	}
 }
