@@ -108,7 +108,11 @@ SELECT column_name, data_type, is_nullable, character_maximum_length, character_
 
 func (client *Client) TableInfo(table string) (*Result, error) {
 	return client.query(fmt.Sprintf(`
-SELECT pg_size_pretty(pg_table_size('%s')) AS data_size, pg_size_pretty(pg_indexes_size('%s')) AS index_size, pg_size_pretty(pg_total_relation_size('%s')) AS total_size, (SELECT COUNT(*) FROM %s) AS rows_count`,
+SELECT
+  pg_size_pretty(pg_table_size('%s')) AS data_size
+, pg_size_pretty(pg_indexes_size('%s')) AS index_size
+, pg_size_pretty(pg_total_relation_size('%s')) AS total_size
+, (SELECT reltuples FROM pg_class WHERE oid = '%s'::regclass) AS rows_count`,
 		table, table, table, table,
 	))
 }
