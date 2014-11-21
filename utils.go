@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const MEGABYTE = 1024 * 1024
+
 func startRuntimeProfiler() {
 	m := &runtime.MemStats{}
 
@@ -14,8 +16,8 @@ func startRuntimeProfiler() {
 
 		fmt.Println("-----------------------")
 		fmt.Println("Goroutines:", runtime.NumGoroutine())
-		fmt.Println("Memory acquired:", m.Sys)
-		fmt.Println("Memory used:", m.Alloc)
+		fmt.Println("Memory acquired:", m.Sys, "bytes,", m.Sys/MEGABYTE, "mb")
+		fmt.Println("Memory used:", m.Alloc, "bytes,", m.Alloc/MEGABYTE, "mb")
 
 		time.Sleep(time.Minute)
 	}
