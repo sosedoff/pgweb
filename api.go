@@ -19,6 +19,10 @@ type Error struct {
 	Message string `json:"error"`
 }
 
+func NewError(err error) Error {
+	return Error{err.Error()}
+}
+
 func assetContentType(name string) string {
 	mime := MIME_TYPES[filepath.Ext(name)]
 

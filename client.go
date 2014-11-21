@@ -19,10 +19,6 @@ type Result struct {
 	Rows    [][]interface{} `json:"rows"`
 }
 
-func NewError(err error) Error {
-	return Error{err.Error()}
-}
-
 func NewClient() (*Client, error) {
 	db, err := sqlx.Open("postgres", getConnectionString())
 
