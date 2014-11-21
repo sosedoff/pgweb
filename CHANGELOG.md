@@ -11,7 +11,7 @@
 - Fixes SQL statements for table row count [GH-67]
 - Fixes /tables JSON response if database does not have any tables
 
-## 0.4.0
+## 0.4.0 - 2014-11-11
 
 - Adds query escaping when exporting results to CSV [GH-38]
 - Adds keyboard shortcut (ctrl+e, command+e on mac) for query explain action
@@ -32,7 +32,7 @@
 - Fixes sidebar navigation scrolling styles [GH-12]
 - Fixes sidebar table name styles to support long names
 
-## 0.3.1
+## 0.3.1 - 2014-10-28
 
 - Adds proper exit code when printing version via -v/--version flag
 - Adds --version and --debug long flag names
@@ -42,7 +42,7 @@
 - Adds --pass flag to specify connection password
 - Fixes --ssl flag usage, previous value was hardcoded
 
-## 0.3.0
+## 0.3.0 - 2014-10-26
 
 - Renamed `make deps` to `make setup` and fix issues with bootstrapping
 - Removed hardcoded url for CSV export, it now detects application host:port
@@ -50,13 +50,13 @@
 - Moved table information view to the sidebar
 - Added --listen flag to specify web server port, still defaults to 8080
 
-## 0.2.0
+## 0.2.0 - 2014-10-23
 
 - Design tweaks
 - Automatically opens browser on OSX systems
 - Adds query explain functionality
 - Adds export to CSV
 
-## 0.1.0
+## 0.1.0 - 2014-10-14
 
 - Initial release
