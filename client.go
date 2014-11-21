@@ -50,23 +50,11 @@ func (client *Client) recordQuery(query string) {
 }
 
 func (client *Client) Info() (*Result, error) {
-	return client.query(`
-SELECT session_user
-, current_user
-, current_database()
-, current_schemas(false)
-, inet_client_addr()
-, inet_client_port()
-, inet_server_addr()
-, inet_server_port()
-, version()`,
-	)
+	return client.query(PG_INFO)
 }
 
 func (client *Client) Databases() ([]string, error) {
-	res, err := client.query(`
-SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname ASC`,
-	)
+	res, err := client.query(PG_DATABASES)
 
 	if err != nil {
 		return nil, err
@@ -82,9 +70,7 @@ SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname ASC
 }
 
 func (client *Client) Tables() ([]string, error) {
-	res, err := client.query(`
-SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name`,
-	)
+	res, err := client.query(PG_TABLES)
 
 	if err != nil {
 		return nil, err
@@ -100,28 +86,15 @@ SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' O
 }
 
 func (client *Client) Table(table string) (*Result, error) {
-	return client.query(`
-SELECT column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default FROM information_schema.columns where table_name = $1`,
-		table,
-	)
+	return client.query(PG_TABLE_SCHEMA, table)
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
-	return client.query(`
-SELECT
-  pg_size_pretty(pg_table_size($1)) AS data_size
-, pg_size_pretty(pg_indexes_size($1)) AS index_size
-, pg_size_pretty(pg_total_relation_size($1)) AS total_size
-, (SELECT reltuples FROM pg_class WHERE oid = $1::regclass) AS rows_count`,
-		table,
-	)
+	return client.query(PG_TABLE_INFO, table)
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
-	res, err := client.query(`
-SELECT indexname, indexdef FROM pg_indexes WHERE tablename = $1`,
-		table,
-	)
+	res, err := client.query(PG_TABLE_INDEXES, table)
 
 	if err != nil {
 		return nil, err
