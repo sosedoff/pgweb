@@ -76,13 +76,13 @@ func (client *Client) Tables() ([]string, error) {
 		return nil, err
 	}
 
-	var tables []string
+	results := make([]string, 0)
 
 	for _, row := range res.Rows {
-		tables = append(tables, row[0].(string))
+		results = append(results, row[0].(string))
 	}
 
-	return tables, nil
+	return results, nil
 }
 
 func (client *Client) Table(table string) (*Result, error) {
