@@ -1,3 +1,16 @@
+## 0.4.1 - Unreleased
+
+- Adds pgweb version on start [GH-65]
+- Adds user detection from OS environment
+- Adds simple memory profiles with --debug option
+- Adds the session user and search path in connection info [GH-67]
+- Removes query recording for internal queries [GH-67]
+- Fixes default sslmode. Its not longer set to "disable"
+- Fixes cells cropping on table indexes view
+- Fixes connection URL generation using web interface
+- Fixes SQL statements for table row count [GH-67]
+- Fixes /tables JSON response if database does not have any tables
+
 ## 0.4.0
 
 - Adds query escaping when exporting results to CSV [GH-38]
