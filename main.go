@@ -203,6 +203,10 @@ func main() {
 		gin.SetMode("release")
 	}
 
+	if options.Debug {
+		go startRuntimeProfiler()
+	}
+
 	startServer()
 	openPage()
 	handleSignals()
