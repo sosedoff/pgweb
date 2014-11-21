@@ -50,11 +50,11 @@ func (client *Client) recordQuery(query string) {
 }
 
 func (client *Client) Info() (*Result, error) {
-	return client.Query(PG_INFO)
+	return client.query(PG_INFO)
 }
 
 func (client *Client) Databases() ([]string, error) {
-	res, err := client.Query(PG_DATABASES)
+	res, err := client.query(PG_DATABASES)
 
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (client *Client) Databases() ([]string, error) {
 }
 
 func (client *Client) Tables() ([]string, error) {
-	res, err := client.Query(PG_TABLES)
+	res, err := client.query(PG_TABLES)
 
 	if err != nil {
 		return nil, err
@@ -86,15 +86,15 @@ func (client *Client) Tables() ([]string, error) {
 }
 
 func (client *Client) Table(table string) (*Result, error) {
-	return client.Query(fmt.Sprintf(PG_TABLE_SCHEMA, table))
+	return client.query(PG_TABLE_SCHEMA, table)
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
-	return client.Query(fmt.Sprintf(PG_TABLE_INFO, table, table, table, table))
+	return client.query(PG_TABLE_INFO, table)
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
-	res, err := client.Query(fmt.Sprintf(PG_TABLE_INDEXES, table))
+	res, err := client.query(PG_TABLE_INDEXES, table)
 
 	if err != nil {
 		return nil, err
@@ -104,9 +104,12 @@ func (client *Client) TableIndexes(table string) (*Result, error) {
 }
 
 func (client *Client) Query(query string) (*Result, error) {
-	rows, err := client.db.Queryx(query)
-
 	client.recordQuery(query)
+	return client.query(query)
+}
+
+func (client *Client) query(query string, args ...interface{}) (*Result, error) {
+	rows, err := client.db.Queryx(query, args...)
 
 	if err != nil {
 		return nil, err
