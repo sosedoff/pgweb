@@ -343,7 +343,9 @@ function getConnectionString() {
     url = "postgres://" + user + ":" + pass + "@" + host + ":" + port + "/" + db + "?sslmode=" + ssl;
   }
   else {
-    if (url.indexOf("localhost") != -1 && url.indexOf("sslmode") == -1) {
+    var local = url.indexOf("localhost") != -1 || url.indexOf("127.0.0.1") != -1;
+
+    if (local && url.indexOf("sslmode") == -1) {
       url += "?sslmode=" + ssl;
     }
   }
