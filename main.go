@@ -204,7 +204,7 @@ func main() {
 	}
 
 	if options.Debug {
-		go startRuntimeProfiler()
+		startRuntimeProfiler()
 	}
 
 	startServer()

@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"os"
 	"runtime"
 	"time"
 )
@@ -9,16 +10,21 @@ import (
 const MEGABYTE = 1024 * 1024
 
 func startRuntimeProfiler() {
-	m := &runtime.MemStats{}
+	go func() {
+		logger := log.New(os.Stdout, "", 0)
+		m := &runtime.MemStats{}
 
-	for {
-		runtime.ReadMemStats(m)
+		for {
+			runtime.ReadMemStats(m)
 
-		fmt.Println("-----------------------")
-		fmt.Println("Goroutines:", runtime.NumGoroutine())
-		fmt.Println("Memory acquired:", m.Sys, "bytes,", m.Sys/MEGABYTE, "mb")
-		fmt.Println("Memory used:", m.Alloc, "bytes,", m.Alloc/MEGABYTE, "mb")
+			logger.Printf(
+				"[DEBUG] Goroutines: %v, Mem used: %v (%v mb), Mem acquired: %v (%v mb)\n",
+				runtime.NumGoroutine(),
+				m.Alloc, m.Alloc/MEGABYTE,
+				m.Sys, m.Sys/MEGABYTE,
+			)
 
-		time.Sleep(time.Second * 30)
-	}
+			time.Sleep(time.Second * 30)
+		}
+	}()
 }
