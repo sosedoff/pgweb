@@ -424,7 +424,9 @@ $(document).ready(function() {
   });
 
   $("#pg_host").on("change", function() {
-    if ($(this).val().indexOf("localhost") != -1) {
+    var value = $(this).val();
+
+    if (value.indexOf("localhost") != -1 || value.indexOf("127.0.0.1") != -1) {
       $("#connection_ssl").val("disable");
     }
   });
