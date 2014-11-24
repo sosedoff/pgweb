@@ -5,7 +5,8 @@ dev: dev-assets
 	@echo "You can now execute ./pgweb"
 
 assets:
-	go-bindata $(BINDATA) -ignore=\\.gitignore -ignore=\\.DS_Store -ignore=\\.gitkeep static/...
+	go-bindata $(BINDATA) $(shell git ls-files -io --exclude-standard static/ | awk '{ gsub(/[.]/, "[.]"); printf "%s", " -ignore=" $$0 }') \
+		-ignore=[.]gitignore -ignore=[.]gitkeep static/...
 
 dev-assets:
 	@$(MAKE) --no-print-directory assets BINDATA="-debug"
