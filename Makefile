@@ -1,4 +1,4 @@
-BINDATA_IGNORE = $(shell git ls-files -io --exclude-standard static/ | awk '{ gsub(/[.]/, "[.]"); printf "%s", " -ignore=" $$0 }')
+BINDATA_IGNORE = $(shell git ls-files -io --exclude-standard static/ | sed 's/^/-ignore=/;s/[.]/[.]/g')
 
 dev: dev-assets
 	godep go build
