@@ -53,6 +53,10 @@ function unescapeHtml(str){
   return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
 }
 
+function getCurrentTable() {
+  return $("#tables").attr("data-current");
+}
+
 function resetTable() {
   $("#results").
     attr("data-mode", "").
@@ -115,7 +119,7 @@ function showQueryHistory() {
 }
 
 function showTableIndexes() {
-  var name = $("#tables li.selected").text();
+  var name = getCurrentTable();
 
   if (name.length == 0) {
     alert("Please select a table!");
@@ -133,7 +137,7 @@ function showTableIndexes() {
 }
 
 function showTableInfo() {
-  var name = $("#tables li.selected").text();
+  var name = getCurrentTable();
 
   if (name.length == 0) {
     alert("Please select a table!");
@@ -151,7 +155,7 @@ function showTableInfo() {
 }
 
 function showTableContent() {
-  var name = $("#tables li.selected").text();
+  var name = getCurrentTable();
 
   if (name.length == 0) {
     alert("Please select a table!");
@@ -171,7 +175,7 @@ function showTableContent() {
 }
 
 function showTableStructure() {
-  var name = $("#tables li.selected").text();
+  var name = getCurrentTable();
 
   if (name.length == 0) {
     alert("Please select a table!");
@@ -408,6 +412,8 @@ $(document).ready(function() {
   $("#tables").on("click", "li", function() {
     $("#tables li.selected").removeClass("selected");
     $(this).addClass("selected");
+    $("#tables").attr("data-current", $.trim($(this).text()));
+
     showTableContent();
     showTableInfo();
   });
