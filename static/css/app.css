@@ -173,6 +173,10 @@
   background: #272c30;
 }
 
+#sidebar ul li i {
+  margin-right: 4px;
+}
+
 #sidebar ul li span {
   padding: 0px 8px 0 12px;
   display: inline-block;
@@ -360,6 +364,10 @@
   position: fixed;
   right: 8px;
   top: 10px;
+}
+
+#edit_connection i {
+  margin-right: 4px;
 }
 
 #close_connection_window {

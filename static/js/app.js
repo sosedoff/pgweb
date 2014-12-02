@@ -34,7 +34,7 @@ function loadTables() {
 
   getTables(function(data) {
     data.forEach(function(item) {
-      $("<li><span>" + item + "</span></li>").appendTo("#tables");
+      $("<li><span><i class='fa fa-table'></i> " + item + "</span></li>").appendTo("#tables");
     });
   });
 }
