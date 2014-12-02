@@ -1,4 +1,4 @@
-## 0.4.1 - Unreleased
+## 0.4.1 - 2014-12-01
 
 - Adds pgweb version on start [GH-65]
 - Adds user detection from OS environment
