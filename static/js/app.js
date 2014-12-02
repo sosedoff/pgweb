@@ -237,6 +237,13 @@ function runQuery() {
     if (query.toLowerCase().indexOf("explain") != -1) {
       $("#results").addClass("no-crop");
     }
+
+    var re = /(create|drop) table/i;
+
+    // Refresh tables list if table was added or removed
+    if (query.match(re)) {
+      loadTables();
+    }
   });
 }
 
