@@ -4,6 +4,7 @@
 - Adds user detection from OS environment
 - Adds simple memory profiles with --debug option
 - Adds the session user and search path in connection info [GH-67]
+- Adds table list reloading after CREATE/DROP TABLE queries [GH-69]
 - Removes query recording for internal queries [GH-67]
 - Fixes default sslmode. Its not longer set to "disable"
 - Fixes cells cropping on table indexes view
