@@ -18,6 +18,7 @@ function apiCall(method, path, params, cb) {
 
 function getTables(cb)                { apiCall("get", "/tables", {}, cb); }
 function getTableStructure(table, cb) { apiCall("get", "/tables/" + table, {}, cb); }
+function getTableContent(table, cb)   { apiCall("get", "/tables/" + table + "/content", {}, cb); }
 function getTableIndexes(table, cb)   { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
 function getHistory(cb)               { apiCall("get", "/history", {}, cb); }
 
@@ -162,9 +163,7 @@ function showTableContent() {
     return;
   }
 
-  var query = "SELECT * FROM \"" + name + "\" LIMIT 100;";
-
-  executeQuery(query, function(data) {
+  getTableContent(name, function(data) {
     buildTable(data);
     setCurrentTab("table_content");
 
@@ -416,6 +415,10 @@ $(document).ready(function() {
 
     showTableContent();
     showTableInfo();
+  });
+
+  $("#tables_refresh").on("click", function() {
+    loadTables();
   });
 
   $("#edit_connection").on("click", function() {

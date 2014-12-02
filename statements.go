@@ -14,7 +14,14 @@ const (
 , inet_server_port()
 , version()`
 
-	PG_TABLE_INDEXES = `SELECT indexname, indexdef FROM pg_indexes WHERE tablename = $1`
+	PG_TABLE_INDEXES = `SELECT
+  indexname
+, indexdef
+FROM pg_class, pg_indexes, pg_namespace
+WHERE pg_class.oid = $1::regclass
+  AND pg_class.relname = pg_indexes.tablename
+  AND pg_class.relnamespace = pg_namespace.oid
+  AND pg_namespace.nspname = pg_indexes.schemaname`
 
 	PG_TABLE_INFO = `SELECT
   pg_size_pretty(pg_table_size($1)) AS data_size
@@ -23,9 +30,22 @@ const (
 , (SELECT reltuples FROM pg_class WHERE oid = $1::regclass) AS rows_count`
 
 	PG_TABLE_SCHEMA = `SELECT
-column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default
-FROM information_schema.columns
-WHERE table_name = $1`
+  column_name
+, data_type
+, is_nullable
+, character_maximum_length
+, character_set_catalog
+, column_default
+FROM information_schema.columns, pg_class, pg_namespace
+WHERE pg_class.oid = $1::regclass
+  AND pg_class.relname = information_schema.columns.table_name
+  AND pg_class.relnamespace = pg_namespace.oid
+  AND pg_namespace.nspname = information_schema.columns.table_schema`
 
-	PG_TABLES = `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name`
+	PG_TABLES = `SELECT
+  pg_class.oid::regclass
+FROM pg_class, pg_namespace
+WHERE pg_class.relkind IN ('m', 'r', 'v')
+  AND pg_class.relnamespace = pg_namespace.oid
+  AND pg_namespace.nspname = ANY (current_schemas(false))`
 )

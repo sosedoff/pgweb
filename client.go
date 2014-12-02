@@ -61,6 +61,10 @@ func (client *Client) Table(table string) (*Result, error) {
 	return client.query(PG_TABLE_SCHEMA, table)
 }
 
+func (client *Client) TableContent(table string) (*Result, error) {
+	return client.query("SELECT * FROM " + table + " LIMIT 100")
+}
+
 func (client *Client) TableInfo(table string) (*Result, error) {
 	return client.query(PG_TABLE_INFO, table)
 }
