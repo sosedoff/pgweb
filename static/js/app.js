@@ -54,7 +54,7 @@ function unescapeHtml(str){
 }
 
 function getCurrentTable() {
-  return $("#tables").attr("data-current");
+  return $("#tables").attr("data-current") || "";
 }
 
 function resetTable() {
