@@ -13,6 +13,10 @@ var MIME_TYPES = map[string]string{
 	".css":  "text/css",
 	".js":   "application/javascript",
 	".icon": "image-x-icon",
+	".eot":  "application/vnd.ms-fontobject",
+	".svg":  "image/svg+xml",
+	".ttf":  "application/font-sfnt",
+	".woff": "application/font-woff",
 }
 
 type Error struct {
