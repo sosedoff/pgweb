@@ -199,7 +199,7 @@ function showQueryPanel() {
 function showConnectionPanel() {
   setCurrentTab("table_connection");
 
-  apiCall("get", "/info", {}, function(data) {
+  apiCall("get", "/connection", {}, function(data) {
     var rows = [];
 
     for(key in data) {
@@ -498,7 +498,7 @@ $(document).ready(function() {
   initEditor();
   addShortcutTooltips();
   
-  apiCall("get", "/info", {}, function(resp) {
+  apiCall("get", "/connection", {}, function(resp) {
     if (resp.error) {
       connected = false;
       showConnectionSettings();

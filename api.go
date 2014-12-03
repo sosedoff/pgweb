@@ -151,7 +151,7 @@ func API_History(c *gin.Context) {
 	c.JSON(200, dbClient.history)
 }
 
-func API_Info(c *gin.Context) {
+func API_ConnectionInfo(c *gin.Context) {
 	if dbClient == nil {
 		c.JSON(400, Error{"Not connected"})
 		return

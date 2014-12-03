@@ -151,7 +151,7 @@ func startServer() {
 	router.GET("/", API_Home)
 	router.POST("/connect", API_Connect)
 	router.GET("/databases", API_GetDatabases)
-	router.GET("/info", API_Info)
+	router.GET("/connection", API_ConnectionInfo)
 	router.GET("/tables", API_GetTables)
 	router.GET("/tables/:table", API_GetTable)
 	router.GET("/tables/:table/info", API_GetTableInfo)
