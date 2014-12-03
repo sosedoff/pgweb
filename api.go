@@ -198,6 +198,17 @@ func API_HandleQuery(query string, c *gin.Context) {
 	c.JSON(200, result)
 }
 
+func API_Bookmarks(c *gin.Context) {
+	bookmarks, err := readAllBookmarks()
+
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	c.JSON(200, bookmarks)
+}
+
 func API_ServeAsset(c *gin.Context) {
 	file := fmt.Sprintf(
 		"static/%s/%s",
