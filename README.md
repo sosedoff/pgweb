@@ -71,6 +71,21 @@ pgweb --url postgres://user:password@host:port/database?sslmode=[mode]
 It works great with [Heroku Postgres](https://postgres.heroku.com) if you need 
 to troubleshoot production database or simply run a few queries.
 
+### SSH Gateway
+
+If your postgres server is running behind firewall, you can connect to it using
+ssh gateways. First, you'll need to run a ssh command:
+
+```
+ssh -Ng -L 5433:localhost:5432 user@remotehost.com
+```
+
+Then you can start pgweb with the following command:
+
+```
+pgweb --url postgres://user:password@localhost:5433/database
+``` 
+
 ### CLI options
 
 ```
