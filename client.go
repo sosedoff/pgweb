@@ -10,8 +10,9 @@ import (
 )
 
 type Client struct {
-	db      *sqlx.DB
-	history []string
+	db               *sqlx.DB
+	history          []string
+	connectionString string
 }
 
 type Row []interface{}
@@ -22,13 +23,14 @@ type Result struct {
 }
 
 func NewClient() (*Client, error) {
-	db, err := sqlx.Open("postgres", getConnectionString())
+	str := getConnectionString()
+	db, err := sqlx.Open("postgres", str)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &Client{db: db}, nil
+	return &Client{db: db, connectionString: str}, nil
 }
 
 func NewClientFromUrl(url string) (*Client, error) {
@@ -38,7 +40,7 @@ func NewClientFromUrl(url string) (*Client, error) {
 		return nil, err
 	}
 
-	return &Client{db: db}, nil
+	return &Client{db: db, connectionString: url}, nil
 }
 
 func (client *Client) Test() error {

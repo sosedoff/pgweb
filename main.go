@@ -107,6 +107,10 @@ func initClient() {
 		exitWithMessage(err.Error())
 	}
 
+	if options.Debug {
+		fmt.Println("Server connection string:", client.connectionString)
+	}
+
 	fmt.Println("Connecting to server...")
 	err = client.Test()
 	if err != nil {
