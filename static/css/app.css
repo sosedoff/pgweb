@@ -378,6 +378,10 @@
   display: none;
 }
 
+.bookmarks {
+  display: none;
+}
+
 .connection-settings {
   width: 600px;
   margin: 0px auto;

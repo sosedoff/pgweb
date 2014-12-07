@@ -75,8 +75,8 @@
       <form role="form" class="form-horizontal" id="connection_form">
         <div class="text-center">
           <div class="btn-group btn-group-sm connection-group-switch">
-            <button type="button" data="scheme" class="btn btn-default">Scheme</button>
-            <button type="button" data="standard" class="btn btn-default active">Standard</button>
+            <button type="button" data="scheme" class="btn btn-default" id="connection_scheme">Scheme</button>
+            <button type="button" data="standard" class="btn btn-default active" id="connection_standard">Standard</button>
             <!--<button type="button" data="ssh" class="btn btn-default">SSH</button>-->
           </div>
         </div>
@@ -94,6 +94,13 @@
         </div>
 
         <div class="connection-standard-group">
+          <div class="form-group bookmarks">
+            <label class="col-sm-3 control-label">Bookmark</label>
+            <div class="col-sm-9">
+              <select class="form-control" id="connection_bookmarks"></select>
+            </div>
+          </div>
+
           <div class="form-group">
             <label class="col-sm-3 control-label">Host</label>
             <div class="col-sm-9">

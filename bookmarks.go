@@ -13,10 +13,11 @@ import (
 type Bookmark struct {
 	Url      string `json:"url"`      // Postgres connection URL
 	Host     string `json:"host"`     // Server hostname
-	Port     int    `json:"port"`     // Server port
+	Port     string `json:"port"`     // Server port
 	User     string `json:"user"`     // Database user
 	Password string `json:"password"` // User password
-	SslMode  string `json:"ssl_mode"` // Connection SSL mode
+	Database string `json:"database"` // Database name
+	Ssl      string `json:"ssl"`      // Connection SSL mode
 }
 
 func readServerConfig(path string) (Bookmark, error) {
