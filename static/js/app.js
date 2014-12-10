@@ -1,5 +1,6 @@
 var editor;
 var connected = false;
+var bookmarks = {};
 
 function apiCall(method, path, params, cb) {
   $.ajax({
@@ -20,6 +21,7 @@ function getTables(cb)                { apiCall("get", "/tables", {}, cb); }
 function getTableStructure(table, cb) { apiCall("get", "/tables/" + table, {}, cb); }
 function getTableIndexes(table, cb)   { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
 function getHistory(cb)               { apiCall("get", "/history", {}, cb); }
+function getBookmarks(cb)             { apiCall("get", "/bookmarks", {}, cb); }
 
 function executeQuery(query, cb) {
   apiCall("post", "/query", { query: query }, cb);
@@ -332,6 +334,29 @@ function addShortcutTooltips() {
 }
 
 function showConnectionSettings() {
+  getBookmarks(function(data) {
+    if (Object.keys(data).length > 0) {
+      // Set bookmarks in global var
+      bookmarks = data;
+
+      // Remove all existing bookmark options
+      $("#connection_bookmarks").html("");
+
+      // Add blank option
+      $("<option value=''></option>").appendTo("#connection_bookmarks");
+
+      // Add all available bookmarks
+      for (key in data) {
+        $("<option value='" + key + "''>" + key + "</option>").appendTo("#connection_bookmarks");
+      }
+
+      $(".bookmarks").show();
+    }
+    else {
+      $(".bookmarks").hide();
+    }
+  });
+
   $("#connection_window").show();
 }
 
@@ -464,6 +489,31 @@ $(document).ready(function() {
         $(".connection-ssh-group").show();
         return;
     }
+  });
+
+  $("#connection_bookmarks").on("change", function(e) {
+    var name = $.trim($(this).val());
+
+    if (name == "") {
+      return;
+    }
+
+    item = bookmarks[name];
+
+    // Check if bookmark only has url set
+    if (item.url != "") {
+      $("#connection_url").val(item.url);
+      $("#connection_scheme").click();
+      return;
+    }
+
+    // Fill in bookmarked connection settings
+    $("#pg_host").val(item.host);
+    $("#pg_port").val(item.port);
+    $("#pg_user").val(item.user);
+    $("#pg_password").val(item.password);
+    $("#pg_db").val(item.database);
+    $("#connection_ssl").val(item.ssl);
   });
 
   $("#connection_form").on("submit", function(e) {

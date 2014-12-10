@@ -1,7 +1,12 @@
 {
-	"ImportPath": "pgweb",
+	"ImportPath": "github.com/sosedoff/pgweb",
 	"GoVersion": "go1.3.3",
 	"Deps": [
+		{
+			"ImportPath": "github.com/BurntSushi/toml",
+			"Comment": "v0.1.0-9-g3883ac1",
+			"Rev": "3883ac1ce943878302255f538fce319d23226223"
+		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
 			"Comment": "v0.4-8-g3b079bb",
@@ -24,6 +29,10 @@
 		{
 			"ImportPath": "github.com/lib/pq",
 			"Rev": "7175accbed18058468c07811f76440d6e8d7cf19"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/go-homedir",
+			"Rev": "7d2d8c8a4e078ce3c58736ab521a40b37a504c52"
 		}
 	]
 }

@@ -165,6 +165,7 @@ func startServer() {
 	router.GET("/explain", API_ExplainQuery)
 	router.POST("/explain", API_ExplainQuery)
 	router.GET("/history", API_History)
+	router.GET("/bookmarks", API_Bookmarks)
 	router.GET("/static/:type/:name", API_ServeAsset)
 
 	fmt.Println("Starting server...")
