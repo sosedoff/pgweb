@@ -24,30 +24,14 @@ Features:
 - Execute SQL query and run analyze on it
 - Export query results to CSV
 - View query history
+- Save server bookmarks
+
+Visit [wiki Pages](https://github.com/sosedoff/pgweb/wiki) for more details
 
 ## Installation
 
-Please visit [Github Releases](https://github.com/sosedoff/pgweb/releases) to download a 
-precompiled binary for your operating system.
-
-Currently supported:
-
-- Mac OSX 64bit
-- Linux 32/64bit
-- Windows 32/64bit
-
-Supported PostgreSQL versions:
-
-- 9.1
-- 9.2
-- 9.3
-
-Older versions of PostgreSQL might also work but this project is not tested on 
-8.x branches.
-
-## Run on Heroku
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/sosedoff/pgweb)
+[Precompiled binaries]((https://github.com/sosedoff/pgweb/releases) for supported 
+operating systems are available.
 
 ## Usage
 
@@ -69,112 +53,10 @@ Connection URL scheme is also supported:
 pgweb --url postgres://user:password@host:port/database?sslmode=[mode]
 ```
 
-It works great with [Heroku Postgres](https://postgres.heroku.com) if you need 
-to troubleshoot production database or simply run a few queries.
+## Deploy on Heroku
 
-### SSH Gateway
+[![Heroku Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/sosedoff/pgweb)
 
-If your postgres server is running behind firewall, you can connect to it using
-ssh gateways. First, you'll need to run a ssh command:
-
-```
-ssh -Ng -L 5433:localhost:5432 user@remotehost.com
-```
-
-Then you can start pgweb with the following command:
-
-```
-pgweb --url postgres://user:password@localhost:5433/database
-``` 
-
-### CLI options
-
-```
-Usage:
-  pgweb [OPTIONS]
-
-Application Options:
-  -v, --version    Print version
-  -d, --debug      Enable debugging mode (false)
-  -s, --skip-open  Skip browser open on start
-      --url=       Database connection string
-      --host=      Server hostname or IP (localhost)
-      --port=      Server port (5432)
-      --user=      Database user (postgres)
-      --pass=      Password for user
-      --db=        Database name (postgres)
-      --ssl=       SSL option (disable)
-      --bind=      HTTP server host (localhost)
-      --listen=    HTTP server listen port (8080)
-      --auth-user= HTTP basic auth user
-      --auth-pass= HTTP basic auth password
-```
-
-## Build from source
-
-Go 1.3+ is required. You can install Go with `homebrew`:
-
-```
-brew install go
-```
-
-To compile source code run the following command:
-
-```
-make setup
-make dev
-```
-
-This will produce `pgweb` binary in the current directory.
-
-There's also a task to compile binaries for other operating systems:
-
-```
-make build
-```
-
-Under the hood it uses [gox](https://github.com/mitchellh/gox). Compiled binaries
-will be stored into `./bin` directory.
-
-
-## Use in Docker
-
-Build the image:
-
-```
-docker build -t pgweb .
-```
-
-Start container:
-
-```
-docker run [OPTIONS of docker] pgweb [OPTIONS of pgweb]
-```
-
-### Example
-
-Run postgresql container:
-
-```
-docker run -d \
-           --name="postgresql" \
-           -p 5432:5432 \     
-           -e USER="testuser" \
-           -e DB="testdb" \
-           -e PASS="test123" \
-           paintedfox/postgresql
-```
-
-Run pgweb container:
-
-```
-docker run -d \
-           -p 8080:8080 pgweb \
-           --url postgres://testuser:test123@your-ip:5432/testdb \
-           --bind 0.0.0.0
-```
-
-Then open [http://your-ip:8082](#) in your browser.
 
 ## Contributing
 
