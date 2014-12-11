@@ -33,6 +33,9 @@ Visit [wiki Pages](https://github.com/sosedoff/pgweb/wiki) for more details
 [Precompiled binaries](https://github.com/sosedoff/pgweb/releases) for supported 
 operating systems are available.
 
+Check [wiki](https://github.com/sosedoff/pgweb/wiki/Installation) for more installation
+options.
+
 ## Usage
 
 Start server:
