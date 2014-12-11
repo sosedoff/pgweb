@@ -30,7 +30,7 @@ Visit [wiki Pages](https://github.com/sosedoff/pgweb/wiki) for more details
 
 ## Installation
 
-[Precompiled binaries]((https://github.com/sosedoff/pgweb/releases) for supported 
+[Precompiled binaries](https://github.com/sosedoff/pgweb/releases) for supported 
 operating systems are available.
 
 ## Usage
