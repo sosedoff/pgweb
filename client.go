@@ -24,6 +24,11 @@ type Result struct {
 
 func NewClient() (*Client, error) {
 	str := getConnectionString()
+
+	if options.Debug {
+		fmt.Println("Creating a new client with: %s", str)
+	}
+
 	db, err := sqlx.Open("postgres", str)
 
 	if err != nil {
@@ -34,6 +39,10 @@ func NewClient() (*Client, error) {
 }
 
 func NewClientFromUrl(url string) (*Client, error) {
+	if options.Debug {
+		fmt.Println("Creating a new client with: %s", url)
+	}
+
 	db, err := sqlx.Open("postgres", url)
 
 	if err != nil {
