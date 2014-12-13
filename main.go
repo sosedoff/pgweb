@@ -77,9 +77,7 @@ func getConnectionString() string {
 		if options.Host == "localhost" || options.Host == "127.0.0.1" {
 			options.Ssl = "disable"
 		}
-	}
-
-	if options.Ssl != "" {
+	} else {
 		str += fmt.Sprintf(" sslmode=%s", options.Ssl)
 	}
 
