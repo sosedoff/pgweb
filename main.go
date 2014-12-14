@@ -152,21 +152,7 @@ func startServer() {
 		router.Use(gin.BasicAuth(auth))
 	}
 
-	router.GET("/", API_Home)
-	router.POST("/connect", API_Connect)
-	router.GET("/databases", API_GetDatabases)
-	router.GET("/connection", API_ConnectionInfo)
-	router.GET("/tables", API_GetTables)
-	router.GET("/tables/:table", API_GetTable)
-	router.GET("/tables/:table/info", API_GetTableInfo)
-	router.GET("/tables/:table/indexes", API_TableIndexes)
-	router.GET("/query", API_RunQuery)
-	router.POST("/query", API_RunQuery)
-	router.GET("/explain", API_ExplainQuery)
-	router.POST("/explain", API_ExplainQuery)
-	router.GET("/history", API_History)
-	router.GET("/bookmarks", API_Bookmarks)
-	router.GET("/static/:type/:name", API_ServeAsset)
+	setupRoutes(router)
 
 	fmt.Println("Starting server...")
 	go router.Run(fmt.Sprintf("%v:%v", options.HttpHost, options.HttpPort))
