@@ -4,7 +4,7 @@ var bookmarks = {};
 
 function apiCall(method, path, params, cb) {
   $.ajax({
-    url: path, 
+    url: "/api" + path, 
     method: method,
     cache: false,
     data: params,

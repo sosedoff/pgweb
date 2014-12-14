@@ -39,20 +39,25 @@ func assetContentType(name string) string {
 
 func setupRoutes(router *gin.Engine) {
 	router.GET("/", API_Home)
-	router.POST("/connect", API_Connect)
-	router.GET("/databases", API_GetDatabases)
-	router.GET("/connection", API_ConnectionInfo)
-	router.GET("/tables", API_GetTables)
-	router.GET("/tables/:table", API_GetTable)
-	router.GET("/tables/:table/info", API_GetTableInfo)
-	router.GET("/tables/:table/indexes", API_TableIndexes)
-	router.GET("/query", API_RunQuery)
-	router.POST("/query", API_RunQuery)
-	router.GET("/explain", API_ExplainQuery)
-	router.POST("/explain", API_ExplainQuery)
-	router.GET("/history", API_History)
-	router.GET("/bookmarks", API_Bookmarks)
 	router.GET("/static/:type/:name", API_ServeAsset)
+
+	api := router.Group("/api")
+	{
+		api.POST("/connect", API_Connect)
+		api.GET("/databases", API_GetDatabases)
+		api.GET("/connection", API_ConnectionInfo)
+		api.GET("/tables", API_GetTables)
+		api.GET("/tables/:table", API_GetTable)
+		api.GET("/tables/:table/info", API_GetTableInfo)
+		api.GET("/tables/:table/indexes", API_TableIndexes)
+		api.GET("/query", API_RunQuery)
+		api.POST("/query", API_RunQuery)
+		api.GET("/explain", API_ExplainQuery)
+		api.POST("/explain", API_ExplainQuery)
+		api.GET("/history", API_History)
+		api.GET("/bookmarks", API_Bookmarks)
+	}
+
 }
 
 func API_Home(c *gin.Context) {
