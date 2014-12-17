@@ -15,7 +15,7 @@ import (
 
 const VERSION = "0.4.1"
 
-var options struct {
+type Options struct {
 	Version  bool   `short:"v" long:"version" description:"Print version"`
 	Debug    bool   `short:"d" long:"debug" description:"Enable debugging mode" default:"false"`
 	Url      string `long:"url" description:"Database connection string"`
@@ -33,6 +33,7 @@ var options struct {
 }
 
 var dbClient *Client
+var options Options
 
 func exitWithMessage(message string) {
 	fmt.Println("Error:", message)
