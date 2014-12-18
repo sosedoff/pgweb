@@ -26,7 +26,7 @@ func NewClient() (*Client, error) {
 	str, err := buildConnectionString(options)
 
 	if options.Debug {
-		fmt.Println("Creating a new client with: %s", str)
+		fmt.Println("Creating a new client with:", str)
 	}
 
 	if err != nil {
