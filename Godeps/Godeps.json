@@ -33,6 +33,10 @@
 		{
 			"ImportPath": "github.com/mitchellh/go-homedir",
 			"Rev": "7d2d8c8a4e078ce3c58736ab521a40b37a504c52"
+		},
+		{
+			"ImportPath": "github.com/stretchr/testify/assert",
+			"Rev": "faedd6eb633a4cd77c15f6c9856608701e40d9a2"
 		}
 	]
 }
