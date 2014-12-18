@@ -5,8 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"os/user"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jessevdk/go-flags"
@@ -38,57 +36,6 @@ var options Options
 func exitWithMessage(message string) {
 	fmt.Println("Error:", message)
 	os.Exit(1)
-}
-
-func getConnectionString() string {
-	if options.Url != "" {
-		url := options.Url
-
-		if strings.Contains(url, "postgresql://") {
-			fmt.Println("Invalid URL format. It should match: postgres://user:password@host:port/db?sslmode=mode")
-			os.Exit(1)
-		}
-
-		// Append sslmode parameter only if its defined as a flag and not present
-		// in the connection string.
-		if options.Ssl != "" && !strings.Contains(url, "sslmode") {
-			url += fmt.Sprintf("?sslmode=%s", options.Ssl)
-		}
-
-		return url
-	}
-
-	// Try to detect user from current OS user
-	if options.User == "" {
-		user, err := user.Current()
-
-		if err == nil {
-			options.User = user.Username
-		}
-	}
-
-	str := fmt.Sprintf(
-		"host=%s port=%d user=%s dbname=%s",
-		options.Host, options.Port,
-		options.User, options.DbName,
-	)
-
-	if options.Ssl == "" {
-		// Disable ssl for localhost connections, most users have it disabled
-		if options.Host == "localhost" || options.Host == "127.0.0.1" {
-			options.Ssl = "disable"
-		}
-	}
-
-	if options.Ssl != "" {
-		str += fmt.Sprintf(" sslmode=%s", options.Ssl)
-	}
-
-	if options.Pass != "" {
-		str += fmt.Sprintf(" password=%s", options.Pass)
-	}
-
-	return str
 }
 
 func initClient() {
