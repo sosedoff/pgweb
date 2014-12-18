@@ -5,5 +5,9 @@ go:
 - 1.4
 - tip
 
-install: make setup
-script: make dev
+install:
+  - make setup
+  
+script:
+  - make dev
+  - make test
