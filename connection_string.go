@@ -35,6 +35,10 @@ func formatConnectionUrl(opts Options) (string, error) {
 	return url, nil
 }
 
+func connectionSettingsBlank(opts Options) bool {
+	return opts.Host == "" && opts.User == "" && opts.DbName == "" && opts.Url == ""
+}
+
 func buildConnectionString(opts Options) (string, error) {
 	if opts.Url != "" {
 		return formatConnectionUrl(opts)

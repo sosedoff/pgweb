@@ -91,15 +91,8 @@ func getConnectionString() string {
 	return str
 }
 
-func connectionSettingsBlank() bool {
-	return options.Host == "" &&
-		options.User == "" &&
-		options.DbName == "" &&
-		options.Url == ""
-}
-
 func initClient() {
-	if connectionSettingsBlank() {
+	if connectionSettingsBlank(options) {
 		return
 	}
 

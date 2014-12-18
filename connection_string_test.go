@@ -156,3 +156,10 @@ func Test_Port(t *testing.T) {
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://user@host:5000/db", str)
 }
+
+func Test_Blank(t *testing.T) {
+	assert.Equal(t, true, connectionSettingsBlank(Options{}))
+	assert.Equal(t, false, connectionSettingsBlank(Options{Host: "host", User: "user"}))
+	assert.Equal(t, false, connectionSettingsBlank(Options{Host: "host", User: "user", DbName: "db"}))
+	assert.Equal(t, false, connectionSettingsBlank(Options{Url: "url"}))
+}
