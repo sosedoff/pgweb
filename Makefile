@@ -1,5 +1,19 @@
 BINDATA_IGNORE = $(shell git ls-files -io --exclude-standard $< | sed 's/^/-ignore=/;s/[.]/[.]/g')
 
+usage:
+	@echo ""
+	@echo "Task                 : Description"
+	@echo "-----------------    : -------------------"
+	@echo "make setup           : Install all necessary dependencies"
+	@echo "make dev             : Generate development build"
+	@echo "make build           : Generate production build for current OS"
+	@echo "make release         : Generate binaries for all supported OSes"
+	@echo "make clean           : Remove all build files and reset assets"
+	@echo "make assets          : Generate production assets file"
+	@echo "make dev-assets      : Generate development assets file"
+	@echo "make docker          : Build docker image (Linux ONLY)"
+	@echo ""
+
 test:
 	godep go test
 
