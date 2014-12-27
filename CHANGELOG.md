@@ -1,3 +1,12 @@
+## 0.4.2 - Unreleased
+
+- Changes /info endpoint to /connection
+- Adds connection string printing in debug mode
+- Adds initial bookmarks support
+- Adds Go 1.4 support
+- Adds /api prefix for all API calls
+- Fixes issues with connection string/options parsing
+
 ## 0.4.1 - 2014-12-01
 
 - Adds pgweb version on start [GH-65]
