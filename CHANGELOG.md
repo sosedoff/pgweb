@@ -6,6 +6,7 @@
 - Adds Go 1.4 support
 - Adds /api prefix for all API calls
 - Fixes issues with connection string/options parsing
+- Fixes capitalized column names in table view
 
 ## 0.4.1 - 2014-12-01
 
