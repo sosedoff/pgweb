@@ -45,6 +45,7 @@ clean:
 	rm -f ./pgweb
 	rm -f ./bin/*
 	rm -f bindata.go
+	make assets
 
 docker:
 	docker build -t pgweb .
