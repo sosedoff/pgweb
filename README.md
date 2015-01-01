@@ -79,4 +79,4 @@ pgweb --url postgres://user:password@host:port/database?sslmode=[mode]
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Dan Sosedoff, <dan.sosedoff@gmail.com>
+Copyright (c) 2014-2015 Dan Sosedoff, <dan.sosedoff@gmail.com>
