@@ -335,6 +335,11 @@ function addShortcutTooltips() {
 
 function showConnectionSettings() {
   getBookmarks(function(data) {
+    // Do not add any bookmarks if we've got an error
+    if (data.error) {
+      return;
+    }
+
     if (Object.keys(data).length > 0) {
       // Set bookmarks in global var
       bookmarks = data;
