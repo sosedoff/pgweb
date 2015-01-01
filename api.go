@@ -79,6 +79,14 @@ func API_Connect(c *gin.Context) {
 		return
 	}
 
+	opts := Options{Url: url}
+	url, err := formatConnectionUrl(opts)
+
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
 	client, err := NewClientFromUrl(url)
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
