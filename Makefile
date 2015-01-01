@@ -12,7 +12,7 @@ usage:
 	@echo "make clean           : Remove all build files and reset assets"
 	@echo "make assets          : Generate production assets file"
 	@echo "make dev-assets      : Generate development assets file"
-	@echo "make docker          : Build docker image (Linux ONLY)"
+	@echo "make docker          : Build docker image"
 	@echo ""
 
 test:
