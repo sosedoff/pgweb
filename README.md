@@ -3,7 +3,6 @@
 Web-based PostgreSQL database browser written in Go.
 
 [![Release](https://img.shields.io/github/release/sosedoff/pgweb.svg)](https://github.com/sosedoff/pgweb/releases)
-[![Build Status](https://img.shields.io/travis/sosedoff/pgweb.svg)](https://travis-ci.org/sosedoff/pgweb)
 
 ## Overview
 
@@ -61,6 +60,19 @@ pgweb --url postgres://user:password@host:port/database?sslmode=[mode]
 ## Deploy on Heroku
 
 [![Heroku Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/sosedoff/pgweb)
+
+## Testing
+
+Run tests:
+
+```
+make test
+```
+
+Continuos integration status:
+
+- Travis (Linux) - [![Build Status](https://img.shields.io/travis/sosedoff/pgweb.svg)](https://travis-ci.org/sosedoff/pgweb)
+- Appveyor (Windows) - [![Build Status](https://img.shields.io/appveyor/ci/sosedoff/pgweb.svg)](https://ci.appveyor.com/project/sosedoff/pgweb)
 
 ## Contribute
 
