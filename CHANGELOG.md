@@ -1,12 +1,15 @@
 ## 0.4.2 - Unreleased
 
-- Changes /info endpoint to /connection
+- Adds Go 1.4 support
 - Adds connection string printing in debug mode
 - Adds initial bookmarks support
-- Adds Go 1.4 support
 - Adds /api prefix for all API calls
+- Adds makefile usage task
+- Changes /api/info endpoint to /api/connection
 - Fixes issues with connection string/options parsing
 - Fixes capitalized column names in table view
+- Fixes bookmark rendering if bookmarks directory (~/.pgweb/bookmarks) does not exist
+- Fixes connection string validation in /api/connect endpoint
 
 ## 0.4.1 - 2014-12-01
 
