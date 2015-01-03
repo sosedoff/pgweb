@@ -12,6 +12,10 @@ import (
 
 var extraMimeTypes = map[string]string{
 	".icon": "image-x-icon",
+	".ttf":  "application/x-font-ttf",
+	".woff": "application/x-font-woff",
+	".eot":  "application/vnd.ms-fontobject",
+	".svg":  "image/svg+xml",
 }
 
 type Error struct {
