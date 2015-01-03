@@ -3,20 +3,15 @@ package main
 import (
 	"errors"
 	"fmt"
+	"mime"
 	"path/filepath"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-var MIME_TYPES = map[string]string{
-	".css":  "text/css",
-	".js":   "application/javascript",
+var extraMimeTypes = map[string]string{
 	".icon": "image-x-icon",
-	".eot":  "application/vnd.ms-fontobject",
-	".svg":  "image/svg+xml",
-	".ttf":  "application/font-sfnt",
-	".woff": "application/font-woff",
 }
 
 type Error struct {
@@ -28,13 +23,18 @@ func NewError(err error) Error {
 }
 
 func assetContentType(name string) string {
-	mime := MIME_TYPES[filepath.Ext(name)]
+	ext := filepath.Ext(name)
+	result := mime.TypeByExtension(ext)
 
-	if mime != "" {
-		return mime
-	} else {
-		return "text/plain"
+	if result == "" {
+		result = extraMimeTypes[ext]
 	}
+
+	if result == "" {
+		result = "text/plain; charset=utf-8"
+	}
+
+	return result
 }
 
 func setupRoutes(router *gin.Engine) {
