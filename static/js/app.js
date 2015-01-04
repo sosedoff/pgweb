@@ -546,8 +546,10 @@ $(document).ready(function() {
       }
       else {
         connected = true;
-        $("#connection_window").hide();
         loadTables();
+
+        $("#connection_window").hide();
+        $("#current_database").text(resp.current_database);
         $("#main").show();
       }
     });
@@ -564,6 +566,8 @@ $(document).ready(function() {
     else {
       connected = true;
       loadTables();
+
+      $("#current_database").text(resp.current_database);
       $("#main").show();
     }
   });

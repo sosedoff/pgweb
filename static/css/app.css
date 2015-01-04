@@ -103,6 +103,10 @@
   overflow: auto;
 }
 
+#sidebar div.tables-list .title span.current-database {
+  margin-left: 4px;
+}
+
 #sidebar div.tables-list .title:hover span.refresh {
   display: inline-block;
 }
