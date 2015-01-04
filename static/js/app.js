@@ -17,11 +17,12 @@ function apiCall(method, path, params, cb) {
   });
 }
 
-function getTables(cb)                { apiCall("get", "/tables", {}, cb); }
-function getTableStructure(table, cb) { apiCall("get", "/tables/" + table, {}, cb); }
-function getTableIndexes(table, cb)   { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
-function getHistory(cb)               { apiCall("get", "/history", {}, cb); }
-function getBookmarks(cb)             { apiCall("get", "/bookmarks", {}, cb); }
+function getTables(cb)                 { apiCall("get", "/tables", {}, cb); }
+function getTableRows(table, opts, cb) { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
+function getTableStructure(table, cb)  { apiCall("get", "/tables/" + table, {}, cb); }
+function getTableIndexes(table, cb)    { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
+function getHistory(cb)                { apiCall("get", "/history", {}, cb); }
+function getBookmarks(cb)              { apiCall("get", "/bookmarks", {}, cb); }
 
 function executeQuery(query, cb) {
   apiCall("post", "/query", { query: query }, cb);
@@ -164,9 +165,7 @@ function showTableContent() {
     return;
   }
 
-  var query = "SELECT * FROM \"" + name + "\" LIMIT 100;";
-
-  executeQuery(query, function(data) {
+  getTableRows(name, { limit: 100 }, function(data) {
     buildTable(data);
     setCurrentTab("table_content");
 
