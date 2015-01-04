@@ -22,6 +22,13 @@ type Result struct {
 	Rows    []Row    `json:"rows"`
 }
 
+// Struct to hold table rows browsing options
+type RowsOptions struct {
+	Limit      int    // Number of rows to fetch
+	SortColumn string // Column to sort by
+	SortOrder  string // Sort direction (ASC, DESC)
+}
+
 func NewClient() (*Client, error) {
 	str, err := buildConnectionString(options)
 
@@ -74,6 +81,24 @@ func (client *Client) Tables() ([]string, error) {
 
 func (client *Client) Table(table string) (*Result, error) {
 	return client.query(PG_TABLE_SCHEMA, table)
+}
+
+func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error) {
+	sql := fmt.Sprintf(`SELECT * FROM "%s"`, table)
+
+	if opts.SortColumn != "" {
+		if opts.SortOrder == "" {
+			opts.SortOrder = "ASC"
+		}
+
+		sql += fmt.Sprintf(" ORDER BY %s %s", opts.SortColumn, opts.SortOrder)
+	}
+
+	if opts.Limit > 0 {
+		sql += fmt.Sprintf(" LIMIT %d", opts.Limit)
+	}
+
+	return client.query(sql)
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {

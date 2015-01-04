@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mime"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -52,6 +53,7 @@ func setupRoutes(router *gin.Engine) {
 		api.GET("/connection", API_ConnectionInfo)
 		api.GET("/tables", API_GetTables)
 		api.GET("/tables/:table", API_GetTable)
+		api.GET("/tables/:table/rows", API_GetTableRows)
 		api.GET("/tables/:table/info", API_GetTableInfo)
 		api.GET("/tables/:table/indexes", API_TableIndexes)
 		api.GET("/query", API_RunQuery)
@@ -162,6 +164,42 @@ func API_GetTables(c *gin.Context) {
 
 func API_GetTable(c *gin.Context) {
 	res, err := dbClient.Table(c.Params.ByName("table"))
+
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	c.JSON(200, res)
+}
+
+func API_GetTableRows(c *gin.Context) {
+	limit := 1000 // Number of rows to fetch
+	limitVal := c.Request.FormValue("limit")
+
+	if limitVal != "" {
+		num, err := strconv.Atoi(limitVal)
+
+		if err != nil {
+			c.JSON(400, Error{"Invalid limit value"})
+			return
+		}
+
+		if num <= 0 {
+			c.JSON(400, Error{"Limit should be greater than 0"})
+			return
+		}
+
+		limit = num
+	}
+
+	opts := RowsOptions{
+		Limit:      limit,
+		SortColumn: c.Request.FormValue("sort_column"),
+		SortOrder:  c.Request.FormValue("sort_order"),
+	}
+
+	res, err := dbClient.TableRows(c.Params.ByName("table"), opts)
 
 	if err != nil {
 		c.JSON(400, NewError(err))
