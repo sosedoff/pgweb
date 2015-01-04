@@ -103,6 +103,22 @@
   overflow: auto;
 }
 
+#sidebar div.tables-list .title:hover span.refresh {
+  display: inline-block;
+}
+
+#sidebar div.tables-list .title span.refresh {
+  float: right;
+  margin-right: 4px;
+  cursor: pointer;
+  color: #95a7b7;
+  display: none;
+}
+
+#sidebar div.tables-list .title span.refresh:hover {
+  color: #fff;
+}
+
 #sidebar div.tables-list #tables {
   padding: 33px 0 0;
   font-size: 13px;

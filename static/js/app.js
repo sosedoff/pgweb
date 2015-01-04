@@ -448,6 +448,10 @@ $(document).ready(function() {
     showTableInfo();
   });
 
+  $("#refresh_tables").on("click", function() {
+    loadTables();
+  });
+
   $("#edit_connection").on("click", function() {
     if (connected) {
       $("#close_connection_window").show();
