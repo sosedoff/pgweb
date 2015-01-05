@@ -109,10 +109,10 @@ function showQueryHistory() {
     var rows = [];
 
     for(i in data) {
-      rows.unshift([parseInt(i) + 1, data[i]]);
+      rows.unshift([parseInt(i) + 1, data[i].query, data[i].timestamp]);
     }
 
-    buildTable({ columns: ["id", "query"], rows: rows });
+    buildTable({ columns: ["id", "query", "timestamp"], rows: rows });
   
     setCurrentTab("table_history");  
     $("#input").hide();

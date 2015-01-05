@@ -11,7 +11,7 @@ import (
 
 type Client struct {
 	db               *sqlx.DB
-	history          []string
+	history          []HistoryRecord
 	connectionString string
 }
 
@@ -46,7 +46,13 @@ func NewClient() (*Client, error) {
 		return nil, err
 	}
 
-	return &Client{db: db, connectionString: str}, nil
+	client := Client{
+		db:               db,
+		connectionString: str,
+		history:          NewHistory(),
+	}
+
+	return &client, nil
 }
 
 func NewClientFromUrl(url string) (*Client, error) {
@@ -60,7 +66,13 @@ func NewClientFromUrl(url string) (*Client, error) {
 		return nil, err
 	}
 
-	return &Client{db: db, connectionString: url}, nil
+	client := Client{
+		db:               db,
+		connectionString: url,
+		history:          NewHistory(),
+	}
+
+	return &client, nil
 }
 
 func (client *Client) Test() error {
@@ -116,8 +128,14 @@ func (client *Client) TableIndexes(table string) (*Result, error) {
 }
 
 func (client *Client) Query(query string) (*Result, error) {
-	client.recordQuery(query)
-	return client.query(query)
+	res, err := client.query(query)
+
+	// Save history records only if query did not fail
+	if err == nil {
+		client.history = append(client.history, NewHistoryRecord(query))
+	}
+
+	return res, err
 }
 
 func (client *Client) query(query string, args ...interface{}) (*Result, error) {
@@ -223,8 +241,4 @@ func (client *Client) fetchRows(q string) ([]string, error) {
 	}
 
 	return results, nil
-}
-
-func (client *Client) recordQuery(query string) {
-	client.history = append(client.history, query)
 }
