@@ -48,6 +48,8 @@ func setupRoutes(router *gin.Engine) {
 
 	api := router.Group("/api")
 	{
+		api.Use(ApiMiddleware())
+
 		api.POST("/connect", API_Connect)
 		api.GET("/databases", API_GetDatabases)
 		api.GET("/connection", API_ConnectionInfo)
@@ -63,7 +65,41 @@ func setupRoutes(router *gin.Engine) {
 		api.GET("/history", API_History)
 		api.GET("/bookmarks", API_Bookmarks)
 	}
+}
 
+// Middleware function to check database connection status before running queries
+func ApiMiddleware() gin.HandlerFunc {
+	allowedPaths := []string{
+		"/api/connect",
+		"/api/bookmarks",
+		"/api/history",
+	}
+
+	return func(c *gin.Context) {
+		if dbClient != nil {
+			c.Next()
+			return
+		}
+
+		currentPath := c.Request.URL.Path
+		allowed := false
+
+		for _, path := range allowedPaths {
+			if path == currentPath {
+				allowed = true
+				break
+			}
+		}
+
+		if allowed {
+			c.Next()
+		} else {
+			c.JSON(400, Error{"Not connected"})
+			c.Abort(400)
+		}
+
+		return
+	}
 }
 
 func API_Home(c *gin.Context) {
@@ -225,11 +261,6 @@ func API_History(c *gin.Context) {
 }
 
 func API_ConnectionInfo(c *gin.Context) {
-	if dbClient == nil {
-		c.JSON(400, Error{"Not connected"})
-		return
-	}
-
 	res, err := dbClient.Info()
 
 	if err != nil {
