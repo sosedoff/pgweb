@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -292,11 +293,11 @@ func API_HandleQuery(query string, c *gin.Context) {
 
 	q := c.Request.URL.Query()
 
-	if len(q["format"]) > 0 {
-		if q["format"][0] == "csv" {
-			c.Data(200, "text/csv", result.CSV())
-			return
-		}
+	if len(q["format"]) > 0 && q["format"][0] == "csv" {
+		filename := fmt.Sprintf("pgweb-%v.csv", time.Now().Unix())
+		c.Writer.Header().Set("Content-disposition", "attachment;filename="+filename)
+		c.Data(200, "text/csv", result.CSV())
+		return
 	}
 
 	c.JSON(200, result)
