@@ -32,8 +32,8 @@ type RowsOptions struct {
 func NewClient() (*Client, error) {
 	str, err := buildConnectionString(options)
 
-	if options.Debug {
-		fmt.Println("Creating a new client with:", str)
+	if options.Debug && str != "" {
+		fmt.Println("Creating a new client for:", str)
 	}
 
 	if err != nil {
@@ -57,7 +57,7 @@ func NewClient() (*Client, error) {
 
 func NewClientFromUrl(url string) (*Client, error) {
 	if options.Debug {
-		fmt.Println("Creating a new client with: %s", url)
+		fmt.Println("Creating a new client for:", url)
 	}
 
 	db, err := sqlx.Open("postgres", url)
