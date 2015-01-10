@@ -9,5 +9,5 @@ install:
   - make setup
   
 script:
-  - make dev
+  - make build
   - make test
