@@ -72,7 +72,7 @@ make test
 Continuous integration status:
 
 - Travis (Linux) - [![Build Status](https://img.shields.io/travis/sosedoff/pgweb.svg)](https://travis-ci.org/sosedoff/pgweb)
-- Appveyor (Windows) - [![Build Status](https://img.shields.io/appveyor/ci/sosedoff/pgweb.svg)](https://ci.appveyor.com/project/sosedoff/pgweb)
+- Appveyor (Windows) - [![Build Status](https://img.shields.io/appveyor/ci/sosedoff/pgweb/master.svg)](https://ci.appveyor.com/project/sosedoff/pgweb)
 
 ## Contribute
 
