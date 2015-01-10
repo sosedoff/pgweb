@@ -7,7 +7,8 @@
 -- Name: booktown Type: DATABASE Owner: postgres
 --
 
-Create Database "booktown";
+DROP DATABASE IF EXISTS "booktown";
+CREATE DATABASE "booktown";
 
 \connect booktown postgres
 --
