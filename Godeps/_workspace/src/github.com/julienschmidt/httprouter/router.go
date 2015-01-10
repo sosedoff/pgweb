@@ -159,6 +159,11 @@ func (r *Router) GET(path string, handle Handle) {
 	r.Handle("GET", path, handle)
 }
 
+// HEAD is a shortcut for router.Handle("HEAD", path, handle)
+func (r *Router) HEAD(path string, handle Handle) {
+	r.Handle("HEAD", path, handle)
+}
+
 // POST is a shortcut for router.Handle("POST", path, handle)
 func (r *Router) POST(path string, handle Handle) {
 	r.Handle("POST", path, handle)
@@ -284,7 +289,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			}
 
 			if tsr && r.RedirectTrailingSlash {
-				if path[len(path)-1] == '/' {
+				if len(path) > 1 && path[len(path)-1] == '/' {
 					req.URL.Path = path[:len(path)-1]
 				} else {
 					req.URL.Path = path + "/"

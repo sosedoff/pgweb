@@ -9,26 +9,27 @@
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
-			"Comment": "v0.4-8-g3b079bb",
-			"Rev": "3b079bb6f79ae501e73a5401c41b589f6616b61e"
+			"Comment": "v0.4-16-g28b9ff9",
+			"Rev": "28b9ff9e3495dabeaea2da86c100effbf1a68346"
 		},
 		{
 			"ImportPath": "github.com/jessevdk/go-flags",
-			"Comment": "v1-265-g1c87b97",
-			"Rev": "1c87b9727cd7c200be13a5d8280d7ea514469235"
+			"Comment": "v1-285-g1679536",
+			"Rev": "1679536dcc895411a9f5848d9a0250be7856448c"
 		},
 		{
 			"ImportPath": "github.com/jmoiron/sqlx",
-			"Comment": "sqlx-v1.0-49-g79215a1",
-			"Rev": "79215a1536dd456d2a5afa112479b4f67fbe9f21"
+			"Comment": "sqlx-v1.0-61-gb468c08",
+			"Rev": "b468c08552f4efac78b94708eb040170a8184c47"
 		},
 		{
 			"ImportPath": "github.com/julienschmidt/httprouter",
-			"Rev": "46807412fe50aaceb73bb57061c2230fd26a1640"
+			"Rev": "b55664b9e92004aebb7f19a19a9d06271f3a41fc"
 		},
 		{
 			"ImportPath": "github.com/lib/pq",
-			"Rev": "7175accbed18058468c07811f76440d6e8d7cf19"
+			"Comment": "go1.0-cutoff-13-g19eeca3",
+			"Rev": "19eeca3e30d2577b1761db471ec130810e67f532"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/go-homedir",
@@ -36,7 +37,7 @@
 		},
 		{
 			"ImportPath": "github.com/stretchr/testify/assert",
-			"Rev": "faedd6eb633a4cd77c15f6c9856608701e40d9a2"
+			"Rev": "2eaa4b48b8954bf871229043b8064ca156a542a5"
 		}
 	]
 }

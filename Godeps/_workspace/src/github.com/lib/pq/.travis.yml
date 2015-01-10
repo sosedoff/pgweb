@@ -1,11 +1,10 @@
 language: go
 
 go:
-  - 1.0.2
-  - 1.0.3
   - 1.1
   - 1.2
   - 1.3
+  - 1.4
   - tip
 
 before_install:
@@ -46,6 +45,7 @@ env:
     - PQGOSSLTESTS=1
     - PQSSLCERTTEST_PATH=$PWD/certs
   matrix:
+    - PGVERSION=9.4
     - PGVERSION=9.3
     - PGVERSION=9.2
     - PGVERSION=9.1

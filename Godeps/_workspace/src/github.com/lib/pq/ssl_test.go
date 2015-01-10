@@ -12,21 +12,18 @@ import (
 	"testing"
 )
 
-func shouldSkipSSLTests(t *testing.T) bool {
+func maybeSkipSSLTests(t *testing.T) {
 	// Require some special variables for testing certificates
 	if os.Getenv("PQSSLCERTTEST_PATH") == "" {
-		return true
+		t.Skip("PQSSLCERTTEST_PATH not set, skipping SSL tests")
 	}
 
 	value := os.Getenv("PQGOSSLTESTS")
 	if value == "" || value == "0" {
-		return true
-	} else if value == "1" {
-		return false
-	} else {
+		t.Skip("PQGOSSLTESTS not enabled, skipping SSL tests")
+	} else if value != "1" {
 		t.Fatalf("unexpected value %q for PQGOSSLTESTS", value)
 	}
-	panic("not reached")
 }
 
 func openSSLConn(t *testing.T, conninfo string) (*sql.DB, error) {
@@ -48,16 +45,13 @@ func checkSSLSetup(t *testing.T, conninfo string) {
 	db, err := openSSLConn(t, conninfo)
 	if err == nil {
 		db.Close()
-		t.Fatal("expected error with conninfo=%q", conninfo)
+		t.Fatalf("expected error with conninfo=%q", conninfo)
 	}
 }
 
 // Connect over SSL and run a simple query to test the basics
 func TestSSLConnection(t *testing.T) {
-	if shouldSkipSSLTests(t) {
-		t.Log("skipping SSL test")
-		return
-	}
+	maybeSkipSSLTests(t)
 	// Environment sanity check: should fail without SSL
 	checkSSLSetup(t, "sslmode=disable user=pqgossltest")
 
@@ -74,10 +68,7 @@ func TestSSLConnection(t *testing.T) {
 
 // Test sslmode=verify-full
 func TestSSLVerifyFull(t *testing.T) {
-	if shouldSkipSSLTests(t) {
-		t.Log("skipping SSL test")
-		return
-	}
+	maybeSkipSSLTests(t)
 	// Environment sanity check: should fail without SSL
 	checkSSLSetup(t, "sslmode=disable user=pqgossltest")
 
@@ -94,7 +85,7 @@ func TestSSLVerifyFull(t *testing.T) {
 	rootCertPath := filepath.Join(os.Getenv("PQSSLCERTTEST_PATH"), "root.crt")
 	rootCert := "sslrootcert=" + rootCertPath + " "
 	// No match on Common Name
-	_, err = openSSLConn(t, rootCert + "host=127.0.0.1 sslmode=verify-full user=pqgossltest")
+	_, err = openSSLConn(t, rootCert+"host=127.0.0.1 sslmode=verify-full user=pqgossltest")
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -103,7 +94,7 @@ func TestSSLVerifyFull(t *testing.T) {
 		t.Fatalf("expected x509.HostnameError, got %#+v", err)
 	}
 	// OK
-	_, err = openSSLConn(t, rootCert + "host=postgres sslmode=verify-full user=pqgossltest")
+	_, err = openSSLConn(t, rootCert+"host=postgres sslmode=verify-full user=pqgossltest")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -111,10 +102,7 @@ func TestSSLVerifyFull(t *testing.T) {
 
 // Test sslmode=verify-ca
 func TestSSLVerifyCA(t *testing.T) {
-	if shouldSkipSSLTests(t) {
-		t.Log("skipping SSL test")
-		return
-	}
+	maybeSkipSSLTests(t)
 	// Environment sanity check: should fail without SSL
 	checkSSLSetup(t, "sslmode=disable user=pqgossltest")
 
@@ -131,17 +119,16 @@ func TestSSLVerifyCA(t *testing.T) {
 	rootCertPath := filepath.Join(os.Getenv("PQSSLCERTTEST_PATH"), "root.crt")
 	rootCert := "sslrootcert=" + rootCertPath + " "
 	// No match on Common Name, but that's OK
-	_, err = openSSLConn(t, rootCert + "host=127.0.0.1 sslmode=verify-ca user=pqgossltest")
+	_, err = openSSLConn(t, rootCert+"host=127.0.0.1 sslmode=verify-ca user=pqgossltest")
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Everything OK
-	_, err = openSSLConn(t, rootCert + "host=postgres sslmode=verify-ca user=pqgossltest")
+	_, err = openSSLConn(t, rootCert+"host=postgres sslmode=verify-ca user=pqgossltest")
 	if err != nil {
 		t.Fatal(err)
 	}
 }
-
 
 func getCertConninfo(t *testing.T, source string) string {
 	var sslkey string
@@ -170,10 +157,7 @@ func getCertConninfo(t *testing.T, source string) string {
 
 // Authenticate over SSL using client certificates
 func TestSSLClientCertificates(t *testing.T) {
-	if shouldSkipSSLTests(t) {
-		t.Log("skipping SSL test")
-		return
-	}
+	maybeSkipSSLTests(t)
 	// Environment sanity check: should fail without SSL
 	checkSSLSetup(t, "sslmode=disable user=pqgossltest")
 
@@ -205,10 +189,7 @@ func TestSSLClientCertificates(t *testing.T) {
 
 // Test errors with ssl certificates
 func TestSSLClientCertificatesMissingFiles(t *testing.T) {
-	if shouldSkipSSLTests(t) {
-		t.Log("skipping SSL test")
-		return
-	}
+	maybeSkipSSLTests(t)
 	// Environment sanity check: should fail without SSL
 	checkSSLSetup(t, "sslmode=disable user=pqgossltest")
 

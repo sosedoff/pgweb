@@ -170,8 +170,11 @@ func (p *Parser) parseOption(s *parseState, name string, option *Option, canarg 
 			arg = *argument
 		} else {
 			arg = s.pop()
+
 			if argumentIsOption(arg) {
 				return newErrorf(ErrExpectedArgument, "expected argument for flag `%s', but got option `%s'", option, arg)
+			} else if p.Options&PassDoubleDash != 0 && arg == "--" {
+				return newErrorf(ErrExpectedArgument, "expected argument for flag `%s', but got double dash `--'", option)
 			}
 		}
 

@@ -30,6 +30,7 @@ var (
 	ErrInFailedTransaction       = errors.New("pq: Could not complete operation in a failed transaction")
 	ErrSSLNotSupported           = errors.New("pq: SSL is not enabled on the server")
 	ErrSSLKeyHasWorldPermissions = errors.New("pq: Private key file has group or world access. Permissions should be u=rw (0600) or less.")
+	ErrCouldNotDetectUsername    = errors.New("pq: Could not detect default username. Please provide one explicitly.")
 )
 
 type drv struct{}
@@ -71,6 +72,7 @@ func (s transactionStatus) String() string {
 	default:
 		errorf("unknown transactionStatus %d", s)
 	}
+
 	panic("not reached")
 }
 
@@ -490,7 +492,6 @@ func (cn *conn) simpleExec(q string) (res driver.Result, commandTag string, err 
 			errorf("unknown response for simple query: %q", t)
 		}
 	}
-	panic("not reached")
 }
 
 func (cn *conn) simpleQuery(q string) (res driver.Rows, err error) {
@@ -543,7 +544,6 @@ func (cn *conn) simpleQuery(q string) (res driver.Rows, err error) {
 			errorf("unknown response for simple query: %q", t)
 		}
 	}
-	panic("not reached")
 }
 
 func (cn *conn) prepareTo(q, stmtName string) (_ *stmt, err error) {
@@ -587,8 +587,6 @@ func (cn *conn) prepareTo(q, stmtName string) (_ *stmt, err error) {
 			errorf("unexpected describe rows response: %q", t)
 		}
 	}
-
-	panic("not reached")
 }
 
 func (cn *conn) Prepare(q string) (_ driver.Stmt, err error) {
@@ -766,8 +764,6 @@ func (cn *conn) recv() (t byte, r *readBuf) {
 			return
 		}
 	}
-
-	panic("not reached")
 }
 
 // recv1Buf is exactly equivalent to recv1, except it uses a buffer supplied by
@@ -788,8 +784,6 @@ func (cn *conn) recv1Buf(r *readBuf) byte {
 			return t
 		}
 	}
-
-	panic("not reached")
 }
 
 // recv1 receives a message from the backend, panicking if an error occurs
@@ -854,9 +848,9 @@ func (cn *conn) verifyCA(client *tls.Conn, tlsConf *tls.Config) {
 	}
 	certs := client.ConnectionState().PeerCertificates
 	opts := x509.VerifyOptions{
-		DNSName: client.ConnectionState().ServerName,
+		DNSName:       client.ConnectionState().ServerName,
 		Intermediates: x509.NewCertPool(),
-		Roots: tlsConf.RootCAs,
+		Roots:         tlsConf.RootCAs,
 	}
 	for i, cert := range certs {
 		if i == 0 {
@@ -869,7 +863,6 @@ func (cn *conn) verifyCA(client *tls.Conn, tlsConf *tls.Config) {
 		panic(err)
 	}
 }
-
 
 // This function sets up SSL client certificates based on either the "sslkey"
 // and "sslcert" settings (possibly set via the environment variables PGSSLKEY
@@ -884,7 +877,7 @@ func (cn *conn) setupSSLClientCertificates(tlsConf *tls.Config, o values) {
 	sslkey := o.Get("sslkey")
 	sslcert := o.Get("sslcert")
 	if sslkey != "" && sslcert != "" {
-		// If the user has set a sslkey and sslcert, they *must* exist.
+		// If the user has set an sslkey and sslcert, they *must* exist.
 		missingOk = false
 	} else {
 		// Automatically load certificates from ~/.postgresql.
@@ -901,7 +894,7 @@ func (cn *conn) setupSSLClientCertificates(tlsConf *tls.Config, o values) {
 		missingOk = true
 	}
 
-	// Check that both files exist, and report the error or stop depending on
+	// Check that both files exist, and report the error or stop, depending on
 	// which behaviour we want.  Note that we don't do any more extensive
 	// checks than this (such as checking that the paths aren't directories);
 	// LoadX509KeyPair() will take care of the rest.
@@ -948,7 +941,7 @@ func (cn *conn) setupSSLCA(tlsConf *tls.Config, o values) {
 	}
 }
 
-// isDriverSetting returns true iff a setting is purely for the configuring the
+// isDriverSetting returns true iff a setting is purely for configuring the
 // driver's options and should not be sent to the server in the connection
 // startup packet.
 func isDriverSetting(key string) bool {
@@ -967,7 +960,6 @@ func isDriverSetting(key string) bool {
 	default:
 		return false
 	}
-	panic("not reached")
 }
 
 func (cn *conn) startup(o values) {
@@ -1124,8 +1116,6 @@ func (st *stmt) Exec(v []driver.Value) (res driver.Result, err error) {
 			errorf("unknown exec response: %q", t)
 		}
 	}
-
-	panic("not reached")
 }
 
 func (st *stmt) exec(v []driver.Value) {
@@ -1287,7 +1277,6 @@ func (rs *rows) Close() error {
 			return err
 		}
 	}
-	panic("not reached")
 }
 
 func (rs *rows) Columns() []string {
@@ -1337,8 +1326,6 @@ func (rs *rows) Next(dest []driver.Value) (err error) {
 			errorf("unexpected message after execute: %q", t)
 		}
 	}
-
-	panic("not reached")
 }
 
 // QuoteIdentifier quotes an "identifier" (e.g. a table or a column name) to be

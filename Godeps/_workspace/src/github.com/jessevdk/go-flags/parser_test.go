@@ -1,6 +1,7 @@
 package flags
 
 import (
+	"fmt"
 	"os"
 	"reflect"
 	"strconv"
@@ -312,6 +313,7 @@ func TestOptionAsArgument(t *testing.T) {
 		expectError bool
 		errType     ErrorType
 		errMsg      string
+		rest        []string
 	}{
 		{
 			// short option must not be accepted as argument
@@ -328,8 +330,23 @@ func TestOptionAsArgument(t *testing.T) {
 			errMsg:      "expected argument for flag `--string-slice', but got option `--other-option'",
 		},
 		{
+			// long option must not be accepted as argument
+			args:        []string{"--string-slice", "--"},
+			expectError: true,
+			errType:     ErrExpectedArgument,
+			errMsg:      "expected argument for flag `--string-slice', but got double dash `--'",
+		},
+		{
 			// quoted and appended option should be accepted as argument (even if it looks like an option)
 			args: []string{"--string-slice", "foobar", "--string-slice=\"--other-option\""},
+		},
+		{
+			// Accept any single character arguments including '-'
+			args: []string{"--string-slice", "-"},
+		},
+		{
+			args: []string{"-o", "-", "-"},
+			rest: []string{"-", "-"},
 		},
 	}
 	var opts struct {
@@ -341,7 +358,74 @@ func TestOptionAsArgument(t *testing.T) {
 		if test.expectError {
 			assertParseFail(t, test.errType, test.errMsg, &opts, test.args...)
 		} else {
-			assertParseSuccess(t, &opts, test.args...)
+			args := assertParseSuccess(t, &opts, test.args...)
+
+			assertStringArray(t, args, test.rest)
 		}
+	}
+}
+
+func TestUnknownFlagHandler(t *testing.T) {
+
+	var opts struct {
+		Flag1 string `long:"flag1"`
+		Flag2 string `long:"flag2"`
+	}
+
+	p := NewParser(&opts, None)
+
+	var unknownFlag1 string
+	var unknownFlag2 bool
+	var unknownFlag3 string
+
+	// Set up a callback to intercept unknown options during parsing
+	p.UnknownOptionHandler = func(option string, arg SplitArgument, args []string) ([]string, error) {
+		if option == "unknownFlag1" {
+			if argValue, ok := arg.Value(); ok {
+				unknownFlag1 = argValue
+				return args, nil
+			}
+			// consume a value from remaining args list
+			unknownFlag1 = args[0]
+			return args[1:], nil
+		} else if option == "unknownFlag2" {
+			// treat this one as a bool switch, don't consume any args
+			unknownFlag2 = true
+			return args, nil
+		} else if option == "unknownFlag3" {
+			if argValue, ok := arg.Value(); ok {
+				unknownFlag3 = argValue
+				return args, nil
+			}
+			// consume a value from remaining args list
+			unknownFlag3 = args[0]
+			return args[1:], nil
+		}
+
+		return args, fmt.Errorf("Unknown flag: %v", option)
+	}
+
+	// Parse args containing some unknown flags, verify that
+	// our callback can handle all of them
+	_, err := p.ParseArgs([]string{"--flag1=stuff", "--unknownFlag1", "blah", "--unknownFlag2", "--unknownFlag3=baz", "--flag2=foo"})
+
+	if err != nil {
+		assertErrorf(t, "Parser returned unexpected error %v", err)
+	}
+
+	assertString(t, opts.Flag1, "stuff")
+	assertString(t, opts.Flag2, "foo")
+	assertString(t, unknownFlag1, "blah")
+	assertString(t, unknownFlag3, "baz")
+
+	if !unknownFlag2 {
+		assertErrorf(t, "Flag should have been set by unknown handler, but had value: %v", unknownFlag2)
+	}
+
+	// Parse args with unknown flags that callback doesn't handle, verify it returns error
+	_, err = p.ParseArgs([]string{"--flag1=stuff", "--unknownFlagX", "blah", "--flag2=foo"})
+
+	if err == nil {
+		assertErrorf(t, "Parser should have returned error, but returned nil")
 	}
 }

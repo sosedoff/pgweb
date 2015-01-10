@@ -76,13 +76,16 @@ func (h handlerStruct) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestRouterAPI(t *testing.T) {
-	var get, post, put, patch, delete, handler, handlerFunc bool
+	var get, head, post, put, patch, delete, handler, handlerFunc bool
 
 	httpHandler := handlerStruct{&handler}
 
 	router := New()
 	router.GET("/GET", func(w http.ResponseWriter, r *http.Request, _ Params) {
 		get = true
+	})
+	router.HEAD("/GET", func(w http.ResponseWriter, r *http.Request, _ Params) {
+		head = true
 	})
 	router.POST("/POST", func(w http.ResponseWriter, r *http.Request, _ Params) {
 		post = true
@@ -107,6 +110,12 @@ func TestRouterAPI(t *testing.T) {
 	router.ServeHTTP(w, r)
 	if !get {
 		t.Error("routing GET failed")
+	}
+
+	r, _ = http.NewRequest("HEAD", "/GET", nil)
+	router.ServeHTTP(w, r)
+	if !head {
+		t.Error("routing HEAD failed")
 	}
 
 	r, _ = http.NewRequest("POST", "/POST", nil)
@@ -162,6 +171,7 @@ func TestRouterNotFound(t *testing.T) {
 	router := New()
 	router.GET("/path", handlerFunc)
 	router.GET("/dir/", handlerFunc)
+	router.GET("/", handlerFunc)
 
 	testRoutes := []struct {
 		route  string
@@ -170,6 +180,7 @@ func TestRouterNotFound(t *testing.T) {
 	}{
 		{"/path/", 301, "map[Location:[/path]]"},   // TSR -/
 		{"/dir", 301, "map[Location:[/dir/]]"},     // TSR +/
+		{"", 301, "map[Location:[/]]"},             // TSR +/
 		{"/PATH", 301, "map[Location:[/path]]"},    // Fixed Case
 		{"/DIR/", 301, "map[Location:[/dir/]]"},    // Fixed Case
 		{"/PATH/", 301, "map[Location:[/path]]"},   // Fixed Case -/
