@@ -3,9 +3,24 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
 	"os/user"
 	"strings"
 )
+
+func currentUser() (string, error) {
+	u, err := user.Current()
+	if err == nil {
+		return u.Username, nil
+	}
+
+	name := os.Getenv("USER")
+	if name != "" {
+		return name, nil
+	}
+
+	return "", errors.New("Unable to detect OS user")
+}
 
 func formatConnectionUrl(opts Options) (string, error) {
 	url := opts.Url
@@ -45,12 +60,10 @@ func buildConnectionString(opts Options) (string, error) {
 	}
 
 	// Try to detect user from current OS user
-	// TODO: remove os/user dependency
 	if opts.User == "" {
-		user, err := user.Current()
-
+		u, err := currentUser()
 		if err == nil {
-			opts.User = user.Username
+			opts.User = u
 		}
 	}
 
