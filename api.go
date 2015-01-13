@@ -45,7 +45,7 @@ func assetContentType(name string) string {
 
 func setupRoutes(router *gin.Engine) {
 	router.GET("/", API_Home)
-	router.GET("/static/:type/:name", API_ServeAsset)
+	router.GET("/static/*path", API_ServeAsset)
 
 	api := router.Group("/api")
 	{
@@ -315,13 +315,8 @@ func API_Bookmarks(c *gin.Context) {
 }
 
 func API_ServeAsset(c *gin.Context) {
-	file := fmt.Sprintf(
-		"static/%s/%s",
-		c.Params.ByName("type"),
-		c.Params.ByName("name"),
-	)
-
-	data, err := Asset(file)
+	path := "static" + c.Params.ByName("path")
+	data, err := Asset(path)
 
 	if err != nil {
 		c.String(400, err.Error())
@@ -333,5 +328,5 @@ func API_ServeAsset(c *gin.Context) {
 		return
 	}
 
-	c.Data(200, assetContentType(file), data)
+	c.Data(200, assetContentType(path), data)
 }
