@@ -1,6 +1,9 @@
 environment:
   GOPATH: c:\projects
 
+services:
+  - postgresql
+
 install:
   - set PATH=%GOPATH%\bin;%PATH%
   - cd %APPVEYOR_BUILD_FOLDER%
