@@ -1,14 +1,21 @@
-## 0.4.2 - Unreleased
+## 0.5.0 - 2015-01-13
 
 - Adds Go 1.4 support
 - Adds connection string printing in debug mode
 - Adds initial bookmarks support
 - Adds /api prefix for all API calls
 - Adds makefile usage task
+- Adds windows CI to verify build process
+- Adds example sql database to codebase
+- Adds timestamped filenames when exporting results to CSV [GH-75]
+- Adds connection checking on each request to prevent api panics
+- Adds timestamps to query history records
+- Adds current database name to the sidebar
+- Adds button to refresh tables list to the sidebar
+- Updates all application dependencies
 - Changes /api/info endpoint to /api/connection
 - Fixes issues with connection string/options parsing
 - Fixes capitalized column names in table view
-- Fixes bookmark rendering if bookmarks directory (~/.pgweb/bookmarks) does not exist
 - Fixes connection string validation in /api/connect endpoint
 
 ## 0.4.1 - 2014-12-01
