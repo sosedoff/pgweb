@@ -22,7 +22,7 @@ func setupCommands() {
 
 	if runtime.GOOS == "windows" {
 		for k, v := range testCommands {
-			testCommands[k] = v + ".exec"
+			testCommands[k] = v + ".exe"
 		}
 	}
 }
