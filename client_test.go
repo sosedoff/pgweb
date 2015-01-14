@@ -4,22 +4,38 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 var testClient *Client
+var testCommands map[string]string
+
+func setupCommands() {
+	testCommands = map[string]string{
+		"createdb": "createdb",
+		"psql":     "psql",
+		"dropdb":   "dropdb",
+	}
+
+	if runtime.GOOS == "windows" {
+		for k, v := range testCommands {
+			testCommands[k] = v + ".exec"
+		}
+	}
+}
 
 func setup() {
-	out, err := exec.Command("createdb", "-U", "postgres", "-h", "localhost", "booktown").CombinedOutput()
+	out, err := exec.Command(testCommands["createdb"], "-U", "postgres", "-h", "localhost", "booktown").CombinedOutput()
 
 	if err != nil {
 		fmt.Print("Database creation failed:", string(out))
 		os.Exit(1)
 	}
 
-	out, err = exec.Command("psql", "-U", "postgres", "-h", "localhost", "-f", "./sql/booktown.sql", "booktown").CombinedOutput()
+	out, err = exec.Command(testCommands["psql"], "-U", "postgres", "-h", "localhost", "-f", "./sql/booktown.sql", "booktown").CombinedOutput()
 
 	if err != nil {
 		fmt.Print("Database import failed:", string(out))
@@ -38,7 +54,7 @@ func teardownClient() {
 }
 
 func teardown() {
-	out, err := exec.Command("dropdb", "-U", "postgres", "-h", "localhost", "booktown").CombinedOutput()
+	out, err := exec.Command(testCommands["dropdb"], "-U", "postgres", "-h", "localhost", "booktown").CombinedOutput()
 
 	if err != nil {
 		fmt.Print(string(out))
@@ -202,6 +218,7 @@ func test_HistoryError(t *testing.T) {
 }
 
 func TestAll(t *testing.T) {
+	setupCommands()
 	teardown()
 	setup()
 	setupClient()
