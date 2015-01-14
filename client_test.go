@@ -225,6 +225,11 @@ func test_HistoryError(t *testing.T) {
 }
 
 func TestAll(t *testing.T) {
+	if onWindows() {
+		// Dont have access to windows machines at the moment...
+		return
+	}
+
 	setupCommands()
 	teardown()
 	setup()
