@@ -20,25 +20,31 @@ func setupCommands() {
 		"dropdb":   "dropdb",
 	}
 
-	if runtime.GOOS == "windows" {
+	if onWindows() {
 		for k, v := range testCommands {
 			testCommands[k] = v + ".exe"
 		}
 	}
 }
 
+func onWindows() bool {
+	return runtime.GOOS == "windows"
+}
+
 func setup() {
 	out, err := exec.Command(testCommands["createdb"], "-U", "postgres", "-h", "localhost", "booktown").CombinedOutput()
 
 	if err != nil {
-		fmt.Print("Database creation failed:", string(out))
+		fmt.Println("Database creation failed:", string(out))
+		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
 
 	out, err = exec.Command(testCommands["psql"], "-U", "postgres", "-h", "localhost", "-f", "./sql/booktown.sql", "booktown").CombinedOutput()
 
 	if err != nil {
-		fmt.Print("Database import failed:", string(out))
+		fmt.Println("Database import failed:", string(out))
+		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
 }
@@ -57,7 +63,8 @@ func teardown() {
 	out, err := exec.Command(testCommands["dropdb"], "-U", "postgres", "-h", "localhost", "booktown").CombinedOutput()
 
 	if err != nil {
-		fmt.Print(string(out))
+		fmt.Println(string(out))
+		fmt.Println("Error:", err)
 	}
 }
 
