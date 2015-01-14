@@ -185,6 +185,22 @@ func test_ResultCsv(t *testing.T) {
 	assert.Equal(t, expected, string(csv))
 }
 
+func test_History(t *testing.T) {
+	_, err := testClient.Query("SELECT * FROM books")
+	query := testClient.history[len(testClient.history)-1].Query
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, "SELECT * FROM books", query)
+}
+
+func test_HistoryError(t *testing.T) {
+	_, err := testClient.Query("SELECT * FROM books123")
+	query := testClient.history[len(testClient.history)-1].Query
+
+	assert.NotEqual(t, nil, err)
+	assert.NotEqual(t, "SELECT * FROM books123", query)
+}
+
 func TestAll(t *testing.T) {
 	teardown()
 	setup()
@@ -203,6 +219,8 @@ func TestAll(t *testing.T) {
 	test_QueryError(t)
 	test_QueryInvalidTable(t)
 	test_ResultCsv(t)
+	test_History(t)
+	test_HistoryError(t)
 
 	teardownClient()
 	teardown()
