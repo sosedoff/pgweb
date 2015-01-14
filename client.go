@@ -148,14 +148,11 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 	defer rows.Close()
 
 	cols, err := rows.Columns()
-
 	if err != nil {
 		return nil, err
 	}
 
-	result := Result{
-		Columns: cols,
-	}
+	result := Result{Columns: cols}
 
 	for rows.Next() {
 		obj, err := rows.SliceScan()
