@@ -8,6 +8,7 @@ usage:
 	@echo "make dev             : Generate development build"
 	@echo "make test            : Run tests"
 	@echo "make build           : Generate production build for current OS"
+	@echo "make bootstrap       : Install cross-compilation toolchain"
 	@echo "make release         : Generate binaries for all supported OSes"
 	@echo "make clean           : Remove all build files and reset assets"
 	@echo "make assets          : Generate production assets file"
@@ -34,6 +35,9 @@ build: assets
 
 release: assets
 	gox -osarch="darwin/amd64 darwin/386 linux/amd64 linux/386 windows/amd64 windows/386" -output="./bin/pgweb_{{.OS}}_{{.Arch}}"
+
+bootstrap:
+	gox -build-toolchain
 
 setup:
 	go get github.com/tools/godep
