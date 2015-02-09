@@ -76,7 +76,7 @@ func TestContextJSON(t *testing.T) {
 		t.Errorf("Response should be {\"foo\":\"bar\"}, was: %s", w.Body.String())
 	}
 
-	if w.HeaderMap.Get("Content-Type") != "application/json" {
+	if w.HeaderMap.Get("Content-Type") != "application/json; charset=utf-8" {
 		t.Errorf("Content-Type should be application/json, was %s", w.HeaderMap.Get("Content-Type"))
 	}
 }
@@ -103,7 +103,7 @@ func TestContextHTML(t *testing.T) {
 		t.Errorf("Response should be Hello alexandernyquist, was: %s", w.Body.String())
 	}
 
-	if w.HeaderMap.Get("Content-Type") != "text/html" {
+	if w.HeaderMap.Get("Content-Type") != "text/html; charset=utf-8" {
 		t.Errorf("Content-Type should be text/html, was %s", w.HeaderMap.Get("Content-Type"))
 	}
 }
@@ -125,7 +125,7 @@ func TestContextString(t *testing.T) {
 		t.Errorf("Response should be test, was: %s", w.Body.String())
 	}
 
-	if w.HeaderMap.Get("Content-Type") != "text/plain" {
+	if w.HeaderMap.Get("Content-Type") != "text/plain; charset=utf-8" {
 		t.Errorf("Content-Type should be text/plain, was %s", w.HeaderMap.Get("Content-Type"))
 	}
 }
@@ -147,7 +147,7 @@ func TestContextXML(t *testing.T) {
 		t.Errorf("Response should be <map><foo>bar</foo></map>, was: %s", w.Body.String())
 	}
 
-	if w.HeaderMap.Get("Content-Type") != "application/xml" {
+	if w.HeaderMap.Get("Content-Type") != "application/xml; charset=utf-8" {
 		t.Errorf("Content-Type should be application/xml, was %s", w.HeaderMap.Get("Content-Type"))
 	}
 }
@@ -232,13 +232,13 @@ func TestBadAbortHandlersChain(t *testing.T) {
 		c.Next()
 		stepsPassed += 1
 		// after check and abort
-		c.Abort(409)
+		c.AbortWithStatus(409)
 	})
 	r.Use(func(c *Context) {
 		stepsPassed += 1
 		c.Next()
 		stepsPassed += 1
-		c.Abort(403)
+		c.AbortWithStatus(403)
 	})
 
 	// RUN
@@ -260,7 +260,7 @@ func TestAbortHandlersChain(t *testing.T) {
 	r := New()
 	r.Use(func(context *Context) {
 		stepsPassed += 1
-		context.Abort(409)
+		context.AbortWithStatus(409)
 	})
 	r.Use(func(context *Context) {
 		stepsPassed += 1
@@ -336,7 +336,7 @@ func TestBindingJSON(t *testing.T) {
 		t.Errorf("Response should be {\"parsed\":\"bar\"}, was: %s", w.Body.String())
 	}
 
-	if w.HeaderMap.Get("Content-Type") != "application/json" {
+	if w.HeaderMap.Get("Content-Type") != "application/json; charset=utf-8" {
 		t.Errorf("Content-Type should be application/json, was %s", w.HeaderMap.Get("Content-Type"))
 	}
 }
@@ -369,7 +369,7 @@ func TestBindingJSONEncoding(t *testing.T) {
 		t.Errorf("Response should be {\"parsed\":\"嘉\"}, was: %s", w.Body.String())
 	}
 
-	if w.HeaderMap.Get("Content-Type") != "application/json" {
+	if w.HeaderMap.Get("Content-Type") != "application/json; charset=utf-8" {
 		t.Errorf("Content-Type should be application/json, was %s", w.HeaderMap.Get("Content-Type"))
 	}
 }
@@ -438,5 +438,46 @@ func TestBindingJSONMalformed(t *testing.T) {
 
 	if w.HeaderMap.Get("Content-Type") == "application/json" {
 		t.Errorf("Content-Type should not be application/json, was %s", w.HeaderMap.Get("Content-Type"))
+	}
+}
+
+func TestClientIP(t *testing.T) {
+	r := New()
+
+	var clientIP string = ""
+	r.GET("/", func(c *Context) {
+		clientIP = c.ClientIP()
+	})
+
+	body := bytes.NewBuffer([]byte(""))
+	req, _ := http.NewRequest("GET", "/", body)
+	req.RemoteAddr = "clientip:1234"
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	if clientIP != "clientip:1234" {
+		t.Errorf("ClientIP should not be %s, but clientip:1234", clientIP)
+	}
+}
+
+func TestClientIPWithXForwardedForWithProxy(t *testing.T) {
+	r := New()
+	r.Use(ForwardedFor())
+
+	var clientIP string = ""
+	r.GET("/", func(c *Context) {
+		clientIP = c.ClientIP()
+	})
+
+	body := bytes.NewBuffer([]byte(""))
+	req, _ := http.NewRequest("GET", "/", body)
+	req.RemoteAddr = "172.16.8.3:1234"
+	req.Header.Set("X-Real-Ip", "realip")
+	req.Header.Set("X-Forwarded-For", "1.2.3.4, 10.10.0.4, 192.168.0.43, 172.16.8.4")
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	if clientIP != "1.2.3.4:0" {
+		t.Errorf("ClientIP should not be %s, but 1.2.3.4:0", clientIP)
 	}
 }

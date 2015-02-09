@@ -60,11 +60,10 @@ func teardownClient() {
 }
 
 func teardown() {
-	out, err := exec.Command(testCommands["dropdb"], "-U", "postgres", "-h", "localhost", "booktown").CombinedOutput()
+	_, err := exec.Command(testCommands["dropdb"], "-U", "postgres", "-h", "localhost", "booktown").CombinedOutput()
 
 	if err != nil {
-		fmt.Println(string(out))
-		fmt.Println("Error:", err)
+		fmt.Println("Teardown error:", err)
 	}
 }
 

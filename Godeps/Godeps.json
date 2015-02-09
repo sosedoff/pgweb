@@ -9,8 +9,8 @@
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
-			"Comment": "v0.4-16-g28b9ff9",
-			"Rev": "28b9ff9e3495dabeaea2da86c100effbf1a68346"
+			"Comment": "v0.5",
+			"Rev": "50e7e427300a7eeeb299a4cd5bc1ebfa04d48528"
 		},
 		{
 			"ImportPath": "github.com/jessevdk/go-flags",

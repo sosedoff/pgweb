@@ -96,7 +96,7 @@ func ApiMiddleware() gin.HandlerFunc {
 			c.Next()
 		} else {
 			c.JSON(400, Error{"Not connected"})
-			c.Abort(400)
+			c.Abort()
 		}
 
 		return
