@@ -1,3 +1,8 @@
+## 0.5.1 - Unreleased
+
+- Upgrades Gin framework dependency to 0.5.0
+- Fixes server crash if another pgweb server is running
+
 ## 0.5.0 - 2015-01-13
 
 - Adds Go 1.4 support
