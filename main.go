@@ -96,7 +96,13 @@ func startServer() {
 	setupRoutes(router)
 
 	fmt.Println("Starting server...")
-	go router.Run(fmt.Sprintf("%v:%v", options.HttpHost, options.HttpPort))
+	go func() {
+		err := router.Run(fmt.Sprintf("%v:%v", options.HttpHost, options.HttpPort))
+		if err != nil {
+			fmt.Println("Cant start server:", err)
+			os.Exit(1)
+		}
+	}()
 }
 
 func handleSignals() {
