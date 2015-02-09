@@ -1,42 +1,67 @@
-#Gin Web Framework
+#Gin Web Framework [![GoDoc](https://godoc.org/github.com/gin-gonic/gin?status.svg)](https://godoc.org/github.com/gin-gonic/gin) [![Build Status](https://travis-ci.org/gin-gonic/gin.svg)](https://travis-ci.org/gin-gonic/gin)
 
-[![GoDoc](https://godoc.org/github.com/gin-gonic/gin?status.svg)](https://godoc.org/github.com/gin-gonic/gin)
-[![Build Status](https://travis-ci.org/gin-gonic/gin.svg)](https://travis-ci.org/gin-gonic/gin)
+Gin is a web framework written in Golang. It features a martini-like API with much better performance, up to 40 times faster thanks to [httprouter](https://github.com/julienschmidt/httprouter). If you need performance and good productivity, you will love Gin. 
 
-Gin is a web framework written in Golang. It features a martini-like API with much better performance, up to 40 times faster. If you need performance and good productivity, you will love Gin.  
-![Gin console logger](http://gin-gonic.github.io/gin/other/console.png)
+![Gin console logger](https://gin-gonic.github.io/gin/other/console.png)
+
+```
+$ cat test.go
+```
+```go
+package main
+
+import "github.com/gin-gonic/gin"
+
+func main() {
+	router := gin.Default()
+	router.GET("/", func(c *gin.Context) {
+		c.String(200, "hello world")
+	})
+	router.GET("/ping", func(c *gin.Context) {
+		c.String(200, "pong")
+	})
+	router.POST("/submit", func(c *gin.Context) {
+		c.String(401, "not authorized")
+	})
+	router.PUT("/error", func(c *gin.Context) {
+		c.String(500, "and error hapenned :(")
+	})
+	router.Run(":8080")
+}
+```
 
 ##Gin is new, will it be supported?
 
-Yes, Gin is an internal project of [my](https://github.com/manucorporat) upcoming startup. We developed it and we are going to continue using and improve it.
+Yes, Gin is an internal tool of [Manu](https://github.com/manucorporat) and [Javi](https://github.com/javierprovecho) for many of our projects/start-ups. We developed it and we are going to continue using and improve it.
 
 
 ##Roadmap for v1.0
-- [x] Performance improments, reduce allocation and garbage collection overhead
-- [x] Fix bugs
-- [ ] Stable API
 - [ ] Ask our designer for a cool logo
 - [ ] Add tons of unit tests
 - [ ] Add internal benchmarks suite
+- [ ] More powerful validation API
+- [ ] Improve documentation
+- [ ] Add Swagger support
+- [x] Stable API
 - [x] Improve logging system
 - [x] Improve JSON/XML validation using bindings
 - [x] Improve XML support
 - [x] Flexible rendering system
-- [ ] More powerful validation API
-- [ ] Improve documentation
-- [ ] Add more cool middlewares, for example redis caching (this also helps developers to understand the framework).
+- [x] Add more cool middlewares, for example redis caching (this also helps developers to understand the framework).
 - [x] Continuous integration
+- [x] Performance improments, reduce allocation and garbage collection overhead
+- [x] Fix bugs
 
 
 
 ## Start using it
-Obviously, you need to have Git and Go! already installed to run Gin.  
+Obviously, you need to have Git and Go already installed to run Gin.  
 Run this in your terminal
 
 ```
 go get github.com/gin-gonic/gin
 ```
-Then import it in your Go! code:
+Then import it in your Go code:
 
 ```
 import "github.com/gin-gonic/gin"
@@ -106,7 +131,8 @@ func main() {
 		c.String(200, message)
 	})
 
-	// However, this one will match /user/john and also /user/john/send
+	// However, this one will match /user/john/ and also /user/john/send
+	// If no other routers match /user/john, it will redirect to /user/join/
 	r.GET("/user/:name/*action", func(c *gin.Context) {
 		name := c.Params.ByName("name")
 		action := c.Params.ByName("action")
@@ -118,7 +144,25 @@ func main() {
 	r.Run(":8080")
 }
 ```
+###Form parameters
+```go
+func main() {
+	r := gin.Default()
+	
+	// This will respond to urls like search?firstname=Jane&lastname=Doe
+	r.GET("/search", func(c *gin.Context) {
+		// You need to call ParseForm() on the request to receive url and form params first
+		c.Request.ParseForm()
+		
+		firstname := c.Request.Form.Get("firstname")
+		lastname := c.Request.Form.get("lastname")
 
+		message := "Hello "+ firstname + lastname
+		c.String(200, message)
+	})
+	r.Run(":8080")
+}
+```
 
 #### Grouping routes
 ```go
@@ -223,7 +267,7 @@ func main() {
 	r := gin.Default()
 
     // Example for binding JSON ({"user": "manu", "password": "123"})
-	r.POST("/login", func(c *gin.Context) {
+	r.POST("/loginJSON", func(c *gin.Context) {
 		var json LoginJSON
 
         c.Bind(&json) // This will infer what binder to use depending on the content-type header.
@@ -234,8 +278,8 @@ func main() {
         }
 	})
 
-    // Example for binding a HTLM form (user=manu&password=123)
-    r.POST("/login", func(c *gin.Context) {
+    // Example for binding a HTML form (user=manu&password=123)
+    r.POST("/loginHTML", func(c *gin.Context) {
         var form LoginForm
 
         c.BindWith(&form, binding.Form) // You can also specify which binder to use. We support binding.Form, binding.JSON and binding.XML.
@@ -257,7 +301,7 @@ func main() {
 func main() {
 	r := gin.Default()
 
-	// gin.H is a shortcup for map[string]interface{}
+	// gin.H is a shortcut for map[string]interface{}
 	r.GET("/someJSON", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "hey", "status": 200})
 	})
@@ -286,7 +330,6 @@ func main() {
 }
 ```
 
-
 ####Serving static files
 
 Use Engine.ServeFiles(path string, root http.FileSystem):
@@ -310,7 +353,7 @@ Using LoadHTMLTemplates()
 ```go
 func main() {
 	r := gin.Default()
-	r.LoadHTMLTemplates("templates/*")
+	r.LoadHTMLGlob("templates/*")
 	r.GET("/index", func(c *gin.Context) {
 		obj := gin.H{"title": "Main website"}
 		c.HTML(200, "index.tmpl", obj)
@@ -319,6 +362,11 @@ func main() {
 	// Listen and server on 0.0.0.0:8080
 	r.Run(":8080")
 }
+```
+```html
+<h1>
+	{{ .title }}
+</h1>
 ```
 
 You can also use your own html template render
@@ -329,7 +377,7 @@ import "html/template"
 func main() {
 	r := gin.Default()
 	html := template.Must(template.ParseFiles("file1", "file2"))
-	r.HTMLTemplates = html
+	r.SetHTMLTemplate(html)
 
 	// Listen and server on 0.0.0.0:8080
 	r.Run(":8080")
@@ -413,7 +461,7 @@ func main() {
 	// hit "localhost:8080/admin/secrets
 	authorized.GET("/secrets", func(c *gin.Context) {
 		// get user, it was setted by the BasicAuth middleware
-		user := c.Get(gin.AuthUserKey).(string)
+		user := c.MustGet(gin.AuthUserKey).(string)
 		if secret, ok := secrets[user]; ok {
 			c.JSON(200, gin.H{"user": user, "secret": secret})
 		} else {
