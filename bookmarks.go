@@ -22,19 +22,13 @@ type Bookmark struct {
 
 func readServerConfig(path string) (Bookmark, error) {
 	bookmark := Bookmark{}
-	buff, err := ioutil.ReadFile(path)
 
+	buff, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Println(err)
 		return bookmark, err
 	}
 
 	_, err = toml.Decode(string(buff), &bookmark)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	return bookmark, err
 }
 
@@ -67,7 +61,7 @@ func readAllBookmarks() (map[string]Bookmark, error) {
 		config, err := readServerConfig(fullPath)
 
 		if err != nil {
-			fmt.Println(err)
+			fmt.Printf("%s parse error: %s\n", fullPath, err)
 			continue
 		}
 
