@@ -17,7 +17,7 @@ usage:
 	@echo ""
 
 test:
-	godep go test
+	godep go test -cover
 
 assets: static/
 	go-bindata $(BINDATA_OPTS) $(BINDATA_IGNORE) -ignore=[.]gitignore -ignore=[.]gitkeep $<...
@@ -41,6 +41,7 @@ bootstrap:
 
 setup:
 	go get github.com/tools/godep
+	go get golang.org/x/tools/cmd/cover
 	godep get github.com/mitchellh/gox
 	godep get github.com/jteeuwen/go-bindata/...
 	godep restore
