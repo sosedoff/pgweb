@@ -304,7 +304,7 @@ func API_HandleQuery(query string, c *gin.Context) {
 }
 
 func API_Bookmarks(c *gin.Context) {
-	bookmarks, err := readAllBookmarks()
+	bookmarks, err := readAllBookmarks(bookmarksPath())
 
 	if err != nil {
 		c.JSON(400, NewError(err))

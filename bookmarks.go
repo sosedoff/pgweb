@@ -42,8 +42,7 @@ func bookmarksPath() string {
 	return fmt.Sprintf("%s/.pgweb/bookmarks", path)
 }
 
-func readAllBookmarks() (map[string]Bookmark, error) {
-	path := bookmarksPath()
+func readAllBookmarks(path string) (map[string]Bookmark, error) {
 	results := map[string]Bookmark{}
 
 	files, err := ioutil.ReadDir(path)
