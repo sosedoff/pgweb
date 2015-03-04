@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -49,8 +47,7 @@ func Test_Bookmark_URL(t *testing.T) {
 }
 
 func Test_Bookmarks_Path(t *testing.T) {
-	path := fmt.Sprintf("%s/.pgweb/bookmarks", os.Getenv("HOME"))
-	assert.Equal(t, path, bookmarksPath())
+	assert.NotEqual(t, "/.pgweb/bookmarks", bookmarksPath())
 }
 
 func Test_Basename(t *testing.T) {
@@ -64,7 +61,6 @@ func Test_ReadBookmarks_Invalid(t *testing.T) {
 	bookmarks, err := readAllBookmarks("foobar")
 
 	assert.Error(t, err)
-	assert.Equal(t, "open foobar: no such file or directory", err.Error())
 	assert.Equal(t, 0, len(bookmarks))
 }
 
