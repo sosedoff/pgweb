@@ -7,17 +7,16 @@ import (
 )
 
 func Test_Invalid_Bookmark_Files(t *testing.T) {
-	examples := map[string]string{
-		"foobar":                       "open foobar: no such file or directory",
-		"./fixtures/invalid.toml":      "Near line 1, key 'invalid encoding': Near line 2: Expected key separator '=', but got '\\n' instead.",
-		"./fixtures/invalid_port.toml": "Type mismatch for 'main.Bookmark.Port': Expected string but found 'int64'.",
-	}
+	_, err := readServerConfig("foobar")
+	assert.Error(t, err)
 
-	for path, message := range examples {
-		_, err := readServerConfig(path)
-		assert.Error(t, err)
-		assert.Equal(t, message, err.Error())
-	}
+	_, err = readServerConfig("./fixtures/invalid.toml")
+	assert.Error(t, err)
+	assert.Equal(t, "Near line 1, key 'invalid encoding': Near line 2: Expected key separator '=', but got '\\n' instead.", err.Error())
+
+	_, err = readServerConfig("./fixtures/invalid_port.toml")
+	assert.Error(t, err)
+	assert.Equal(t, "Type mismatch for 'main.Bookmark.Port': Expected string but found 'int64'.", err.Error())
 }
 
 func Test_Bookmark(t *testing.T) {
