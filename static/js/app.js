@@ -186,6 +186,10 @@ function showTableStructure() {
   getTableStructure(name, function(data) {
     setCurrentTab("table_structure");
     buildTable(data);
+
+    $("#input").hide();
+    $("#output").addClass("full");
+    $("#results").addClass("no-crop");
   });
 }
 
