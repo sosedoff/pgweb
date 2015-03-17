@@ -15,6 +15,7 @@ usage:
 	@echo "make assets          : Generate production assets file"
 	@echo "make dev-assets      : Generate development assets file"
 	@echo "make docker          : Build docker image"
+	@echo "make docker-release  : Build and tag docker image"
 	@echo ""
 
 test:
