@@ -40,7 +40,7 @@ func setup() {
 		os.Exit(1)
 	}
 
-	out, err = exec.Command(testCommands["psql"], "-U", "postgres", "-h", "localhost", "-f", "./sql/booktown.sql", "booktown").CombinedOutput()
+	out, err = exec.Command(testCommands["psql"], "-U", "postgres", "-h", "localhost", "-f", "./data/booktown.sql", "booktown").CombinedOutput()
 
 	if err != nil {
 		fmt.Println("Database import failed:", string(out))
