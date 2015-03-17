@@ -1,3 +1,4 @@
+DOCKER_RELEASE_TAG = "sosedoff/pgweb:$(shell git describe --abbrev=0 --tags | sed 's/v//')"
 BINDATA_IGNORE = $(shell git ls-files -io --exclude-standard $< | sed 's/^/-ignore=/;s/[.]/[.]/g')
 
 usage:
@@ -54,3 +55,6 @@ clean:
 
 docker:
 	docker build -t pgweb .
+
+docker-release:
+	docker build -t $(DOCKER_RELEASE_TAG) .
