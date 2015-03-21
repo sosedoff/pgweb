@@ -76,7 +76,7 @@ func static_css_app_css() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/css/app.css", size: 6401, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/css/app.css", size: 6401, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -96,7 +96,7 @@ func static_css_bootstrap_css() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/css/bootstrap.css", size: 109518, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/css/bootstrap.css", size: 109518, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -116,7 +116,7 @@ func static_css_font_awesome_css() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/css/font-awesome.css", size: 21984, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/css/font-awesome.css", size: 21984, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -136,7 +136,7 @@ func static_fonts_fontawesome_otf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/fonts/FontAwesome.otf", size: 85908, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/fonts/FontAwesome.otf", size: 85908, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -156,7 +156,7 @@ func static_fonts_fontawesome_webfont_eot() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/fonts/fontawesome-webfont.eot", size: 56006, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/fonts/fontawesome-webfont.eot", size: 56006, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -176,7 +176,7 @@ func static_fonts_fontawesome_webfont_svg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/fonts/fontawesome-webfont.svg", size: 287007, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/fonts/fontawesome-webfont.svg", size: 287007, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -196,7 +196,7 @@ func static_fonts_fontawesome_webfont_ttf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/fonts/fontawesome-webfont.ttf", size: 112160, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/fonts/fontawesome-webfont.ttf", size: 112160, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -216,7 +216,7 @@ func static_fonts_fontawesome_webfont_woff() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/fonts/fontawesome-webfont.woff", size: 65452, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/fonts/fontawesome-webfont.woff", size: 65452, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -236,7 +236,7 @@ func static_img_icon_ico() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/img/icon.ico", size: 104736, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/img/icon.ico", size: 104736, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -256,7 +256,7 @@ func static_img_icon_png() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/img/icon.png", size: 7945, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/img/icon.png", size: 7945, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -276,7 +276,7 @@ func static_index_html() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/index.html", size: 7445, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/index.html", size: 7445, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -296,7 +296,7 @@ func static_js_ace_pgsql_js() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/js/ace-pgsql.js", size: 53342, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/js/ace-pgsql.js", size: 53342, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -316,7 +316,7 @@ func static_js_ace_js() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/js/ace.js", size: 327872, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/js/ace.js", size: 327872, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -336,7 +336,7 @@ func static_js_app_js() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/js/app.js", size: 13936, mode: os.FileMode(420), modTime: time.Unix(1425925840, 0)}
+	info := bindata_file_info{name: "static/js/app.js", size: 13936, mode: os.FileMode(420), modTime: time.Unix(1426567719, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -356,7 +356,7 @@ func static_js_jquery_js() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "static/js/jquery.js", size: 84245, mode: os.FileMode(420), modTime: time.Unix(1420860892, 0)}
+	info := bindata_file_info{name: "static/js/jquery.js", size: 84245, mode: os.FileMode(420), modTime: time.Unix(1426567063, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
