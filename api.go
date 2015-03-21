@@ -54,6 +54,7 @@ func setupRoutes(router *gin.Engine) {
 		api.POST("/connect", API_Connect)
 		api.GET("/databases", API_GetDatabases)
 		api.GET("/connection", API_ConnectionInfo)
+		api.GET("/activity", API_Activity)
 		api.GET("/tables", API_GetTables)
 		api.GET("/tables/:table", API_GetTable)
 		api.GET("/tables/:table/rows", API_GetTableRows)
@@ -270,6 +271,16 @@ func API_ConnectionInfo(c *gin.Context) {
 	}
 
 	c.JSON(200, res.Format()[0])
+}
+
+func API_Activity(c *gin.Context) {
+	res, err := dbClient.Activity()
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	c.JSON(200, res)
 }
 
 func API_TableIndexes(c *gin.Context) {
