@@ -28,4 +28,18 @@ FROM information_schema.columns
 WHERE table_name = $1`
 
 	PG_TABLES = `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name`
+
+	PG_ACTIVITY = `SELECT
+  datname,
+  query,
+  state,
+  waiting,
+  query_start,
+  state_change,
+  pid,
+  datid,
+  application_name,
+  client_addr
+  FROM pg_stat_activity
+  WHERE state IS NOT NULL`
 )
