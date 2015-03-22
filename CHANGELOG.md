@@ -1,3 +1,9 @@
+## 0.5.2 - Unreleased
+
+- Adds a new endpoint /activity that retuns active queries
+- Adds tab to view active queries
+- Fixes SQL query view when switching to table structure view
+
 ## 0.5.1 - 2015-02-23
 
 - Upgrades Gin framework dependency to 0.5.0
