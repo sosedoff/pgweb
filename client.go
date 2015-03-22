@@ -129,7 +129,7 @@ func (client *Client) TableIndexes(table string) (*Result, error) {
 
 // Returns all active queriers on the server
 func (client *Client) Activity() (*Result, error) {
-	return client.Query(PG_ACTIVITY)
+	return client.query(PG_ACTIVITY)
 }
 
 func (client *Client) Query(query string) (*Result, error) {

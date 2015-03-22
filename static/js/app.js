@@ -221,6 +221,16 @@ function showConnectionPanel() {
   });
 }
 
+function showActivityPanel() {
+  setCurrentTab("table_activity");
+
+  apiCall("get", "/activity", {}, function(data) {
+    buildTable(data);
+    $("#input").hide();
+    $("#output").addClass("full");
+  });
+}
+
 function runQuery() {
   setCurrentTab("table_query");
 
@@ -404,6 +414,7 @@ $(document).ready(function() {
   $("#table_history").on("click",    function() { showQueryHistory();    });
   $("#table_query").on("click",      function() { showQueryPanel();      });
   $("#table_connection").on("click", function() { showConnectionPanel(); });
+  $("#table_activity").on("click",   function() { showActivityPanel();   });
 
   $("#run").on("click", function() {
     runQuery();
