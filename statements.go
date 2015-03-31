@@ -3,6 +3,8 @@ package main
 const (
 	PG_DATABASES = `SELECT datname FROM pg_database WHERE NOT datistemplate ORDER BY datname ASC`
 
+	PG_SCHEMAS = `SELECT schema_name FROM information_schema.schemata ORDER BY schema_name ASC`
+
 	PG_INFO = `SELECT
   session_user
 , current_user

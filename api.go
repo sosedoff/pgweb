@@ -55,6 +55,7 @@ func setupRoutes(router *gin.Engine) {
 		api.GET("/databases", API_GetDatabases)
 		api.GET("/connection", API_ConnectionInfo)
 		api.GET("/activity", API_Activity)
+		api.GET("/schemas", API_GetSchemas)
 		api.GET("/tables", API_GetTables)
 		api.GET("/tables/:table", API_GetTable)
 		api.GET("/tables/:table/rows", API_GetTableRows)
@@ -187,6 +188,17 @@ func API_ExplainQuery(c *gin.Context) {
 	}
 
 	API_HandleQuery(fmt.Sprintf("EXPLAIN ANALYZE %s", query), c)
+}
+
+func API_GetSchemas(c *gin.Context) {
+	names, err := dbClient.Schemas()
+
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	c.JSON(200, names)
 }
 
 func API_GetTables(c *gin.Context) {

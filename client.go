@@ -87,6 +87,10 @@ func (client *Client) Databases() ([]string, error) {
 	return client.fetchRows(PG_DATABASES)
 }
 
+func (client *Client) Schemas() ([]string, error) {
+	return client.fetchRows(PG_SCHEMAS)
+}
+
 func (client *Client) Tables() ([]string, error) {
 	return client.fetchRows(PG_TABLES)
 }
