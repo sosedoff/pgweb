@@ -2,6 +2,7 @@
 
 - Adds a new endpoint /activity that retuns active queries
 - Adds tab to view active queries
+- Adds column sorting when browsing table contents
 - Fixes SQL query view when switching to table structure view
 
 ## 0.5.1 - 2015-02-23
