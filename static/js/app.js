@@ -68,7 +68,18 @@ function resetTable() {
     removeClass("no-crop");
 }
 
-function buildTable(results) {
+function sortArrow(direction) {
+    switch (direction) {
+        case "ASC":
+            return "&#x25B2;";
+        case "DESC":
+            return "&#x25BC;";
+        default:
+            return "";
+    }
+}
+
+function buildTable(results, sortColumn, sortOrder) {
   resetTable();
 
   if (results.error) {
@@ -87,7 +98,11 @@ function buildTable(results) {
   var rows = "";
 
   results.columns.forEach(function(col) {
-    cols += "<th data='" + col + "'>" + col + "</th>";
+      if (col === sortColumn) {
+          cols += "<th data='" + col + "'" + "data-sort-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
+      } else {
+          cols += "<th data='" + col + "'>" + col + "</th>";
+      }
   });
 
   results.rows.forEach(function(row) {
@@ -157,7 +172,7 @@ function showTableInfo() {
   });
 }
 
-function showTableContent() {
+function showTableContent(sortColumn, sortOrder) {
   var name = getCurrentTable();
 
   if (name.length == 0) {
@@ -165,8 +180,8 @@ function showTableContent() {
     return;
   }
 
-  getTableRows(name, { limit: 100 }, function(data) {
-    buildTable(data);
+  getTableRows(name, { limit: 100, sort_column: sortColumn, sort_order: sortOrder }, function(data) {
+    buildTable(data, sortColumn, sortOrder);
     setCurrentTab("table_content");
 
     $("#results").attr("data-mode", "browse");
@@ -431,6 +446,23 @@ $(document).ready(function() {
   $("#results").on("click", "tr", function() {
     $("#results tr.selected").removeClass();
     $(this).addClass("selected");
+  });
+
+  $("#results").on("click", "th", function(e) {
+      var sortColumn = this.attributes['data'].value;
+      var contentTab = $('#table_content').hasClass('selected');
+
+      if (!contentTab) {
+          return;
+      }
+
+      if (this.dataset.sortOrder === "ASC") {
+          this.dataset.sortOrder = "DESC"
+      } else {
+          this.dataset.sortOrder = "ASC"
+      }
+
+      showTableContent(sortColumn, this.dataset.sortOrder);
   });
 
   $("#results").on("dblclick", "td > div", function() {
