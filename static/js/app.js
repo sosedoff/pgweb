@@ -4,7 +4,7 @@ var bookmarks = {};
 
 function apiCall(method, path, params, cb) {
   $.ajax({
-    url: "/api" + path, 
+    url: "/api" + path,
     method: method,
     cache: false,
     data: params,
@@ -68,7 +68,18 @@ function resetTable() {
     removeClass("no-crop");
 }
 
-function buildTable(results) {
+function sortArrow(direction) {
+    switch (direction) {
+        case "ASC":
+            return "&#x25B2;";
+        case "DESC":
+            return "&#x25BC;";
+        default:
+            return "";
+    }
+}
+
+function buildTable(results, sortColumn, sortOrder) {
   resetTable();
 
   if (results.error) {
@@ -87,7 +98,11 @@ function buildTable(results) {
   var rows = "";
 
   results.columns.forEach(function(col) {
-    cols += "<th data='" + col + "'>" + col + "</th>";
+      if (col === sortColumn) {
+          cols += "<th data='" + col + "'" + "data-sort-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
+      } else {
+          cols += "<th data='" + col + "'>" + col + "</th>";
+      }
   });
 
   results.rows.forEach(function(row) {
@@ -113,8 +128,8 @@ function showQueryHistory() {
     }
 
     buildTable({ columns: ["id", "query", "timestamp"], rows: rows });
-  
-    setCurrentTab("table_history");  
+
+    setCurrentTab("table_history");
     $("#input").hide();
     $("#output").addClass("full");
     $("#results").addClass("no-crop");
@@ -157,7 +172,7 @@ function showTableInfo() {
   });
 }
 
-function showTableContent() {
+function showTableContent(sortColumn, sortOrder) {
   var name = getCurrentTable();
 
   if (name.length == 0) {
@@ -165,8 +180,8 @@ function showTableContent() {
     return;
   }
 
-  getTableRows(name, { limit: 100 }, function(data) {
-    buildTable(data);
+  getTableRows(name, { limit: 100, sort_column: sortColumn, sort_order: sortOrder }, function(data) {
+    buildTable(data, sortColumn, sortOrder);
     setCurrentTab("table_content");
 
     $("#results").attr("data-mode", "browse");
@@ -433,6 +448,23 @@ $(document).ready(function() {
     $(this).addClass("selected");
   });
 
+  $("#results").on("click", "th", function(e) {
+      var sortColumn = this.attributes['data'].value;
+      var contentTab = $('#table_content').hasClass('selected');
+
+      if (!contentTab) {
+          return;
+      }
+
+      if (this.dataset.sortOrder === "ASC") {
+          this.dataset.sortOrder = "DESC"
+      } else {
+          this.dataset.sortOrder = "ASC"
+      }
+
+      showTableContent(sortColumn, this.dataset.sortOrder);
+  });
+
   $("#results").on("dblclick", "td > div", function() {
     if ($(this).has("textarea").length > 0) {
       return;
@@ -544,7 +576,7 @@ $(document).ready(function() {
 
     var button = $(this).children("button");
     var url = getConnectionString();
-   
+
     if (url.length == 0) {
       return;
     }
@@ -572,7 +604,7 @@ $(document).ready(function() {
 
   initEditor();
   addShortcutTooltips();
-  
+
   apiCall("get", "/connection", {}, function(resp) {
     if (resp.error) {
       connected = false;
