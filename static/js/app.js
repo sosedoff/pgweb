@@ -4,7 +4,7 @@ var bookmarks = {};
 
 function apiCall(method, path, params, cb) {
   $.ajax({
-    url: "/api" + path, 
+    url: "/api" + path,
     method: method,
     cache: false,
     data: params,
@@ -113,8 +113,8 @@ function showQueryHistory() {
     }
 
     buildTable({ columns: ["id", "query", "timestamp"], rows: rows });
-  
-    setCurrentTab("table_history");  
+
+    setCurrentTab("table_history");
     $("#input").hide();
     $("#output").addClass("full");
     $("#results").addClass("no-crop");
@@ -544,7 +544,7 @@ $(document).ready(function() {
 
     var button = $(this).children("button");
     var url = getConnectionString();
-   
+
     if (url.length == 0) {
       return;
     }
@@ -572,7 +572,7 @@ $(document).ready(function() {
 
   initEditor();
   addShortcutTooltips();
-  
+
   apiCall("get", "/connection", {}, function(resp) {
     if (resp.error) {
       connected = false;
