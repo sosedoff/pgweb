@@ -1,4 +1,4 @@
-## 0.5.2 - Unreleased
+## 0.5.2 - 2015-04-13
 
 - Adds a new endpoint /activity that retuns active queries
 - Adds tab to view active queries
