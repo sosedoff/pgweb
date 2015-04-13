@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const VERSION = "0.5.1"
+const VERSION = "0.5.2"
 
 type Options struct {
 	Version  bool   `short:"v" long:"version" description:"Print version"`
