@@ -314,6 +314,15 @@
   -webkit-font-smoothing: antialiased;
 }
 
+#results th.active {
+  background: #e3e3e3;
+}
+
+#results[data-mode="browse"] th:hover {
+  cursor: pointer;
+  background: #fafafa;
+}
+
 #results tbody tr:hover td {
   background: #ffe;
 }

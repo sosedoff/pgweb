@@ -98,11 +98,12 @@ function buildTable(results, sortColumn, sortOrder) {
   var rows = "";
 
   results.columns.forEach(function(col) {
-      if (col === sortColumn) {
-          cols += "<th data='" + col + "'" + "data-sort-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
-      } else {
-          cols += "<th data='" + col + "'>" + col + "</th>";
-      }
+    if (col === sortColumn) {
+      cols += "<th class='active' data='" + col + "'" + "data-sort-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
+    }
+    else {
+      cols += "<th data='" + col + "'>" + col + "</th>";
+    }
   });
 
   results.rows.forEach(function(row) {
@@ -449,20 +450,21 @@ $(document).ready(function() {
   });
 
   $("#results").on("click", "th", function(e) {
-      var sortColumn = this.attributes['data'].value;
-      var contentTab = $('#table_content').hasClass('selected');
+    var sortColumn = this.attributes['data'].value;
+    var contentTab = $('#table_content').hasClass('selected');
 
-      if (!contentTab) {
-          return;
-      }
+    if (!contentTab) {
+      return;
+    }
 
-      if (this.dataset.sortOrder === "ASC") {
-          this.dataset.sortOrder = "DESC"
-      } else {
-          this.dataset.sortOrder = "ASC"
-      }
+    if (this.dataset.sortOrder === "ASC") {
+      this.dataset.sortOrder = "DESC"
+    }
+    else {
+      this.dataset.sortOrder = "ASC"
+    }
 
-      showTableContent(sortColumn, this.dataset.sortOrder);
+    showTableContent(sortColumn, this.dataset.sortOrder);
   });
 
   $("#results").on("dblclick", "td > div", function() {
