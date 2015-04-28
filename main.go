@@ -24,7 +24,7 @@ type Options struct {
 	DbName   string `long:"db" description:"Database name"`
 	Ssl      string `long:"ssl" description:"SSL option"`
 	HttpHost string `long:"bind" description:"HTTP server host" default:"localhost"`
-	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8080"`
+	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8081"`
 	AuthUser string `long:"auth-user" description:"HTTP basic auth user"`
 	AuthPass string `long:"auth-pass" description:"HTTP basic auth password"`
 	SkipOpen bool   `short:"s" long:"skip-open" description:"Skip browser open on start"`
