@@ -7,31 +7,18 @@ import (
 	"os/signal"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jessevdk/go-flags"
 	_ "github.com/lib/pq"
+
+	"github.com/sosedoff/pgweb/pkg/api"
+	"github.com/sosedoff/pgweb/pkg/client"
+	"github.com/sosedoff/pgweb/pkg/command"
+	"github.com/sosedoff/pgweb/pkg/connection"
+	"github.com/sosedoff/pgweb/pkg/util"
 )
 
 const VERSION = "0.5.2"
 
-type Options struct {
-	Version  bool   `short:"v" long:"version" description:"Print version"`
-	Debug    bool   `short:"d" long:"debug" description:"Enable debugging mode" default:"false"`
-	Url      string `long:"url" description:"Database connection string"`
-	Host     string `long:"host" description:"Server hostname or IP"`
-	Port     int    `long:"port" description:"Server port" default:"5432"`
-	User     string `long:"user" description:"Database user"`
-	Pass     string `long:"pass" description:"Password for user"`
-	DbName   string `long:"db" description:"Database name"`
-	Ssl      string `long:"ssl" description:"SSL option"`
-	HttpHost string `long:"bind" description:"HTTP server host" default:"localhost"`
-	HttpPort uint   `long:"listen" description:"HTTP server listen port" default:"8081"`
-	AuthUser string `long:"auth-user" description:"HTTP basic auth user"`
-	AuthPass string `long:"auth-pass" description:"HTTP basic auth password"`
-	SkipOpen bool   `short:"s" long:"skip-open" description:"Skip browser open on start"`
-}
-
-var dbClient *Client
-var options Options
+var options command.Options
 
 func exitWithMessage(message string) {
 	fmt.Println("Error:", message)
@@ -39,49 +26,48 @@ func exitWithMessage(message string) {
 }
 
 func initClient() {
-	if connectionSettingsBlank(options) {
+	if connection.IsBlank(command.Opts) {
 		return
 	}
 
-	client, err := NewClient()
+	cl, err := client.New()
 	if err != nil {
 		exitWithMessage(err.Error())
 	}
 
-	if options.Debug {
-		fmt.Println("Server connection string:", client.connectionString)
+	if command.Opts.Debug {
+		fmt.Println("Server connection string:", cl.ConnectionString)
 	}
 
 	fmt.Println("Connecting to server...")
-	err = client.Test()
+	err = cl.Test()
 	if err != nil {
 		exitWithMessage(err.Error())
 	}
 
 	fmt.Println("Checking tables...")
-	_, err = client.Tables()
+	_, err = cl.Tables()
 	if err != nil {
 		exitWithMessage(err.Error())
 	}
 
-	dbClient = client
+	api.DbClient = cl
 }
 
 func initOptions() {
-	_, err := flags.ParseArgs(&options, os.Args)
-
+	err := command.ParseOptions()
 	if err != nil {
 		os.Exit(1)
 	}
 
-	if options.Url == "" {
-		options.Url = os.Getenv("DATABASE_URL")
-	}
+	options = command.Opts
 
 	if options.Version {
 		fmt.Printf("pgweb v%s\n", VERSION)
 		os.Exit(0)
 	}
+
+	fmt.Println("Pgweb version", VERSION)
 }
 
 func startServer() {
@@ -93,7 +79,7 @@ func startServer() {
 		router.Use(gin.BasicAuth(auth))
 	}
 
-	setupRoutes(router)
+	api.SetupRoutes(router)
 
 	fmt.Println("Starting server...")
 	go func() {
@@ -129,20 +115,19 @@ func openPage() {
 
 func main() {
 	initOptions()
-
-	fmt.Println("Pgweb version", VERSION)
 	initClient()
 
-	if dbClient != nil {
-		defer dbClient.db.Close()
+	if api.DbClient != nil {
+		defer api.DbClient.Close()
 	}
 
 	if !options.Debug {
 		gin.SetMode("release")
 	}
 
+	// Print memory usage every 30 seconds with debug flag
 	if options.Debug {
-		startRuntimeProfiler()
+		util.StartProfiler()
 	}
 
 	startServer()

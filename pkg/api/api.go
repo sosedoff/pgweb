@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"errors"
@@ -10,6 +10,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sosedoff/pgweb/pkg/bookmarks"
+	"github.com/sosedoff/pgweb/pkg/client"
+	"github.com/sosedoff/pgweb/pkg/command"
+	"github.com/sosedoff/pgweb/pkg/connection"
+	"github.com/sosedoff/pgweb/pkg/data"
 )
 
 var extraMimeTypes = map[string]string{
@@ -19,6 +24,8 @@ var extraMimeTypes = map[string]string{
 	".eot":  "application/vnd.ms-fontobject",
 	".svg":  "image/svg+xml",
 }
+
+var DbClient *client.Client
 
 type Error struct {
 	Message string `json:"error"`
@@ -43,7 +50,7 @@ func assetContentType(name string) string {
 	return result
 }
 
-func setupRoutes(router *gin.Engine) {
+func SetupRoutes(router *gin.Engine) {
 	router.GET("/", API_Home)
 	router.GET("/static/*path", API_ServeAsset)
 
@@ -79,7 +86,7 @@ func ApiMiddleware() gin.HandlerFunc {
 	}
 
 	return func(c *gin.Context) {
-		if dbClient != nil {
+		if DbClient != nil {
 			c.Next()
 			return
 		}
@@ -106,7 +113,7 @@ func ApiMiddleware() gin.HandlerFunc {
 }
 
 func API_Home(c *gin.Context) {
-	data, err := Asset("static/index.html")
+	data, err := data.Asset("static/index.html")
 
 	if err != nil {
 		c.String(400, err.Error())
@@ -124,41 +131,41 @@ func API_Connect(c *gin.Context) {
 		return
 	}
 
-	opts := Options{Url: url}
-	url, err := formatConnectionUrl(opts)
+	opts := command.Options{Url: url}
+	url, err := connection.FormatUrl(opts)
 
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
 		return
 	}
 
-	client, err := NewClientFromUrl(url)
+	cl, err := client.NewFromUrl(url)
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
 		return
 	}
 
-	err = client.Test()
+	err = cl.Test()
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
 		return
 	}
 
-	info, err := client.Info()
+	info, err := cl.Info()
 
 	if err == nil {
-		if dbClient != nil {
-			dbClient.db.Close()
+		if DbClient != nil {
+			DbClient.Close()
 		}
 
-		dbClient = client
+		DbClient = cl
 	}
 
 	c.JSON(200, info.Format()[0])
 }
 
 func API_GetDatabases(c *gin.Context) {
-	names, err := dbClient.Databases()
+	names, err := DbClient.Databases()
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -191,7 +198,7 @@ func API_ExplainQuery(c *gin.Context) {
 }
 
 func API_GetSchemas(c *gin.Context) {
-	names, err := dbClient.Schemas()
+	names, err := DbClient.Schemas()
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -202,7 +209,7 @@ func API_GetSchemas(c *gin.Context) {
 }
 
 func API_GetTables(c *gin.Context) {
-	names, err := dbClient.Tables()
+	names, err := DbClient.Tables()
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -213,7 +220,7 @@ func API_GetTables(c *gin.Context) {
 }
 
 func API_GetTable(c *gin.Context) {
-	res, err := dbClient.Table(c.Params.ByName("table"))
+	res, err := DbClient.Table(c.Params.ByName("table"))
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -243,13 +250,13 @@ func API_GetTableRows(c *gin.Context) {
 		limit = num
 	}
 
-	opts := RowsOptions{
+	opts := client.RowsOptions{
 		Limit:      limit,
 		SortColumn: c.Request.FormValue("sort_column"),
 		SortOrder:  c.Request.FormValue("sort_order"),
 	}
 
-	res, err := dbClient.TableRows(c.Params.ByName("table"), opts)
+	res, err := DbClient.TableRows(c.Params.ByName("table"), opts)
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -260,7 +267,7 @@ func API_GetTableRows(c *gin.Context) {
 }
 
 func API_GetTableInfo(c *gin.Context) {
-	res, err := dbClient.TableInfo(c.Params.ByName("table"))
+	res, err := DbClient.TableInfo(c.Params.ByName("table"))
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -271,11 +278,11 @@ func API_GetTableInfo(c *gin.Context) {
 }
 
 func API_History(c *gin.Context) {
-	c.JSON(200, dbClient.history)
+	c.JSON(200, DbClient.History)
 }
 
 func API_ConnectionInfo(c *gin.Context) {
-	res, err := dbClient.Info()
+	res, err := DbClient.Info()
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -286,7 +293,7 @@ func API_ConnectionInfo(c *gin.Context) {
 }
 
 func API_Activity(c *gin.Context) {
-	res, err := dbClient.Activity()
+	res, err := DbClient.Activity()
 	if err != nil {
 		c.JSON(400, NewError(err))
 		return
@@ -296,7 +303,7 @@ func API_Activity(c *gin.Context) {
 }
 
 func API_TableIndexes(c *gin.Context) {
-	res, err := dbClient.TableIndexes(c.Params.ByName("table"))
+	res, err := DbClient.TableIndexes(c.Params.ByName("table"))
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -307,7 +314,7 @@ func API_TableIndexes(c *gin.Context) {
 }
 
 func API_HandleQuery(query string, c *gin.Context) {
-	result, err := dbClient.Query(query)
+	result, err := DbClient.Query(query)
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -327,7 +334,7 @@ func API_HandleQuery(query string, c *gin.Context) {
 }
 
 func API_Bookmarks(c *gin.Context) {
-	bookmarks, err := readAllBookmarks(bookmarksPath())
+	bookmarks, err := bookmarks.ReadAll(bookmarks.Path())
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -339,7 +346,7 @@ func API_Bookmarks(c *gin.Context) {
 
 func API_ServeAsset(c *gin.Context) {
 	path := "static" + c.Params.ByName("path")
-	data, err := Asset(path)
+	data, err := data.Asset(path)
 
 	if err != nil {
 		c.String(400, err.Error())

@@ -1,4 +1,4 @@
-package main
+package bookmarks
 
 import (
 	"fmt"
@@ -37,12 +37,12 @@ func fileBasename(path string) string {
 	return strings.Replace(filename, filepath.Ext(path), "", 1)
 }
 
-func bookmarksPath() string {
+func Path() string {
 	path, _ := homedir.Dir()
 	return fmt.Sprintf("%s/.pgweb/bookmarks", path)
 }
 
-func readAllBookmarks(path string) (map[string]Bookmark, error) {
+func ReadAll(path string) (map[string]Bookmark, error) {
 	results := map[string]Bookmark{}
 
 	files, err := ioutil.ReadDir(path)

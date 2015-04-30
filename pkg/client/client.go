@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"bytes"
@@ -7,12 +7,16 @@ import (
 	"reflect"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sosedoff/pgweb/pkg/command"
+	"github.com/sosedoff/pgweb/pkg/connection"
+	"github.com/sosedoff/pgweb/pkg/history"
+	"github.com/sosedoff/pgweb/pkg/statements"
 )
 
 type Client struct {
 	db               *sqlx.DB
-	history          []HistoryRecord
-	connectionString string
+	History          []history.Record
+	ConnectionString string
 }
 
 type Row []interface{}
@@ -29,10 +33,10 @@ type RowsOptions struct {
 	SortOrder  string // Sort direction (ASC, DESC)
 }
 
-func NewClient() (*Client, error) {
-	str, err := buildConnectionString(options)
+func New() (*Client, error) {
+	str, err := connection.BuildString(command.Opts)
 
-	if options.Debug && str != "" {
+	if command.Opts.Debug && str != "" {
 		fmt.Println("Creating a new client for:", str)
 	}
 
@@ -48,15 +52,15 @@ func NewClient() (*Client, error) {
 
 	client := Client{
 		db:               db,
-		connectionString: str,
-		history:          NewHistory(),
+		ConnectionString: str,
+		History:          history.New(),
 	}
 
 	return &client, nil
 }
 
-func NewClientFromUrl(url string) (*Client, error) {
-	if options.Debug {
+func NewFromUrl(url string) (*Client, error) {
+	if command.Opts.Debug {
 		fmt.Println("Creating a new client for:", url)
 	}
 
@@ -68,8 +72,8 @@ func NewClientFromUrl(url string) (*Client, error) {
 
 	client := Client{
 		db:               db,
-		connectionString: url,
-		history:          NewHistory(),
+		ConnectionString: url,
+		History:          history.New(),
 	}
 
 	return &client, nil
@@ -80,23 +84,23 @@ func (client *Client) Test() error {
 }
 
 func (client *Client) Info() (*Result, error) {
-	return client.query(PG_INFO)
+	return client.query(statements.PG_INFO)
 }
 
 func (client *Client) Databases() ([]string, error) {
-	return client.fetchRows(PG_DATABASES)
+	return client.fetchRows(statements.PG_DATABASES)
 }
 
 func (client *Client) Schemas() ([]string, error) {
-	return client.fetchRows(PG_SCHEMAS)
+	return client.fetchRows(statements.PG_SCHEMAS)
 }
 
 func (client *Client) Tables() ([]string, error) {
-	return client.fetchRows(PG_TABLES)
+	return client.fetchRows(statements.PG_TABLES)
 }
 
 func (client *Client) Table(table string) (*Result, error) {
-	return client.query(PG_TABLE_SCHEMA, table)
+	return client.query(statements.PG_TABLE_SCHEMA, table)
 }
 
 func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error) {
@@ -118,11 +122,11 @@ func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error)
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
-	return client.query(PG_TABLE_INFO, table)
+	return client.query(statements.PG_TABLE_INFO, table)
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
-	res, err := client.query(PG_TABLE_INDEXES, table)
+	res, err := client.query(statements.PG_TABLE_INDEXES, table)
 
 	if err != nil {
 		return nil, err
@@ -133,7 +137,7 @@ func (client *Client) TableIndexes(table string) (*Result, error) {
 
 // Returns all active queriers on the server
 func (client *Client) Activity() (*Result, error) {
-	return client.query(PG_ACTIVITY)
+	return client.query(statements.PG_ACTIVITY)
 }
 
 func (client *Client) Query(query string) (*Result, error) {
@@ -141,7 +145,7 @@ func (client *Client) Query(query string) (*Result, error) {
 
 	// Save history records only if query did not fail
 	if err == nil {
-		client.history = append(client.history, NewHistoryRecord(query))
+		client.History = append(client.History, history.NewRecord(query))
 	}
 
 	return res, err
@@ -229,6 +233,11 @@ func (res *Result) CSV() []byte {
 
 	writer.Flush()
 	return buff.Bytes()
+}
+
+// Close database connection
+func (client *Client) Close() error {
+	return client.db.Close()
 }
 
 // Fetch all rows as strings for a single column

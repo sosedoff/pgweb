@@ -1,4 +1,4 @@
-package main
+package connection
 
 import (
 	"errors"
@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/user"
 	"strings"
+
+	"github.com/sosedoff/pgweb/pkg/command"
 )
 
 func currentUser() (string, error) {
@@ -22,7 +24,7 @@ func currentUser() (string, error) {
 	return "", errors.New("Unable to detect OS user")
 }
 
-func formatConnectionUrl(opts Options) (string, error) {
+func FormatUrl(opts command.Options) (string, error) {
 	url := opts.Url
 
 	// Make sure to only accept urls in a standard format
@@ -50,13 +52,13 @@ func formatConnectionUrl(opts Options) (string, error) {
 	return url, nil
 }
 
-func connectionSettingsBlank(opts Options) bool {
+func IsBlank(opts command.Options) bool {
 	return opts.Host == "" && opts.User == "" && opts.DbName == "" && opts.Url == ""
 }
 
-func buildConnectionString(opts Options) (string, error) {
+func BuildString(opts command.Options) (string, error) {
 	if opts.Url != "" {
-		return formatConnectionUrl(opts)
+		return FormatUrl(opts)
 	}
 
 	// Try to detect user from current OS user

@@ -22,7 +22,7 @@ test:
 	godep go test -cover
 
 assets: static/
-	go-bindata $(BINDATA_OPTS) $(BINDATA_IGNORE) -ignore=[.]gitignore -ignore=[.]gitkeep $<...
+	go-bindata -o pkg/data/bindata.go -pkg data $(BINDATA_OPTS) $(BINDATA_IGNORE) -ignore=[.]gitignore -ignore=[.]gitkeep $<...
 
 dev-assets:
 	@$(MAKE) --no-print-directory assets BINDATA_OPTS="-debug"
