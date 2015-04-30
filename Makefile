@@ -11,6 +11,7 @@ usage:
 	@echo "make build           : Generate production build for current OS"
 	@echo "make bootstrap       : Install cross-compilation toolchain"
 	@echo "make release         : Generate binaries for all supported OSes"
+	@echo "make test            : Execute test suite"
 	@echo "make clean           : Remove all build files and reset assets"
 	@echo "make assets          : Generate production assets file"
 	@echo "make dev-assets      : Generate development assets file"
