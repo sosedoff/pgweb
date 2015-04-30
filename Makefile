@@ -19,7 +19,7 @@ usage:
 	@echo ""
 
 test:
-	godep go test -cover
+	godep go test -cover ./...
 
 assets: static/
 	go-bindata -o pkg/data/bindata.go -pkg data $(BINDATA_OPTS) $(BINDATA_IGNORE) -ignore=[.]gitignore -ignore=[.]gitkeep $<...
