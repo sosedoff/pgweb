@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"reflect"
 
+	_ "github.com/lib/pq"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
@@ -65,7 +67,6 @@ func NewFromUrl(url string) (*Client, error) {
 	}
 
 	db, err := sqlx.Open("postgres", url)
-
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +238,10 @@ func (res *Result) CSV() []byte {
 
 // Close database connection
 func (client *Client) Close() error {
-	return client.db.Close()
+	if client.db != nil {
+		return client.db.Close()
+	}
+	return nil
 }
 
 // Fetch all rows as strings for a single column

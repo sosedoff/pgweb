@@ -10,8 +10,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var testClient *Client
-var testCommands map[string]string
+var (
+	testClient   *Client
+	testCommands map[string]string
+)
 
 func setupCommands() {
 	testCommands = map[string]string{
@@ -40,7 +42,7 @@ func setup() {
 		os.Exit(1)
 	}
 
-	out, err = exec.Command(testCommands["psql"], "-U", "postgres", "-h", "localhost", "-f", "./data/booktown.sql", "booktown").CombinedOutput()
+	out, err = exec.Command(testCommands["psql"], "-U", "postgres", "-h", "localhost", "-f", "../../data/booktown.sql", "booktown").CombinedOutput()
 
 	if err != nil {
 		fmt.Println("Database import failed:", string(out))
@@ -50,7 +52,7 @@ func setup() {
 }
 
 func setupClient() {
-	testClient, _ = NewClientFromUrl("postgres://postgres@localhost/booktown?sslmode=disable")
+	testClient, _ = NewFromUrl("postgres://postgres@localhost/booktown?sslmode=disable")
 }
 
 func teardownClient() {
@@ -69,14 +71,14 @@ func teardown() {
 
 func test_NewClientFromUrl(t *testing.T) {
 	url := "postgres://postgres@localhost/booktown?sslmode=disable"
-	client, err := NewClientFromUrl(url)
+	client, err := NewFromUrl(url)
 
 	if err != nil {
-		defer client.db.Close()
+		defer client.Close()
 	}
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, url, client.connectionString)
+	assert.Equal(t, url, client.ConnectionString)
 }
 
 func test_Test(t *testing.T) {
@@ -209,7 +211,7 @@ func test_ResultCsv(t *testing.T) {
 
 func test_History(t *testing.T) {
 	_, err := testClient.Query("SELECT * FROM books")
-	query := testClient.history[len(testClient.history)-1].Query
+	query := testClient.History[len(testClient.History)-1].Query
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "SELECT * FROM books", query)
@@ -217,7 +219,7 @@ func test_History(t *testing.T) {
 
 func test_HistoryError(t *testing.T) {
 	_, err := testClient.Query("SELECT * FROM books123")
-	query := testClient.history[len(testClient.history)-1].Query
+	query := testClient.History[len(testClient.History)-1].Query
 
 	assert.NotEqual(t, nil, err)
 	assert.NotEqual(t, "SELECT * FROM books123", query)
