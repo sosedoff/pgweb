@@ -410,7 +410,7 @@ function getConnectionString() {
       port = "5432";
     }
 
-    url = "postgres://" + user + ":" + encodeURIComponent(pass) + "@" + host + ":" + port + "/" + db + "?sslmode=" + ssl;
+    url = "postgres://" + user + ":" + pass + "@" + host + ":" + port + "/" + db + "?sslmode=" + ssl;
   }
   else {
     var local = url.indexOf("localhost") != -1 || url.indexOf("127.0.0.1") != -1;
