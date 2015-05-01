@@ -1,3 +1,5 @@
+TARGETS = darwin/amd64 darwin/386 linux/amd64 linux/386 windows/amd64 windows/386
+GIT_COMMIT = $(shell git rev-parse HEAD)
 DOCKER_RELEASE_TAG = "sosedoff/pgweb:$(shell git describe --abbrev=0 --tags | sed 's/v//')"
 BINDATA_IGNORE = $(shell git ls-files -io --exclude-standard $< | sed 's/^/-ignore=/;s/[.]/[.]/g')
 
@@ -37,7 +39,10 @@ build: assets
 	@echo "You can now execute ./pgweb"
 
 release: assets
-	gox -osarch="darwin/amd64 darwin/386 linux/amd64 linux/386 windows/amd64 windows/386" -output="./bin/pgweb_{{.OS}}_{{.Arch}}"
+	gox \
+		-osarch="$(TARGETS)" \
+		-ldflags "-X main.GitCommit $(GIT_COMMIT)" \
+		-output="./bin/pgweb_{{.OS}}_{{.Arch}}"
 
 bootstrap:
 	gox -build-toolchain
