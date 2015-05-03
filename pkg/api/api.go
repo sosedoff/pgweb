@@ -24,7 +24,7 @@ func GetAsset(c *gin.Context) {
 	serveStaticAsset(c.Params.ByName("path"), c)
 }
 
-func GetConnect(c *gin.Context) {
+func Connect(c *gin.Context) {
 	url := c.Request.FormValue("url")
 
 	if url == "" {
@@ -65,7 +65,7 @@ func GetConnect(c *gin.Context) {
 	c.JSON(200, info.Format()[0])
 }
 
-func GetGetDatabases(c *gin.Context) {
+func GetDatabases(c *gin.Context) {
 	names, err := DbClient.Databases()
 
 	if err != nil {
@@ -76,7 +76,7 @@ func GetGetDatabases(c *gin.Context) {
 	c.JSON(200, names)
 }
 
-func GetRunQuery(c *gin.Context) {
+func RunQuery(c *gin.Context) {
 	query := strings.TrimSpace(c.Request.FormValue("query"))
 
 	if query == "" {
@@ -87,7 +87,7 @@ func GetRunQuery(c *gin.Context) {
 	GetHandleQuery(query, c)
 }
 
-func GetExplainQuery(c *gin.Context) {
+func ExplainQuery(c *gin.Context) {
 	query := strings.TrimSpace(c.Request.FormValue("query"))
 
 	if query == "" {
@@ -98,7 +98,7 @@ func GetExplainQuery(c *gin.Context) {
 	GetHandleQuery(fmt.Sprintf("EXPLAIN ANALYZE %s", query), c)
 }
 
-func GetGetSchemas(c *gin.Context) {
+func GetSchemas(c *gin.Context) {
 	names, err := DbClient.Schemas()
 
 	if err != nil {
@@ -109,7 +109,7 @@ func GetGetSchemas(c *gin.Context) {
 	c.JSON(200, names)
 }
 
-func GetGetTables(c *gin.Context) {
+func GetTables(c *gin.Context) {
 	names, err := DbClient.Tables()
 
 	if err != nil {
@@ -120,7 +120,7 @@ func GetGetTables(c *gin.Context) {
 	c.JSON(200, names)
 }
 
-func GetGetTable(c *gin.Context) {
+func GetTable(c *gin.Context) {
 	res, err := DbClient.Table(c.Params.ByName("table"))
 
 	if err != nil {
@@ -131,7 +131,7 @@ func GetGetTable(c *gin.Context) {
 	c.JSON(200, res)
 }
 
-func GetGetTableRows(c *gin.Context) {
+func GetTableRows(c *gin.Context) {
 	limit := 1000 // Number of rows to fetch
 	limitVal := c.Request.FormValue("limit")
 
@@ -167,7 +167,7 @@ func GetGetTableRows(c *gin.Context) {
 	c.JSON(200, res)
 }
 
-func GetGetTableInfo(c *gin.Context) {
+func GetTableInfo(c *gin.Context) {
 	res, err := DbClient.TableInfo(c.Params.ByName("table"))
 
 	if err != nil {
