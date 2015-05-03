@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sosedoff/pgweb/pkg/data"
 )
 
 var extraMimeTypes = map[string]string{
@@ -13,6 +14,7 @@ var extraMimeTypes = map[string]string{
 	".woff": "application/x-font-woff",
 	".eot":  "application/vnd.ms-fontobject",
 	".svg":  "image/svg+xml",
+	".html": "text/html; charset-utf-8",
 }
 
 type Error struct {
@@ -71,4 +73,14 @@ func dbCheckMiddleware() gin.HandlerFunc {
 
 		return
 	}
+}
+
+func serveStaticAsset(path string, c *gin.Context) {
+	data, err := data.Asset("static" + path)
+	if err != nil {
+		c.String(400, err.Error())
+		c.Abort()
+	}
+
+	c.Data(200, assetContentType(path), data)
 }

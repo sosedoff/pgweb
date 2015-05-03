@@ -12,20 +12,16 @@ import (
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
-	"github.com/sosedoff/pgweb/pkg/data"
 )
 
 var DbClient *client.Client
 
 func GetHome(c *gin.Context) {
-	data, err := data.Asset("static/index.html")
+	serveStaticAsset("/index.html", c)
+}
 
-	if err != nil {
-		c.String(400, err.Error())
-		return
-	}
-
-	c.Data(200, "text/html; charset=utf-8", data)
+func GetAsset(c *gin.Context) {
+	serveStaticAsset(c.Params.ByName("path"), c)
 }
 
 func GetConnect(c *gin.Context) {
@@ -247,21 +243,4 @@ func GetBookmarks(c *gin.Context) {
 	}
 
 	c.JSON(200, bookmarks)
-}
-
-func GetAsset(c *gin.Context) {
-	path := "static" + c.Params.ByName("path")
-	data, err := data.Asset(path)
-
-	if err != nil {
-		c.String(400, err.Error())
-		return
-	}
-
-	if len(data) == 0 {
-		c.String(404, "Asset is empty")
-		return
-	}
-
-	c.Data(200, assetContentType(path), data)
 }
