@@ -79,8 +79,17 @@ func serveStaticAsset(path string, c *gin.Context) {
 	data, err := data.Asset("static" + path)
 	if err != nil {
 		c.String(400, err.Error())
-		c.Abort()
+		return
 	}
 
 	c.Data(200, assetContentType(path), data)
+}
+
+func serveResult(result interface{}, err error, c *gin.Context) {
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	c.JSON(200, result)
 }

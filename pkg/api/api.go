@@ -67,13 +67,7 @@ func Connect(c *gin.Context) {
 
 func GetDatabases(c *gin.Context) {
 	names, err := DbClient.Databases()
-
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, names)
+	serveResult(names, err, c)
 }
 
 func RunQuery(c *gin.Context) {
@@ -84,7 +78,7 @@ func RunQuery(c *gin.Context) {
 		return
 	}
 
-	GetHandleQuery(query, c)
+	HandleQuery(query, c)
 }
 
 func ExplainQuery(c *gin.Context) {
@@ -95,40 +89,22 @@ func ExplainQuery(c *gin.Context) {
 		return
 	}
 
-	GetHandleQuery(fmt.Sprintf("EXPLAIN ANALYZE %s", query), c)
+	HandleQuery(fmt.Sprintf("EXPLAIN ANALYZE %s", query), c)
 }
 
 func GetSchemas(c *gin.Context) {
 	names, err := DbClient.Schemas()
-
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, names)
+	serveResult(names, err, c)
 }
 
 func GetTables(c *gin.Context) {
 	names, err := DbClient.Tables()
-
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, names)
+	serveResult(names, err, c)
 }
 
 func GetTable(c *gin.Context) {
 	res, err := DbClient.Table(c.Params.ByName("table"))
-
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, res)
+	serveResult(res, err, c)
 }
 
 func GetTableRows(c *gin.Context) {
@@ -158,13 +134,7 @@ func GetTableRows(c *gin.Context) {
 	}
 
 	res, err := DbClient.TableRows(c.Params.ByName("table"), opts)
-
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, res)
+	serveResult(res, err, c)
 }
 
 func GetTableInfo(c *gin.Context) {
@@ -195,26 +165,15 @@ func GetConnectionInfo(c *gin.Context) {
 
 func GetActivity(c *gin.Context) {
 	res, err := DbClient.Activity()
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, res)
+	serveResult(res, err, c)
 }
 
 func GetTableIndexes(c *gin.Context) {
 	res, err := DbClient.TableIndexes(c.Params.ByName("table"))
-
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, res)
+	serveResult(res, err, c)
 }
 
-func GetHandleQuery(query string, c *gin.Context) {
+func HandleQuery(query string, c *gin.Context) {
 	result, err := DbClient.Query(query)
 
 	if err != nil {
@@ -236,11 +195,5 @@ func GetHandleQuery(query string, c *gin.Context) {
 
 func GetBookmarks(c *gin.Context) {
 	bookmarks, err := bookmarks.ReadAll(bookmarks.Path())
-
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, bookmarks)
+	serveResult(bookmarks, err, c)
 }
