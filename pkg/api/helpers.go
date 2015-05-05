@@ -43,6 +43,7 @@ func NewError(err error) Error {
 // Middleware function to check database connection status before running queries
 func dbCheckMiddleware() gin.HandlerFunc {
 	allowedPaths := []string{
+		"/api/info",
 		"/api/connect",
 		"/api/bookmarks",
 		"/api/history",

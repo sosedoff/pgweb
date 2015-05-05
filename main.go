@@ -14,11 +14,6 @@ import (
 	"github.com/sosedoff/pgweb/pkg/util"
 )
 
-const VERSION = "0.5.2"
-
-// The git commit that was compiled. This will be filled in by the compiler.
-var GitCommit string
-
 var options command.Options
 
 func exitWithMessage(message string) {
@@ -72,9 +67,9 @@ func initOptions() {
 }
 
 func printVersion() {
-	str := fmt.Sprintf("Pgweb v%s", VERSION)
-	if GitCommit != "" {
-		str += fmt.Sprintf(" (git: %s)", GitCommit)
+	str := fmt.Sprintf("Pgweb v%s", command.VERSION)
+	if command.GitCommit != "" {
+		str += fmt.Sprintf(" (git: %s)", command.GitCommit)
 	}
 
 	fmt.Println(str)

@@ -197,3 +197,13 @@ func GetBookmarks(c *gin.Context) {
 	bookmarks, err := bookmarks.ReadAll(bookmarks.Path())
 	serveResult(bookmarks, err, c)
 }
+
+func GetInfo(c *gin.Context) {
+	info := map[string]string{
+		"version":    command.VERSION,
+		"git_sha":    command.GitCommit,
+		"build_time": command.BuildTime,
+	}
+
+	c.JSON(200, info)
+}

@@ -12,6 +12,7 @@ func SetupRoutes(router *gin.Engine) {
 	{
 		api.Use(dbCheckMiddleware())
 
+		api.GET("/info", GetInfo)
 		api.POST("/connect", Connect)
 		api.GET("/databases", GetDatabases)
 		api.GET("/connection", GetConnectionInfo)
