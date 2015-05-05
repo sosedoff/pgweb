@@ -378,7 +378,7 @@
 #connection_window {
   z-index: 3;
   position: fixed;
-  background: #ebeef0;
+  background: #fff;
   top: 0px;
   left: 0px;
   bottom: 0px;
@@ -418,12 +418,12 @@
   text-align: center;
   text-shadow: 0px 1px 0px #fff;
   margin-bottom: 25px;
-  color: #95A7B7;
+  color: #999;
   font-weight: normal;
 }
 
 .connection-settings form {
-  background: #fff;
+  background: #f6f6f6;
   padding: 25px;
   border-radius: 4px;
   -moz-border-radius: 4px;
