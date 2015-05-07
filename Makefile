@@ -40,10 +40,14 @@ build: assets
 	@echo "You can now execute ./pgweb"
 
 release: assets
-	gox \
+	@echo "Building binaries..."
+	@gox \
 		-osarch="$(TARGETS)" \
 		-ldflags "-X github.com/sosedoff/pgweb/pkg/command.GitCommit $(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime $(BUILD_TIME)" \
 		-output="./bin/pgweb_{{.OS}}_{{.Arch}}"
+
+	@echo "\nPackaging binaries...\n"
+	@./script/package.sh
 
 bootstrap:
 	gox -build-toolchain
