@@ -295,7 +295,7 @@
 
 #results tr:nth-child(even) > td {
   border: none;
-  background: #f8f8f8;
+  background: #fafafa;
 }
 
 #results tr:nth-child(odd) > td {
@@ -325,6 +325,10 @@
 
 #results tbody tr:hover td {
   background: #ffe;
+}
+
+#results tbody tr {
+  border-bottom: 1px solid #f2f2f2;
 }
 
 #results tr.selected td {
