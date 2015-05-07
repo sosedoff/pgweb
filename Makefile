@@ -61,7 +61,7 @@ setup:
 
 clean:
 	rm -f ./pgweb
-	rm -f ./bin/*
+	rm -rf ./bin/*
 	rm -f bindata.go
 	make assets
 
