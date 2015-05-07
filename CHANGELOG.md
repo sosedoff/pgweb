@@ -1,3 +1,11 @@
+## 0.5.3 - 2015-05-06
+
+- Changes default server port from 8080 to 8081 to avoil conflict with RethinkDB
+- Changes styles for table rows and connection settings window
+- Adds highlighting styles for columns with sort order
+- Adds git sha into program version output
+- Add new endpoint /api/info to get build details
+
 ## 0.5.2 - 2015-04-13
 
 - Adds a new endpoint /activity that retuns active queries
