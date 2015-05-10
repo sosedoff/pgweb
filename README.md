@@ -3,6 +3,8 @@
 Web-based PostgreSQL database browser written in Go.
 
 [![Release](https://img.shields.io/github/release/sosedoff/pgweb.svg)](https://github.com/sosedoff/pgweb/releases)
+[![Linux Build](https://img.shields.io/travis/sosedoff/pgweb.svg?label=Linux)](https://travis-ci.org/sosedoff/pgweb)
+[![Windows Build](https://img.shields.io/appveyor/ci/sosedoff/pgweb/master.svg?label=Windows)](https://ci.appveyor.com/project/sosedoff/pgweb)
 
 ## Overview
 
@@ -68,11 +70,6 @@ Run tests:
 ```
 make test
 ```
-
-Continuous integration status:
-
-- Travis (Linux) - [![Build Status](https://img.shields.io/travis/sosedoff/pgweb.svg)](https://travis-ci.org/sosedoff/pgweb)
-- Appveyor (Windows) - [![Build Status](https://img.shields.io/appveyor/ci/sosedoff/pgweb/master.svg)](https://ci.appveyor.com/project/sosedoff/pgweb)
 
 ## Contribute
 
