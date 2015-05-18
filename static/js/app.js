@@ -253,7 +253,7 @@ function runQuery() {
   $("#run, #explain, #csv").prop("disabled", true);
   $("#query_progress").show();
 
-  var query = $.trim(editor.getValue());
+  var query = $.trim(editor.getSelectedText() || editor.getValue());
 
   if (query.length == 0) {
     $("#run, #explain, #csv").prop("disabled", false);
