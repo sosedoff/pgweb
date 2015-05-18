@@ -73,6 +73,8 @@
   left: 0px;
   top: 0px;
   bottom: 0px;
+  border-right: 1px solid #d4d4d4;
+  box-sizing: border-box;
 }
 
 #sidebar .title {
@@ -83,8 +85,9 @@
   height: 33px;
   padding: 0px 8px;
   padding-left: 12px;
-  color: #fff;
-  background: #31373d;
+  color: #000;
+  font-weight: bold;
+  background: #f6f6f6;
 }
 
 #sidebar div.tables-list {
@@ -94,7 +97,7 @@
   left: 0px;
   bottom: 130px;
   overflow: auto;
-  background: #31373d;
+  background: #f6f6f6;
 }
 
 #sidebar div.tables-list .wrap {
@@ -114,17 +117,17 @@
   float: right;
   margin-right: 4px;
   cursor: pointer;
-  color: #95a7b7;
+  color: #aaa;
   display: none;
 }
 
 #sidebar div.tables-list .title span.refresh:hover {
-  color: #fff;
+  color: #555;
 }
 
 #sidebar div.tables-list #tables {
   padding: 33px 0 0;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 #sidebar div.table-information {
@@ -133,7 +136,10 @@
   left: 0px;
   height: 130px;
   bottom: 0px;
-  background: #272c30;
+  background: #f6f6f6;
+  border-top: 1px solid #d4d4d4;
+  border-right: 1px solid #d4d4d4;
+  box-sizing: border-box;
 }
 
 #sidebar div.table-information .wrap {
@@ -142,7 +148,7 @@
 }
 
 #sidebar div.table-information .title {
-  background: #272c30;
+  background: #f6f6f6;
 }
 
 #sidebar div.table-information ul {
@@ -156,11 +162,11 @@
   height: 24px;
   padding: 0 8px 0 12px;
   cursor: default;
-  color: #637D94 !important;
+  color: #7F7E7F !important;
 }
 
 #sidebar div.table-information ul li span {
-  color: #95a7b7;
+  color: #4F4F4F;
   min-width: 0;
   padding-left: 0px;
 }
@@ -177,19 +183,18 @@
   padding: 0px;
   margin: 0px;
   cursor: pointer;
-  color: #95a7b7 !important;
+  color: #4F4E4F !important;
   white-space: nowrap;
 }
 
 #sidebar li.selected {
-  color: #fff !important;
   font-weight: bold;
-  background: #272c30;
+  background: #e6e6e6;
   -webkit-font-smoothing: antialiased;
 }
 
 #sidebar ul li:hover span {
-  background: #272c30;
+  background: #f1f1f1;
 }
 
 #sidebar ul li i {
