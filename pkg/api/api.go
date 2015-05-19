@@ -185,6 +185,10 @@ func HandleQuery(query string, c *gin.Context) {
 
 	if len(q["format"]) > 0 && q["format"][0] == "csv" {
 		filename := fmt.Sprintf("pgweb-%v.csv", time.Now().Unix())
+		if len(q["filename"]) > 0 && q["filename"][0] != "" {
+			filename = q["filename"][0]
+		}
+
 		c.Writer.Header().Set("Content-disposition", "attachment;filename="+filename)
 		c.Data(200, "text/csv", result.CSV())
 		return

@@ -12,6 +12,7 @@
   <script type="text/javascript" src="/static/js/jquery.js"></script>
   <script type="text/javascript" src="/static/js/ace.js"></script>
   <script type="text/javascript" src="/static/js/ace-pgsql.js"></script>
+  <script type="text/javascript" src="/static/js/bootstrap-contextmenu.js"></script>
   <script type="text/javascript" src="/static/js/app.js"></script>
 </head>
 <body>
@@ -81,7 +82,6 @@
           <div class="btn-group btn-group-sm connection-group-switch">
             <button type="button" data="scheme" class="btn btn-default" id="connection_scheme">Scheme</button>
             <button type="button" data="standard" class="btn btn-default active" id="connection_standard">Standard</button>
-            <!--<button type="button" data="ssh" class="btn btn-default">SSH</button>-->
           </div>
         </div>
 
@@ -192,6 +192,14 @@
         </div>
       </form>
     </div>
+  </div>
+  <div id="tables_context_menu">
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="#" data-action="export">Export to CSV</a></li>
+      <li class="divider"></li>
+      <li><a href="#" data-action="truncate">Truncate table</a></li>
+      <li><a href="#" data-action="delete">Delete table</a></li>
+    </ul>
   </div>
 </body>
 </html>

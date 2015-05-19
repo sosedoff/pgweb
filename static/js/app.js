@@ -37,7 +37,7 @@ function loadTables() {
 
   getTables(function(data) {
     data.forEach(function(item) {
-      $("<li><span><i class='fa fa-table'></i> " + item + "</span></li>").appendTo("#tables");
+      $("<li><span><i class='fa fa-table'></i> " + item + " </span></li>").appendTo("#tables");
     });
   });
 }
@@ -68,15 +68,45 @@ function resetTable() {
     removeClass("no-crop");
 }
 
+function performTableAction(table, action) {
+  if (action == "truncate" || action == "delete") {
+    var message = "Are you sure you want to " + action + " table " + table + " ?";
+    if (!confirm(message)) return;
+  }
+
+  switch(action) {
+    case "truncate":
+      executeQuery("TRUNCATE TABLE " + table, function(data) {
+        if (data.error) alert(data.error);
+        resetTable();
+      });
+      break;
+    case "delete":
+      executeQuery("DROP TABLE " + table, function(data) {
+        if (data.error) alert(data.error);
+        loadTables();
+        resetTable();
+      });
+      break;
+    case "export":
+      var filename = table + ".csv"
+      var query = window.encodeURI("SELECT * FROM " + table);
+      var url = "http://" + window.location.host + "/api/query?format=csv&filename=" + filename + "&query=" + query;
+      var win = window.open(url, "_blank");
+      win.focus();
+      break;
+  }
+}
+
 function sortArrow(direction) {
-    switch (direction) {
-        case "ASC":
-            return "&#x25B2;";
-        case "DESC":
-            return "&#x25BC;";
-        default:
-            return "";
-    }
+  switch (direction) {
+    case "ASC":
+      return "&#x25B2;";
+    case "DESC":
+      return "&#x25BC;";
+    default:
+      return "";
+  }
 }
 
 function buildTable(results, sortColumn, sortOrder) {
@@ -494,6 +524,16 @@ $(document).ready(function() {
 
     showTableContent();
     showTableInfo();
+  });
+
+  $("#tables").contextmenu({
+    target: "#tables_context_menu",
+    scopes: "li",
+    onItem: function(context, e) {
+      var table   = $.trim($(context[0]).text());
+      var action  = $(e.target).data("action");
+      performTableAction(table, action);
+    }
   });
 
   $("#refresh_tables").on("click", function() {
