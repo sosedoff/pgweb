@@ -20,6 +20,6 @@ build_script:
   - godep go build
 
 test_script:
-  - godep go test
+  - godep go test -cover ./...
 
 deploy: off
