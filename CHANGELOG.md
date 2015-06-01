@@ -1,3 +1,10 @@
+## 0.6.0 - 2015-05-31
+
+- Adds ability to execute only selected SQL query in run command view, GH-85
+- Adds ability to delete/truncate table via context meny on sidebar view 
+- Adds ability to export table contents to CSV via context menu on sidebar view
+- Changes sidebar color scheme to a lighter and better looking one
+
 ## 0.5.3 - 2015-05-06
 
 - Changes default server port from 8080 to 8081 to avoil conflict with RethinkDB
