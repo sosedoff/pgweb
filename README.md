@@ -14,8 +14,7 @@ is to utilize ability of the compiler to produce zero-dependency binaries for
 multiple platforms. Pgweb was created as an attempt to build very simple and portable
 application to work with local or remote PostgreSQL databases.
 
-<img src="screenshots/browse.png" width="345px" />
-<img src="screenshots/query.png" width="345px" />
+[See application screenshots](SCREENSHOTS.md)
 
 ## Features
 
