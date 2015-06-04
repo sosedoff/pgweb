@@ -22,10 +22,10 @@ application to work with local or remote PostgreSQL databases.
 - Zero dependencies
 - Simple installation (distributes as a single binary)
 - Connect to local or remote servers
-- Browse tables and table data
+- Browse tables and table rows
 - Get table details: structure, size, indeces, row count
-- Run / analyze custom queries
-- Export query results to CSV
+- Run and analyze custom SQL queries
+- Export table rows and query results as CSV
 - Query history
 - Server bookmarks
 
@@ -64,7 +64,11 @@ pgweb --url postgres://user:password@host:port/database?sslmode=[mode]
 
 ## Testing
 
-Run tests:
+Before running tests, make sure you have PostgreSQL server running on `localhost:5432`
+interface. Also, you must have `postgres` user that could create new databases
+in your local environment. Pgweb server should not be running at the same time.
+
+Execute test suite:
 
 ```
 make test
@@ -72,10 +76,13 @@ make test
 
 ## Contribute
 
-- Fork repository
-- Create a feature or bugfix branch
-- Open a new pull request
-- Use [github issues](https://github.com/sosedoff/pgweb/issues) for any questions
+- Fork this repository
+- Create a new feature branch for a new functionality or bugfix
+- Commit your changes
+- Execute test suite
+- Push your code and open a new pull request
+- Use [issues](https://github.com/sosedoff/pgweb/issues) for any questions
+- Check [wiki](https://github.com/sosedoff/pgweb/wiki) for extra documentation
 
 ## Contact
 
