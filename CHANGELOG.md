@@ -1,3 +1,7 @@
+## 0.6.1 - 2015-06-18
+
+- This release is repackage-release targeted to fix binary downloads
+
 ## 0.6.0 - 2015-05-31
 
 - Adds ability to execute only selected SQL query in run command view, GH-85
