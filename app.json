@@ -8,6 +8,7 @@
   "keywords": [
     "postgres",
     "database",
+    "golang",
     "frontend"
   ],
   "addons": [
@@ -21,7 +22,7 @@
     },
     "AUTH_PASS": {
       "description": "The login password. Please change this.",
-      "value": "pgweb"
+      "generator": "secret"
     }
   }
 }
