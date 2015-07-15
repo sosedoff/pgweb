@@ -14,7 +14,6 @@
     "heroku-postgresql"
   ],
   "env": {
-    "BUILDPACK_URL": "https://github.com/kr/heroku-buildpack-go",
     "AUTH_USER": {
       "description": "A username to log into pgweb.",
       "value": "admin"
