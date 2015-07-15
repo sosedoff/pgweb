@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -15,21 +16,31 @@ type Fatalistic interface {
 	Fatal(args ...interface{})
 }
 
+func forceBinaryParameters() bool {
+	bp := os.Getenv("PQTEST_BINARY_PARAMETERS")
+	if bp == "yes" {
+		return true
+	} else if bp == "" || bp == "no" {
+		return false
+	} else {
+		panic("unexpected value for PQTEST_BINARY_PARAMETERS")
+	}
+}
+
 func openTestConnConninfo(conninfo string) (*sql.DB, error) {
-	datname := os.Getenv("PGDATABASE")
-	sslmode := os.Getenv("PGSSLMODE")
-	timeout := os.Getenv("PGCONNECT_TIMEOUT")
-
-	if datname == "" {
-		os.Setenv("PGDATABASE", "pqgotest")
+	defaultTo := func(envvar string, value string) {
+		if os.Getenv(envvar) == "" {
+			os.Setenv(envvar, value)
+		}
 	}
+	defaultTo("PGDATABASE", "pqgotest")
+	defaultTo("PGSSLMODE", "disable")
+	defaultTo("PGCONNECT_TIMEOUT", "20")
 
-	if sslmode == "" {
-		os.Setenv("PGSSLMODE", "disable")
-	}
-
-	if timeout == "" {
-		os.Setenv("PGCONNECT_TIMEOUT", "20")
+	if forceBinaryParameters() &&
+		!strings.HasPrefix(conninfo, "postgres://") &&
+		!strings.HasPrefix(conninfo, "postgresql://") {
+		conninfo = conninfo + " binary_parameters=yes"
 	}
 
 	return sql.Open("postgres", conninfo)
@@ -106,18 +117,22 @@ func TestCommitInFailedTransaction(t *testing.T) {
 }
 
 func TestOpenURL(t *testing.T) {
-	db, err := openTestConnConninfo("postgres://")
-	if err != nil {
-		t.Fatal(err)
+	testURL := func(url string) {
+		db, err := openTestConnConninfo(url)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer db.Close()
+		// database/sql might not call our Open at all unless we do something with
+		// the connection
+		txn, err := db.Begin()
+		if err != nil {
+			t.Fatal(err)
+		}
+		txn.Rollback()
 	}
-	defer db.Close()
-	// database/sql might not call our Open at all unless we do something with
-	// the connection
-	txn, err := db.Begin()
-	if err != nil {
-		t.Fatal(err)
-	}
-	txn.Rollback()
+	testURL("postgres://")
+	testURL("postgresql://")
 }
 
 func TestExec(t *testing.T) {
@@ -342,6 +357,7 @@ func TestEncodeDecode(t *testing.T) {
 			'2000-1-1 01:02:03.04-7'::timestamptz,
 			0::boolean,
 			123,
+			-321,
 			3.14::float8
 		WHERE
 			    E'\\000\\001\\002'::bytea = $1
@@ -370,9 +386,9 @@ func TestEncodeDecode(t *testing.T) {
 	var got2 string
 	var got3 = sql.NullInt64{Valid: true}
 	var got4 time.Time
-	var got5, got6, got7 interface{}
+	var got5, got6, got7, got8 interface{}
 
-	err = r.Scan(&got1, &got2, &got3, &got4, &got5, &got6, &got7)
+	err = r.Scan(&got1, &got2, &got3, &got4, &got5, &got6, &got7, &got8)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -401,8 +417,12 @@ func TestEncodeDecode(t *testing.T) {
 		t.Fatalf("expected 123, got %d", got6)
 	}
 
-	if got7 != float64(3.14) {
-		t.Fatalf("expected 3.14, got %f", got7)
+	if got7 != int64(-321) {
+		t.Fatalf("expected -321, got %d", got7)
+	}
+
+	if got8 != float64(3.14) {
+		t.Fatalf("expected 3.14, got %f", got8)
 	}
 }
 
