@@ -3,24 +3,34 @@ package pq
 import (
 	"bytes"
 	"database/sql/driver"
+	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"github.com/lib/pq/oid"
 	"math"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/lib/pq/oid"
 )
+
+func binaryEncode(parameterStatus *parameterStatus, x interface{}) []byte {
+	switch v := x.(type) {
+	case []byte:
+		return v
+	default:
+		return encode(parameterStatus, x, oid.T_unknown)
+	}
+	panic("not reached")
+}
 
 func encode(parameterStatus *parameterStatus, x interface{}, pgtypOid oid.Oid) []byte {
 	switch v := x.(type) {
 	case int64:
-		return []byte(fmt.Sprintf("%d", v))
-	case float32:
-		return []byte(fmt.Sprintf("%.9f", v))
+		return strconv.AppendInt(nil, v, 10)
 	case float64:
-		return []byte(fmt.Sprintf("%.17f", v))
+		return strconv.AppendFloat(nil, v, 'f', -1, 64)
 	case []byte:
 		if pgtypOid == oid.T_bytea {
 			return encodeBytea(parameterStatus.serverVersion, v)
@@ -34,7 +44,7 @@ func encode(parameterStatus *parameterStatus, x interface{}, pgtypOid oid.Oid) [
 
 		return []byte(v)
 	case bool:
-		return []byte(fmt.Sprintf("%t", v))
+		return strconv.AppendBool(nil, v)
 	case time.Time:
 		return formatTs(v)
 
@@ -45,7 +55,33 @@ func encode(parameterStatus *parameterStatus, x interface{}, pgtypOid oid.Oid) [
 	panic("not reached")
 }
 
-func decode(parameterStatus *parameterStatus, s []byte, typ oid.Oid) interface{} {
+func decode(parameterStatus *parameterStatus, s []byte, typ oid.Oid, f format) interface{} {
+	if f == formatBinary {
+		return binaryDecode(parameterStatus, s, typ)
+	} else {
+		return textDecode(parameterStatus, s, typ)
+	}
+}
+
+func binaryDecode(parameterStatus *parameterStatus, s []byte, typ oid.Oid) interface{} {
+	switch typ {
+	case oid.T_bytea:
+		return s
+	case oid.T_int8:
+		return int64(binary.BigEndian.Uint64(s))
+	case oid.T_int4:
+		return int64(int32(binary.BigEndian.Uint32(s)))
+	case oid.T_int2:
+		return int64(int16(binary.BigEndian.Uint16(s)))
+
+	default:
+		errorf("don't know how to decode binary parameter of type %u", uint32(typ))
+	}
+
+	panic("not reached")
+}
+
+func textDecode(parameterStatus *parameterStatus, s []byte, typ oid.Oid) interface{} {
 	switch typ {
 	case oid.T_bytea:
 		return parseBytea(s)
@@ -59,7 +95,7 @@ func decode(parameterStatus *parameterStatus, s []byte, typ oid.Oid) interface{}
 		return mustParse("15:04:05-07", typ, s)
 	case oid.T_bool:
 		return s[0] == 't'
-	case oid.T_int8, oid.T_int2, oid.T_int4:
+	case oid.T_int8, oid.T_int4, oid.T_int2:
 		i, err := strconv.ParseInt(string(s), 10, 64)
 		if err != nil {
 			errorf("%s", err)
@@ -86,8 +122,6 @@ func appendEncodedText(parameterStatus *parameterStatus, buf []byte, x interface
 	switch v := x.(type) {
 	case int64:
 		return strconv.AppendInt(buf, v, 10)
-	case float32:
-		return strconv.AppendFloat(buf, float64(v), 'f', -1, 32)
 	case float64:
 		return strconv.AppendFloat(buf, v, 'f', -1, 64)
 	case []byte:
@@ -149,12 +183,6 @@ func appendEscapedText(buf []byte, text string) []byte {
 func mustParse(f string, typ oid.Oid, s []byte) time.Time {
 	str := string(s)
 
-	// Special case until time.Parse bug is fixed:
-	// http://code.google.com/p/go/issues/detail?id=3487
-	if str[len(str)-2] == '.' {
-		str += "0"
-	}
-
 	// check for a 30-minute-offset timezone
 	if (typ == oid.T_timestamptz || typ == oid.T_timetz) &&
 		str[len(str)-3] == ':' {
@@ -212,11 +240,72 @@ func (c *locationCache) getLocation(offset int) *time.Location {
 	return location
 }
 
+var infinityTsEnabled = false
+var infinityTsNegative time.Time
+var infinityTsPositive time.Time
+
+const (
+	infinityTsEnabledAlready        = "pq: infinity timestamp enabled already"
+	infinityTsNegativeMustBeSmaller = "pq: infinity timestamp: negative value must be smaller (before) than positive"
+)
+
+/*
+ * If EnableInfinityTs is not called, "-infinity" and "infinity" will return
+ * []byte("-infinity") and []byte("infinity") respectively, and potentially
+ * cause error "sql: Scan error on column index 0: unsupported driver -> Scan pair: []uint8 -> *time.Time",
+ * when scanning into a time.Time value.
+ *
+ * Once EnableInfinityTs has been called, all connections created using this
+ * driver will decode Postgres' "-infinity" and "infinity" for "timestamp",
+ * "timestamp with time zone" and "date" types to the predefined minimum and
+ * maximum times, respectively.  When encoding time.Time values, any time which
+ * equals or preceeds the predefined minimum time will be encoded to
+ * "-infinity".  Any values at or past the maximum time will similarly be
+ * encoded to "infinity".
+ *
+ *
+ * If EnableInfinityTs is called with negative >= positive, it will panic.
+ * Calling EnableInfinityTs after a connection has been established results in
+ * undefined behavior.  If EnableInfinityTs is called more than once, it will
+ * panic.
+ */
+func EnableInfinityTs(negative time.Time, positive time.Time) {
+	if infinityTsEnabled {
+		panic(infinityTsEnabledAlready)
+	}
+	if !negative.Before(positive) {
+		panic(infinityTsNegativeMustBeSmaller)
+	}
+	infinityTsEnabled = true
+	infinityTsNegative = negative
+	infinityTsPositive = positive
+}
+
+/*
+ * Testing might want to toggle infinityTsEnabled
+ */
+func disableInfinityTs() {
+	infinityTsEnabled = false
+}
+
 // This is a time function specific to the Postgres default DateStyle
 // setting ("ISO, MDY"), the only one we currently support. This
 // accounts for the discrepancies between the parsing available with
 // time.Parse and the Postgres date formatting quirks.
-func parseTs(currentLocation *time.Location, str string) (result time.Time) {
+func parseTs(currentLocation *time.Location, str string) interface{} {
+	switch str {
+	case "-infinity":
+		if infinityTsEnabled {
+			return infinityTsNegative
+		}
+		return []byte(str)
+	case "infinity":
+		if infinityTsEnabled {
+			return infinityTsPositive
+		}
+		return []byte(str)
+	}
+
 	monSep := strings.IndexRune(str, '-')
 	// this is Gregorian year, not ISO Year
 	// In Gregorian system, the year 1 BC is followed by AD 1
@@ -310,10 +399,18 @@ func parseTs(currentLocation *time.Location, str string) (result time.Time) {
 	return t
 }
 
-// formatTs formats t as time.RFC3339Nano and appends time zone seconds if
-// needed.
+// formatTs formats t into a format postgres understands.
 func formatTs(t time.Time) (b []byte) {
-	b = []byte(t.Format(time.RFC3339Nano))
+	if infinityTsEnabled {
+		// t <= -infinity : ! (t > -infinity)
+		if !t.After(infinityTsNegative) {
+			return []byte("-infinity")
+		}
+		// t >= infinity : ! (!t < infinity)
+		if !t.Before(infinityTsPositive) {
+			return []byte("infinity")
+		}
+	}
 	// Need to send dates before 0001 A.D. with " BC" suffix, instead of the
 	// minus sign preferred by Go.
 	// Beware, "0000" in ISO is "1 BC", "-0001" is "2 BC" and so on
@@ -324,25 +421,26 @@ func formatTs(t time.Time) (b []byte) {
 		bc = true
 	}
 	b = []byte(t.Format(time.RFC3339Nano))
-	if bc {
-		b = append(b, "  BC"...)
-	}
 
 	_, offset := t.Zone()
 	offset = offset % 60
-	if offset == 0 {
-		return b
+	if offset != 0 {
+		// RFC3339Nano already printed the minus sign
+		if offset < 0 {
+			offset = -offset
+		}
+
+		b = append(b, ':')
+		if offset < 10 {
+			b = append(b, '0')
+		}
+		b = strconv.AppendInt(b, int64(offset), 10)
 	}
 
-	if offset < 0 {
-		offset = -offset
+	if bc {
+		b = append(b, " BC"...)
 	}
-
-	b = append(b, ':')
-	if offset < 10 {
-		b = append(b, '0')
-	}
-	return strconv.AppendInt(b, int64(offset), 10)
+	return b
 }
 
 // Parse a bytea value received from the server.  Both "hex" and the legacy
@@ -397,7 +495,10 @@ func parseBytea(s []byte) (result []byte) {
 func encodeBytea(serverVersion int, v []byte) (result []byte) {
 	if serverVersion >= 90000 {
 		// Use the hex format if we know that the server supports it
-		result = []byte(fmt.Sprintf("\\x%x", v))
+		result = make([]byte, 2+hex.EncodedLen(len(v)))
+		result[0] = '\\'
+		result[1] = 'x'
+		hex.Encode(result[2:], v)
 	} else {
 		// .. or resort to "escape"
 		for _, b := range v {
