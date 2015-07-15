@@ -1,10 +1,17 @@
+## 0.6.2 - Unreleased
+
+- Adds ability to specify connection strings prefixed by `postgresql://`, [GH-92]
+- Updates configuration for Heroku, [GH-89], [GH-90]
+- Updates postgresql library dependency to latest, [GH-91]
+- Fixes password field to not display plaintext passwords, [GH-87]
+
 ## 0.6.1 - 2015-06-18
 
 - This release is repackage-release targeted to fix binary downloads
 
 ## 0.6.0 - 2015-05-31
 
-- Adds ability to execute only selected SQL query in run command view, GH-85
+- Adds ability to execute only selected SQL query in run command view, [GH-85]
 - Adds ability to delete/truncate table via context meny on sidebar view 
 - Adds ability to export table contents to CSV via context menu on sidebar view
 - Changes sidebar color scheme to a lighter and better looking one
