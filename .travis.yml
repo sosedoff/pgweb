@@ -1,4 +1,5 @@
 language: go
+sudo: false
 
 addons:
   postgresql: "9.3"
