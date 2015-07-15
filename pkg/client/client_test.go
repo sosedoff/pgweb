@@ -81,6 +81,18 @@ func test_NewClientFromUrl(t *testing.T) {
 	assert.Equal(t, url, client.ConnectionString)
 }
 
+func test_NewClientFromUrl2(t *testing.T) {
+	url := "postgresql://postgres@localhost/booktown?sslmode=disable"
+	client, err := NewFromUrl(url)
+
+	if err != nil {
+		defer client.Close()
+	}
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, url, client.ConnectionString)
+}
+
 func test_Test(t *testing.T) {
 	assert.Equal(t, nil, testClient.Test())
 }
