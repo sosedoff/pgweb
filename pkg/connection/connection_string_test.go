@@ -12,7 +12,7 @@ import (
 func Test_Invalid_Url(t *testing.T) {
 	opts := command.Options{}
 	examples := []string{
-		"postgresql://foobar",
+		"postgre://foobar",
 		"foobar",
 	}
 
