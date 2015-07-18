@@ -1,4 +1,4 @@
-## 0.6.2 - Unreleased
+## 0.6.2 - 2015-07-15
 
 - Adds ability to specify connection strings prefixed by `postgresql://`, [GH-92]
 - Updates configuration for Heroku, [GH-89], [GH-90]
