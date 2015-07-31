@@ -291,6 +291,9 @@ function runQuery() {
     return;
   }
 
+  // Automatically save last executed query so its not lost
+  localStorage.setItem("pgweb_query", query);
+
   executeQuery(query, function(data) {
     buildTable(data);
 
@@ -360,6 +363,7 @@ function initEditor() {
   editor.getSession().setMode("ace/mode/pgsql");
   editor.getSession().setTabSize(2);
   editor.getSession().setUseSoftTabs(true);
+
   editor.commands.addCommands([{
     name: "run_query",
     bindKey: {
@@ -379,6 +383,12 @@ function initEditor() {
       runExplain();
     }
   }]);
+
+  var query = localStorage.getItem("pgweb_query");
+  if (query && query.length > 0) {
+    editor.setValue(query);
+    editor.clearSelection();
+  }
 }
 
 function addShortcutTooltips() {
