@@ -1,6 +1,7 @@
 package api
 
 import (
+	"log"
 	"mime"
 	"path/filepath"
 
@@ -73,6 +74,15 @@ func dbCheckMiddleware() gin.HandlerFunc {
 		}
 
 		return
+	}
+}
+
+// Middleware function to print out request parameters and body for debugging
+func requestInspectMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		err := c.Request.ParseForm()
+
+		log.Println("Request params:", err, c.Request.Form)
 	}
 }
 

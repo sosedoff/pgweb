@@ -2,7 +2,16 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sosedoff/pgweb/pkg/command"
 )
+
+func SetupMiddlewares(group *gin.RouterGroup) {
+	if command.Opts.Debug {
+		group.Use(requestInspectMiddleware())
+	}
+
+	group.Use(dbCheckMiddleware())
+}
 
 func SetupRoutes(router *gin.Engine) {
 	router.GET("/", GetHome)
@@ -10,7 +19,7 @@ func SetupRoutes(router *gin.Engine) {
 
 	api := router.Group("/api")
 	{
-		api.Use(dbCheckMiddleware())
+		SetupMiddlewares(api)
 
 		api.GET("/info", GetInfo)
 		api.POST("/connect", Connect)
