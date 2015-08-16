@@ -452,7 +452,7 @@ function getConnectionString() {
     var host = $("#pg_host").val();
     var port = $("#pg_port").val();
     var user = $("#pg_user").val();
-    var pass = $("#pg_password").val();
+    var pass = encodeURIComponent($("#pg_password").val());
     var db   = $("#pg_db").val();
 
     if (port.length == 0) {

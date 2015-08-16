@@ -3,6 +3,7 @@ package connection
 import (
 	"errors"
 	"fmt"
+	neturl "net/url"
 	"os"
 	"os/user"
 	"strings"
@@ -83,7 +84,7 @@ func BuildString(opts command.Options) (string, error) {
 	}
 
 	if opts.Pass != "" {
-		url += fmt.Sprintf(":%s", opts.Pass)
+		url += fmt.Sprintf(":%s", neturl.QueryEscape(opts.Pass))
 	}
 
 	url += fmt.Sprintf("@%s:%d", opts.Host, opts.Port)
