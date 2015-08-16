@@ -24,6 +24,10 @@ function getTableIndexes(table, cb)    { apiCall("get", "/tables/" + table + "/i
 function getHistory(cb)                { apiCall("get", "/history", {}, cb); }
 function getBookmarks(cb)              { apiCall("get", "/bookmarks", {}, cb); }
 
+function encodeQuery(query) {
+  return window.btoa(query);
+}
+
 function executeQuery(query, cb) {
   apiCall("post", "/query", { query: query }, cb);
 }
@@ -344,10 +348,7 @@ function exportToCSV() {
     return;
   }
 
-  // Replace line breaks with spaces and properly encode query
-  query = window.encodeURI(query.replace(/\n/g, " "));
-
-  var url = "http://" + window.location.host + "/api/query?format=csv&query=" + query;
+  var url = "http://" + window.location.host + "/api/query?format=csv&query=" + encodeQuery(query);
   var win = window.open(url, '_blank');
 
   setCurrentTab("table_query");

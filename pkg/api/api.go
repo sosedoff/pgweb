@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"strconv"
@@ -174,8 +175,12 @@ func GetTableIndexes(c *gin.Context) {
 }
 
 func HandleQuery(query string, c *gin.Context) {
-	result, err := DbClient.Query(query)
+	rawQuery, err := base64.StdEncoding.DecodeString(query)
+	if err == nil {
+		query = string(rawQuery)
+	}
 
+	result, err := DbClient.Query(query)
 	if err != nil {
 		c.JSON(400, NewError(err))
 		return
