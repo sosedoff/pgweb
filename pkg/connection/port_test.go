@@ -31,6 +31,7 @@ func Test_portAvailable(t *testing.T) {
 			if err == nil {
 				conn.Close()
 			}
+			serv.Close()
 		}
 	}()
 
