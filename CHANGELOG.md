@@ -1,3 +1,10 @@
+## 0.6.3 - 2015-08-16
+
+- Adds PostgreSQL password escaping in web ui, GH-96
+- Adds base64 query encoding for CSV export, GH-95
+- Adds automatic saving of last executed query to localStorage
+- Adds request middleware to log incoming form params in debug mode
+
 ## 0.6.2 - 2015-07-15
 
 - Adds ability to specify connection strings prefixed by `postgresql://`, [GH-92]
