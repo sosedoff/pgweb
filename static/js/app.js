@@ -324,7 +324,7 @@ function runQuery() {
     // Refresh tables list if table was added or removed
     if (query.match(re)) {
       loadTables();
-    loadSequences();
+      loadSequences();
     }
   });
 }
