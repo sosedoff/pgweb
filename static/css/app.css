@@ -125,7 +125,7 @@
   color: #555;
 }
 
-#sidebar div.tables-list #tables {
+#sidebar div.tables-list #tables, #sequences {
   padding: 33px 0 0;
   font-size: 12px;
 }
