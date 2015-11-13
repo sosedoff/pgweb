@@ -164,6 +164,11 @@ func GetConnectionInfo(c *gin.Context) {
 	c.JSON(200, res.Format()[0])
 }
 
+func GetSequences(c *gin.Context) {
+	res, err := DbClient.Sequences()
+	serveResult(res, err, c)
+}
+
 func GetActivity(c *gin.Context) {
 	res, err := DbClient.Activity()
 	serveResult(res, err, c)

@@ -31,6 +31,8 @@ WHERE table_name = $1`
 
 	PG_TABLES = `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name`
 
+	PG_SEQUENCES = `SELECT sequence_name FROM information_schema.sequences WHERE sequence_schema = 'public' ORDER BY sequence_name`
+
 	PG_ACTIVITY = `SELECT
   datname,
   query,

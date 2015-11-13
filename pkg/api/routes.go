@@ -25,6 +25,7 @@ func SetupRoutes(router *gin.Engine) {
 		api.POST("/connect", Connect)
 		api.GET("/databases", GetDatabases)
 		api.GET("/connection", GetConnectionInfo)
+		api.GET("/sequences", GetSequences)
 		api.GET("/activity", GetActivity)
 		api.GET("/schemas", GetSchemas)
 		api.GET("/tables", GetTables)
