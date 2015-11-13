@@ -23,7 +23,7 @@ function getTableStructure(table, cb)  { apiCall("get", "/tables/" + table, {}, 
 function getTableIndexes(table, cb)    { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
 function getHistory(cb)                { apiCall("get", "/history", {}, cb); }
 function getBookmarks(cb)              { apiCall("get", "/bookmarks", {}, cb); }
-function getSequences(cb)				{ apiCall("get", "/sequences", {}, cb); }
+function getSequences(cb)              { apiCall("get", "/sequences", {}, cb); }
 
 function encodeQuery(query) {
   return window.btoa(query);
@@ -41,8 +41,8 @@ function loadTables() {
   $("#tables li").remove();
 
   getTables(function(data) {
-	data.forEach(function(item) {
-		$("<li><span><i class='fa fa-table'></i> " + item + " </span></li>").appendTo("#tables");
+    data.forEach(function(item) {
+      $("<li><span><i class='fa fa-table'></i> " + item + " </span></li>").appendTo("#tables");
     });
   });
 }
@@ -51,7 +51,7 @@ function loadSequences() {
   $("#sequences li").remove();
 
   getSequences(function(data) {
-	data.forEach(function(item) {
+    data.forEach(function(item) {
       $("<li><span><i class='fa fa-chevron-right'></i> " + item + " </span></li>").appendTo("#sequences");
     });
   });
@@ -100,7 +100,7 @@ function performTableAction(table, action) {
       executeQuery("DROP TABLE " + table, function(data) {
         if (data.error) alert(data.error);
         loadTables();
-		loadSequences();
+        loadSequences();
         resetTable();
       });
       break;
@@ -324,7 +324,7 @@ function runQuery() {
     // Refresh tables list if table was added or removed
     if (query.match(re)) {
       loadTables();
-	  loadSequences();
+    loadSequences();
     }
   });
 }
@@ -551,7 +551,7 @@ $(document).ready(function() {
 
   $("#tables").on("click", "li", function() {
     $("#tables li.selected").removeClass("selected");
-	$("#sequences li.selected").removeClass("selected");
+    $("#sequences li.selected").removeClass("selected");
     $(this).addClass("selected");
     $("#tables").attr("data-current", $.trim($(this).text()));
 
@@ -571,8 +571,8 @@ $(document).ready(function() {
 
   $("#sequences").on("click", "li", function() {
     $("#tables li.selected").removeClass("selected");
-	$("#sequences li.selected").removeClass("selected");
-	
+    $("#sequences li.selected").removeClass("selected");
+
     $(this).addClass("selected");
     $("#tables").attr("data-current", $.trim($(this).text()));
 
@@ -582,7 +582,7 @@ $(document).ready(function() {
 
   $("#refresh_tables").on("click", function() {
     loadTables();
-	loadSequences();
+    loadSequences();
   });
 
   $("#edit_connection").on("click", function() {
@@ -681,7 +681,7 @@ $(document).ready(function() {
       else {
         connected = true;
         loadTables();
-		loadSequences();
+        loadSequences();
 
         $("#connection_window").hide();
         $("#current_database").text(resp.current_database);
@@ -701,7 +701,7 @@ $(document).ready(function() {
     else {
       connected = true;
       loadTables();
-	  loadSequences();
+      loadSequences();
 
       $("#current_database").text(resp.current_database);
       $("#main").show();
