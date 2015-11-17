@@ -188,6 +188,20 @@ func test_TableIndexes(t *testing.T) {
 	assert.Equal(t, 2, len(res.Rows))
 }
 
+func test_Sequences(t *testing.T) {
+	res, err := testClient.Sequences()
+
+	expected := []string{
+		"author_ids",
+		"book_ids",
+		"shipments_ship_id_seq",
+		"subject_ids",
+	}
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, expected, res)
+}
+
 func test_Query(t *testing.T) {
 	res, err := testClient.Query("SELECT * FROM books")
 
@@ -257,6 +271,7 @@ func TestAll(t *testing.T) {
 	test_TableRows(t)
 	test_TableInfo(t)
 	test_TableIndexes(t)
+	test_Sequences(t)
 	test_Query(t)
 	test_QueryError(t)
 	test_QueryInvalidTable(t)
