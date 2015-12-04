@@ -16,7 +16,7 @@ const (
 , inet_server_port()
 , version()`
 
-	PG_TABLE_INDEXES = `SELECT indexname, indexdef FROM pg_indexes WHERE tablename = $1`
+	PG_TABLE_INDEXES = `SELECT indexname, indexdef FROM pg_indexes WHERE tablename = $1 and schemaname = 'public'`
 
 	PG_TABLE_INFO = `SELECT
   pg_size_pretty(pg_table_size($1)) AS data_size
@@ -27,7 +27,8 @@ const (
 	PG_TABLE_SCHEMA = `SELECT
 column_name, data_type, is_nullable, character_maximum_length, character_set_catalog, column_default
 FROM information_schema.columns
-WHERE table_name = $1`
+WHERE table_name = $1
+AND table_schema = 'public'`
 
 	PG_TABLES = `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_schema,table_name`
 
