@@ -188,6 +188,14 @@ func test_TableIndexes(t *testing.T) {
 	assert.Equal(t, 2, len(res.Rows))
 }
 
+func test_TableConstraints(t *testing.T) {
+	res, err := testClient.TableConstraints("editions")
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, 1, len(res.Columns))
+	assert.Equal(t, 2, len(res.Rows))
+}
+
 func test_Sequences(t *testing.T) {
 	res, err := testClient.Sequences()
 
@@ -271,6 +279,7 @@ func TestAll(t *testing.T) {
 	test_TableRows(t)
 	test_TableInfo(t)
 	test_TableIndexes(t)
+	test_TableConstraints(t)
 	test_Sequences(t)
 	test_Query(t)
 	test_QueryError(t)
