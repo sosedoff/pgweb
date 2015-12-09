@@ -18,6 +18,16 @@ const (
 
 	PG_TABLE_INDEXES = `SELECT indexname, indexdef FROM pg_indexes WHERE tablename = $1`
 
+  PG_TABLE_CONSTRAINTS = `SELECT
+  pg_get_constraintdef(c.oid, true) as condef
+  FROM pg_constraint c
+  JOIN pg_namespace n ON n.oid = c.connamespace
+  JOIN pg_class cl ON cl.oid = c.conrelid
+  WHERE n.nspname = 'public'
+  AND relname = $1
+  ORDER BY contype desc`
+
+
 	PG_TABLE_INFO = `SELECT
   pg_size_pretty(pg_table_size($1)) AS data_size
 , pg_size_pretty(pg_indexes_size($1)) AS index_size

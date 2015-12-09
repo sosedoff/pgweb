@@ -17,13 +17,14 @@ function apiCall(method, path, params, cb) {
   });
 }
 
-function getTables(cb)                 { apiCall("get", "/tables", {}, cb); }
-function getTableRows(table, opts, cb) { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
-function getTableStructure(table, cb)  { apiCall("get", "/tables/" + table, {}, cb); }
-function getTableIndexes(table, cb)    { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
-function getHistory(cb)                { apiCall("get", "/history", {}, cb); }
-function getBookmarks(cb)              { apiCall("get", "/bookmarks", {}, cb); }
-function getSequences(cb)              { apiCall("get", "/sequences", {}, cb); }
+function getTables(cb)                  { apiCall("get", "/tables", {}, cb); }
+function getTableRows(table, opts, cb)  { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
+function getTableStructure(table, cb)   { apiCall("get", "/tables/" + table, {}, cb); }
+function getTableIndexes(table, cb)     { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
+function getTableConstraints(table, cb) { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
+function getHistory(cb)                 { apiCall("get", "/history", {}, cb); }
+function getBookmarks(cb)               { apiCall("get", "/bookmarks", {}, cb); }
+function getSequences(cb)               { apiCall("get", "/sequences", {}, cb); }
 
 function encodeQuery(query) {
   return window.btoa(query);
@@ -193,6 +194,24 @@ function showTableIndexes() {
 
   getTableIndexes(name, function(data) {
     setCurrentTab("table_indexes");
+    buildTable(data);
+
+    $("#input").hide();
+    $("#output").addClass("full");
+    $("#results").addClass("no-crop");
+  });
+}
+
+function showTableConstraints() {
+  var name = getCurrentTable();
+
+  if (name.length == 0) {
+    alert("Please select a table!");
+    return;
+  }
+
+  getTableConstraints(name, function(data) {
+    setCurrentTab("table_constraints");
     buildTable(data);
 
     $("#input").hide();
@@ -486,13 +505,14 @@ function getConnectionString() {
 }
 
 $(document).ready(function() {
-  $("#table_content").on("click",    function() { showTableContent();    });
-  $("#table_structure").on("click",  function() { showTableStructure();  });
-  $("#table_indexes").on("click",    function() { showTableIndexes();    });
-  $("#table_history").on("click",    function() { showQueryHistory();    });
-  $("#table_query").on("click",      function() { showQueryPanel();      });
-  $("#table_connection").on("click", function() { showConnectionPanel(); });
-  $("#table_activity").on("click",   function() { showActivityPanel();   });
+  $("#table_content").on("click",     function() { showTableContent();     });
+  $("#table_structure").on("click",   function() { showTableStructure();   });
+  $("#table_indexes").on("click",     function() { showTableIndexes();     });
+  $("#table_constraints").on("click", function() { showTableConstraints(); });
+  $("#table_history").on("click",     function() { showQueryHistory();     });
+  $("#table_query").on("click",       function() { showQueryPanel();       });
+  $("#table_connection").on("click",  function() { showConnectionPanel();  });
+  $("#table_activity").on("click",    function() { showActivityPanel();    });
 
   $("#run").on("click", function() {
     runQuery();

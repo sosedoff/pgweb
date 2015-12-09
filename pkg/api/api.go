@@ -179,6 +179,11 @@ func GetTableIndexes(c *gin.Context) {
 	serveResult(res, err, c)
 }
 
+func GetTableConstraints(c *gin.Context) {
+	res, err := DbClient.TableConstraints(c.Params.ByName("table"))
+	serveResult(res, err, c)
+}
+
 func HandleQuery(query string, c *gin.Context) {
 	rawQuery, err := base64.StdEncoding.DecodeString(query)
 	if err == nil {

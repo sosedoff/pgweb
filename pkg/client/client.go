@@ -136,6 +136,16 @@ func (client *Client) TableIndexes(table string) (*Result, error) {
 	return res, err
 }
 
+func (client *Client) TableConstraints(table string) (*Result, error) {
+	res, err := client.query(statements.PG_TABLE_CONSTRAINTS, table)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, err
+}
+
 func (client *Client) Sequences() ([]string, error) {
 	return client.fetchRows(statements.PG_SEQUENCES)
 }
