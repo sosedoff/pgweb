@@ -394,6 +394,7 @@ function initEditor() {
 
   editor.setFontSize(13);
   editor.setTheme("ace/theme/tomorrow");
+  editor.setShowPrintMargin(false);
   editor.getSession().setMode("ace/mode/pgsql");
   editor.getSession().setTabSize(2);
   editor.getSession().setUseSoftTabs(true);
