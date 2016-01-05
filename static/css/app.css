@@ -90,6 +90,13 @@
   background: #f6f6f6;
 }
 
+#sidebar .title.main {
+  line-height: 50px;
+  height: 50px;
+  border-bottom: 1px solid #d4d4d4;
+  background: #f1f1f1;
+}
+
 #sidebar div.tables-list {
   position: absolute;
   right: 0;
@@ -126,7 +133,7 @@
 }
 
 #sidebar div.tables-list #tables, #sequences {
-  padding: 33px 0 0;
+  padding: 50px 0 0;
   font-size: 12px;
 }
 

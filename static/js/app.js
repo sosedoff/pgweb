@@ -392,6 +392,8 @@ function initEditor() {
   var writeQueryTimeout = null;
   editor = ace.edit("custom_query");
 
+  editor.setFontSize(13);
+  editor.setTheme("ace/theme/tomorrow");
   editor.getSession().setMode("ace/mode/pgsql");
   editor.getSession().setTabSize(2);
   editor.getSession().setUseSoftTabs(true);
