@@ -238,17 +238,31 @@
   padding: 0px 13px;
   margin: 0px;
   font-size: 13px;
-  color: #fff;
+  color: #555;
   border: none;
   box-shadow: none;
-  background: #7eb54e;
+  background: transparent;
+  border: 1px solid #999;
   float: left;
   margin-right: 10px;
 }
 
-#input .actions .btn-default {
-  background: #aaa;
+#input .actions .btn-primary {
+  border-color: #7eb54e;
+  color: #7eb54e;
 }
+
+#input .actions .btn:hover {
+  background: transparent !important;
+  border-color: #444;
+  color: #000;
+}
+
+#input .actions .btn-primary:hover {
+  color: #64903e;
+  border-color: #64903e;
+}
+
 
 #input .actions #query_progress {
   display: none;
@@ -378,7 +392,7 @@
 
 #custom_query {
   height: 193px;
-  margin: 6px 0px;
+  margin-top: 12px;
 }
 
 #connection_window {
@@ -396,6 +410,9 @@
   position: fixed;
   right: 8px;
   top: 10px;
+  background: #79589f;
+  color: #fff;
+  border-color: #fff;
 }
 
 #edit_connection i {
@@ -455,9 +472,13 @@
 
 .ace_gutter, .ace_gutter-cell {
   background: #fff !important;
-  color: #888;
+  color: #bbb;
 }
 
 .ace_active-line {
   background: #f9f9f9 !important;
+}
+
+.ace_active-line {
+  background: none !important;
 }
