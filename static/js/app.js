@@ -84,7 +84,7 @@ function resetTable() {
     removeClass("no-crop");
 }
 
-function performTableAction(table, action) {
+function performTableAction(table, action, el) {
   if (action == "truncate" || action == "delete") {
     var message = "Are you sure you want to " + action + " table " + table + " ?";
     if (!confirm(message)) return;
@@ -106,10 +106,11 @@ function performTableAction(table, action) {
       });
       break;
     case "export":
-      var filename = table + ".csv"
+      var format = el.data("format");
+      var filename = table + "." + format;
       var query = window.encodeURI("SELECT * FROM " + table);
-      var url = "http://" + window.location.host + "/api/query?format=csv&filename=" + filename + "&query=" + query;
-      var win = window.open(url, "_blank");
+      var url = "http://" + window.location.host + "/api/query?format=" + format + "&filename=" + filename + "&query=" + query;
+      var win  = window.open(url, "_blank");
       win.focus();
       break;
   }
@@ -315,13 +316,13 @@ function showActivityPanel() {
 function runQuery() {
   setCurrentTab("table_query");
 
-  $("#run, #explain, #csv").prop("disabled", true);
+  $("#run, #explain, #csv, #json").prop("disabled", true);
   $("#query_progress").show();
 
   var query = $.trim(editor.getSelectedText() || editor.getValue());
 
   if (query.length == 0) {
-    $("#run, #explain, #csv").prop("disabled", false);
+    $("#run, #explain, #csv, #json").prop("disabled", false);
     $("#query_progress").hide();
     return;
   }
@@ -329,7 +330,7 @@ function runQuery() {
   executeQuery(query, function(data) {
     buildTable(data);
 
-    $("#run, #explain, #csv").prop("disabled", false);
+    $("#run, #explain, #csv, #json").prop("disabled", false);
     $("#query_progress").hide();
     $("#input").show();
     $("#output").removeClass("full");
@@ -351,13 +352,13 @@ function runQuery() {
 function runExplain() {
   setCurrentTab("table_query");
 
-  $("#run, #explain, #csv").prop("disabled", true);
+  $("#run, #explain, #csv, #json").prop("disabled", true);
   $("#query_progress").show();
 
   var query = $.trim(editor.getValue());
 
   if (query.length == 0) {
-    $("#run, #explain, #csv").prop("disabled", false);
+    $("#run, #explain, #csv, #json").prop("disabled", false);
     $("#query_progress").hide();
     return;
   }
@@ -365,7 +366,7 @@ function runExplain() {
   explainQuery(query, function(data) {
     buildTable(data);
 
-    $("#run, #explain, #csv").prop("disabled", false);
+    $("#run, #explain, #csv, #json").prop("disabled", false);
     $("#query_progress").hide();
     $("#input").show();
     $("#output").removeClass("full");
@@ -373,14 +374,14 @@ function runExplain() {
   });
 }
 
-function exportToCSV() {
+function exportTo(format) {
   var query = $.trim(editor.getValue());
 
   if (query.length == 0) {
     return;
   }
 
-  var url = "http://" + window.location.host + "/api/query?format=csv&query=" + encodeQuery(query);
+  var url = "http://" + window.location.host + "/api/query?format=" + format + "&query=" + encodeQuery(query);
   var win = window.open(url, '_blank');
 
   setCurrentTab("table_query");
@@ -523,8 +524,12 @@ $(document).ready(function() {
   });
 
   $("#csv").on("click", function() {
-    exportToCSV();
+    exportTo("csv");
   });
+
+  $("#json").on("click", function() {
+    exportTo("json");
+  })
 
   $("#results").on("click", "tr", function() {
     $("#results tr.selected").removeClass();
@@ -583,9 +588,10 @@ $(document).ready(function() {
     target: "#tables_context_menu",
     scopes: "li",
     onItem: function(context, e) {
+      var el      = $(e.target);
       var table   = $.trim($(context[0]).text());
-      var action  = $(e.target).data("action");
-      performTableAction(table, action);
+      var action  = el.data("action");
+      performTableAction(table, action, el);
     }
   });
 

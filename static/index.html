@@ -61,7 +61,8 @@
           <div class="actions">
             <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
             <input type="button" id="explain" value="Explain Query" class="btn btn-sm btn-default" />
-            <input type="button" id="csv" value="Download CSV" class="btn btn-sm btn-default" />
+            <input type="button" id="csv" value="CSV" class="btn btn-sm btn-default" />
+            <input type="button" id="json" value="JSON" class="btn btn-sm btn-default" />
 
             <div id="query_progress">Please wait, query is executing...</div>
           </div>
@@ -197,7 +198,9 @@
   </div>
   <div id="tables_context_menu">
     <ul class="dropdown-menu" role="menu">
-      <li><a href="#" data-action="export">Export to CSV</a></li>
+      <li><a href="#" data-action="export" data-format="json">Export to JSON</a></li>
+      <li><a href="#" data-action="export" data-format="csv">Export to CSV</a></li>
+      <li><a href="#" data-action="export" data-format="xml">Export to XML</a></li>
       <li class="divider"></li>
       <li><a href="#" data-action="truncate">Truncate table</a></li>
       <li><a href="#" data-action="delete">Delete table</a></li>
