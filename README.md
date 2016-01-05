@@ -25,7 +25,7 @@ application to work with local or remote PostgreSQL databases.
 - Browse tables and table rows
 - Get table details: structure, size, indeces, row count
 - Run and analyze custom SQL queries
-- Export table rows and query results as CSV
+- Export table rows and query results to CSV/JSON/XML
 - Query history
 - Server bookmarks
 
@@ -94,4 +94,4 @@ make test
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2015 Dan Sosedoff, <dan.sosedoff@gmail.com>
+Copyright (c) 2014-2016 Dan Sosedoff, <dan.sosedoff@gmail.com>
