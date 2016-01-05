@@ -1,3 +1,10 @@
+## 0.7.0 - 2018-01-05
+
+- Adds sequences to the sidebar panel - GH-100
+- Adds table constrains view - GH-104
+- Adds ability to export table and query rows as JSON/XML - GH-107
+- Updates to UI theme and SQL editor
+
 ## 0.6.3 - 2015-08-16
 
 - Adds PostgreSQL password escaping in web ui, GH-96
