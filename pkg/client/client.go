@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"reflect"
 
@@ -248,6 +249,21 @@ func (res *Result) CSV() []byte {
 
 	writer.Flush()
 	return buff.Bytes()
+}
+
+func (res *Result) JSON() []byte {
+	records := []map[string]interface{}{}
+
+	for _, row := range res.Rows {
+		record := map[string]interface{}{}
+		for i, col := range res.Columns {
+			record[col] = row[i]
+		}
+		records = append(records, record)
+	}
+
+	data, _ := json.Marshal(records)
+	return data
 }
 
 // Close database connection

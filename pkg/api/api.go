@@ -196,20 +196,27 @@ func HandleQuery(query string, c *gin.Context) {
 		return
 	}
 
-	q := c.Request.URL.Query()
+	format := getQueryParam(c, "format")
+	filename := getQueryParam(c, "filename")
 
-	if len(q["format"]) > 0 && q["format"][0] == "csv" {
-		filename := fmt.Sprintf("pgweb-%v.csv", time.Now().Unix())
-		if len(q["filename"]) > 0 && q["filename"][0] != "" {
-			filename = q["filename"][0]
-		}
-
-		c.Writer.Header().Set("Content-disposition", "attachment;filename="+filename)
-		c.Data(200, "text/csv", result.CSV())
-		return
+	if filename == "" {
+		filename = fmt.Sprintf("pgweb-%v.%v", time.Now().Unix(), format)
 	}
 
-	c.JSON(200, result)
+	if format != "" {
+		c.Writer.Header().Set("Content-disposition", "attachment;filename="+filename)
+	}
+
+	switch format {
+	case "csv":
+		c.Data(200, "text/csv", result.CSV())
+	case "json":
+		c.Data(200, "applicaiton/json", result.JSON())
+	case "xml":
+		c.XML(200, result)
+	default:
+		c.JSON(200, result)
+	}
 }
 
 func GetBookmarks(c *gin.Context) {

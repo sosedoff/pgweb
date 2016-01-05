@@ -22,6 +22,17 @@ type Error struct {
 	Message string `json:"error"`
 }
 
+func getQueryParam(c *gin.Context, name string) string {
+	result := ""
+	q := c.Request.URL.Query()
+
+	if len(q[name]) > 0 {
+		result = q[name][0]
+	}
+
+	return result
+}
+
 func assetContentType(name string) string {
 	ext := filepath.Ext(name)
 	result := mime.TypeByExtension(ext)
