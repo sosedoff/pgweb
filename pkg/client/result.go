@@ -60,16 +60,6 @@ func (res *Result) CSV() []byte {
 }
 
 func (res *Result) JSON() []byte {
-	records := []map[string]interface{}{}
-
-	for _, row := range res.Rows {
-		record := map[string]interface{}{}
-		for i, col := range res.Columns {
-			record[col] = row[i]
-		}
-		records = append(records, record)
-	}
-
-	data, _ := json.Marshal(records)
+	data, _ := json.Marshal(res.Format())
 	return data
 }
