@@ -7,6 +7,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_PrepareBigints(t *testing.T) {
+	result := Result{
+		Columns: []string{"value"},
+		Rows: []Row{
+			Row{int(1234)},
+			Row{int64(9223372036854775807)},
+			Row{int64(-9223372036854775808)},
+		},
+	}
+
+	result.PrepareBigints()
+
+	assert.Equal(t, 1234, result.Rows[0][0])
+	assert.Equal(t, "9223372036854775807", result.Rows[1][0])
+	assert.Equal(t, "-9223372036854775808", result.Rows[2][0])
+}
+
 func Test_CSV(t *testing.T) {
 	result := Result{
 		Columns: []string{"id", "name", "email"},

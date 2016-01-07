@@ -207,6 +207,8 @@ func HandleQuery(query string, c *gin.Context) {
 		c.Writer.Header().Set("Content-disposition", "attachment;filename="+filename)
 	}
 
+	result.PrepareBigints()
+
 	switch format {
 	case "csv":
 		c.Data(200, "text/csv", result.CSV())

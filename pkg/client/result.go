@@ -5,6 +5,8 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"reflect"
+	"strconv"
 )
 
 type Row []interface{}
@@ -12,6 +14,22 @@ type Row []interface{}
 type Result struct {
 	Columns []string `json:"columns"`
 	Rows    []Row    `json:"rows"`
+}
+
+// Due to big int number limitations in javascript, numbers should be encoded
+// as strings so they could be properly loaded on the frontend.
+func (res *Result) PrepareBigints() {
+	for i, row := range res.Rows {
+		for j, col := range row {
+			if col == nil {
+				continue
+			}
+
+			if reflect.TypeOf(col).Kind() == reflect.Int64 {
+				res.Rows[i][j] = strconv.FormatInt(col.(int64), 10)
+			}
+		}
+	}
 }
 
 func (res *Result) Format() []map[string]interface{} {
