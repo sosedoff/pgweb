@@ -193,6 +193,8 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 		}
 	}
 
+	result.PrepareBigints()
+
 	return &result, nil
 }
 
