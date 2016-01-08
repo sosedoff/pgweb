@@ -244,11 +244,11 @@ func test_ResultCsv(t *testing.T) {
 }
 
 func test_History(t *testing.T) {
-	_, err := testClient.Query("SELECT * FROM books")
+	_, err := testClient.Query("SELECT * FROM books WHERE id = 12345")
 	query := testClient.History[len(testClient.History)-1].Query
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "SELECT * FROM books", query)
+	assert.Equal(t, "SELECT * FROM books WHERE id = 12345", query)
 }
 
 func test_HistoryError(t *testing.T) {
@@ -257,6 +257,16 @@ func test_HistoryError(t *testing.T) {
 
 	assert.NotEqual(t, nil, err)
 	assert.NotEqual(t, "SELECT * FROM books123", query)
+}
+
+func test_HistoryUniqueness(t *testing.T) {
+	client, _ := NewFromUrl("postgres://postgres@localhost/booktown?sslmode=disable")
+
+	client.Query("SELECT * FROM books WHERE id = 1")
+	client.Query("SELECT * FROM books WHERE id = 1")
+
+	assert.Equal(t, 1, len(client.History))
+	assert.Equal(t, "SELECT * FROM books WHERE id = 1", client.History[0].Query)
 }
 
 func TestAll(t *testing.T) {

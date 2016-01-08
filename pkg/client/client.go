@@ -150,7 +150,7 @@ func (client *Client) Query(query string) (*Result, error) {
 	res, err := client.query(query)
 
 	// Save history records only if query did not fail
-	if err == nil {
+	if err == nil && !client.hasHistoryRecord(query) {
 		client.History = append(client.History, history.NewRecord(query))
 	}
 
@@ -222,4 +222,17 @@ func (client *Client) fetchRows(q string) ([]string, error) {
 	}
 
 	return results, nil
+}
+
+func (client *Client) hasHistoryRecord(query string) bool {
+	result := false
+
+	for _, record := range client.History {
+		if record.Query == query {
+			result = true
+			break
+		}
+	}
+
+	return result
 }
