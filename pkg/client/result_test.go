@@ -14,6 +14,8 @@ func Test_PrepareBigints(t *testing.T) {
 			Row{int(1234)},
 			Row{int64(9223372036854775807)},
 			Row{int64(-9223372036854775808)},
+			Row{float64(9223372036854775808.9223372036854775808)},
+			Row{float64(999999999999999.9)},
 		},
 	}
 
@@ -22,6 +24,8 @@ func Test_PrepareBigints(t *testing.T) {
 	assert.Equal(t, 1234, result.Rows[0][0])
 	assert.Equal(t, "9223372036854775807", result.Rows[1][0])
 	assert.Equal(t, "-9223372036854775808", result.Rows[2][0])
+	assert.Equal(t, "9.223372036854776e+18", result.Rows[3][0])
+	assert.Equal(t, "9.999999999999999e+14", result.Rows[4][0])
 }
 
 func Test_CSV(t *testing.T) {

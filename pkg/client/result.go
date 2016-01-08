@@ -25,8 +25,17 @@ func (res *Result) PrepareBigints() {
 				continue
 			}
 
-			if reflect.TypeOf(col).Kind() == reflect.Int64 {
-				res.Rows[i][j] = strconv.FormatInt(col.(int64), 10)
+			switch reflect.TypeOf(col).Kind() {
+			case reflect.Int64:
+				val := col.(int64)
+				if val < -9007199254740991 || val > 9007199254740991 {
+					res.Rows[i][j] = strconv.FormatInt(col.(int64), 10)
+				}
+			case reflect.Float64:
+				val := col.(float64)
+				if val < -999999999999999 || val > 999999999999999 {
+					res.Rows[i][j] = strconv.FormatFloat(val, 'e', -1, 64)
+				}
 			}
 		}
 	}
