@@ -285,6 +285,10 @@
   background: #bbb;
 }
 
+#input .actions .btn:last-child {
+  margin-right: 0px;
+}
+
 #output {
   position: absolute;
   left: 0px;

@@ -316,13 +316,13 @@ function showActivityPanel() {
 function runQuery() {
   setCurrentTab("table_query");
 
-  $("#run, #explain, #csv, #json").prop("disabled", true);
+  $("#run, #explain, #csv, #json, #xml").prop("disabled", true);
   $("#query_progress").show();
 
   var query = $.trim(editor.getSelectedText() || editor.getValue());
 
   if (query.length == 0) {
-    $("#run, #explain, #csv, #json").prop("disabled", false);
+    $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
     $("#query_progress").hide();
     return;
   }
@@ -330,7 +330,7 @@ function runQuery() {
   executeQuery(query, function(data) {
     buildTable(data);
 
-    $("#run, #explain, #csv, #json").prop("disabled", false);
+    $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
     $("#query_progress").hide();
     $("#input").show();
     $("#output").removeClass("full");
@@ -352,13 +352,13 @@ function runQuery() {
 function runExplain() {
   setCurrentTab("table_query");
 
-  $("#run, #explain, #csv, #json").prop("disabled", true);
+  $("#run, #explain, #csv, #json, #xml").prop("disabled", true);
   $("#query_progress").show();
 
   var query = $.trim(editor.getValue());
 
   if (query.length == 0) {
-    $("#run, #explain, #csv, #json").prop("disabled", false);
+    $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
     $("#query_progress").hide();
     return;
   }
@@ -366,7 +366,7 @@ function runExplain() {
   explainQuery(query, function(data) {
     buildTable(data);
 
-    $("#run, #explain, #csv, #json").prop("disabled", false);
+    $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
     $("#query_progress").hide();
     $("#input").show();
     $("#output").removeClass("full");
@@ -532,7 +532,11 @@ $(document).ready(function() {
 
   $("#json").on("click", function() {
     exportTo("json");
-  })
+  });
+
+  $("#xml").on("click", function() {
+    exportTo("xml");
+  });
 
   $("#results").on("click", "tr", function() {
     $("#results tr.selected").removeClass();
