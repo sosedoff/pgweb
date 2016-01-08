@@ -263,7 +263,6 @@
   border-color: #64903e;
 }
 
-
 #input .actions #query_progress {
   display: none;
   float: left;
@@ -300,8 +299,90 @@
   overflow: auto;
 }
 
-#output.full {
+#pagination {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 50px;
+  padding: 10px;
   top: 0px;
+  left: 0px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 1px 3px 0px #f1f1f1;
+}
+
+#pagination .pager-container {
+  float: right;
+}
+
+#pagination .filters {
+  float: left;
+  font-size: 12px;
+}
+
+#pagination .filters span {
+  display: inline-block;
+  float: left;
+  font-weight: bold;
+  line-height: 32px;
+  height: 32px;
+  margin: 0px 8px;
+  color: #999;
+}
+
+#pagination .filters select {
+  font-size: 12px;
+  width: 100px;
+  float: left;
+  line-height: 30px;
+  height: 30px;
+  margin-right: 8px;
+  outline: none;
+}
+
+#pagination .filters select.column {
+  width: 150px;
+}
+
+#pagination .filters select.filter {
+  width: 100px;
+}
+
+#pagination .filters input {
+  float: left;
+  width: 200px;
+  height: 30px;
+  line-height: 30px;
+  margin-right: 8px;
+  font-size: 12px;
+}
+
+#pagination .filters .btn-primary {
+  border-color: #7eb54e;
+  color: #7eb54e;
+  background: #fff;
+  outline: none;
+  float: left;
+  margin-right: 8px;
+}
+
+#pagination .filters .btn-default {
+  float: left;
+  outline: none;
+}
+
+#pagination .btn-group {
+  float: right;
+}
+
+#pagination .current-page {
+  float: right;
+  font-size: 12px;
+  margin-right: 12px;
+  color: #999;
+  line-height: 32px;
+  height: 32px;
 }
 
 #results {
@@ -393,6 +474,20 @@
 #results.no-crop td div {
   max-width: none;
 }
+
+.full #output {
+  top: 0px !important;
+}
+
+.with-pagination #output {
+  top: 50px !important;
+}
+
+.with-pagination #pagination {
+  display: block;
+}
+
+/* -------------------------------------------------------------------------- */
 
 #custom_query {
   height: 193px;

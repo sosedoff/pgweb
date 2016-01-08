@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -109,32 +108,54 @@ func GetTable(c *gin.Context) {
 }
 
 func GetTableRows(c *gin.Context) {
-	limit := 1000 // Number of rows to fetch
-	limitVal := c.Request.FormValue("limit")
+	offset, err := parseIntFormValue(c, "offset", 0)
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
 
-	if limitVal != "" {
-		num, err := strconv.Atoi(limitVal)
-
-		if err != nil {
-			c.JSON(400, Error{"Invalid limit value"})
-			return
-		}
-
-		if num <= 0 {
-			c.JSON(400, Error{"Limit should be greater than 0"})
-			return
-		}
-
-		limit = num
+	limit, err := parseIntFormValue(c, "limit", 100)
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
 	}
 
 	opts := client.RowsOptions{
 		Limit:      limit,
+		Offset:     offset,
 		SortColumn: c.Request.FormValue("sort_column"),
 		SortOrder:  c.Request.FormValue("sort_order"),
+		Where:      c.Request.FormValue("where"),
 	}
 
 	res, err := DbClient.TableRows(c.Params.ByName("table"), opts)
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	countRes, err := DbClient.TableRowsCount(c.Params.ByName("table"), opts)
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	numFetch := int64(opts.Limit)
+	numOffset := int64(opts.Offset)
+	numRows := countRes.Rows[0][0].(int64)
+	numPages := numRows / numFetch
+
+	if numPages*numFetch < numRows {
+		numPages++
+	}
+
+	res.Pagination = &client.Pagination{
+		Rows:    numRows,
+		Page:    (numOffset / numFetch) + 1,
+		Pages:   numPages,
+		PerPage: numFetch,
+	}
+
 	serveResult(res, err, c)
 }
 

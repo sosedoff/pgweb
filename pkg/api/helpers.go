@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"log"
 	"mime"
 	"path/filepath"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sosedoff/pgweb/pkg/data"
@@ -31,6 +33,25 @@ func getQueryParam(c *gin.Context, name string) string {
 	}
 
 	return result
+}
+
+func parseIntFormValue(c *gin.Context, name string, defValue int) (int, error) {
+	val := c.Request.FormValue(name)
+
+	if val == "" {
+		return defValue, nil
+	}
+
+	num, err := strconv.Atoi(val)
+	if err != nil {
+		return defValue, fmt.Errorf("%s must be a number", name)
+	}
+
+	if num < 1 && defValue != 0 {
+		return defValue, fmt.Errorf("%s must be greated than 0", name)
+	}
+
+	return num, nil
 }
 
 func assetContentType(name string) string {
