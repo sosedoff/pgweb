@@ -75,6 +75,35 @@
           <table id="results" class="table"></table>
         </div>
       </div>
+      <div id="pagination">
+        <form class="filters" action="#" id="rows_filter">
+          <span>Search</span>
+          <select class="column form-control"></select>
+          <select class="filter form-control">
+            <option value="equal">=</option>
+            <option value="not_equal">&ne;</option>
+            <option value="greater">&gt;</option>
+            <option value-"greater_eq">&ge;</option>
+            <option value="less">&lt;</option>
+            <option value="less_eq">&le;</option>
+            <option value="like">LIKE</option>
+            <option value="ilike">ILIKE</option>
+            <option value="null">IS NULL</option>
+            <option value="not_null">NOT NULL</option>
+          </select>
+          <input type="text" class="form-control" placeholder="Search query" />
+          <button class="btn btn-primary btn-sm apply-filters" type="submit">Apply</button>
+          <button class="btn btn-default btn-sm reset-filters"><i class="fa fa-times"></i></button>
+        </form>
+        <div class="btn-group">
+          <button type="button" class="btn btn-default btn-sm prev-page" disabled="disabled"><i class="fa fa-angle-left"></i></button>
+          <button type="button" class="btn btn-default btn-sm page change-limit" title="Click to change row limit"></button>
+          <button type="button" class="btn btn-default btn-sm next-page"><i class="fa fa-angle-right"></i></button>
+        </div>
+        <div class="current-page" data-page="1" data-pages="1">
+          <span id="total_records"></span> rows
+        </div>
+      </div>
     </div>
   </div>
 

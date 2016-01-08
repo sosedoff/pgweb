@@ -11,9 +11,17 @@ import (
 
 type Row []interface{}
 
+type Pagination struct {
+	Rows    int64 `json:"rows_count"`
+	Page    int64 `json:"page"`
+	Pages   int64 `json:"pages_count"`
+	PerPage int64 `json:"per_page"`
+}
+
 type Result struct {
-	Columns []string `json:"columns"`
-	Rows    []Row    `json:"rows"`
+	Pagination *Pagination `json:"pagination,omitempty"`
+	Columns    []string    `json:"columns"`
+	Rows       []Row       `json:"rows"`
 }
 
 // Due to big int number limitations in javascript, numbers should be encoded

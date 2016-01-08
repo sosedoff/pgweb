@@ -1,6 +1,45 @@
 var editor;
 var connected = false;
 var bookmarks = {};
+var default_rows_limit = 100;
+
+var filterOptions = {
+  "equal":      "= 'DATA'",
+  "not_equal":  "!= 'DATA'",
+  "greater":    "> 'DATA'" ,
+  "greater_eq": ">= 'DATA'",
+  "less":       "< 'DATA'",
+  "less_eq":    "<= 'DATA'",
+  "like":       "LIKE 'DATA'",
+  "ilike":      "ILIKE 'DATA'",
+  "null":       "IS NULL",
+  "not_null":   "IS NOT NULL"
+};
+
+function setRowsLimit(num) {
+  localStorage.setItem("rows_limit", num);
+}
+
+function getRowsLimit() {
+  return parseInt(localStorage.getItem("rows_limit") || default_rows_limit);
+}
+
+function getPaginationOffset() {
+  var page  = $(".current-page").data("page");
+  var limit = getRowsLimit();
+  return (page - 1) * limit;
+}
+
+function getPagesCount(rowsCount) {
+  var limit = getRowsLimit();
+  var num = parseInt(rowsCount / limit);
+
+  if ((num * limit) < rowsCount) {
+    num++;
+  }
+
+  return num;
+}
 
 function apiCall(method, path, params, cb) {
   $.ajax({
@@ -180,7 +219,7 @@ function showQueryHistory() {
 
     setCurrentTab("table_history");
     $("#input").hide();
-    $("#output").addClass("full");
+    $("#body").prop("class", "full");
     $("#results").addClass("no-crop");
   });
 }
@@ -198,7 +237,7 @@ function showTableIndexes() {
     buildTable(data);
 
     $("#input").hide();
-    $("#output").addClass("full");
+    $("#body").prop("class", "full");
     $("#results").addClass("no-crop");
   });
 }
@@ -216,7 +255,7 @@ function showTableConstraints() {
     buildTable(data);
 
     $("#input").hide();
-    $("#output").addClass("full");
+    $("#body").prop("class", "full");
     $("#results").addClass("no-crop");
   });
 }
@@ -237,6 +276,39 @@ function showTableInfo() {
     $("#table_rows_count").text(data.rows_count);
     $("#table_encoding").text("Unknown");
   });
+
+  buildTableFilters(name);
+}
+
+function updatePaginator(pagination) {
+  if (!pagination) {
+    $(".current-page").data("page", 1).data("pages", 1);
+    $("button.page").text("1 of 1");
+    $(".prev-page, .next-page").prop("disabled", "disabled");
+    return;
+  }
+
+  $(".current-page").
+    data("page", pagination.page).
+    data("pages", pagination.pages_count);
+
+  if (pagination.page > 1) {
+    $(".prev-page").prop("disabled", "");
+  }
+  else {
+    $(".prev-page").prop("disabled", "disabled");
+  }
+
+  if (pagination.pages_count > 1 && pagination.page < pagination.pages_count) {
+    $(".next-page").prop("disabled", "");
+  }
+  else {
+    $(".next-page").prop("disabled", "disabled");
+  }
+
+  $("#total_records").text(pagination.rows_count);
+  if (pagination.pages_count == 0) pagination.pages_count = 1;
+  $("button.page").text(pagination.page + " of " + pagination.pages_count);
 }
 
 function showTableContent(sortColumn, sortOrder) {
@@ -247,13 +319,37 @@ function showTableContent(sortColumn, sortOrder) {
     return;
   }
 
-  getTableRows(name, { limit: 100, sort_column: sortColumn, sort_order: sortOrder }, function(data) {
-    buildTable(data, sortColumn, sortOrder);
-    setCurrentTab("table_content");
+  var opts = {
+    limit:       getRowsLimit(),
+    offset:      getPaginationOffset(),
+    sort_column: sortColumn,
+    sort_order:  sortOrder
+  };
 
+  var filter = {
+    column: $(".filters select.column").val(),
+    op:     $(".filters select.filter").val(),
+    input:  $(".filters input").val()
+  };
+
+  // Apply filtering only if column is selected
+  if (filter.column && filter.op) {
+    var where = [
+      filter.column,
+      filterOptions[filter.op].replace("DATA", filter.input)
+    ].join(" ");
+
+    opts["where"] = where;
+  }
+
+  getTableRows(name, opts, function(data) {
     $("#results").attr("data-mode", "browse");
     $("#input").hide();
-    $("#output").addClass("full");
+    $("#body").prop("class", "with-pagination");
+
+    buildTable(data, sortColumn, sortOrder);
+    setCurrentTab("table_content");
+    updatePaginator(data.pagination);
   });
 }
 
@@ -265,12 +361,13 @@ function showTableStructure() {
     return;
   }
 
-  getTableStructure(name, function(data) {
-    setCurrentTab("table_structure");
-    buildTable(data);
+  setCurrentTab("table_structure");
+  
+  $("#input").hide();
+  $("#body").prop("class", "full");
 
-    $("#input").hide();
-    $("#output").addClass("full");
+  getTableStructure(name, function(data) {
+    buildTable(data);
     $("#results").addClass("no-crop");
   });
 }
@@ -280,7 +377,7 @@ function showQueryPanel() {
   editor.focus();
 
   $("#input").show();
-  $("#output").removeClass("full");
+  $("#body").prop("class", "")
 }
 
 function showConnectionPanel() {
@@ -299,7 +396,7 @@ function showConnectionPanel() {
     });
 
     $("#input").hide();
-    $("#output").addClass("full");
+    $("#body").addClass("full");
   });
 }
 
@@ -309,7 +406,7 @@ function showActivityPanel() {
   apiCall("get", "/activity", {}, function(data) {
     buildTable(data);
     $("#input").hide();
-    $("#output").addClass("full");
+    $("#body").addClass("full");
   });
 }
 
@@ -333,7 +430,7 @@ function runQuery() {
     $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
     $("#query_progress").hide();
     $("#input").show();
-    $("#output").removeClass("full");
+    $("#body").removeClass("full");
 
     if (query.toLowerCase().indexOf("explain") != -1) {
       $("#results").addClass("no-crop");
@@ -369,7 +466,7 @@ function runExplain() {
     $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
     $("#query_progress").hide();
     $("#input").show();
-    $("#output").removeClass("full");
+    $("#body").removeClass("full");
     $("#results").addClass("no-crop");
   });
 }
@@ -386,6 +483,21 @@ function exportTo(format) {
 
   setCurrentTab("table_query");
   win.focus();
+}
+
+function buildTableFilters(name) {
+  getTableStructure(name, function(data) {
+    if (data.rows.length == 0) {
+      $("#pagination .filters").hide();
+    }
+
+    $("#pagination select.column").html("<option value='' selected>Select column</option>");
+
+    for (row of data.rows) {
+      var el = $("<option/>").attr("value", row[0]).text(row[0]);
+      $("#pagination select.column").append(el);
+    }
+  });
 }
 
 function initEditor() {
@@ -586,6 +698,7 @@ $(document).ready(function() {
     $("#sequences li.selected").removeClass("selected");
     $(this).addClass("selected");
     $("#tables").attr("data-current", $.trim($(this).text()));
+    $(".current-page").data("page", 1);
 
     showTableContent();
     showTableInfo();
@@ -616,6 +729,80 @@ $(document).ready(function() {
   $("#refresh_tables").on("click", function() {
     loadTables();
     loadSequences();
+  });
+
+  $("#rows_filter").on("submit", function(e) {
+    e.preventDefault();
+    $(".current-page").data("page", 1);
+
+    var column = $(this).find("select.column").val();
+    var filter = $(this).find("select.filter").val();
+    var query  = $.trim($(this).find("input").val());
+
+    if (filterOptions[filter].indexOf("DATA") > 0 && query == "") {
+      alert("Please specify filter query");
+      return
+    }
+
+    showTableContent();
+  });
+
+  $(".change-limit").on("click", function() {
+    var limit = prompt("Please specify a new rows limit", getRowsLimit());
+
+    if (limit && limit >= 1) {
+      $(".current-page").data("page", 1);
+      setRowsLimit(limit);
+      showTableContent();
+    }
+  });
+
+  $("select.filter").on("change", function(e) {
+    var val = $(this).val();
+
+    if (["null", "not_null"].indexOf(val) >= 0) {
+      $(".filters input").hide().val("");
+    }
+    else {
+      $(".filters input.text").show();
+    }
+  });
+
+  $("button.reset-filters").on("click", function() {
+    $(".filters select, .filters input").val("");
+    showTableContent();
+  });
+
+  $("#pagination .next-page").on("click", function() {
+    var current = $(".current-page").data("page");
+    var total   = $(".current-page").data("pages");
+
+    if (total > current) {
+      $(".current-page").data("page", current + 1);
+      showTableContent();
+
+      if (current + 1 == total) {
+        $(this).prop("disabled", "disabled");
+      }
+    }
+
+    if (current > 1) {
+      $(".prev-page").prop("disabled", "");
+    }
+  });
+
+  $("#pagination .prev-page").on("click", function() {
+    var current = $(".current-page").data("page");
+
+    if (current > 1) {
+      $(".current-page").data("page", current - 1);
+      $(".next-page").prop("disabled", "");
+      showTableContent();
+    }
+
+    if (current == 1) {
+      $(this).prop("disabled", "disabled");
+    }
   });
 
   $("#edit_connection").on("click", function() {

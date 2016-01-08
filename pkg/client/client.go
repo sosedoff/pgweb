@@ -21,6 +21,7 @@ type Client struct {
 
 // Struct to hold table rows browsing options
 type RowsOptions struct {
+	Where      string // Custom filter
 	Offset     int    // Number of rows to skip
 	Limit      int    // Number of rows to fetch
 	SortColumn string // Column to sort by
@@ -99,6 +100,10 @@ func (client *Client) Table(table string) (*Result, error) {
 func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error) {
 	sql := fmt.Sprintf(`SELECT * FROM "%s"`, table)
 
+	if opts.Where != "" {
+		sql += fmt.Sprintf(" WHERE %s", opts.Where)
+	}
+
 	if opts.SortColumn != "" {
 		if opts.SortOrder == "" {
 			opts.SortOrder = "ASC"
@@ -113,6 +118,16 @@ func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error)
 
 	if opts.Offset > 0 {
 		sql += fmt.Sprintf(" OFFSET %d", opts.Offset)
+	}
+
+	return client.query(sql)
+}
+
+func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, error) {
+	sql := fmt.Sprintf(`SELECT COUNT(1) FROM "%s"`, table)
+
+	if opts.Where != "" {
+		sql += fmt.Sprintf(" WHERE %s", opts.Where)
 	}
 
 	return client.query(sql)

@@ -125,9 +125,37 @@ func GetTableRows(c *gin.Context) {
 		Offset:     offset,
 		SortColumn: c.Request.FormValue("sort_column"),
 		SortOrder:  c.Request.FormValue("sort_order"),
+		Where:      c.Request.FormValue("where"),
 	}
 
 	res, err := DbClient.TableRows(c.Params.ByName("table"), opts)
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	countRes, err := DbClient.TableRowsCount(c.Params.ByName("table"), opts)
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	numFetch := int64(opts.Limit)
+	numOffset := int64(opts.Offset)
+	numRows := countRes.Rows[0][0].(int64)
+	numPages := numRows / numFetch
+
+	if numPages*numFetch < numRows {
+		numPages++
+	}
+
+	res.Pagination = &client.Pagination{
+		Rows:    numRows,
+		Page:    (numOffset / numFetch) + 1,
+		Pages:   numPages,
+		PerPage: numFetch,
+	}
+
 	serveResult(res, err, c)
 }
 

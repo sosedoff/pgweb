@@ -47,7 +47,7 @@ func parseIntFormValue(c *gin.Context, name string, defValue int) (int, error) {
 		return defValue, fmt.Errorf("%s must be a number", name)
 	}
 
-	if num < 1 {
+	if num < 1 && defValue != 0 {
 		return defValue, fmt.Errorf("%s must be greated than 0", name)
 	}
 
