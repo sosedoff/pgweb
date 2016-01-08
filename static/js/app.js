@@ -699,6 +699,7 @@ $(document).ready(function() {
     $(this).addClass("selected");
     $("#tables").attr("data-current", $.trim($(this).text()));
     $(".current-page").data("page", 1);
+    $(".filters select, .filters input").val("");
 
     showTableContent();
     showTableInfo();
