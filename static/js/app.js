@@ -740,7 +740,7 @@ $(document).ready(function() {
     var filter = $(this).find("select.filter").val();
     var query  = $.trim($(this).find("input").val());
 
-    if (filterOptions[filter].indexOf("DATA") > 0 && query == "") {
+    if (filter && filterOptions[filter].indexOf("DATA") > 0 && query == "") {
       alert("Please specify filter query");
       return
     }
@@ -765,7 +765,7 @@ $(document).ready(function() {
       $(".filters input").hide().val("");
     }
     else {
-      $(".filters input.text").show();
+      $(".filters input").show();
     }
   });
 
