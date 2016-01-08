@@ -21,6 +21,7 @@ type Client struct {
 
 // Struct to hold table rows browsing options
 type RowsOptions struct {
+	Offset     int    // Number of rows to skip
 	Limit      int    // Number of rows to fetch
 	SortColumn string // Column to sort by
 	SortOrder  string // Sort direction (ASC, DESC)
@@ -108,6 +109,10 @@ func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error)
 
 	if opts.Limit > 0 {
 		sql += fmt.Sprintf(" LIMIT %d", opts.Limit)
+	}
+
+	if opts.Offset > 0 {
+		sql += fmt.Sprintf(" OFFSET %d", opts.Offset)
 	}
 
 	return client.query(sql)
