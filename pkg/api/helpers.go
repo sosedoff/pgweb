@@ -8,6 +8,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/data"
 )
 
@@ -98,6 +100,18 @@ func dbCheckMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		// We dont care about sessions unless they're enabled
+		if !command.Opts.Sessions {
+			if DbClient == nil {
+				c.JSON(400, Error{"Not connected"})
+				c.Abort()
+				return
+			}
+
+			c.Next()
+			return
+		}
+
 		sessionId := getSessionId(c)
 		if sessionId == "" {
 			c.JSON(400, Error{"Session ID is required"})
@@ -112,7 +126,6 @@ func dbCheckMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("db", conn)
 		c.Next()
 	}
 }

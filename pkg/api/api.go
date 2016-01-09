@@ -14,11 +14,37 @@ import (
 	"github.com/sosedoff/pgweb/pkg/connection"
 )
 
-var DbClient *client.Client
-var DbSessions = map[string]*client.Client{}
+var (
+	DbClient   *client.Client
+	DbSessions = map[string]*client.Client{}
+)
 
 func DB(c *gin.Context) *client.Client {
-	return DbSessions[getSessionId(c)]
+	if command.Opts.Sessions {
+		return DbSessions[getSessionId(c)]
+	} else {
+		return DbClient
+	}
+}
+
+func setClient(c *gin.Context, newClient *client.Client) error {
+	currentClient := DB(c)
+	if currentClient != nil {
+		currentClient.Close()
+	}
+
+	if !command.Opts.Sessions {
+		DbClient = newClient
+		return nil
+	}
+
+	sessionId := getSessionId(c)
+	if sessionId == "" {
+		return errors.New("Session ID is required")
+	}
+
+	DbSessions[sessionId] = newClient
+	return nil
 }
 
 func GetHome(c *gin.Context) {
@@ -38,12 +64,6 @@ func Connect(c *gin.Context) {
 
 	if url == "" {
 		c.JSON(400, Error{"Url parameter is required"})
-		return
-	}
-
-	sessionId := getSessionId(c)
-	if sessionId == "" {
-		c.JSON(400, Error{"Session ID is required"})
 		return
 	}
 
@@ -68,14 +88,13 @@ func Connect(c *gin.Context) {
 	}
 
 	info, err := cl.Info()
-
 	if err == nil {
-		db := DbSessions[sessionId]
-		if db != nil {
-			db.Close()
+		err = setClient(c, cl)
+		if err != nil {
+			cl.Close()
+			c.JSON(400, Error{err.Error()})
+			return
 		}
-
-		DbSessions[sessionId] = cl
 	}
 
 	c.JSON(200, info.Format()[0])
