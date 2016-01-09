@@ -20,8 +20,25 @@ var extraMimeTypes = map[string]string{
 	".html": "text/html; charset-utf-8",
 }
 
+// Paths that dont require database connection
+var allowedPaths = map[string]bool{
+	"/api/sessions":  true,
+	"/api/info":      true,
+	"/api/connect":   true,
+	"/api/bookmarks": true,
+	"/api/history":   true,
+}
+
 type Error struct {
 	Message string `json:"error"`
+}
+
+func getSessionId(c *gin.Context) string {
+	id := c.Request.Header.Get("x-session-id")
+	if id == "" {
+		id = c.Request.URL.Query().Get("_session_id")
+	}
+	return id
 }
 
 func getQueryParam(c *gin.Context, name string) string {
@@ -75,37 +92,28 @@ func NewError(err error) Error {
 
 // Middleware function to check database connection status before running queries
 func dbCheckMiddleware() gin.HandlerFunc {
-	allowedPaths := []string{
-		"/api/info",
-		"/api/connect",
-		"/api/bookmarks",
-		"/api/history",
-	}
-
 	return func(c *gin.Context) {
-		if DbClient != nil {
+		if allowedPaths[c.Request.URL.Path] == true {
 			c.Next()
 			return
 		}
 
-		currentPath := c.Request.URL.Path
-		allowed := false
-
-		for _, path := range allowedPaths {
-			if path == currentPath {
-				allowed = true
-				break
-			}
+		sessionId := getSessionId(c)
+		if sessionId == "" {
+			c.JSON(400, Error{"Session ID is required"})
+			c.Abort()
+			return
 		}
 
-		if allowed {
-			c.Next()
-		} else {
+		conn := DbSessions[sessionId]
+		if conn == nil {
 			c.JSON(400, Error{"Not connected"})
 			c.Abort()
+			return
 		}
 
-		return
+		c.Set("db", conn)
+		c.Next()
 	}
 }
 
@@ -113,7 +121,6 @@ func dbCheckMiddleware() gin.HandlerFunc {
 func requestInspectMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		err := c.Request.ParseForm()
-
 		log.Println("Request params:", err, c.Request.Form)
 	}
 }

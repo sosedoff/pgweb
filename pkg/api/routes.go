@@ -22,6 +22,7 @@ func SetupRoutes(router *gin.Engine) {
 		SetupMiddlewares(api)
 
 		api.GET("/info", GetInfo)
+		api.GET("/sessions", GetSessions)
 		api.POST("/connect", Connect)
 		api.GET("/databases", GetDatabases)
 		api.GET("/connection", GetConnectionInfo)
