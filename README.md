@@ -22,6 +22,7 @@ application to work with local or remote PostgreSQL databases.
 - Zero dependencies
 - Simple installation (distributes as a single binary)
 - Connect to local or remote servers
+- Multiple database sessions
 - Browse tables and table rows
 - Get table details: structure, size, indeces, row count
 - Run and analyze custom SQL queries
@@ -30,6 +31,10 @@ application to work with local or remote PostgreSQL databases.
 - Server bookmarks
 
 Visit [WIKI](https://github.com/sosedoff/pgweb/wiki) for more details
+
+## Demo
+
+Visit https://pgweb-demo.herokuapp.com to see pgweb in action.
 
 ## Installation
 
@@ -56,6 +61,20 @@ Connection URL scheme is also supported:
 
 ```
 pgweb --url postgres://user:password@host:port/database?sslmode=[mode]
+```
+
+### Multiple database sessions
+
+To enable multiple database sessions in pgweb, start the server with:
+
+```
+pgweb --sessions
+```
+
+Or set environment variable:
+
+```
+SESSIONS=1 pgweb
 ```
 
 ## Deploy on Heroku
