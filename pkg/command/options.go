@@ -36,5 +36,9 @@ func ParseOptions() error {
 		Opts.Url = os.Getenv("DATABASE_URL")
 	}
 
+	if os.Getenv("SESSIONS") != "" {
+		Opts.Sessions = true
+	}
+
 	return nil
 }
