@@ -56,7 +56,14 @@ func GetAsset(c *gin.Context) {
 }
 
 func GetSessions(c *gin.Context) {
-	c.JSON(200, DbSessions)
+	// In debug mode endpoint will return a lot of sensitive information
+	// like full database connection string and all query history.
+	if command.Opts.Debug {
+		c.JSON(200, DbSessions)
+		return
+	}
+
+	c.JSON(200, map[string]int{"sessions": len(DbSessions)})
 }
 
 func Connect(c *gin.Context) {
