@@ -111,7 +111,7 @@ function loadSequences() {
 
   getSequences(function(data) {
     data.forEach(function(item) {
-      $("<li><span><i class='fa fa-chevron-right'></i> " + item + " </span></li>").appendTo("#sequences");
+      $("<li><span><i class='fa fa-circle-o'></i> " + item + " </span></li>").appendTo("#sequences");
     });
   });
 }
