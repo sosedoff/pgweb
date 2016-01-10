@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/sosedoff/pgweb",
-	"GoVersion": "go1.4",
+	"GoVersion": "go1.5.1",
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
