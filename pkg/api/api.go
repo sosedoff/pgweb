@@ -14,7 +14,38 @@ import (
 	"github.com/sosedoff/pgweb/pkg/connection"
 )
 
-var DbClient *client.Client
+var (
+	DbClient   *client.Client
+	DbSessions = map[string]*client.Client{}
+)
+
+func DB(c *gin.Context) *client.Client {
+	if command.Opts.Sessions {
+		return DbSessions[getSessionId(c)]
+	} else {
+		return DbClient
+	}
+}
+
+func setClient(c *gin.Context, newClient *client.Client) error {
+	currentClient := DB(c)
+	if currentClient != nil {
+		currentClient.Close()
+	}
+
+	if !command.Opts.Sessions {
+		DbClient = newClient
+		return nil
+	}
+
+	sessionId := getSessionId(c)
+	if sessionId == "" {
+		return errors.New("Session ID is required")
+	}
+
+	DbSessions[sessionId] = newClient
+	return nil
+}
 
 func GetHome(c *gin.Context) {
 	serveStaticAsset("/index.html", c)
@@ -22,6 +53,17 @@ func GetHome(c *gin.Context) {
 
 func GetAsset(c *gin.Context) {
 	serveStaticAsset(c.Params.ByName("path"), c)
+}
+
+func GetSessions(c *gin.Context) {
+	// In debug mode endpoint will return a lot of sensitive information
+	// like full database connection string and all query history.
+	if command.Opts.Debug {
+		c.JSON(200, DbSessions)
+		return
+	}
+
+	c.JSON(200, map[string]int{"sessions": len(DbSessions)})
 }
 
 func Connect(c *gin.Context) {
@@ -53,20 +95,20 @@ func Connect(c *gin.Context) {
 	}
 
 	info, err := cl.Info()
-
 	if err == nil {
-		if DbClient != nil {
-			DbClient.Close()
+		err = setClient(c, cl)
+		if err != nil {
+			cl.Close()
+			c.JSON(400, Error{err.Error()})
+			return
 		}
-
-		DbClient = cl
 	}
 
 	c.JSON(200, info.Format()[0])
 }
 
 func GetDatabases(c *gin.Context) {
-	names, err := DbClient.Databases()
+	names, err := DB(c).Databases()
 	serveResult(names, err, c)
 }
 
@@ -93,17 +135,17 @@ func ExplainQuery(c *gin.Context) {
 }
 
 func GetSchemas(c *gin.Context) {
-	names, err := DbClient.Schemas()
+	names, err := DB(c).Schemas()
 	serveResult(names, err, c)
 }
 
 func GetTables(c *gin.Context) {
-	names, err := DbClient.Tables()
+	names, err := DB(c).Tables()
 	serveResult(names, err, c)
 }
 
 func GetTable(c *gin.Context) {
-	res, err := DbClient.Table(c.Params.ByName("table"))
+	res, err := DB(c).Table(c.Params.ByName("table"))
 	serveResult(res, err, c)
 }
 
@@ -128,13 +170,13 @@ func GetTableRows(c *gin.Context) {
 		Where:      c.Request.FormValue("where"),
 	}
 
-	res, err := DbClient.TableRows(c.Params.ByName("table"), opts)
+	res, err := DB(c).TableRows(c.Params.ByName("table"), opts)
 	if err != nil {
 		c.JSON(400, NewError(err))
 		return
 	}
 
-	countRes, err := DbClient.TableRowsCount(c.Params.ByName("table"), opts)
+	countRes, err := DB(c).TableRowsCount(c.Params.ByName("table"), opts)
 	if err != nil {
 		c.JSON(400, NewError(err))
 		return
@@ -160,7 +202,7 @@ func GetTableRows(c *gin.Context) {
 }
 
 func GetTableInfo(c *gin.Context) {
-	res, err := DbClient.TableInfo(c.Params.ByName("table"))
+	res, err := DB(c).TableInfo(c.Params.ByName("table"))
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -171,11 +213,11 @@ func GetTableInfo(c *gin.Context) {
 }
 
 func GetHistory(c *gin.Context) {
-	c.JSON(200, DbClient.History)
+	c.JSON(200, DB(c).History)
 }
 
 func GetConnectionInfo(c *gin.Context) {
-	res, err := DbClient.Info()
+	res, err := DB(c).Info()
 
 	if err != nil {
 		c.JSON(400, NewError(err))
@@ -186,22 +228,22 @@ func GetConnectionInfo(c *gin.Context) {
 }
 
 func GetSequences(c *gin.Context) {
-	res, err := DbClient.Sequences()
+	res, err := DB(c).Sequences()
 	serveResult(res, err, c)
 }
 
 func GetActivity(c *gin.Context) {
-	res, err := DbClient.Activity()
+	res, err := DB(c).Activity()
 	serveResult(res, err, c)
 }
 
 func GetTableIndexes(c *gin.Context) {
-	res, err := DbClient.TableIndexes(c.Params.ByName("table"))
+	res, err := DB(c).TableIndexes(c.Params.ByName("table"))
 	serveResult(res, err, c)
 }
 
 func GetTableConstraints(c *gin.Context) {
-	res, err := DbClient.TableConstraints(c.Params.ByName("table"))
+	res, err := DB(c).TableConstraints(c.Params.ByName("table"))
 	serveResult(res, err, c)
 }
 
@@ -211,7 +253,7 @@ func HandleQuery(query string, c *gin.Context) {
 		query = string(rawQuery)
 	}
 
-	result, err := DbClient.Query(query)
+	result, err := DB(c).Query(query)
 	if err != nil {
 		c.JSON(400, NewError(err))
 		return

@@ -21,6 +21,7 @@ type Options struct {
 	AuthUser string `long:"auth-user" description:"HTTP basic auth user"`
 	AuthPass string `long:"auth-pass" description:"HTTP basic auth password"`
 	SkipOpen bool   `short:"s" long:"skip-open" description:"Skip browser open on start"`
+	Sessions bool   `long:"sessions" description:"Enable multiple database sessions" default:"false"`
 }
 
 var Opts Options
@@ -33,6 +34,10 @@ func ParseOptions() error {
 
 	if Opts.Url == "" {
 		Opts.Url = os.Getenv("DATABASE_URL")
+	}
+
+	if os.Getenv("SESSIONS") != "" {
+		Opts.Sessions = true
 	}
 
 	return nil

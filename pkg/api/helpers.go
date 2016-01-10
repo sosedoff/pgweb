@@ -2,13 +2,11 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"mime"
 	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sosedoff/pgweb/pkg/data"
 )
 
 var extraMimeTypes = map[string]string{
@@ -20,8 +18,25 @@ var extraMimeTypes = map[string]string{
 	".html": "text/html; charset-utf-8",
 }
 
+// Paths that dont require database connection
+var allowedPaths = map[string]bool{
+	"/api/sessions":  true,
+	"/api/info":      true,
+	"/api/connect":   true,
+	"/api/bookmarks": true,
+	"/api/history":   true,
+}
+
 type Error struct {
 	Message string `json:"error"`
+}
+
+func getSessionId(c *gin.Context) string {
+	id := c.Request.Header.Get("x-session-id")
+	if id == "" {
+		id = c.Request.URL.Query().Get("_session_id")
+	}
+	return id
 }
 
 func getQueryParam(c *gin.Context, name string) string {
@@ -71,68 +86,4 @@ func assetContentType(name string) string {
 
 func NewError(err error) Error {
 	return Error{err.Error()}
-}
-
-// Middleware function to check database connection status before running queries
-func dbCheckMiddleware() gin.HandlerFunc {
-	allowedPaths := []string{
-		"/api/info",
-		"/api/connect",
-		"/api/bookmarks",
-		"/api/history",
-	}
-
-	return func(c *gin.Context) {
-		if DbClient != nil {
-			c.Next()
-			return
-		}
-
-		currentPath := c.Request.URL.Path
-		allowed := false
-
-		for _, path := range allowedPaths {
-			if path == currentPath {
-				allowed = true
-				break
-			}
-		}
-
-		if allowed {
-			c.Next()
-		} else {
-			c.JSON(400, Error{"Not connected"})
-			c.Abort()
-		}
-
-		return
-	}
-}
-
-// Middleware function to print out request parameters and body for debugging
-func requestInspectMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		err := c.Request.ParseForm()
-
-		log.Println("Request params:", err, c.Request.Form)
-	}
-}
-
-func serveStaticAsset(path string, c *gin.Context) {
-	data, err := data.Asset("static" + path)
-	if err != nil {
-		c.String(400, err.Error())
-		return
-	}
-
-	c.Data(200, assetContentType(path), data)
-}
-
-func serveResult(result interface{}, err error, c *gin.Context) {
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, result)
 }

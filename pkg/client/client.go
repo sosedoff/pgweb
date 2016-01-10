@@ -15,8 +15,8 @@ import (
 
 type Client struct {
 	db               *sqlx.DB
-	History          []history.Record
-	ConnectionString string
+	History          []history.Record `json:"history"`
+	ConnectionString string           `json:"connection_string"`
 }
 
 // Struct to hold table rows browsing options

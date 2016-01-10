@@ -16,6 +16,22 @@ var filterOptions = {
   "not_null":   "IS NOT NULL"
 };
 
+function guid() {
+  function s4() { return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1); }
+  return [s4(), s4(), "-", s4(), "-", s4(), "-", s4(), "-", s4(), s4(), s4()].join("");
+}
+
+function getSessionId() {
+  var id = localStorage.getItem("session_id");
+
+  if (!id) {
+    id = guid();
+    localStorage.setItem("session_id", id);
+  }
+
+  return id;
+}
+
 function setRowsLimit(num) {
   localStorage.setItem("rows_limit", num);
 }
@@ -47,6 +63,9 @@ function apiCall(method, path, params, cb) {
     method: method,
     cache: false,
     data: params,
+    headers: {
+      "x-session-id": getSessionId()
+    },
     success: function(data) {
       cb(data);
     },
