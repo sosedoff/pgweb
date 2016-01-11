@@ -1,4 +1,11 @@
-## 0.7.0 - 2018-01-05
+## 0.8.0 - 2016-01-11
+
+- Fixes bug with bigint conversions in javascript. Now bigints are encoded as strings. GH-109
+- Adds pagination and simple column filtering to table rows browser. GH-110
+- Adds ability to use pgweb with multiple database sessions. GH-111
+- Adds a few design tweaks and cleanups
+
+## 0.7.0 - 2016-01-05
 
 - Adds sequences to the sidebar panel - GH-100
 - Adds table constrains view - GH-104
