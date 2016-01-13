@@ -44,7 +44,7 @@ func Test_getAvailablePort(t *testing.T) {
 		t.Skip("FIXME")
 	}
 
-	port, err := getAvailablePort(8081, 1)
+	port, err := AvailablePort(8081, 1)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 8081, port)
 
@@ -65,11 +65,11 @@ func Test_getAvailablePort(t *testing.T) {
 		}
 	}()
 
-	port, err = getAvailablePort(8081, 0)
+	port, err = AvailablePort(8081, 0)
 	assert.EqualError(t, err, "No available port")
 	assert.Equal(t, -1, port)
 
-	port, err = getAvailablePort(8081, 1)
+	port, err = AvailablePort(8081, 1)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 8082, port)
 }

@@ -16,6 +16,7 @@ import (
 
 type Client struct {
 	db               *sqlx.DB
+	tunnel           *Tunnel
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
 }
@@ -49,7 +50,6 @@ func New() (*Client, error) {
 	}
 
 	db, err := sqlx.Open("postgres", str)
-
 	if err != nil {
 		return nil, err
 	}

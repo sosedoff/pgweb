@@ -18,6 +18,12 @@ type Bookmark struct {
 	Password string `json:"password"` // User password
 	Database string `json:"database"` // Database name
 	Ssl      string `json:"ssl"`      // Connection SSL mode
+
+	SshHost     string `json:"ssh_user"`
+	SshPort     string `json:"ssh_port"`
+	SshUser     string `json:"ssh_user"`
+	SshPassword string `json:"ssh_password"`
+	SshKey      string `json:"ssh_key"`
 }
 
 func readServerConfig(path string) (Bookmark, error) {
