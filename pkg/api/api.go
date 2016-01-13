@@ -233,11 +233,6 @@ func GetConnectionInfo(c *gin.Context) {
 	c.JSON(200, res.Format()[0])
 }
 
-func GetSequences(c *gin.Context) {
-	res, err := DB(c).Sequences()
-	serveResult(res, err, c)
-}
-
 func GetActivity(c *gin.Context) {
 	res, err := DB(c).Activity()
 	serveResult(res, err, c)

@@ -84,7 +84,6 @@ function getTableIndexes(table, cb)     { apiCall("get", "/tables/" + table + "/
 function getTableConstraints(table, cb) { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
 function getHistory(cb)                 { apiCall("get", "/history", {}, cb); }
 function getBookmarks(cb)               { apiCall("get", "/bookmarks", {}, cb); }
-function getSequences(cb)               { apiCall("get", "/sequences", {}, cb); }
 function executeQuery(query, cb)        { apiCall("post", "/query", { query: query }, cb); }
 function explainQuery(query, cb)        { apiCall("post", "/explain", { query: query }, cb); }
 

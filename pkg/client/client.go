@@ -171,10 +171,6 @@ func (client *Client) TableConstraints(table string) (*Result, error) {
 	return res, err
 }
 
-func (client *Client) Sequences() ([]string, error) {
-	return client.fetchRows(statements.PG_SEQUENCES)
-}
-
 // Returns all active queriers on the server
 func (client *Client) Activity() (*Result, error) {
 	return client.query(statements.PG_ACTIVITY)
