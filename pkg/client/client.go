@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	_ "github.com/lib/pq"
 
@@ -26,6 +27,14 @@ type RowsOptions struct {
 	Limit      int    // Number of rows to fetch
 	SortColumn string // Column to sort by
 	SortOrder  string // Sort direction (ASC, DESC)
+}
+
+func getSchemaAndTable(str string) (string, string) {
+	chunks := strings.Split(str, ".")
+	if len(chunks) == 1 {
+		return "public", chunks[0]
+	}
+	return chunks[0], chunks[1]
 }
 
 func New() (*Client, error) {
@@ -89,16 +98,18 @@ func (client *Client) Schemas() ([]string, error) {
 	return client.fetchRows(statements.PG_SCHEMAS)
 }
 
-func (client *Client) Tables() ([]string, error) {
-	return client.fetchRows(statements.PG_TABLES)
+func (client *Client) Objects() (*Result, error) {
+	return client.query(statements.PG_OBJECTS)
 }
 
 func (client *Client) Table(table string) (*Result, error) {
-	return client.query(statements.PG_TABLE_SCHEMA, table)
+	schema, table := getSchemaAndTable(table)
+	return client.query(statements.PG_TABLE_SCHEMA, schema, table)
 }
 
 func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error) {
-	sql := fmt.Sprintf(`SELECT * FROM "%s"`, table)
+	schema, table := getSchemaAndTable(table)
+	sql := fmt.Sprintf(`SELECT * FROM "%s"."%s"`, schema, table)
 
 	if opts.Where != "" {
 		sql += fmt.Sprintf(" WHERE %s", opts.Where)
@@ -124,7 +135,8 @@ func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error)
 }
 
 func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, error) {
-	sql := fmt.Sprintf(`SELECT COUNT(1) FROM "%s"`, table)
+	schema, table := getSchemaAndTable(table)
+	sql := fmt.Sprintf(`SELECT COUNT(1) FROM "%s"."%s"`, schema, table)
 
 	if opts.Where != "" {
 		sql += fmt.Sprintf(" WHERE %s", opts.Where)
@@ -138,7 +150,8 @@ func (client *Client) TableInfo(table string) (*Result, error) {
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
-	res, err := client.query(statements.PG_TABLE_INDEXES, table)
+	schema, table := getSchemaAndTable(table)
+	res, err := client.query(statements.PG_TABLE_INDEXES, schema, table)
 
 	if err != nil {
 		return nil, err
@@ -148,17 +161,14 @@ func (client *Client) TableIndexes(table string) (*Result, error) {
 }
 
 func (client *Client) TableConstraints(table string) (*Result, error) {
-	res, err := client.query(statements.PG_TABLE_CONSTRAINTS, table)
+	schema, table := getSchemaAndTable(table)
+	res, err := client.query(statements.PG_TABLE_CONSTRAINTS, schema, table)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return res, err
-}
-
-func (client *Client) Sequences() ([]string, error) {
-	return client.fetchRows(statements.PG_SEQUENCES)
 }
 
 // Returns all active queriers on the server

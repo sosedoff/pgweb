@@ -1,7 +1,8 @@
-var editor;
-var connected = false;
-var bookmarks = {};
+var editor             = null;
+var connected          = false;
+var bookmarks          = {};
 var default_rows_limit = 100;
+var currentTable       = null;
 
 var filterOptions = {
   "equal":      "= 'DATA'",
@@ -75,6 +76,7 @@ function apiCall(method, path, params, cb) {
   });
 }
 
+function getObjects(cb)                 { apiCall("get", "/objects", {}, cb); }
 function getTables(cb)                  { apiCall("get", "/tables", {}, cb); }
 function getTableRows(table, opts, cb)  { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
 function getTableStructure(table, cb)   { apiCall("get", "/tables/" + table, {}, cb); }
@@ -82,37 +84,70 @@ function getTableIndexes(table, cb)     { apiCall("get", "/tables/" + table + "/
 function getTableConstraints(table, cb) { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
 function getHistory(cb)                 { apiCall("get", "/history", {}, cb); }
 function getBookmarks(cb)               { apiCall("get", "/bookmarks", {}, cb); }
-function getSequences(cb)               { apiCall("get", "/sequences", {}, cb); }
+function executeQuery(query, cb)        { apiCall("post", "/query", { query: query }, cb); }
+function explainQuery(query, cb)        { apiCall("post", "/explain", { query: query }, cb); }
 
 function encodeQuery(query) {
   return window.btoa(query);
 }
 
-function executeQuery(query, cb) {
-  apiCall("post", "/query", { query: query }, cb);
+function buildSchemaSection(name, objects) {
+  var section = "";
+
+  var titles = {
+    "tables":    "Tables",
+    "views":     "Views",
+    "sequences": "Sequences"
+  };
+
+  var icons = {
+    "tables":    '<i class="fa fa-table"></i>',
+    "views":     '<i class="fa fa-table"></i>',
+    "sequences": '<i class="fa fa-circle-o"></i>'
+  };
+
+  var klass = "";
+  if (name == "public") klass = "expanded";
+
+  section += "<div class='schema " + klass + "'>";
+  section += "<div class='schema-name'><i class='fa fa-folder-o'></i><i class='fa fa-folder-open-o'></i> " + name + "</div>";
+  section += "<div class='schema-container'>";
+
+  for (group of ["tables", "views", "sequences"]) {
+    if (objects[group].length == 0) continue;
+
+    group_klass = "";
+    if (name == "public" && group == "tables") group_klass = "expanded";
+
+    section += "<div class='schema-group " + group_klass + "'>";
+    section += "<div class='schema-group-title'><i class='fa fa-chevron-right'></i><i class='fa fa-chevron-down'></i> " + titles[group] + " (" + objects[group].length + ")</div>";
+    section += "<ul>"
+
+    for (item of objects[group]) {
+      var id = name + "." + item;
+      section += "<li class='schema-" + group + "' data-type='" + group + "' data-id='" + id + "'>" + icons[group] + "&nbsp;" + item + "</li>";
+    }
+    section += "</ul></div>";
+  }
+
+  section += "</div></div>";
+
+  return section;
 }
 
-function explainQuery(query, cb) {
-  apiCall("post", "/explain", { query: query }, cb);
-}
+function loadSchemas() {
+  $("#objects").html("");
 
-function loadTables() {
-  $("#tables li").remove();
+  getObjects(function(data) {
+    for (schema in data) {
+      $(buildSchemaSection(schema, data[schema])).appendTo("#objects");
+    }
 
-  getTables(function(data) {
-    data.forEach(function(item) {
-      $("<li><span><i class='fa fa-table'></i> " + item + " </span></li>").appendTo("#tables");
-    });
-  });
-}
+    if (Object.keys(data).length == 1) {
+      $(".schema").addClass("expanded");
+    }
 
-function loadSequences() {
-  $("#sequences li").remove();
-
-  getSequences(function(data) {
-    data.forEach(function(item) {
-      $("<li><span><i class='fa fa-circle-o'></i> " + item + " </span></li>").appendTo("#sequences");
-    });
+    bindContextMenus();
   });
 }
 
@@ -131,7 +166,7 @@ function unescapeHtml(str){
 }
 
 function getCurrentTable() {
-  return $("#tables").attr("data-current") || "";
+  return currentTable;
 }
 
 function resetTable() {
@@ -158,8 +193,7 @@ function performTableAction(table, action, el) {
     case "delete":
       executeQuery("DROP TABLE " + table, function(data) {
         if (data.error) alert(data.error);
-        loadTables();
-        loadSequences();
+        loadSchemas();
         resetTable();
       });
       break;
@@ -459,8 +493,7 @@ function runQuery() {
 
     // Refresh tables list if table was added or removed
     if (query.match(re)) {
-      loadTables();
-      loadSequences();
+      loadSchemas();
     }
   });
 }
@@ -639,6 +672,21 @@ function getConnectionString() {
   return url;
 }
 
+function bindContextMenus() {
+  $(".schema-group ul").each(function(id, el) {
+    $(el).contextmenu({
+      target: "#tables_context_menu",
+      scopes: "li.schema-tables",
+      onItem: function(context, e) {
+        var el      = $(e.target);
+        var table   = $(context[0]).data("id");
+        var action  = el.data("action");
+        performTableAction(table, action, el);
+      }
+    });
+  });
+}
+
 $(document).ready(function() {
   $("#table_content").on("click",     function() { showTableContent();     });
   $("#table_structure").on("click",   function() { showTableStructure();   });
@@ -672,6 +720,26 @@ $(document).ready(function() {
   $("#results").on("click", "tr", function() {
     $("#results tr.selected").removeClass();
     $(this).addClass("selected");
+  });
+
+  $("#objects").on("click", ".schema-group-title", function(e) {
+    $(this).parent().toggleClass("expanded");
+  });
+
+  $("#objects").on("click", ".schema-name", function(e) {
+    $(this).parent().toggleClass("expanded");
+  });
+
+  $("#objects").on("click", "li", function(e) {
+    currentTable = $(this).data("id");
+
+    $("#objects li").removeClass("active");
+    $(this).addClass("active");
+    $(".current-page").data("page", 1);
+    $(".filters select, .filters input").val("");
+
+    showTableInfo();
+    showTableContent();
   });
 
   $("#results").on("click", "th", function(e) {
@@ -712,43 +780,8 @@ $(document).ready(function() {
     $(this).html(textarea).css("max-height", "200px");
   });
 
-  $("#tables").on("click", "li", function() {
-    $("#tables li.selected").removeClass("selected");
-    $("#sequences li.selected").removeClass("selected");
-    $(this).addClass("selected");
-    $("#tables").attr("data-current", $.trim($(this).text()));
-    $(".current-page").data("page", 1);
-    $(".filters select, .filters input").val("");
-
-    showTableContent();
-    showTableInfo();
-  });
-
-  $("#tables").contextmenu({
-    target: "#tables_context_menu",
-    scopes: "li",
-    onItem: function(context, e) {
-      var el      = $(e.target);
-      var table   = $.trim($(context[0]).text());
-      var action  = el.data("action");
-      performTableAction(table, action, el);
-    }
-  });
-
-  $("#sequences").on("click", "li", function() {
-    $("#tables li.selected").removeClass("selected");
-    $("#sequences li.selected").removeClass("selected");
-
-    $(this).addClass("selected");
-    $("#tables").attr("data-current", $.trim($(this).text()));
-
-    showTableContent();
-    $(".table-information ul").hide();
-  });
-
   $("#refresh_tables").on("click", function() {
-    loadTables();
-    loadSequences();
+    loadSchemas();
   });
 
   $("#rows_filter").on("submit", function(e) {
@@ -920,8 +953,7 @@ $(document).ready(function() {
       }
       else {
         connected = true;
-        loadTables();
-        loadSequences();
+        loadSchemas();
 
         $("#connection_window").hide();
         $("#current_database").text(resp.current_database);
@@ -940,8 +972,7 @@ $(document).ready(function() {
     }
     else {
       connected = true;
-      loadTables();
-      loadSequences();
+      loadSchemas();
 
       $("#current_database").text(resp.current_database);
       $("#main").show();

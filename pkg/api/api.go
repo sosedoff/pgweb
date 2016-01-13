@@ -112,6 +112,17 @@ func GetDatabases(c *gin.Context) {
 	serveResult(names, err, c)
 }
 
+func GetObjects(c *gin.Context) {
+	result, err := DB(c).Objects()
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	objects := client.ObjectsFromResult(result)
+	c.JSON(200, objects)
+}
+
 func RunQuery(c *gin.Context) {
 	query := strings.TrimSpace(c.Request.FormValue("query"))
 
@@ -135,13 +146,8 @@ func ExplainQuery(c *gin.Context) {
 }
 
 func GetSchemas(c *gin.Context) {
-	names, err := DB(c).Schemas()
-	serveResult(names, err, c)
-}
-
-func GetTables(c *gin.Context) {
-	names, err := DB(c).Tables()
-	serveResult(names, err, c)
+	res, err := DB(c).Schemas()
+	serveResult(res, err, c)
 }
 
 func GetTable(c *gin.Context) {
@@ -225,11 +231,6 @@ func GetConnectionInfo(c *gin.Context) {
 	}
 
 	c.JSON(200, res.Format()[0])
-}
-
-func GetSequences(c *gin.Context) {
-	res, err := DB(c).Sequences()
-	serveResult(res, err, c)
 }
 
 func GetActivity(c *gin.Context) {
