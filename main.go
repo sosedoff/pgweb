@@ -41,8 +41,8 @@ func initClient() {
 		exitWithMessage(err.Error())
 	}
 
-	fmt.Println("Checking tables...")
-	_, err = cl.Tables()
+	fmt.Println("Checking database objects...")
+	_, err = cl.Objects()
 	if err != nil {
 		exitWithMessage(err.Error())
 	}

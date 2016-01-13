@@ -15,6 +15,14 @@ var (
 	testCommands map[string]string
 )
 
+func mapKeys(data map[string]*Objects) []string {
+	result := []string{}
+	for k, _ := range data {
+		result = append(result, k)
+	}
+	return result
+}
+
 func setupCommands() {
 	testCommands = map[string]string{
 		"createdb": "createdb",
@@ -112,10 +120,11 @@ func test_Databases(t *testing.T) {
 	assert.Contains(t, res, "postgres")
 }
 
-func test_Tables(t *testing.T) {
-	res, err := testClient.Tables()
+func test_Objects(t *testing.T) {
+	res, err := testClient.Objects()
+	objects := ObjectsFromResult(res)
 
-	expected := []string{
+	tables := []string{
 		"alternate_stock",
 		"authors",
 		"book_backup",
@@ -132,19 +141,21 @@ func test_Tables(t *testing.T) {
 		"my_list",
 		"numeric_values",
 		"publishers",
-		"recent_shipments",
 		"schedules",
 		"shipments",
 		"states",
 		"stock",
 		"stock_backup",
-		"stock_view",
 		"subjects",
 		"text_sorting",
 	}
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, expected, res)
+	assert.Equal(t, []string{"schema", "name", "type", "owner"}, res.Columns)
+	assert.Equal(t, []string{"public"}, mapKeys(objects))
+	assert.Equal(t, tables, objects["public"].Tables)
+	assert.Equal(t, []string{"recent_shipments", "stock_view"}, objects["public"].Views)
+	assert.Equal(t, []string{"author_ids", "book_ids", "shipments_ship_id_seq", "subject_ids"}, objects["public"].Sequences)
 }
 
 func test_Table(t *testing.T) {
@@ -284,7 +295,7 @@ func TestAll(t *testing.T) {
 	test_Test(t)
 	test_Info(t)
 	test_Databases(t)
-	test_Tables(t)
+	test_Objects(t)
 	test_Table(t)
 	test_TableRows(t)
 	test_TableInfo(t)

@@ -24,6 +24,12 @@ type Result struct {
 	Rows       []Row       `json:"rows"`
 }
 
+type Objects struct {
+	Tables    []string `json:"tables"`
+	Views     []string `json:"views"`
+	Sequences []string `json:"sequences"`
+}
+
 // Due to big int number limitations in javascript, numbers should be encoded
 // as strings so they could be properly loaded on the frontend.
 func (res *Result) PrepareBigints() {
@@ -97,4 +103,33 @@ func (res *Result) CSV() []byte {
 func (res *Result) JSON() []byte {
 	data, _ := json.Marshal(res.Format())
 	return data
+}
+
+func ObjectsFromResult(res *Result) map[string]*Objects {
+	objects := map[string]*Objects{}
+
+	for _, row := range res.Rows {
+		schema := row[0].(string)
+		name := row[1].(string)
+		object_type := row[2].(string)
+
+		if objects[schema] == nil {
+			objects[schema] = &Objects{
+				Tables:    []string{},
+				Views:     []string{},
+				Sequences: []string{},
+			}
+		}
+
+		switch object_type {
+		case "table":
+			objects[schema].Tables = append(objects[schema].Tables, name)
+		case "view":
+			objects[schema].Views = append(objects[schema].Views, name)
+		case "sequence":
+			objects[schema].Sequences = append(objects[schema].Sequences, name)
+		}
+	}
+
+	return objects
 }
