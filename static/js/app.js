@@ -23,11 +23,11 @@ function guid() {
 }
 
 function getSessionId() {
-  var id = localStorage.getItem("session_id");
+  var id = sessionStorage.getItem("session_id");
 
   if (!id) {
     id = guid();
-    localStorage.setItem("session_id", id);
+    sessionStorage.setItem("session_id", id);
   }
 
   return id;
