@@ -52,16 +52,22 @@ func Test_JSON(t *testing.T) {
 		},
 	}
 
-	output := result.JSON()
-	obj := []map[string]interface{}{}
-	err := json.Unmarshal(output, &obj)
+	obj := []struct {
+		Id    int
+		Name  string
+		Email string
+	}{}
 
-	assert.NoError(t, err)
-	assert.Equal(t, 2, len(obj))
-
-	for i, row := range obj {
-		for j, col := range result.Columns {
-			assert.Equal(t, result.Rows[i][j], row[col])
-		}
+	expected := []struct {
+		Id    int
+		Name  string
+		Email string
+	}{
+		{1, "John", "john@example.com"},
+		{2, "Bob", "bob@example.com"},
 	}
+
+	assert.NoError(t, json.Unmarshal(result.JSON(), &obj))
+	assert.Equal(t, 2, len(obj))
+	assert.Equal(t, expected, obj)
 }
