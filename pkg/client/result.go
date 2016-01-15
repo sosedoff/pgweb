@@ -25,9 +25,10 @@ type Result struct {
 }
 
 type Objects struct {
-	Tables    []string `json:"tables"`
-	Views     []string `json:"views"`
-	Sequences []string `json:"sequences"`
+	Tables            []string `json:"tables"`
+	Views             []string `json:"views"`
+	MaterializedViews []string `json:"materialized_views"`
+	Sequences         []string `json:"sequences"`
 }
 
 // Due to big int number limitations in javascript, numbers should be encoded
@@ -115,9 +116,10 @@ func ObjectsFromResult(res *Result) map[string]*Objects {
 
 		if objects[schema] == nil {
 			objects[schema] = &Objects{
-				Tables:    []string{},
-				Views:     []string{},
-				Sequences: []string{},
+				Tables:            []string{},
+				Views:             []string{},
+				MaterializedViews: []string{},
+				Sequences:         []string{},
 			}
 		}
 
@@ -126,6 +128,8 @@ func ObjectsFromResult(res *Result) map[string]*Objects {
 			objects[schema].Tables = append(objects[schema].Tables, name)
 		case "view":
 			objects[schema].Views = append(objects[schema].Views, name)
+		case "materialized_view":
+			objects[schema].MaterializedViews = append(objects[schema].MaterializedViews, name)
 		case "sequence":
 			objects[schema].Sequences = append(objects[schema].Sequences, name)
 		}

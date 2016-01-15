@@ -130,7 +130,7 @@ FROM
 LEFT JOIN
   pg_catalog.pg_namespace n ON n.oid = c.relnamespace
 WHERE
-  c.relkind IN ('r','v','S','s','') AND
+  c.relkind IN ('r','v','m','S','s','') AND
   n.nspname !~ '^pg_toast' AND 
   n.nspname NOT IN ('information_schema', 'pg_catalog')
 ORDER BY 1, 2`

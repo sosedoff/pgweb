@@ -95,15 +95,17 @@ function buildSchemaSection(name, objects) {
   var section = "";
 
   var titles = {
-    "tables":    "Tables",
-    "views":     "Views",
-    "sequences": "Sequences"
+    "tables":             "Tables",
+    "views":              "Views",
+    "materialized_views": "Materialized Views",
+    "sequences":          "Sequences"
   };
 
   var icons = {
-    "tables":    '<i class="fa fa-table"></i>',
-    "views":     '<i class="fa fa-table"></i>',
-    "sequences": '<i class="fa fa-circle-o"></i>'
+    "tables":             '<i class="fa fa-table"></i>',
+    "views":              '<i class="fa fa-table"></i>',
+    "materialized_views": '<i class="fa fa-table"></i>',
+    "sequences":          '<i class="fa fa-circle-o"></i>'
   };
 
   var klass = "";
@@ -113,7 +115,7 @@ function buildSchemaSection(name, objects) {
   section += "<div class='schema-name'><i class='fa fa-folder-o'></i><i class='fa fa-folder-open-o'></i> " + name + "</div>";
   section += "<div class='schema-container'>";
 
-  for (group of ["tables", "views", "sequences"]) {
+  for (group of ["tables", "views", "materialized_views", "sequences"]) {
     if (objects[group].length == 0) continue;
 
     group_klass = "";
