@@ -907,6 +907,8 @@ CREATE FUNCTION "check_book_addition" () RETURNS opaque AS '
 
 CREATE VIEW "stock_view" as SELECT stock.isbn, stock.retail, stock.stock FROM stock;
 
+CREATE MATERIALIZED VIEW "m_stock_view" as SELECT stock.isbn, stock.retail, stock.stock FROM stock;
+
 --
 -- TOC Entry ID 30 (OID 3628247)
 --
