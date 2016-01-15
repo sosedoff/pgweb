@@ -3,6 +3,7 @@ var connected          = false;
 var bookmarks          = {};
 var default_rows_limit = 100;
 var currentTable       = null;
+var materializedViews  = [];
 
 var filterOptions = {
   "equal":      "= 'DATA'",
@@ -79,7 +80,7 @@ function apiCall(method, path, params, cb) {
 function getObjects(cb)                 { apiCall("get", "/objects", {}, cb); }
 function getTables(cb)                  { apiCall("get", "/tables", {}, cb); }
 function getTableRows(table, opts, cb)  { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
-function getTableStructure(table, cb)   { apiCall("get", "/tables/" + table, {}, cb); }
+function getTableStructure(table, opts, cb)   { apiCall("get", "/tables/" + table, opts, cb); }
 function getTableIndexes(table, cb)     { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
 function getTableConstraints(table, cb) { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
 function getHistory(cb)                 { apiCall("get", "/history", {}, cb); }
@@ -95,15 +96,17 @@ function buildSchemaSection(name, objects) {
   var section = "";
 
   var titles = {
-    "tables":    "Tables",
-    "views":     "Views",
-    "sequences": "Sequences"
+    "tables":             "Tables",
+    "views":              "Views",
+    "materialized_views": "Materialized Views",
+    "sequences":          "Sequences"
   };
 
-  var icons = {
-    "tables":    '<i class="fa fa-table"></i>',
-    "views":     '<i class="fa fa-table"></i>',
-    "sequences": '<i class="fa fa-circle-o"></i>'
+  var icons = { 
+    "tables":             '<i class="fa fa-table"></i>',
+    "views":              '<i class="fa fa-table"></i>',
+    "materialized_views": '<i class="fa fa-table"></i>',
+    "sequences":          '<i class="fa fa-circle-o"></i>'
   };
 
   var klass = "";
@@ -113,7 +116,7 @@ function buildSchemaSection(name, objects) {
   section += "<div class='schema-name'><i class='fa fa-folder-o'></i><i class='fa fa-folder-open-o'></i> " + name + "</div>";
   section += "<div class='schema-container'>";
 
-  for (group of ["tables", "views", "sequences"]) {
+  for (group of ["tables", "views", "materialized_views", "sequences"]) {
     if (objects[group].length == 0) continue;
 
     group_klass = "";
@@ -126,6 +129,8 @@ function buildSchemaSection(name, objects) {
     for (item of objects[group]) {
       var id = name + "." + item;
       section += "<li class='schema-" + group + "' data-type='" + group + "' data-id='" + id + "'>" + icons[group] + "&nbsp;" + item + "</li>";
+
+      if (group == "materialized_views") materializedViews.push(id)
     }
     section += "</ul></div>";
   }
@@ -406,6 +411,14 @@ function showTableContent(sortColumn, sortOrder) {
   });
 }
 
+function isMaterializedView(name) {
+  if (materializedViews.indexOf(name) == -1) {
+    return false
+  }
+
+  return true
+}
+
 function showTableStructure() {
   var name = getCurrentTable();
 
@@ -419,7 +432,7 @@ function showTableStructure() {
   $("#input").hide();
   $("#body").prop("class", "full");
 
-  getTableStructure(name, function(data) {
+  getTableStructure(name, {is_mview: isMaterializedView(name)}, function(data) {
     buildTable(data);
     $("#results").addClass("no-crop");
   });
@@ -538,7 +551,7 @@ function exportTo(format) {
 }
 
 function buildTableFilters(name) {
-  getTableStructure(name, function(data) {
+  getTableStructure(name, {is_mview: isMaterializedView(name)}, function(data) {
     if (data.rows.length == 0) {
       $("#pagination .filters").hide();
     }

@@ -91,6 +91,21 @@ WHERE
   table_name = $2`
 
 	// ---------------------------------------------------------------------------
+	PG_MATERIALIZED_VIEW_SCHEMA = `
+SELECT 
+  attname as column_name, 
+  atttypid::regtype AS data_type,
+  (case when attnotnull IS TRUE then 'NO' else 'YES' end) as is_nullable,
+  null as character_maximum_length,
+  null as character_set_catalog,
+  null as column_default
+FROM
+  pg_attribute
+WHERE
+  attrelid = $1::regclass AND attnum > 0
+  AND NOT attisdropped;`
+
+	// ---------------------------------------------------------------------------
 
 	PG_ACTIVITY = `
 SELECT
@@ -130,7 +145,7 @@ FROM
 LEFT JOIN
   pg_catalog.pg_namespace n ON n.oid = c.relnamespace
 WHERE
-  c.relkind IN ('r','v','S','s','') AND
+  c.relkind IN ('r','v','m','S','s','') AND
   n.nspname !~ '^pg_toast' AND 
   n.nspname NOT IN ('information_schema', 'pg_catalog')
 ORDER BY 1, 2`

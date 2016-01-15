@@ -102,8 +102,13 @@ func (client *Client) Objects() (*Result, error) {
 	return client.query(statements.PG_OBJECTS)
 }
 
-func (client *Client) Table(table string) (*Result, error) {
+func (client *Client) Table(table string, isMaterializedView bool) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
+
+	if isMaterializedView {
+		return client.query(statements.PG_MATERIALIZED_VIEW_SCHEMA, schema+"."+table)
+	}
+
 	return client.query(statements.PG_TABLE_SCHEMA, schema, table)
 }
 

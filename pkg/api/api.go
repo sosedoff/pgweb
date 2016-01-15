@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -151,7 +152,15 @@ func GetSchemas(c *gin.Context) {
 }
 
 func GetTable(c *gin.Context) {
-	res, err := DB(c).Table(c.Params.ByName("table"))
+	var isMaterializedView bool
+	flag := c.Request.FormValue("is_mview")
+	if formValue, err := strconv.ParseBool(flag); err == nil {
+		if formValue {
+			isMaterializedView = true
+		}
+	}
+
+	res, err := DB(c).Table(c.Params.ByName("table"), isMaterializedView)
 	serveResult(res, err, c)
 }
 
