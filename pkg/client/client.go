@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	neturl "net/url"
 	"reflect"
 	"strings"
 
@@ -86,8 +87,14 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 
 		go tunnel.Start()
 
+		uri, err := neturl.Parse(url)
+		if err != nil {
+			tunnel.Close()
+			return nil, err
+		}
+
 		// Override remote postgres port with local proxy port
-		url = strings.Replace(url, ":5432", fmt.Sprintf(":%v", tunnel.Port), 1)
+		url = strings.Replace(url, uri.Host, fmt.Sprintf("127.0.0.1:%v", tunnel.Port), 1)
 	}
 
 	if command.Opts.Debug {
