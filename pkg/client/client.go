@@ -11,6 +11,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/history"
+	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/pkg/statements"
 )
 
@@ -63,7 +64,32 @@ func New() (*Client, error) {
 	return &client, nil
 }
 
-func NewFromUrl(url string) (*Client, error) {
+func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
+	var tunnel *Tunnel
+
+	if sshInfo != nil {
+		if command.Opts.Debug {
+			fmt.Println("Opening SSH tunnel for:", sshInfo)
+		}
+
+		tunnel, err := NewTunnel(sshInfo, url)
+		if err != nil {
+			tunnel.Close()
+			return nil, err
+		}
+
+		err = tunnel.Configure()
+		if err != nil {
+			tunnel.Close()
+			return nil, err
+		}
+
+		go tunnel.Start()
+
+		// Override remote postgres port with local proxy port
+		url = strings.Replace(url, ":5432", fmt.Sprintf(":%v", tunnel.Port), 1)
+	}
+
 	if command.Opts.Debug {
 		fmt.Println("Creating a new client for:", url)
 	}
@@ -75,6 +101,7 @@ func NewFromUrl(url string) (*Client, error) {
 
 	client := Client{
 		db:               db,
+		tunnel:           tunnel,
 		ConnectionString: url,
 		History:          history.New(),
 	}
@@ -230,9 +257,14 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 
 // Close database connection
 func (client *Client) Close() error {
+	if client.tunnel != nil {
+		client.tunnel.Close()
+	}
+
 	if client.db != nil {
 		return client.db.Close()
 	}
+
 	return nil
 }
 

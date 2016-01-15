@@ -60,7 +60,7 @@ func setup() {
 }
 
 func setupClient() {
-	testClient, _ = NewFromUrl("postgres://postgres@localhost/booktown?sslmode=disable")
+	testClient, _ = NewFromUrl("postgres://postgres@localhost/booktown?sslmode=disable", nil)
 }
 
 func teardownClient() {
@@ -79,7 +79,7 @@ func teardown() {
 
 func test_NewClientFromUrl(t *testing.T) {
 	url := "postgres://postgres@localhost/booktown?sslmode=disable"
-	client, err := NewFromUrl(url)
+	client, err := NewFromUrl(url, nil)
 
 	if err != nil {
 		defer client.Close()
@@ -91,7 +91,7 @@ func test_NewClientFromUrl(t *testing.T) {
 
 func test_NewClientFromUrl2(t *testing.T) {
 	url := "postgresql://postgres@localhost/booktown?sslmode=disable"
-	client, err := NewFromUrl(url)
+	client, err := NewFromUrl(url, nil)
 
 	if err != nil {
 		defer client.Close()
@@ -257,7 +257,7 @@ func test_HistoryError(t *testing.T) {
 }
 
 func test_HistoryUniqueness(t *testing.T) {
-	client, _ := NewFromUrl("postgres://postgres@localhost/booktown?sslmode=disable")
+	client, _ := NewFromUrl("postgres://postgres@localhost/booktown?sslmode=disable", nil)
 
 	client.Query("SELECT * FROM books WHERE id = 1")
 	client.Query("SELECT * FROM books WHERE id = 1")
