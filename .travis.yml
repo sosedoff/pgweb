@@ -18,4 +18,4 @@ install:
 script:
   - make build
   - make test
-  - PGHOST=127.0.0.1 ./scripts/test_all.sh
+  - PGHOST=127.0.0.1 ./script/test_all.sh
