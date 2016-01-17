@@ -107,6 +107,10 @@ func (client *Client) Table(table string) (*Result, error) {
 	return client.query(statements.PG_TABLE_SCHEMA, schema, table)
 }
 
+func (client *Client) MaterializedView(name string) (*Result, error) {
+	return client.query(statements.PG_MATERIALIZED_VIEW_SCHEMA, name)
+}
+
 func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
 	sql := fmt.Sprintf(`SELECT * FROM "%s"."%s"`, schema, table)

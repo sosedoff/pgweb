@@ -151,7 +151,15 @@ func GetSchemas(c *gin.Context) {
 }
 
 func GetTable(c *gin.Context) {
-	res, err := DB(c).Table(c.Params.ByName("table"))
+	var res *client.Result
+	var err error
+
+	if c.Request.FormValue("type") == "materialized_view" {
+		res, err = DB(c).MaterializedView(c.Params.ByName("table"))
+	} else {
+		res, err = DB(c).Table(c.Params.ByName("table"))
+	}
+
 	serveResult(res, err, c)
 }
 

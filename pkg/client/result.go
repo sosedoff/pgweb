@@ -25,10 +25,10 @@ type Result struct {
 }
 
 type Objects struct {
-	Tables            []string `json:"tables"`
-	Views             []string `json:"views"`
-	MaterializedViews []string `json:"materialized_views"`
-	Sequences         []string `json:"sequences"`
+	Tables            []string `json:"table"`
+	Views             []string `json:"view"`
+	MaterializedViews []string `json:"materialized_view"`
+	Sequences         []string `json:"sequence"`
 }
 
 // Due to big int number limitations in javascript, numbers should be encoded
