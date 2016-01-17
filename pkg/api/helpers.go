@@ -7,6 +7,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
 var extraMimeTypes = map[string]string{
@@ -67,6 +69,21 @@ func parseIntFormValue(c *gin.Context, name string, defValue int) (int, error) {
 	}
 
 	return num, nil
+}
+
+func parseSshInfo(c *gin.Context) *shared.SSHInfo {
+	info := shared.SSHInfo{
+		Host:     c.Request.FormValue("ssh_host"),
+		Port:     c.Request.FormValue("ssh_port"),
+		User:     c.Request.FormValue("ssh_user"),
+		Password: c.Request.FormValue("ssh_password"),
+	}
+
+	if info.Port == "" {
+		info.Port = "22"
+	}
+
+	return &info
 }
 
 func assetContentType(name string) string {

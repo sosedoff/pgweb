@@ -1,11 +1,18 @@
 {
 	"ImportPath": "github.com/sosedoff/pgweb",
-	"GoVersion": "go1.5.2",
+	"GoVersion": "go1.5",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
 			"Comment": "v0.1.0-9-g3883ac1",
 			"Rev": "3883ac1ce943878302255f538fce319d23226223"
+		},
+		{
+			"ImportPath": "github.com/davecgh/go-spew/spew",
+			"Rev": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
@@ -36,8 +43,21 @@
 			"Rev": "7d2d8c8a4e078ce3c58736ab521a40b37a504c52"
 		},
 		{
+			"ImportPath": "github.com/pmezard/go-difflib/difflib",
+			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
+		},
+		{
 			"ImportPath": "github.com/stretchr/testify/assert",
-			"Rev": "2eaa4b48b8954bf871229043b8064ca156a542a5"
+			"Comment": "v1.1.3",
+			"Rev": "f390dcf405f7b83c997eac1b06768bb9f44dec18"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/curve25519",
+			"Rev": "3760e016850398b85094c4c99e955b8c3dea5711"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/ssh",
+			"Rev": "3760e016850398b85094c4c99e955b8c3dea5711"
 		}
 	]
 }

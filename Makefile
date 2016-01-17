@@ -15,6 +15,7 @@ usage:
 	@echo "make bootstrap       : Install cross-compilation toolchain"
 	@echo "make release         : Generate binaries for all supported OSes"
 	@echo "make test            : Execute test suite"
+	@echo "make test-all        : Execute test suite on multiple PG versions"
 	@echo "make clean           : Remove all build files and reset assets"
 	@echo "make assets          : Generate production assets file"
 	@echo "make dev-assets      : Generate development assets file"
@@ -24,6 +25,9 @@ usage:
 
 test:
 	godep go test -cover ./...
+
+test-all:
+	@./script/test_all.sh
 
 assets: static/
 	go-bindata -o pkg/data/bindata.go -pkg data $(BINDATA_OPTS) $(BINDATA_IGNORE) -ignore=[.]gitignore -ignore=[.]gitkeep $<...

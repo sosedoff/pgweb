@@ -7,6 +7,7 @@ import (
 	"os/signal"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/sosedoff/pgweb/pkg/api"
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"

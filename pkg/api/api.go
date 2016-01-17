@@ -8,10 +8,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/sosedoff/pgweb/pkg/bookmarks"
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
+	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
 var (
@@ -67,6 +69,7 @@ func GetSessions(c *gin.Context) {
 }
 
 func Connect(c *gin.Context) {
+	var sshInfo *shared.SSHInfo
 	url := c.Request.FormValue("url")
 
 	if url == "" {
@@ -82,7 +85,11 @@ func Connect(c *gin.Context) {
 		return
 	}
 
-	cl, err := client.NewFromUrl(url)
+	if c.Request.FormValue("ssh") != "" {
+		sshInfo = parseSshInfo(c)
+	}
+
+	cl, err := client.NewFromUrl(url, sshInfo)
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
 		return

@@ -101,7 +101,7 @@ func setup() {
 
 func setupClient() {
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	testClient, _ = NewFromUrl(url)
+	testClient, _ = NewFromUrl(url, nil)
 }
 
 func teardownClient() {
@@ -126,7 +126,7 @@ func teardown() {
 
 func test_NewClientFromUrl(t *testing.T) {
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	client, err := NewFromUrl(url)
+	client, err := NewFromUrl(url, nil)
 
 	if err != nil {
 		defer client.Close()
@@ -138,7 +138,7 @@ func test_NewClientFromUrl(t *testing.T) {
 
 func test_NewClientFromUrl2(t *testing.T) {
 	url := fmt.Sprintf("postgresql://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	client, err := NewFromUrl(url)
+	client, err := NewFromUrl(url, nil)
 
 	if err != nil {
 		defer client.Close()
@@ -312,7 +312,7 @@ func test_HistoryError(t *testing.T) {
 
 func test_HistoryUniqueness(t *testing.T) {
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	client, _ := NewFromUrl(url)
+	client, _ := NewFromUrl(url, nil)
 
 	client.Query("SELECT * FROM books WHERE id = 1")
 	client.Query("SELECT * FROM books WHERE id = 1")

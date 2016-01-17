@@ -23,7 +23,7 @@ func portAvailable(port int) bool {
 }
 
 // Get available TCP port on localhost by trying available ports in a range
-func getAvailablePort(start int, limit int) (int, error) {
+func AvailablePort(start int, limit int) (int, error) {
 	for i := start; i <= (start + limit); i++ {
 		if portAvailable(i) {
 			return i, nil

@@ -655,7 +655,7 @@ function getConnectionString() {
   var mode = $(".connection-group-switch button.active").attr("data");
   var ssl  = $("#connection_ssl").val();
 
-  if (mode == "standard") {
+  if (mode == "standard" || mode == "ssh") {
     var host = $("#pg_host").val();
     var port = $("#pg_port").val();
     var user = $("#pg_user").val();
@@ -939,22 +939,46 @@ $(document).ready(function() {
     $("#pg_password").val(item.password);
     $("#pg_db").val(item.database);
     $("#connection_ssl").val(item.ssl);
+    
+    if (item.ssh) {
+      $("#ssh_host").val(item.ssh.host);
+      $("#ssh_port").val(item.ssh.port);
+      $("#ssh_user").val(item.ssh.user);
+      $("#ssh_password").val(item.ssh.password);
+      $("#connection_ssh").click();
+    }
+    else {
+      $("#ssh_host").val("");
+      $("#ssh_port").val("");
+      $("#ssh_user").val("");
+      $("#ssh_password").val("");
+    }
   });
 
   $("#connection_form").on("submit", function(e) {
     e.preventDefault();
 
     var button = $(this).children("button");
-    var url = getConnectionString();
+    var params = {
+      url: getConnectionString()
+    };
 
-    if (url.length == 0) {
+    if (params.url.length == 0) {
       return;
+    }
+
+    if ($(".connection-group-switch button.active").attr("data") == "ssh") {
+      params["ssh"]          = 1
+      params["ssh_host"]     = $("#ssh_host").val();
+      params["ssh_port"]     = $("#ssh_port").val();
+      params["ssh_user"]     = $("#ssh_user").val();
+      params["ssh_password"] = $("#ssh_password").val();
     }
 
     $("#connection_error").hide();
     button.prop("disabled", true).text("Please wait...");
 
-    apiCall("post", "/connect", { url: url }, function(resp) {
+    apiCall("post", "/connect", params, function(resp) {
       button.prop("disabled", false).text("Connect");
 
       if (resp.error) {
