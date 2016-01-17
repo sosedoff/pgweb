@@ -11,8 +11,13 @@ import (
 )
 
 var (
-	testClient   *Client
-	testCommands map[string]string
+	testClient     *Client
+	testCommands   map[string]string
+	serverHost     string
+	serverPort     string
+	serverUser     string
+	serverPassword string
+	serverDatabase string
 )
 
 func mapKeys(data map[string]*Objects) []string {
@@ -21,6 +26,28 @@ func mapKeys(data map[string]*Objects) []string {
 		result = append(result, k)
 	}
 	return result
+}
+
+func pgVersion() (int, int) {
+	var major, minor int
+	fmt.Sscanf(os.Getenv("PGVERSION"), "%d.%d", &major, &minor)
+	return major, minor
+}
+
+func getVar(name, def string) string {
+	val := os.Getenv(name)
+	if val == "" {
+		return def
+	}
+	return val
+}
+
+func initVars() {
+	serverHost = getVar("PGHOST", "localhost")
+	serverPort = getVar("PGPORT", "5432")
+	serverUser = getVar("PGUSER", "postgres")
+	serverPassword = getVar("PGPASSWORD", "postgres")
+	serverDatabase = getVar("PGDATABASE", "booktown")
 }
 
 func setupCommands() {
@@ -42,7 +69,13 @@ func onWindows() bool {
 }
 
 func setup() {
-	out, err := exec.Command(testCommands["createdb"], "-U", "postgres", "-h", "localhost", "booktown").CombinedOutput()
+	out, err := exec.Command(
+		testCommands["createdb"],
+		"-U", serverUser,
+		"-h", serverHost,
+		"-p", serverPort,
+		serverDatabase,
+	).CombinedOutput()
 
 	if err != nil {
 		fmt.Println("Database creation failed:", string(out))
@@ -50,7 +83,14 @@ func setup() {
 		os.Exit(1)
 	}
 
-	out, err = exec.Command(testCommands["psql"], "-U", "postgres", "-h", "localhost", "-f", "../../data/booktown.sql", "booktown").CombinedOutput()
+	out, err = exec.Command(
+		testCommands["psql"],
+		"-U", serverUser,
+		"-h", serverHost,
+		"-p", serverPort,
+		"-f", "../../data/booktown.sql",
+		serverDatabase,
+	).CombinedOutput()
 
 	if err != nil {
 		fmt.Println("Database import failed:", string(out))
@@ -60,7 +100,8 @@ func setup() {
 }
 
 func setupClient() {
-	testClient, _ = NewFromUrl("postgres://postgres@localhost/booktown?sslmode=disable", nil)
+	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
+	testClient, _ = NewFromUrl(url, nil)
 }
 
 func teardownClient() {
@@ -70,7 +111,13 @@ func teardownClient() {
 }
 
 func teardown() {
-	_, err := exec.Command(testCommands["dropdb"], "-U", "postgres", "-h", "localhost", "booktown").CombinedOutput()
+	_, err := exec.Command(
+		testCommands["dropdb"],
+		"-U", serverUser,
+		"-h", serverHost,
+		"-p", serverPort,
+		serverDatabase,
+	).CombinedOutput()
 
 	if err != nil {
 		fmt.Println("Teardown error:", err)
@@ -78,7 +125,7 @@ func teardown() {
 }
 
 func test_NewClientFromUrl(t *testing.T) {
-	url := "postgres://postgres@localhost/booktown?sslmode=disable"
+	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 	client, err := NewFromUrl(url, nil)
 
 	if err != nil {
@@ -90,7 +137,7 @@ func test_NewClientFromUrl(t *testing.T) {
 }
 
 func test_NewClientFromUrl2(t *testing.T) {
-	url := "postgresql://postgres@localhost/booktown?sslmode=disable"
+	url := fmt.Sprintf("postgresql://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 	client, err := NewFromUrl(url, nil)
 
 	if err != nil {
@@ -156,6 +203,13 @@ func test_Objects(t *testing.T) {
 	assert.Equal(t, tables, objects["public"].Tables)
 	assert.Equal(t, []string{"recent_shipments", "stock_view"}, objects["public"].Views)
 	assert.Equal(t, []string{"author_ids", "book_ids", "shipments_ship_id_seq", "subject_ids"}, objects["public"].Sequences)
+
+	major, minor := pgVersion()
+	if minor == 0 || minor >= 3 {
+		assert.Equal(t, []string{"m_stock_view"}, objects["public"].MaterializedViews)
+	} else {
+		t.Logf("Skipping materialized view on %d.%d\n", major, minor)
+	}
 }
 
 func test_Table(t *testing.T) {
@@ -257,7 +311,8 @@ func test_HistoryError(t *testing.T) {
 }
 
 func test_HistoryUniqueness(t *testing.T) {
-	client, _ := NewFromUrl("postgres://postgres@localhost/booktown?sslmode=disable", nil)
+	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
+	client, _ := NewFromUrl(url, nil)
 
 	client.Query("SELECT * FROM books WHERE id = 1")
 	client.Query("SELECT * FROM books WHERE id = 1")
@@ -272,6 +327,7 @@ func TestAll(t *testing.T) {
 		return
 	}
 
+	initVars()
 	setupCommands()
 	teardown()
 	setup()

@@ -2,7 +2,7 @@ var editor             = null;
 var connected          = false;
 var bookmarks          = {};
 var default_rows_limit = 100;
-var currentTable       = null;
+var currentObject      = null;
 
 var filterOptions = {
   "equal":      "= 'DATA'",
@@ -23,11 +23,11 @@ function guid() {
 }
 
 function getSessionId() {
-  var id = localStorage.getItem("session_id");
+  var id = sessionStorage.getItem("session_id");
 
   if (!id) {
     id = guid();
-    localStorage.setItem("session_id", id);
+    sessionStorage.setItem("session_id", id);
   }
 
   return id;
@@ -76,16 +76,16 @@ function apiCall(method, path, params, cb) {
   });
 }
 
-function getObjects(cb)                 { apiCall("get", "/objects", {}, cb); }
-function getTables(cb)                  { apiCall("get", "/tables", {}, cb); }
-function getTableRows(table, opts, cb)  { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
-function getTableStructure(table, cb)   { apiCall("get", "/tables/" + table, {}, cb); }
-function getTableIndexes(table, cb)     { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
-function getTableConstraints(table, cb) { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
-function getHistory(cb)                 { apiCall("get", "/history", {}, cb); }
-function getBookmarks(cb)               { apiCall("get", "/bookmarks", {}, cb); }
-function executeQuery(query, cb)        { apiCall("post", "/query", { query: query }, cb); }
-function explainQuery(query, cb)        { apiCall("post", "/explain", { query: query }, cb); }
+function getObjects(cb)                     { apiCall("get", "/objects", {}, cb); }
+function getTables(cb)                      { apiCall("get", "/tables", {}, cb); }
+function getTableRows(table, opts, cb)      { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
+function getTableStructure(table, opts, cb) { apiCall("get", "/tables/" + table, opts, cb); }
+function getTableIndexes(table, cb)         { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
+function getTableConstraints(table, cb)     { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
+function getHistory(cb)                     { apiCall("get", "/history", {}, cb); }
+function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
+function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
+function explainQuery(query, cb)            { apiCall("post", "/explain", { query: query }, cb); }
 
 function encodeQuery(query) {
   return window.btoa(query);
@@ -95,15 +95,17 @@ function buildSchemaSection(name, objects) {
   var section = "";
 
   var titles = {
-    "tables":    "Tables",
-    "views":     "Views",
-    "sequences": "Sequences"
+    "table":             "Tables",
+    "view":              "Views",
+    "materialized_view": "Materialized Views",
+    "sequence":          "Sequences"
   };
 
   var icons = {
-    "tables":    '<i class="fa fa-table"></i>',
-    "views":     '<i class="fa fa-table"></i>',
-    "sequences": '<i class="fa fa-circle-o"></i>'
+    "table":             '<i class="fa fa-table"></i>',
+    "view":              '<i class="fa fa-table"></i>',
+    "materialized_view": '<i class="fa fa-table"></i>',
+    "sequence":          '<i class="fa fa-circle-o"></i>'
   };
 
   var klass = "";
@@ -113,11 +115,11 @@ function buildSchemaSection(name, objects) {
   section += "<div class='schema-name'><i class='fa fa-folder-o'></i><i class='fa fa-folder-open-o'></i> " + name + "</div>";
   section += "<div class='schema-container'>";
 
-  for (group of ["tables", "views", "sequences"]) {
+  for (group of ["table", "view", "materialized_view", "sequence"]) {
     if (objects[group].length == 0) continue;
 
     group_klass = "";
-    if (name == "public" && group == "tables") group_klass = "expanded";
+    if (name == "public" && group == "table") group_klass = "expanded";
 
     section += "<div class='schema-group " + group_klass + "'>";
     section += "<div class='schema-group-title'><i class='fa fa-chevron-right'></i><i class='fa fa-chevron-down'></i> " + titles[group] + " (" + objects[group].length + ")</div>";
@@ -165,8 +167,8 @@ function unescapeHtml(str){
   return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
 }
 
-function getCurrentTable() {
-  return currentTable;
+function getCurrentObject() {
+  return currentObject || { name: "", type: "" };
 }
 
 function resetTable() {
@@ -278,7 +280,7 @@ function showQueryHistory() {
 }
 
 function showTableIndexes() {
-  var name = getCurrentTable();
+  var name = getCurrentObject().name;
 
   if (name.length == 0) {
     alert("Please select a table!");
@@ -296,7 +298,7 @@ function showTableIndexes() {
 }
 
 function showTableConstraints() {
-  var name = getCurrentTable();
+  var name = getCurrentObject().name;
 
   if (name.length == 0) {
     alert("Please select a table!");
@@ -314,7 +316,7 @@ function showTableConstraints() {
 }
 
 function showTableInfo() {
-  var name = getCurrentTable();
+  var name = getCurrentObject().name;
 
   if (name.length == 0) {
     alert("Please select a table!");
@@ -330,7 +332,7 @@ function showTableInfo() {
     $("#table_encoding").text("Unknown");
   });
 
-  buildTableFilters(name);
+  buildTableFilters(name, getCurrentObject().type);
 }
 
 function updatePaginator(pagination) {
@@ -365,7 +367,7 @@ function updatePaginator(pagination) {
 }
 
 function showTableContent(sortColumn, sortOrder) {
-  var name = getCurrentTable();
+  var name = getCurrentObject().name;
 
   if (name.length == 0) {
     alert("Please select a table!");
@@ -407,7 +409,7 @@ function showTableContent(sortColumn, sortOrder) {
 }
 
 function showTableStructure() {
-  var name = getCurrentTable();
+  var name = getCurrentObject().name;
 
   if (name.length == 0) {
     alert("Please select a table!");
@@ -419,7 +421,9 @@ function showTableStructure() {
   $("#input").hide();
   $("#body").prop("class", "full");
 
-  getTableStructure(name, function(data) {
+  console.log(getCurrentObject());
+
+  getTableStructure(name, { type: getCurrentObject().type }, function(data) {
     buildTable(data);
     $("#results").addClass("no-crop");
   });
@@ -537,10 +541,13 @@ function exportTo(format) {
   win.focus();
 }
 
-function buildTableFilters(name) {
-  getTableStructure(name, function(data) {
+function buildTableFilters(name, type) {
+  getTableStructure(name, { type: type }, function(data) {
     if (data.rows.length == 0) {
       $("#pagination .filters").hide();
+    }
+    else {
+      $("#pagination .filters").show();
     }
 
     $("#pagination select.column").html("<option value='' selected>Select column</option>");
@@ -731,7 +738,10 @@ $(document).ready(function() {
   });
 
   $("#objects").on("click", "li", function(e) {
-    currentTable = $(this).data("id");
+    currentObject = {
+      name: $(this).data("id"),
+      type: $(this).data("type")
+    };
 
     $("#objects li").removeClass("active");
     $(this).addClass("active");

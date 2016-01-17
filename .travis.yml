@@ -1,12 +1,16 @@
+sudo: required
+
 language: go
-sudo: false
+
+services:
+  - docker
 
 addons:
   postgresql: "9.4"
 
 go:
-- 1.4.2
-- 1.5.2
+  - 1.4.2
+  - 1.5.2
 
 install:
   - make setup
@@ -14,3 +18,4 @@ install:
 script:
   - make build
   - make test
+  - PGHOST=127.0.0.1 ./script/test_all.sh
