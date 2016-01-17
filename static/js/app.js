@@ -546,6 +546,9 @@ function buildTableFilters(name, type) {
     if (data.rows.length == 0) {
       $("#pagination .filters").hide();
     }
+    else {
+      $("#pagination .filters").show();
+    }
 
     $("#pagination select.column").html("<option value='' selected>Select column</option>");
 

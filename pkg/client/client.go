@@ -205,7 +205,10 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 		return nil, err
 	}
 
-	result := Result{Columns: cols}
+	result := Result{
+		Columns: cols,
+		Rows:    []Row{},
+	}
 
 	for rows.Next() {
 		obj, err := rows.SliceScan()
