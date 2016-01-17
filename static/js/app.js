@@ -945,6 +945,13 @@ $(document).ready(function() {
       $("#ssh_port").val(item.ssh.port);
       $("#ssh_user").val(item.ssh.user);
       $("#ssh_password").val(item.ssh.password);
+      $("#connection_ssh").click();
+    }
+    else {
+      $("#ssh_host").val("");
+      $("#ssh_port").val("");
+      $("#ssh_user").val("");
+      $("#ssh_password").val("");
     }
   });
 
