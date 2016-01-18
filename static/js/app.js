@@ -902,6 +902,7 @@ $(document).ready(function() {
       case "scheme":
         $(".connection-scheme-group").show();
         $(".connection-standard-group").hide();
+        $(".connection-ssh-group").hide();
         return;
       case "standard":
         $(".connection-scheme-group").hide();
