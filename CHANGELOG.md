@@ -1,3 +1,11 @@
+## 0.9.0 - 2016-01-19
+
+- Add support for multiple schemas. GH-112
+- Add support for native ssh tunnes. GH-114
+- Add materialized views to list of schema objects
+- Adds a few design tweaks and cleanups
+- Fixes bug with nil result set when fetching rows
+
 ## 0.8.0 - 2016-01-11
 
 - Fixes bug with bigint conversions in javascript. Now bigints are encoded as strings. GH-109
