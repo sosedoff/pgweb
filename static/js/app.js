@@ -230,7 +230,7 @@ function buildTable(results, sortColumn, sortOrder) {
     return;
   }
 
-  if (!results.rows) {
+  if (results.rows.length == 0) {
     $("<tr><td>No records found</tr></tr>").appendTo("#results");
     $("#results").addClass("empty");
     return;
