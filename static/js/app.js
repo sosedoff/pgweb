@@ -493,9 +493,9 @@ function runQuery() {
       $("#results").addClass("no-crop");
     }
 
-    var re = /(create|drop) table/i;
+    var re = /(create|drop)\s/i;
 
-    // Refresh tables list if table was added or removed
+    // Reload objects list if anything was created/deleted
     if (query.match(re)) {
       loadSchemas();
     }
