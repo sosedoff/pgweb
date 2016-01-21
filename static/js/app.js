@@ -941,7 +941,7 @@ $(document).ready(function() {
     $("#pg_db").val(item.database);
     $("#connection_ssl").val(item.ssl);
     
-    if (item.ssh) {
+    if (Object.keys(item.ssh).length > 0) {
       $("#ssh_host").val(item.ssh.host);
       $("#ssh_port").val(item.ssh.port);
       $("#ssh_user").val(item.ssh.user);
@@ -953,6 +953,7 @@ $(document).ready(function() {
       $("#ssh_port").val("");
       $("#ssh_user").val("");
       $("#ssh_password").val("");
+      $(".connection-ssh-group").hide();
     }
   });
 
