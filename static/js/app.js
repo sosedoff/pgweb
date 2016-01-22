@@ -59,7 +59,10 @@ function getPagesCount(rowsCount) {
 }
 
 function apiCall(method, path, params, cb) {
+  var timeout = 120000; // 2 mins is enough
+
   $.ajax({
+    timeout: timeout,
     url: "/api" + path,
     method: method,
     cache: false,
@@ -71,6 +74,10 @@ function apiCall(method, path, params, cb) {
       cb(data);
     },
     error: function(xhr, status, data) {
+      if (status == "timeout") {
+        return cb({ error: "Query timeout after " + (timeout / 1000) + "s" });
+      }
+
       cb(jQuery.parseJSON(xhr.responseText));
     }
   });
