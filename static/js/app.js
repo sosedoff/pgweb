@@ -690,7 +690,7 @@ function bindContextMenus() {
   $(".schema-group ul").each(function(id, el) {
     $(el).contextmenu({
       target: "#tables_context_menu",
-      scopes: "li.schema-tables",
+      scopes: "li.schema-table",
       onItem: function(context, e) {
         var el      = $(e.target);
         var table   = $(context[0]).data("id");
