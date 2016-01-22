@@ -19,7 +19,7 @@ func Test_portAvailable(t *testing.T) {
 
 	serv, err := net.Listen("tcp", "127.0.0.1:8081")
 	if err != nil {
-		fmt.Println(os.Stderr, "Unable to start test tcp listener:", err)
+		fmt.Fprintln(os.Stderr, "Unable to start test tcp listener:", err)
 		t.Fail()
 		return
 	}
@@ -50,7 +50,7 @@ func Test_getAvailablePort(t *testing.T) {
 
 	serv, err := net.Listen("tcp", "127.0.0.1:8081")
 	if err != nil {
-		fmt.Println(os.Stderr, "Unable to start test tcp listener:", err)
+		fmt.Fprintln(os.Stderr, "Unable to start test tcp listener:", err)
 		t.Fail()
 		return
 	}

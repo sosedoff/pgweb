@@ -132,6 +132,8 @@ func (tunnel *Tunnel) Configure() error {
 }
 
 func (tunnel *Tunnel) Start() {
+	defer tunnel.Close()
+
 	for {
 		conn, err := tunnel.Listener.Accept()
 		if err != nil {
@@ -140,8 +142,6 @@ func (tunnel *Tunnel) Start() {
 
 		go tunnel.handleConnection(conn)
 	}
-
-	tunnel.Close()
 }
 
 func NewTunnel(sshInfo *shared.SSHInfo, dbUrl string) (*Tunnel, error) {
