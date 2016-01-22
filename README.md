@@ -18,15 +18,15 @@ application to work with local or remote PostgreSQL databases.
 
 ## Features
 
-- Works on OSX, Linux and Windows
+- Cross-platform support OSX/Linux/Windows 32/64-bit
+- Simple installation (distributed as a single binary)
 - Zero dependencies
-- Simple installation (distributes as a single binary)
-- Connect to local or remote servers
+- Works with PostgreSQL 9.1+
+- SSH Connections
 - Multiple database sessions
-- Browse tables and table rows
-- Get table details: structure, size, indeces, row count
-- Run and analyze custom SQL queries
-- Export table rows and query results to CSV/JSON/XML
+- Simple database browser
+- Execute and analyze custom SQL queries
+- Table and query data export to CSV/JSON/XML
 - Query history
 - Server bookmarks
 
@@ -79,7 +79,7 @@ SESSIONS=1 pgweb
 
 ## Deploy on Heroku
 
-[![Heroku Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/sosedoff/pgweb)
+[![Heroku Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/sosedoff/pgweb)
 
 ## Testing
 
@@ -91,6 +91,13 @@ Execute test suite:
 
 ```
 make test
+```
+
+If you're using Docker locally, you might also run pgweb test suite against
+all supported PostgreSQL version with a single command:
+
+```
+make test-all
 ```
 
 ## Contribute
