@@ -1,3 +1,11 @@
+## 0.9.1 - 2016-01-25
+
+- Fixes bug with tables context menu
+- Fixes JS bug when query returns no rows
+- Fixes bug with switching between different connection modes
+- Adds AJAX timeout to 5s
+- Adds sidebar reload action on any CREATE/DROP action
+
 ## 0.9.0 - 2016-01-19
 
 - Add support for multiple schemas. GH-112
