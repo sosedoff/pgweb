@@ -397,7 +397,7 @@ function showTableContent(sortColumn, sortOrder) {
   // Apply filtering only if column is selected
   if (filter.column && filter.op) {
     var where = [
-      filter.column,
+      '"' + filter.column + '"',
       filterOptions[filter.op].replace("DATA", filter.input)
     ].join(" ");
 
