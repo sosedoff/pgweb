@@ -1,0 +1,34 @@
+nav { 
+  max-width: 1060px;
+  margin: 0 auto;
+
+  div {
+    float: left;
+    
+    &:nth-child(2) {
+      float: right;
+    }
+  }
+
+  a {
+    float: left;
+    font-size: 1.29rem;
+    line-height: 2.33;
+
+    &:hover {
+      color: $subAccentColor;
+    }
+  }
+
+  .pro {
+    color: $accentColor;
+    box-shadow: 0 0 0 2px $accentColor;
+    font-size: 1.14rem;
+    font-weight: 700;
+
+    &:hover {
+      background: $accentColor;
+      color: #fff;
+    }
+  }
+}

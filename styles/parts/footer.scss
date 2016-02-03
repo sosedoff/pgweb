@@ -1,0 +1,15 @@
+footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  padding: 2em;
+  height: 80px;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 1rem;
+  z-index: 5;
+
+  > a {
+    padding: 0 0.5em;
+  }
+}

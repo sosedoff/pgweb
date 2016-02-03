@@ -1,0 +1,169 @@
+section {
+  margin: 0 auto 8em;
+}
+
+.preview {
+  width: 800px;
+  height: 400px;
+  margin: 0 auto;
+  background: top center no-repeat url('../images/pgweb.png');
+  background-size: cover;
+}
+
+.supported-os {
+  padding: 0;
+}
+
+.os {
+  margin: 0 auto;
+  text-align: center;
+
+  > div {
+    position: relative;
+    padding: 70px 0 0;
+    display: inline-block;
+    width: 160px;
+    font-size: 1.21rem;
+    font-weight: 600;
+    color: $subAccentColor;
+
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      margin-left: -30px;
+      content: ' ';
+      width: 60px;
+      height: 60px;
+      border-radius: 100%;
+      border: solid 2px $subAccentColor;
+      background-size: 60px;
+      background-position: center;
+    }
+
+    &.osx:before {
+      background: url('../images/os/osx.svg');
+    }
+    &.linux:before {
+      background: url('../images/os/linux.svg');
+    }
+    &.windows:before {
+      background: url('../images/os/windows.svg');
+    }
+  }
+}
+
+.features {
+  max-width: 1060px;
+  margin: 0 auto;
+  text-align: left;
+
+  h2 {
+    margin: 0 0 0.5em; 
+    font-weight: 700;
+  }
+}
+
+.pro {
+  max-width: 1060px;
+  margin: 0 auto 4em;
+  text-align: left;
+
+  h1 {
+    font-size: 2.7rem;
+    
+    > span {
+      color: $accentColor;
+    }
+  }
+
+  h2 {
+    margin: 0 0 0.5em; 
+  }
+
+  .col {
+    position: relative;
+
+    &:before {
+      position: absolute;
+      content: ' ';
+      left: 0; top: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 100%;
+      box-shadow: 0 0 0 3px $subAccentColor;
+    }
+  }
+}
+
+.cols-2 {
+  .col {
+    margin: 0 6% 5% 0;
+    padding: 0 0 0 6em;
+    width: 47%;
+    float: left;
+
+    &:nth-child(2n) {
+      margin-right: 0;
+    }
+  }
+}
+
+.cols-3 {
+  .col {
+    box-sizing: content-box;
+    margin: 0 5% 5% 0;
+    width: 30%;
+    float: left;
+
+    &:nth-child(3n) {
+      margin-right: 0;
+    }
+  }
+}
+
+/* purchase link */
+.ca {
+  text-align: center;
+}
+
+.link {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  margin: 0 auto;
+  font-size: 1.43rem;
+  line-height: 2.6;
+  padding: 0 3em 0 1em;
+  font-weight: 700;
+  color: #fff;
+  transition: background 0.1s ease;
+  background: $accentColor;
+  border-radius: 2px;
+
+  &:before {
+    display: block;
+    position: absolute;
+    content: ' ';
+    top: 50%;
+    margin-top: -13px;
+    right: 1.1em;
+    width: 26px;
+    height: 26px;
+    background: center url('../images/arrow.svg');
+    background-size: 26px;
+    transform: translate(0,0);
+    transition: transform 0.1s ease-out;
+  }
+
+  &:hover {
+    color: #fff; 
+    transition: background 0.1s ease;
+    background: $subAccentColor;
+
+    &:before {
+      transform: translate(5px,0);
+      transition: transform 0.1s ease-out;
+    }
+  }
+}

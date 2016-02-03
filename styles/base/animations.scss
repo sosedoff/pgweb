@@ -1,0 +1,12 @@
+@-webkit-keyframes boop {
+  0%   { transform: translate(0, 0); }
+  100%  { transform: translate(8px, 0); }
+}
+@-moz-keyframes boop {
+  0%   { transform: translate(0, 0); }
+  100%  { transform: translate(8px, 0); }
+}
+@keyframes boop {
+  0%   { transform: translate(0, 0); }
+  100%  { transform: translate(8px, 0); }
+}

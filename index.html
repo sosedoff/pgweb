@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'><link type="text/css" rel="stylesheet" href="styles/all.css" />  
+    <meta name="viewport" content="width=device-width, minimal-ui">
+    <script src="/scripts/jquery.min.js" type="text/javascript"></script>
+    <title>Pgweb - Cross-platform client for PostgreSQL databases</title>
+  </head>
+  <body>
+    <div id="wrapper" class="homePage">
+      <div class="inner">
+        <header>
+          <nav>
+            <div>
+              <a href="#features">Features</a>
+              <a href="https://github.com/sosedoff/pgweb/releases/latest" target="_blank">Downloads</a>
+            </div>
+            <div>
+              <a href="https://github.com/sosedoff/pgweb"><i class="fa fa-github"></i> View on Github</a>
+            </div>
+          </nav>
+        </header>  
+
+        <main role="main"> 
+          <section class="top">
+            <aside>
+              <h1 class="logo"><a href="/"><i class="fa fa-database"></i> pgweb</a></h1>
+              <h2>Cross-platform client for PostgreSQL databases</h2>
+            </aside>
+            <div class="preview"></div>
+          </section>
+
+          <section class="supported-os">
+            <div class="os">
+              <div class="osx">OSX</div>
+              <div class="linux">Linux</div>
+              <div class="windows">Windows</div>
+            </div>
+          </section>
+
+          <section>
+            <aside>
+              <h1 id="features">Features</h1>
+            </aside>
+            <div class="features cols-3">
+              <div class="col">
+                <h3>Cross-platform</h3>
+                <p>Pgweb runs on OSX, Linux and Windows operating systems without a hustle. Binaries are cross-complied with Go and available for 32/64 bit systems. You can even run it on RaspberryPi</p>
+              </div>
+              <div class="col">
+                <h3>Easy to Install</h3>
+                <p>Pgweb comes as a single binary file that's ready to go. You can install it manually, via Docker or using Homebrew on OSX which is updated regularly and is super convenient.</p>
+              </div>
+              <div class="col">
+                <h3>Zero Dependencies</h3>
+                <p>No need to install anything on your machines or services. Just download and run. To get started Pgweb just needs a browser and a PostgreSQL server to connect to.</p>
+              </div>
+              <div class="col">
+                <h3>PostgreSQL 9.1+</h3>
+                <p>Most versions of PostgreSQL are supported, starting with official support for 9.1. Older versions could also be compatible but not guaranteed.</p>
+              </div>
+              <div class="col">
+                <h3>Simple and Clean</h3>
+                <p>Pgweb was designed to be very simple and clean UI to browse database tables or run and analyze SQL queries. Export query results or table rows to CSV/JSON/XML. Multiple schemas are supported. Records query history.</p>
+              </div>
+              <div class="col">
+                <h3>Flexible Sessions</h3>
+                <p>Pgweb can work with any local or remote PostgreSQL server (Heroku supported) as well as any server behind a firewall by using native SSH tunnelling with passwords or ssh keys. Quick-connect with server bookmarks.</p>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <div class="features">
+              <a href="https://github.com/sosedoff/pgweb" class="download">Download Pgweb</a>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <footer>
+        &copy; 2014-2016 <a href="http://sosedoff.com?from=pgweb">Dan Sosedoff</a>
+      </footer>
+    </div>
+  </body>
+</html>

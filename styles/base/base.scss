@@ -1,0 +1,67 @@
+$accentColor: #16d5b4;
+$subAccentColor: #7a56a1;
+
+body {
+  z-index: 1;
+}
+
+#wrapper {
+  padding: 0;
+  height: auto !important; 
+  height: 100%; min-height: 100%;
+  position: relative;
+  transition: background 0.2s ease;
+
+  > .inner {
+    position: relative;
+    padding: 0 0 10em;
+  }
+}
+
+main {
+  position: relative;
+  text-align: left;
+  z-index: 3;
+  margin: 0 auto;
+  color: #333;
+
+  section {
+    position: relative;
+    padding: 0 4em;
+  }
+
+  aside {
+    padding: 0 0 4em;
+  }
+}
+
+::selection {
+  background: #00d7b9; 
+  color: #fff;
+}
+::-moz-selection {
+  background: #00d7b9; 
+  color: #fff;
+}
+
+header,
+div,
+.logo,
+section {
+  box-sizing: border-box;
+}
+
+i {
+  font-style: normal;
+}
+
+a {
+  color: inherit;
+  font-weight: 400;
+  text-decoration: none;
+  -moz-transition: color .2s;
+  -webkit-transition: color .2s;
+  transition: color .2s;
+}
+
+a:hover { color: #000; }

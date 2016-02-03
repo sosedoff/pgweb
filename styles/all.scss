@@ -1,0 +1,21 @@
+@import 'base/reset';
+@import 'base/base';
+@import 'base/type';
+@import 'base/forms';
+@import 'base/animations';
+
+// Parts
+@import 'parts/header';
+@import 'parts/nav';
+@import 'parts/footer';
+
+// Pages
+@import 'pages/home';
+@import 'pages/pricing';
+
+// Media
+@import 'media/phone';
+
+// Clears
+@import 'base/clears';
+

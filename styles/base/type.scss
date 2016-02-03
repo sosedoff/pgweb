@@ -1,0 +1,48 @@
+html {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: normal;
+  font-weight: 400;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  line-height: 1.73;
+}
+
+h1, h2, h3, h4, h5, nav {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
+  text-align: left;
+}
+
+h1 { font-size: 2rem; margin: 0 0 0.5em; font-weight: 700; text-align: center; }
+h2 { font-size: 1.35rem; text-align: center; font-weight: 600; color: rgba(51,51,51,0.8); }
+h3 { font-size: 1.21rem; text-align: left; margin: 0 0 0.5em; }
+h4 { font-size: 1.13rem; }
+
+.logo {
+  font-size: 3.14rem; margin: 0 0 0.2em; 
+
+  > a { font-weight: 700; }
+}
+
+p {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  line-height: 1.73;
+  margin: 0 0 3em;
+}
+
+strong { font-weight: 700; }
+
+input,
+textarea {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  font-weight: 700;
+  -webkit-font-smoothing: antialiased;
+}

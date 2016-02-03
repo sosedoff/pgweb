@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 19.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 702 373" enable-background="new 0 0 702 373" xml:space="preserve">
+<g>
+	<g id="XMLID_460_" opacity="0.5">
+		<path fill="#FFFFFF" d="M701.5,369H1.5c-0.6,0-1-0.4-1-1V1.4c0-0.6,0.4-1,1-1h700c0.6,0,1,0.4,1,1V368
+			C702.5,368.6,702.1,369,701.5,369z M2.5,367h698V2.4H2.5V367z"/>
+	</g>
+	<g id="XMLID_403_">
+		<rect id="XMLID_426_" x="3" y="76.4" opacity="0.25" fill="#231F20" width="29.1" height="296.6"/>
+		<path id="XMLID_424_" fill="#93C194" d="M65.5,41.7v19.9H16.4V41.7H65.5 M65.5,39.7H16.4c-1.1,0-2,0.9-2,2v19.9c0,1.1,0.9,2,2,2
+			h49.2c1.1,0,2-0.9,2-2V41.7C67.5,40.6,66.6,39.7,65.5,39.7L65.5,39.7z"/>
+		<g id="XMLID_420_" opacity="0.5">
+			<rect id="XMLID_21_" x="314.5" y="48.5" fill="none" width="31.3" height="14.9"/>
+			<text transform="matrix(1 0 0 1 314.4697 57.0761)" fill="#FFFFFF" font-family="'HelveticaNeue-Medium'" font-size="12px">Save</text>
+		</g>
+		<polygon id="XMLID_419_" fill="#93C194" points="25.4,47.5 25.4,55.8 32.4,51.6 		"/>
+		<rect id="XMLID_17_" x="37.2" y="46.6" fill="none" width="24.3" height="13.6"/>
+		
+			<text id="XMLID_415_" transform="matrix(1 0 0 1 37.2053 55.1892)" fill="#93C194" font-family="'HelveticaNeue-Medium'" font-size="12px">Run</text>
+		<path id="XMLID_414_" opacity="0.5" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-miterlimit="10" d="M308,49.3
+			c0.9,0.8,1.5,1.9,1.5,3.2c0,2.3-1.9,4.2-4.2,4.2s-4.2-1.9-4.2-4.2s1.9-4.2,4.2-4.2"/>
+		<rect id="XMLID_413_" x="355.8" y="30" opacity="0.5" fill="#F5F6F7" width="2" height="338.4"/>
+		<g id="XMLID_409_" opacity="0.5">
+			<rect id="XMLID_12_" x="367" y="45.2" fill="none" width="221.5" height="56.5"/>
+			<text transform="matrix(1 0 0 1 366.9927 54.667)" fill="#FFFFFF" font-family="'Monaco'" font-size="12px">root@a8de1abe6363a:/code#</text>
+		</g>
+		<rect id="XMLID_408_" x="3" y="125.4" opacity="0.5" fill="#231F20" width="352.9" height="24.7"/>
+		<rect id="XMLID_8_" x="41" y="85" fill="none" width="304.2" height="106.6"/>
+		<text id="XMLID_406_" transform="matrix(1 0 0 1 40.959 94.5049)"><tspan x="0" y="0" fill="#61CCCD" font-family="'Monaco'" font-size="12px">puts </tspan><tspan x="36" y="0" fill="#92C292" font-family="'Monaco'" font-size="12px">“Welcome!”</tspan><tspan x="0" y="24" fill="#F99157" font-family="'Monaco'" font-size="12px">10</tspan><tspan x="14.4" y="24" fill="#61CCCD" font-family="'Monaco'" font-size="12px">.</tspan><tspan x="21.6" y="24" fill="#212121" font-family="'Monaco'" font-size="12px">times </tspan><tspan x="64.8" y="24" fill="#C695C6" font-family="'Monaco'" font-size="12px">do </tspan><tspan x="86.4" y="24" fill="#61CCCD" font-family="'Monaco'" font-size="12px">|i|</tspan><tspan x="0" y="48" fill="#61CCCD" font-family="'Monaco'" font-size="12px">  puts </tspan><tspan x="50.4" y="48" fill="#92C292" font-family="'Monaco'" font-size="12px">“I’m doing something:</tspan><tspan x="201.6" y="48" fill="#212121" font-family="'Monaco'" font-size="12px"> #</tspan><tspan x="216" y="48" fill="#212121" font-family="'Monaco'" font-size="12px">{i}</tspan><tspan x="237.6" y="48" fill="#92C292" font-family="'Monaco'" font-size="12px">”</tspan><tspan x="0" y="72" fill="#C695C6" font-family="'Monaco'" font-size="12px">end</tspan></text>
+		<rect id="XMLID_5_" x="7.9" y="85" fill="none" width="14.8" height="96.4"/>
+		<text id="XMLID_404_" transform="matrix(1 0 0 1 16.1055 93.7168)"><tspan x="0" y="0" fill="#72716D" font-family="'Monaco'" font-size="11px">1</tspan><tspan x="0" y="24" fill="#72716D" font-family="'Monaco'" font-size="11px">2</tspan><tspan x="0" y="48" fill="#72716D" font-family="'Monaco'" font-size="11px">3</tspan><tspan x="0" y="72" fill="#72716D" font-family="'Monaco'" font-size="11px">4</tspan></text>
+	</g>
+	<rect id="XMLID_356_" x="1.5" y="28" opacity="0.5" fill="#FFFFFF" width="700" height="2"/>
+	<circle opacity="0.3" fill="#FFFFFF" cx="18.9" cy="14.7" r="4"/>
+	<circle opacity="0.3" fill="#FFFFFF" cx="34.9" cy="14.7" r="4"/>
+	<circle opacity="0.3" fill="#FFFFFF" cx="49.9" cy="14.7" r="4"/>
+</g>
+</svg>

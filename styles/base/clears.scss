@@ -1,0 +1,12 @@
+section:after,
+aside:after,
+nav:after,
+header:after,
+.cols:after,
+.cols-2:after,
+.col-3:after,
+.clear:after { 
+  display: block; content: "."; 
+  clear: both; 
+  font-size: 0; line-height: 0; height: 0; overflow: hidden; 
+}

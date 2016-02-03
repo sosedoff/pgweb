@@ -1,0 +1,44 @@
+html,
+body,
+div,
+span,
+iframe,
+object,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+label {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+}
+
+html,
+body { height: 100%; }
+
+body {
+  position: relative;
+  z-index: 1;
+}
+:focus { outline: 0; }
+img { vertical-align: middle; }
+a img { border: 0; }
+
+input,
+textarea,
+button {
+  border: solid 1px #000;
+  -webkit-appearance: none;
+}
+object,
+iframe {
+  display: block;
+  max-width: 100%;
+}
+
+html, body { height: 100%; }
