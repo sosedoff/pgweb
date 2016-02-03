@@ -253,7 +253,7 @@ section {
   width: 800px;
   height: 400px;
   margin: 0 auto;
-  background: top center no-repeat url("/images/pgweb.png");
+  background: top center no-repeat url("../images/pgweb.png");
   background-size: cover; }
 
 .supported-os {
@@ -283,11 +283,11 @@ section {
       background-size: 60px;
       background-position: center; }
     .os > div.osx:before {
-      background: url("/images/os/osx.svg"); }
+      background: url("../images/os/osx.svg"); }
     .os > div.linux:before {
-      background: url("/images/os/linux.svg"); }
+      background: url("../images/os/linux.svg"); }
     .os > div.windows:before {
-      background: url("/images/os/windows.svg"); }
+      background: url("../images/os/windows.svg"); }
 
 .features {
   max-width: 1060px;
@@ -361,7 +361,7 @@ section {
     right: 1.1em;
     width: 26px;
     height: 26px;
-    background: center url("/images/arrow.svg");
+    background: center url("../images/arrow.svg");
     background-size: 26px;
     transform: translate(0, 0);
     transition: transform 0.1s ease-out; }
