@@ -887,6 +887,7 @@ $(document).ready(function() {
   $("#close_connection").on("click", function() {
     disconnect(function() {
       showConnectionSettings();
+      $("#close_connection_window").hide();
     });
   });
 
