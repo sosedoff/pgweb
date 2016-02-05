@@ -93,6 +93,7 @@ function getHistory(cb)                     { apiCall("get", "/history", {}, cb)
 function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
 function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
 function explainQuery(query, cb)            { apiCall("post", "/explain", { query: query }, cb); }
+function disconnect(cb)                     { apiCall("post", "/disconnect", {}, cb); }
 
 function encodeQuery(query) {
   return window.btoa(query);
@@ -881,6 +882,12 @@ $(document).ready(function() {
     }
 
     showConnectionSettings();
+  });
+
+  $("#close_connection").on("click", function() {
+    disconnect(function() {
+      showConnectionSettings();
+    });
   });
 
   $("#close_connection_window").on("click", function() {

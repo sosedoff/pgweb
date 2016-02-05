@@ -471,10 +471,13 @@
   display: none;
 }
 
-#edit_connection {
+.connection-actions {
   position: fixed;
   right: 8px;
   top: 10px;
+}
+
+#edit_connection, #close_connection {
   background: #79589f;
   color: #fff;
   border-color: #fff;
