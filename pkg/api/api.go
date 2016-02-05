@@ -114,6 +114,23 @@ func Connect(c *gin.Context) {
 	c.JSON(200, info.Format()[0])
 }
 
+func Disconnect(c *gin.Context) {
+	conn := DB(c)
+
+	if conn == nil {
+		c.JSON(400, Error{"Not connected"})
+		return
+	}
+
+	err := conn.Close()
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	c.JSON(200, map[string]bool{"success": true})
+}
+
 func GetDatabases(c *gin.Context) {
 	names, err := DB(c).Databases()
 	serveResult(names, err, c)
