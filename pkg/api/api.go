@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -148,10 +147,10 @@ func GetObjects(c *gin.Context) {
 }
 
 func RunQuery(c *gin.Context) {
-	query := strings.TrimSpace(c.Request.FormValue("query"))
+	query := cleanQuery(c.Request.FormValue("query"))
 
 	if query == "" {
-		c.JSON(400, errors.New("Query parameter is missing"))
+		c.JSON(400, NewError(errors.New("Query parameter is missing")))
 		return
 	}
 
@@ -159,10 +158,10 @@ func RunQuery(c *gin.Context) {
 }
 
 func ExplainQuery(c *gin.Context) {
-	query := strings.TrimSpace(c.Request.FormValue("query"))
+	query := cleanQuery(c.Request.FormValue("query"))
 
 	if query == "" {
-		c.JSON(400, errors.New("Query parameter is missing"))
+		c.JSON(400, NewError(errors.New("Query parameter is missing")))
 		return
 	}
 

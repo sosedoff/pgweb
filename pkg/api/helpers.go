@@ -45,6 +45,21 @@ func NewError(err error) Error {
 	return Error{err.Error()}
 }
 
+// Returns a clean query without any comment statements
+func cleanQuery(query string) string {
+	lines := []string{}
+
+	for _, line := range strings.Split(query, "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "--") {
+			continue
+		}
+		lines = append(lines, line)
+	}
+
+	return strings.TrimSpace(strings.Join(lines, "\n"))
+}
+
 func desanitize64(query string) string {
 	// Before feeding the string into decoded, we must "reconstruct" the base64 data.
 	// Javascript replaces a few characters to be url-safe.

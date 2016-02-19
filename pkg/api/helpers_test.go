@@ -17,3 +17,9 @@ func Test_desanitize64(t *testing.T) {
 		assert.Equal(t, expected, desanitize64(example))
 	}
 }
+
+func Test_cleanQuery(t *testing.T) {
+	assert.Equal(t, "a\nb\nc", cleanQuery("a\nb\nc"))
+	assert.Equal(t, "", cleanQuery("--something"))
+	assert.Equal(t, "test", cleanQuery("--test\ntest\n   -- test\n"))
+}
