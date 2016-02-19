@@ -281,7 +281,7 @@ func GetTableConstraints(c *gin.Context) {
 }
 
 func HandleQuery(query string, c *gin.Context) {
-	rawQuery, err := base64.StdEncoding.DecodeString(query)
+	rawQuery, err := base64.StdEncoding.DecodeString(desanitize64(query))
 	if err == nil {
 		query = string(rawQuery)
 	}

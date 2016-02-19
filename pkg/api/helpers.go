@@ -5,6 +5,7 @@ import (
 	"mime"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -29,8 +30,29 @@ var allowedPaths = map[string]bool{
 	"/api/history":   true,
 }
 
+// List of characters replaced by javascript code to make queries url-safe.
+var base64subs = map[string]string{
+	"-": "+",
+	"_": "/",
+	".": "=",
+}
+
 type Error struct {
 	Message string `json:"error"`
+}
+
+func NewError(err error) Error {
+	return Error{err.Error()}
+}
+
+func desanitize64(query string) string {
+	// Before feeding the string into decoded, we must "reconstruct" the base64 data.
+	// Javascript replaces a few characters to be url-safe.
+	for olds, news := range base64subs {
+		query = strings.Replace(query, olds, news, -1)
+	}
+
+	return query
 }
 
 func getSessionId(c *gin.Context) string {
@@ -99,8 +121,4 @@ func assetContentType(name string) string {
 	}
 
 	return result
-}
-
-func NewError(err error) Error {
-	return Error{err.Error()}
 }

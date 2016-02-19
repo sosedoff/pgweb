@@ -96,7 +96,7 @@ function explainQuery(query, cb)            { apiCall("post", "/explain", { quer
 function disconnect(cb)                     { apiCall("post", "/disconnect", {}, cb); }
 
 function encodeQuery(query) {
-  return window.btoa(query);
+  return window.btoa(query).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ".");
 }
 
 function buildSchemaSection(name, objects) {
