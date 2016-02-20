@@ -2,6 +2,7 @@ package command
 
 import (
 	"os"
+	"strings"
 
 	"github.com/jessevdk/go-flags"
 )
@@ -22,6 +23,7 @@ type Options struct {
 	AuthPass string `long:"auth-pass" description:"HTTP basic auth password"`
 	SkipOpen bool   `short:"s" long:"skip-open" description:"Skip browser open on start"`
 	Sessions bool   `long:"sessions" description:"Enable multiple database sessions" default:"false"`
+	Prefix   string `long:"prefix" description:"Add a url prefix"`
 }
 
 var Opts Options
@@ -38,6 +40,10 @@ func ParseOptions() error {
 
 	if os.Getenv("SESSIONS") != "" {
 		Opts.Sessions = true
+	}
+
+	if Opts.Prefix != "" && !strings.Contains(Opts.Prefix, "/") {
+		Opts.Prefix = Opts.Prefix + "/"
 	}
 
 	return nil

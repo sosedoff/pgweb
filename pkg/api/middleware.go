@@ -2,6 +2,7 @@ package api
 
 import (
 	"log"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -12,7 +13,9 @@ import (
 // Middleware function to check database connection status before running queries
 func dbCheckMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if allowedPaths[c.Request.URL.Path] == true {
+		path := strings.Replace(c.Request.URL.Path, command.Opts.Prefix, "", -1)
+
+		if allowedPaths[path] == true {
 			c.Next()
 			return
 		}
