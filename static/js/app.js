@@ -975,7 +975,7 @@ $(document).ready(function() {
   $("#connection_form").on("submit", function(e) {
     e.preventDefault();
 
-    var button = $(this).children("button");
+    var button = $(this).find("button.open-connection");
     var params = {
       url: getConnectionString()
     };
