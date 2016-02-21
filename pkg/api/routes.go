@@ -14,10 +14,12 @@ func SetupMiddlewares(group *gin.RouterGroup) {
 }
 
 func SetupRoutes(router *gin.Engine) {
-	router.GET("/", GetHome)
-	router.GET("/static/*path", GetAsset)
+	group := router.Group(command.Opts.Prefix)
 
-	api := router.Group("/api")
+	group.GET("/", GetHome)
+	group.GET("/static/*path", GetAsset)
+
+	api := group.Group("/api")
 	{
 		SetupMiddlewares(api)
 

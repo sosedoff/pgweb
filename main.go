@@ -104,7 +104,7 @@ func handleSignals() {
 }
 
 func openPage() {
-	url := fmt.Sprintf("http://%v:%v", options.HttpHost, options.HttpPort)
+	url := fmt.Sprintf("http://%v:%v/%s", options.HttpHost, options.HttpPort, options.Prefix)
 	fmt.Println("To view database open", url, "in browser")
 
 	if options.SkipOpen {

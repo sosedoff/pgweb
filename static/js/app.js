@@ -63,7 +63,7 @@ function apiCall(method, path, params, cb) {
 
   $.ajax({
     timeout: timeout,
-    url: "/api" + path,
+    url: "api" + path,
     method: method,
     cache: false,
     data: params,
