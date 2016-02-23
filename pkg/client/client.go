@@ -2,8 +2,10 @@ package client
 
 import (
 	"fmt"
+	"log"
 	neturl "net/url"
 	"reflect"
+	"strconv"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -215,7 +217,15 @@ func (client *Client) Activity() (*Result, error) {
 }
 
 func (client *Client) Query(query string) (*Result, error) {
-	res, err := client.query(query)
+
+	timeout := command.Opts.Timeout
+	res, err := client.query("set statement_timeout to " + strconv.Itoa(timeout*1000) + "; --SELECT setting FROM pg_settings where name = 'statement_timeout';")
+
+	if command.Opts.Debug {
+		log.Println("Query Timeout Seconds: ", timeout)
+	}
+
+	res, err = client.query(query)
 
 	// Save history records only if query did not fail
 	if err == nil && !client.hasHistoryRecord(query) {

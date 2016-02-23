@@ -24,6 +24,7 @@ type Options struct {
 	SkipOpen bool   `short:"s" long:"skip-open" description:"Skip browser open on start"`
 	Sessions bool   `long:"sessions" description:"Enable multiple database sessions" default:"false"`
 	Prefix   string `long:"prefix" description:"Add a url prefix"`
+	Timeout  int    `long:"timeout" description:"Query Timeout (Seconds)" default:"30"`
 }
 
 var Opts Options
