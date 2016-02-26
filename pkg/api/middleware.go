@@ -32,7 +32,7 @@ func dbCheckMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		sessionId := getSessionId(c)
+		sessionId := getSessionId(c.Request)
 		if sessionId == "" {
 			c.JSON(400, Error{"Session ID is required"})
 			c.Abort()
