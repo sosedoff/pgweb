@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"mime"
+	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -70,10 +71,10 @@ func desanitize64(query string) string {
 	return query
 }
 
-func getSessionId(c *gin.Context) string {
-	id := c.Request.Header.Get("x-session-id")
+func getSessionId(req *http.Request) string {
+	id := req.Header.Get("x-session-id")
 	if id == "" {
-		id = c.Request.URL.Query().Get("_session_id")
+		id = req.URL.Query().Get("_session_id")
 	}
 	return id
 }
