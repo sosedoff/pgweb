@@ -7,17 +7,19 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	testClient     *Client
-	testCommands   map[string]string
-	serverHost     string
-	serverPort     string
-	serverUser     string
-	serverPassword string
-	serverDatabase string
+	testClient       *Client
+	testCommands     map[string]string
+	serverHost       string
+	serverPort       string
+	serverUser       string
+	serverPassword   string
+	serverDatabase   string
+	forceWindowsTest string
 )
 
 func mapKeys(data map[string]*Objects) []string {
@@ -48,6 +50,7 @@ func initVars() {
 	serverUser = getVar("PGUSER", "postgres")
 	serverPassword = getVar("PGPASSWORD", "postgres")
 	serverDatabase = getVar("PGDATABASE", "booktown")
+	forceWindowsTest = getVar("FORCE_WIN_TEST", "0")
 }
 
 func setupCommands() {
@@ -285,6 +288,28 @@ func test_QueryInvalidTable(t *testing.T) {
 	assert.Equal(t, true, res == nil)
 }
 
+func test_QueryTimeout(t *testing.T) {
+	err := command.ParseOptions()
+	command.Opts.Timeout = 2
+
+	res, err := testClient.Query("select '1'::varchar as a from pg_sleep(1);")
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, 2, command.Opts.Timeout)
+	assert.Equal(t, 1, len(res.Columns))
+	assert.Equal(t, 1, len(res.Rows))
+}
+
+func test_QueryTimeoutError(t *testing.T) {
+	err := command.ParseOptions()
+	command.Opts.Timeout = 2
+
+	_, err = testClient.Query("select '1'::varchar as a from pg_sleep(3);")
+
+	assert.NotEqual(t, nil, err)
+	assert.Equal(t, "pq: canceling statement due to statement timeout", err.Error())
+}
+
 func test_ResultCsv(t *testing.T) {
 	res, _ := testClient.Query("SELECT * FROM books ORDER BY id ASC LIMIT 1")
 	csv := res.CSV()
@@ -322,7 +347,7 @@ func test_HistoryUniqueness(t *testing.T) {
 }
 
 func TestAll(t *testing.T) {
-	if onWindows() {
+	if onWindows() && forceWindowsTest == "0" {
 		// Dont have access to windows machines at the moment...
 		return
 	}
@@ -346,6 +371,8 @@ func TestAll(t *testing.T) {
 	test_Query(t)
 	test_QueryError(t)
 	test_QueryInvalidTable(t)
+	test_QueryTimeout(t)
+	test_QueryTimeoutError(t)
 	test_ResultCsv(t)
 	test_History(t)
 	test_HistoryError(t)
