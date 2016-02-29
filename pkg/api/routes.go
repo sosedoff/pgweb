@@ -47,6 +47,5 @@ func SetupRoutes(router *gin.Engine) {
 		api.POST("/explain", ExplainQuery)
 		api.GET("/history", GetHistory)
 		api.GET("/bookmarks", GetBookmarks)
-
 	}
 }
