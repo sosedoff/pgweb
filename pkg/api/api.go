@@ -22,7 +22,7 @@ var (
 
 func DB(c *gin.Context) *client.Client {
 	if command.Opts.Sessions {
-		return DbSessions[getSessionId(c)]
+		return DbSessions[getSessionId(c.Request)]
 	} else {
 		return DbClient
 	}
@@ -39,7 +39,7 @@ func setClient(c *gin.Context, newClient *client.Client) error {
 		return nil
 	}
 
-	sessionId := getSessionId(c)
+	sessionId := getSessionId(c.Request)
 	if sessionId == "" {
 		return errors.New("Session ID is required")
 	}

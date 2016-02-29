@@ -100,7 +100,7 @@
   right: 0;
   top: 0px;
   left: 0px;
-  bottom: 130px;
+  bottom: 145px;
   overflow: auto;
 }
 
@@ -134,7 +134,7 @@
   position: fixed;
   width: 250px;
   left: 0px;
-  height: 130px;
+  height: 145px;
   bottom: 0px;
   /*border-top: 1px solid #d4d4d4;*/
   /*border-right: 1px solid #d4d4d4;*/
