@@ -58,12 +58,26 @@ function getPagesCount(rowsCount) {
   return num;
 }
 
+var timeout_is_set = 0
+var timeout = 300000; // 5 mins is enough
 function apiCall(method, path, params, cb) {
-  var timeout = 3600000; // 5 mins is enough
+  url="";
 
+  if(timeout_is_set==0 && path!="/timeout"){
+    gettimeout(function(data) {  timeout=data; });
+	timeout_is_set=1;
+  }
+
+  if (path=="/timeout"){
+	url=path;
+  } 
+  else{
+	url="api" + path;
+  }
+  
   $.ajax({
     timeout: timeout,
-    url: "api" + path,
+    url: url,
     method: method,
     cache: false,
     data: params,
@@ -94,6 +108,7 @@ function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, c
 function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
 function explainQuery(query, cb)            { apiCall("post", "/explain", { query: query }, cb); }
 function disconnect(cb)                     { apiCall("post", "/disconnect", {}, cb); }
+function gettimeout(cb)                     { apiCall("get", "/timeout", {}, cb); }
 
 function encodeQuery(query) {
   return window.btoa(query).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ".");

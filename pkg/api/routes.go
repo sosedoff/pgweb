@@ -18,6 +18,7 @@ func SetupRoutes(router *gin.Engine) {
 
 	group.GET("/", GetHome)
 	group.GET("/static/*path", GetAsset)
+	group.GET("/timeout", GetTimeout)
 
 	api := group.Group("/api")
 	{
@@ -46,5 +47,6 @@ func SetupRoutes(router *gin.Engine) {
 		api.POST("/explain", ExplainQuery)
 		api.GET("/history", GetHistory)
 		api.GET("/bookmarks", GetBookmarks)
+
 	}
 }

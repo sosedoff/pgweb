@@ -157,6 +157,10 @@ func RunQuery(c *gin.Context) {
 	HandleQuery(query, c)
 }
 
+func GetTimeout(c *gin.Context) {
+	serveResult((command.Opts.Timeout * 1000), nil, c)
+}
+
 func ExplainQuery(c *gin.Context) {
 	query := cleanQuery(c.Request.FormValue("query"))
 
