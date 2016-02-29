@@ -218,11 +218,11 @@ func (client *Client) Activity() (*Result, error) {
 
 func (client *Client) Query(query string) (*Result, error) {
 
-	timeout := command.Opts.Timeout
-	res, err := client.query("set statement_timeout to " + strconv.Itoa(timeout*1000) + "; --SELECT setting FROM pg_settings where name = 'statement_timeout';")
+	timeout := command.Opts.Timeout * 1000
+	res, err := client.query("set statement_timeout to " + strconv.Itoa(timeout) + "; --SELECT setting FROM pg_settings where name = 'statement_timeout';")
 
 	if command.Opts.Debug {
-		log.Println("Query Timeout Seconds: ", timeout)
+		log.Println("Query Timeout Microseconds: ", timeout)
 	}
 
 	res, err = client.query(query)
