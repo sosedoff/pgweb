@@ -1,3 +1,14 @@
+## 0.9.2 - 2016-03-01
+
+- Fixes bug with unsafe base64 encoded sql queries
+- Fixes issue with session id not being included in multi-session mode
+- Fixes visual issue with long table names in sidebar
+- Fixes visual issue with a scrollbar in table information widget
+- Fixes issue with database connection form being reset by clicking on 'cancel' button
+- Adds ability to close connection
+- Adds display message for number of affected rows for update/delete queries, GH-133
+- Adds web server url prefix as a CLI option, GH-135
+
 ## 0.9.1 - 2016-01-25
 
 - Fixes bug with tables context menu
