@@ -1,6 +1,7 @@
 {
 	"ImportPath": "github.com/sosedoff/pgweb",
-	"GoVersion": "go1.5",
+	"GoVersion": "go1.6",
+	"GodepVersion": "v71",
 	"Packages": [
 		"./..."
 	],
@@ -20,6 +21,16 @@
 			"Rev": "50e7e427300a7eeeb299a4cd5bc1ebfa04d48528"
 		},
 		{
+			"ImportPath": "github.com/gin-gonic/gin/binding",
+			"Comment": "v0.5",
+			"Rev": "50e7e427300a7eeeb299a4cd5bc1ebfa04d48528"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin/render",
+			"Comment": "v0.5",
+			"Rev": "50e7e427300a7eeeb299a4cd5bc1ebfa04d48528"
+		},
+		{
 			"ImportPath": "github.com/jessevdk/go-flags",
 			"Comment": "v1-285-g1679536",
 			"Rev": "1679536dcc895411a9f5848d9a0250be7856448c"
@@ -30,11 +41,22 @@
 			"Rev": "b468c08552f4efac78b94708eb040170a8184c47"
 		},
 		{
+			"ImportPath": "github.com/jmoiron/sqlx/reflectx",
+			"Comment": "sqlx-v1.0-61-gb468c08",
+			"Rev": "b468c08552f4efac78b94708eb040170a8184c47"
+		},
+		{
 			"ImportPath": "github.com/julienschmidt/httprouter",
+			"Comment": "v1-37-gb55664b",
 			"Rev": "b55664b9e92004aebb7f19a19a9d06271f3a41fc"
 		},
 		{
 			"ImportPath": "github.com/lib/pq",
+			"Comment": "go1.0-cutoff-56-gdc50b6a",
+			"Rev": "dc50b6ad2d3ee836442cf3389009c7cd1e64bb43"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/oid",
 			"Comment": "go1.0-cutoff-56-gdc50b6a",
 			"Rev": "dc50b6ad2d3ee836442cf3389009c7cd1e64bb43"
 		},
