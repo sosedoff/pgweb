@@ -24,7 +24,7 @@ usage:
 	@echo ""
 
 test:
-	godep go test -cover ./...
+	go test -cover ./...
 
 test-all:
 	@./script/test_all.sh
@@ -36,11 +36,11 @@ dev-assets:
 	@$(MAKE) --no-print-directory assets BINDATA_OPTS="-debug"
 
 dev: dev-assets
-	godep go build
+	go build
 	@echo "You can now execute ./pgweb"
 
 build: assets
-	godep go build
+	go build
 	@echo "You can now execute ./pgweb"
 
 release: assets
@@ -59,8 +59,8 @@ bootstrap:
 setup:
 	go get github.com/tools/godep
 	go get golang.org/x/tools/cmd/cover
-	godep get github.com/mitchellh/gox
-	godep get github.com/jteeuwen/go-bindata/...
+	go get github.com/mitchellh/gox
+	go get github.com/jteeuwen/go-bindata/...
 	godep restore
 
 clean:

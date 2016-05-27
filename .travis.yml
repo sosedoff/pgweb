@@ -9,12 +9,15 @@ addons:
   postgresql: "9.4"
 
 go:
-  - 1.4.2
-  - 1.5.2
+  - 1.5.4
+  - 1.6.2
+
+env:
+  - GO15VENDOREXPERIMENT=1
 
 install:
   - make setup
-  
+
 script:
   - make build
   - make test
