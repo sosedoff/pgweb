@@ -8,7 +8,7 @@ export PGPASSWORD=""
 export PGDATABASE="booktown"
 export PGPORT="15432"
 
-for i in {1..5}
+for i in {1..6}
 do
   export PGVERSION="9.$i"
   echo "Running tests against PostgreSQL v$PGVERSION"
