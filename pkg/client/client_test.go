@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -19,14 +20,6 @@ var (
 	serverPassword string
 	serverDatabase string
 )
-
-func mapKeys(data map[string]*Objects) []string {
-	result := []string{}
-	for k, _ := range data {
-		result = append(result, k)
-	}
-	return result
-}
 
 func pgVersion() (int, int) {
 	var major, minor int
@@ -199,10 +192,17 @@ func test_Objects(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, []string{"schema", "name", "type", "owner"}, res.Columns)
-	assert.Equal(t, []string{"public"}, mapKeys(objects))
-	assert.Equal(t, tables, objects["public"].Tables)
-	assert.Equal(t, []string{"recent_shipments", "stock_view"}, objects["public"].Views)
-	assert.Equal(t, []string{"author_ids", "book_ids", "shipments_ship_id_seq", "subject_ids"}, objects["public"].Sequences)
+	obj, ok := objects["public"]
+	require.True(t, ok)
+	for _, table := range tables {
+		assert.Contains(t, obj.Tables, table)
+	}
+	for _, view := range []string{"recent_shipments", "stock_view"} {
+		assert.Contains(t, obj.Views, view)
+	}
+	for _, seq := range []string{"author_ids", "book_ids", "shipments_ship_id_seq", "subject_ids"} {
+		assert.Contains(t, obj.Sequences, seq)
+	}
 
 	major, minor := pgVersion()
 	if minor == 0 || minor >= 3 {
