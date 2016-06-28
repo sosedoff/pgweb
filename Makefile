@@ -2,6 +2,7 @@ TARGETS = darwin/amd64 darwin/386 linux/amd64 linux/386 windows/amd64 windows/38
 GIT_COMMIT = $(shell git rev-parse HEAD)
 BUILD_TIME = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ" | tr -d '\n')
 DOCKER_RELEASE_TAG = "sosedoff/pgweb:$(shell git describe --abbrev=0 --tags | sed 's/v//')"
+DOCKER_LATEST_TAG = "sosedoff/pgweb:latest"
 BINDATA_IGNORE = $(shell git ls-files -io --exclude-standard $< | sed 's/^/-ignore=/;s/[.]/[.]/g')
 
 usage:
@@ -21,6 +22,7 @@ usage:
 	@echo "make dev-assets      : Generate development assets file"
 	@echo "make docker          : Build docker image"
 	@echo "make docker-release  : Build and tag docker image"
+	@echo "make docker-push     : Push docker images to registry"
 	@echo ""
 
 test:
@@ -74,3 +76,8 @@ docker:
 
 docker-release:
 	docker build -t $(DOCKER_RELEASE_TAG) .
+	docker build -t $(DOCKER_LATEST_TAG) .
+
+docker-push:
+	docker push $(DOCKER_RELEASE_TAG)
+	docker push $(DOCKER_LATEST_TAG)
