@@ -1,3 +1,11 @@
+## 0.9.3 - 2016-06-30
+
+- Uses Go 1.6 for development, GH-155
+- Fixes timestamp formatting in CSV export, GH-163
+- Included PostgreSQL 9.6 for integration testing
+- Switches docker image to Alpine to reduce image size
+- Adds support for ARMv5
+
 ## 0.9.2 - 2016-03-01
 
 - Fixes bug with unsafe base64 encoded sql queries
