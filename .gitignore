@@ -3,3 +3,4 @@ pgweb
 bin
 tmp/
 cover.out
+.idea
