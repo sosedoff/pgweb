@@ -1,9 +1,7 @@
 package statements
 
 const (
-	// ---------------------------------------------------------------------------
-
-	PG_DATABASES = `
+	Databases = `
 SELECT
   datname
 FROM
@@ -15,7 +13,7 @@ ORDER BY
 
 	// ---------------------------------------------------------------------------
 
-	PG_SCHEMAS = `
+	Schemas = `
 SELECT
   schema_name
 FROM
@@ -25,7 +23,7 @@ ORDER BY
 
 	// ---------------------------------------------------------------------------
 
-	PG_INFO = `
+	Info = `
 SELECT
   session_user,
   current_user,
@@ -39,7 +37,7 @@ SELECT
 
 	// ---------------------------------------------------------------------------
 
-	PG_TABLE_INDEXES = `
+	TableIndexes = `
 SELECT
   indexname, indexdef
 FROM
@@ -50,7 +48,7 @@ WHERE
 
 	// ---------------------------------------------------------------------------
 
-	PG_TABLE_CONSTRAINTS = `
+	TableConstraints = `
 SELECT
   pg_get_constraintdef(c.oid, true) as condef
 FROM
@@ -67,7 +65,7 @@ ORDER BY
 
 	// ---------------------------------------------------------------------------
 
-	PG_TABLE_INFO = `
+	TableInfo = `
 SELECT
   pg_size_pretty(pg_table_size($1)) AS data_size,
   pg_size_pretty(pg_indexes_size($1)) AS index_size,
@@ -76,7 +74,7 @@ SELECT
 
 	// ---------------------------------------------------------------------------
 
-	PG_TABLE_SCHEMA = `
+	TableSchema = `
 SELECT
   column_name,
   data_type,
@@ -92,7 +90,7 @@ WHERE
 
 	// ---------------------------------------------------------------------------
 
-	PG_MATERIALIZED_VIEW_SCHEMA = `
+	MaterializedView = `
 SELECT 
   attname as column_name, 
   atttypid::regtype AS data_type,
@@ -109,7 +107,7 @@ WHERE
 
 	// ---------------------------------------------------------------------------
 
-	PG_ACTIVITY = `
+	Activity = `
 SELECT
   datname,
   query,
@@ -128,7 +126,7 @@ WHERE
 
 	// ---------------------------------------------------------------------------
 
-	PG_OBJECTS = `
+	Objects = `
 SELECT
   n.nspname as "schema",
   c.relname as "name",

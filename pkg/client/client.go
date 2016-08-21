@@ -121,28 +121,28 @@ func (client *Client) Test() error {
 }
 
 func (client *Client) Info() (*Result, error) {
-	return client.query(statements.PG_INFO)
+	return client.query(statements.Info)
 }
 
 func (client *Client) Databases() ([]string, error) {
-	return client.fetchRows(statements.PG_DATABASES)
+	return client.fetchRows(statements.Databases)
 }
 
 func (client *Client) Schemas() ([]string, error) {
-	return client.fetchRows(statements.PG_SCHEMAS)
+	return client.fetchRows(statements.Schemas)
 }
 
 func (client *Client) Objects() (*Result, error) {
-	return client.query(statements.PG_OBJECTS)
+	return client.query(statements.Objects)
 }
 
 func (client *Client) Table(table string) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
-	return client.query(statements.PG_TABLE_SCHEMA, schema, table)
+	return client.query(statements.TableSchema, schema, table)
 }
 
 func (client *Client) MaterializedView(name string) (*Result, error) {
-	return client.query(statements.PG_MATERIALIZED_VIEW_SCHEMA, name)
+	return client.query(statements.MaterializedView, name)
 }
 
 func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error) {
@@ -184,12 +184,12 @@ func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, e
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
-	return client.query(statements.PG_TABLE_INFO, table)
+	return client.query(statements.TableInfo, table)
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
-	res, err := client.query(statements.PG_TABLE_INDEXES, schema, table)
+	res, err := client.query(statements.TableIndexes, schema, table)
 
 	if err != nil {
 		return nil, err
@@ -200,7 +200,7 @@ func (client *Client) TableIndexes(table string) (*Result, error) {
 
 func (client *Client) TableConstraints(table string) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
-	res, err := client.query(statements.PG_TABLE_CONSTRAINTS, schema, table)
+	res, err := client.query(statements.TableConstraints, schema, table)
 
 	if err != nil {
 		return nil, err
@@ -211,7 +211,7 @@ func (client *Client) TableConstraints(table string) (*Result, error) {
 
 // Returns all active queriers on the server
 func (client *Client) Activity() (*Result, error) {
-	return client.query(statements.PG_ACTIVITY)
+	return client.query(statements.Activity)
 }
 
 func (client *Client) Query(query string) (*Result, error) {
