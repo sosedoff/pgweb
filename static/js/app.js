@@ -211,7 +211,7 @@ function performTableAction(table, action, el) {
       var format = el.data("format");
       var filename = table + "." + format;
       var query = window.encodeURI("SELECT * FROM " + table);
-      var url = window.location.href.split('#')[0] + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
+      var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
       var win  = window.open(url, "_blank");
       win.focus();
       break;
@@ -542,7 +542,7 @@ function exportTo(format) {
     return;
   }
 
-  var url = window.location.href.split('#')[0] + "api/query?format=" + format + "&query=" + encodeQuery(query) + "&_session_id=" + getSessionId();
+  var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&query=" + encodeQuery(query) + "&_session_id=" + getSessionId();
   var win = window.open(url, '_blank');
 
   setCurrentTab("table_query");
