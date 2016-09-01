@@ -211,7 +211,7 @@ function performTableAction(table, action, el) {
       var format = el.data("format");
       var filename = table + "." + format;
       var query = window.encodeURI("SELECT * FROM " + table);
-      var url = window.location.href + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
+      var url = window.location.href.split('#')[0] + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
       var win  = window.open(url, "_blank");
       win.focus();
       break;
@@ -413,6 +413,8 @@ function showTableContent(sortColumn, sortOrder) {
     buildTable(data, sortColumn, sortOrder);
     setCurrentTab("table_content");
     updatePaginator(data.pagination);
+
+    updateCustomQuery(name, opts);
   });
 }
 
@@ -440,6 +442,7 @@ function showTableStructure() {
 function showQueryPanel() {
   setCurrentTab("table_query");
   editor.focus();
+  editor.setValue(editor.getValue())
 
   $("#input").show();
   $("#body").prop("class", "")
@@ -542,11 +545,28 @@ function exportTo(format) {
     return;
   }
 
-  var url = window.location.href + "api/query?format=" + format + "&query=" + encodeQuery(query) + "&_session_id=" + getSessionId();
+  var url = window.location.href.split('#')[0] + "api/query?format=" + format + "&query=" + encodeQuery(query) + "&_session_id=" + getSessionId();
   var win = window.open(url, '_blank');
 
   setCurrentTab("table_query");
   win.focus();
+}
+
+function updateCustomQuery(name, opts) {
+  var query = 'SELECT * from ' + name;
+
+  if (opts["where"]) {
+    query += ' WHERE ' + opts["where"];
+  }
+
+  if (opts["sort_column"] && opts["sort_order"]) {
+    query += ' ORDER BY ' + opts["sort_column"] + ' ' + opts["sort_order"];
+  }
+
+  query += ';'
+
+  var editor = ace.edit("custom_query");
+  editor.setValue(query);
 }
 
 function buildTableFilters(name, type) {
