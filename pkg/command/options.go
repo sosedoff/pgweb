@@ -46,5 +46,13 @@ func ParseOptions() error {
 		Opts.Prefix = Opts.Prefix + "/"
 	}
 
+	if Opts.AuthUser == "" && os.Getenv("AUTH_USER") != "" {
+		Opts.AuthUser = os.Getenv("AUTH_USER")
+	}
+
+	if Opts.AuthPass == "" && os.Getenv("AUTH_PASS") != "" {
+		Opts.AuthPass = os.Getenv("AUTH_PASS")
+	}
+
 	return nil
 }
