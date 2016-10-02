@@ -1,3 +1,14 @@
+## 0.9.5 - 2016-10-01
+
+- Only view schema with USAGE privileges, GH-167
+- Fixed broken export to CSV/JSON/XML if hashmark in URL, GH-175
+- Added example service configuration for systemd, GH-177
+- Allow setting auth user and pass using variables
+
+## 0.9.4 - 2016-07-29
+
+- Fixes CSV/JSON/XML export buttons when pgweb is running with url prefix, GH-170
+
 ## 0.9.3 - 2016-06-30
 
 - Uses Go 1.6 for development, GH-155
