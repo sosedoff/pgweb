@@ -49,12 +49,12 @@ release: clean assets
 	@echo "Building binaries..."
 	@gox \
 		-osarch "$(TARGETS)" \
-		-ldflags "-X github.com/sosedoff/pgweb/pkg/command.GitCommit $(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime $(BUILD_TIME)" \
+		-ldflags "-X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME)" \
 		-output "./bin/pgweb_{{.OS}}_{{.Arch}}"
 
 	@echo "Building ARM binaries..."
 	GOOS=linux GOARCH=arm GOARM=5 go build \
-	  -ldflags "-X github.com/sosedoff/pgweb/pkg/command.GitCommit $(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime $(BUILD_TIME)" \
+	  -ldflags "-X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME)" \
 		-o "./bin/pgweb_linux_arm_v5"
 
 	@echo "\nPackaging binaries...\n"
