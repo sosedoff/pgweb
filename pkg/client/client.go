@@ -158,7 +158,7 @@ func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error)
 			opts.SortOrder = "ASC"
 		}
 
-		sql += fmt.Sprintf(" ORDER BY %s %s", opts.SortColumn, opts.SortOrder)
+		sql += fmt.Sprintf(` ORDER BY "%s" %s`, opts.SortColumn, opts.SortOrder)
 	}
 
 	if opts.Limit > 0 {
