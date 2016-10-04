@@ -431,7 +431,7 @@ CREATE TABLE "numeric_values" (
 
 CREATE TABLE "daily_inventory" (
 	"isbn" text,
-	"is_stocked" boolean
+	"isStocked" boolean
 );
 
 --

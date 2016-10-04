@@ -237,6 +237,20 @@ func test_TableRows(t *testing.T) {
 	assert.Equal(t, 15, len(res.Rows))
 }
 
+func test_TableRowsOptions(t *testing.T) {
+	res, err := testClient.TableRows("books_inventory", RowsOptions{
+		Where:      `0 < 1 AND "isStocked"`,
+		Offset:     2,
+		Limit:      1,
+		SortColumn: `isStocked`,
+		SortOrder:  `ASC`,
+	})
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, 3, len(res.Columns))
+	assert.Equal(t, 1, len(res.Rows))
+}
+
 func test_TableInfo(t *testing.T) {
 	res, err := testClient.TableInfo("books")
 
@@ -340,6 +354,7 @@ func TestAll(t *testing.T) {
 	test_Objects(t)
 	test_Table(t)
 	test_TableRows(t)
+	test_TableRowsOptions(t)
 	test_TableInfo(t)
 	test_TableIndexes(t)
 	test_TableConstraints(t)
