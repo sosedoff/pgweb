@@ -180,6 +180,7 @@ func test_Objects(t *testing.T) {
 		"customers",
 		"daily_inventory",
 		"distinguished_authors",
+		"dummies",
 		"editions",
 		"employees",
 		"favorite_authors",
@@ -285,6 +286,17 @@ func test_QueryInvalidTable(t *testing.T) {
 	assert.Equal(t, true, res == nil)
 }
 
+func test_TableRowsOrderEscape(t *testing.T) {
+	rows, err := testClient.TableRows("dummies", RowsOptions{SortColumn: "isDummy"})
+	assert.Equal(t, nil, err)
+	assert.Equal(t, 2, len(rows.Rows))
+
+	rows, err = testClient.TableRows("dummies", RowsOptions{SortColumn: "isdummy"})
+	assert.NotEqual(t, nil, err)
+	assert.Equal(t, `pq: column "isdummy" does not exist`, err.Error())
+	assert.Equal(t, true, rows == nil)
+}
+
 func test_ResultCsv(t *testing.T) {
 	res, _ := testClient.Query("SELECT * FROM books ORDER BY id ASC LIMIT 1")
 	csv := res.CSV()
@@ -346,6 +358,7 @@ func TestAll(t *testing.T) {
 	test_Query(t)
 	test_QueryError(t)
 	test_QueryInvalidTable(t)
+	test_TableRowsOrderEscape(t)
 	test_ResultCsv(t)
 	test_History(t)
 	test_HistoryError(t)

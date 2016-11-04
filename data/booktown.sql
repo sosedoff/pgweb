@@ -17,6 +17,15 @@ CREATE DATABASE "booktown";
 -- Name: DATABASE "booktown" Type: COMMENT Owner: 
 --
 
+CREATE TABLE "dummies" (
+  "id" integer NOT NULL,
+  "isDummy" boolean
+);
+
+INSERT INTO "dummies" VALUES (1, true);
+INSERT INTO "dummies" VALUES (2, true);
+
+
 COMMENT ON DATABASE "booktown" IS 'The Book Town Database.';
 
 --
