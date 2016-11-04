@@ -22,5 +22,5 @@ install:
 script:
   - make build
   - make test
-  - PGHOST=127.0.0.1 make test-all
+  - make test-all
   - make docker-release
