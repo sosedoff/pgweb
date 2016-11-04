@@ -266,6 +266,11 @@ function buildTable(results, sortColumn, sortOrder) {
 }
 
 function setCurrentTab(id) {
+  // Pagination should only be visible on rows tab
+  if (id != "table_content") {
+    $("#body").removeClass("with-pagination");
+  }
+  
   $("#nav ul li.selected").removeClass("selected");
   $("#" + id).addClass("selected");
 }
