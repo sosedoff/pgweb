@@ -335,7 +335,7 @@ func test_HistoryUniqueness(t *testing.T) {
 
 func TestAll(t *testing.T) {
 	if onWindows() {
-		// Dont have access to windows machines at the moment...
+		t.Log("Unit testing on Windows platform is not supported.")
 		return
 	}
 
