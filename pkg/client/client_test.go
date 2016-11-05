@@ -373,6 +373,7 @@ func TestAll(t *testing.T) {
 	test_TableRowsOrderEscape(t)
 	test_ResultCsv(t)
 	test_History(t)
+	test_HistoryUniqueness(t)
 	test_HistoryError(t)
 	test_ReadOnlyMode(t)
 
