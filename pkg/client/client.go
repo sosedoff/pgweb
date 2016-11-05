@@ -232,7 +232,7 @@ func (client *Client) SetReadOnlyMode() error {
 	}
 
 	if value == "off" {
-		_, err = client.db.Exec("SET default_transaction_read_only=on;")
+		_, err := client.db.Exec("SET default_transaction_read_only=on;")
 		return err
 	}
 
