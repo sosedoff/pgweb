@@ -128,6 +128,9 @@ func SwitchDb(c *gin.Context) {
 
 	name := c.Request.URL.Query().Get("db")
 	if name == "" {
+		name = c.Request.FormValue("db")
+	}
+	if name == "" {
 		c.JSON(400, Error{"Database name is not provided"})
 		return
 	}
@@ -167,6 +170,8 @@ func SwitchDb(c *gin.Context) {
 			return
 		}
 	}
+
+	conn.Close()
 
 	c.JSON(200, info.Format()[0])
 }
