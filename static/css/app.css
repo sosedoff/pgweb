@@ -475,6 +475,7 @@
   position: fixed;
   right: 8px;
   top: 10px;
+  display: none;
 }
 
 #edit_connection, #close_connection {
