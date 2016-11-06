@@ -218,6 +218,16 @@ function performTableAction(table, action, el) {
   }
 }
 
+function performRowAction(action, value) {
+  if (action == "stop_query") {
+    if (!confirm("Are you sure you want to stop the query?")) return;
+    executeQuery("SELECT pg_cancel_backend(" + value + ");", function(data) {
+      if (data.error) alert(data.error);
+      setTimeout(showActivityPanel, 1000);
+    });
+  }
+}
+
 function sortArrow(direction) {
   switch (direction) {
     case "ASC":
@@ -229,7 +239,10 @@ function sortArrow(direction) {
   }
 }
 
-function buildTable(results, sortColumn, sortOrder) {
+function buildTable(results, sortColumn, sortOrder, options) {
+  if (!options) options = {};
+  var action = options.action;
+
   resetTable();
 
   if (results.error) {
@@ -256,9 +269,27 @@ function buildTable(results, sortColumn, sortOrder) {
     }
   });
 
+  // No header to make the column non-sortable
+  if (action) {
+    cols += "<th></th>";
+
+    // Determine which column contains the data attribute
+    action.dataColumn = results.columns.indexOf(action.data);
+  }
+
   results.rows.forEach(function(row) {
     var r = "";
-    for (i in row) { r += "<td><div>" + escapeHtml(row[i]) + "</div></td>"; }
+
+    // Add all actual row data here
+    for (i in row) {
+      r += "<td><div>" + escapeHtml(row[i]) + "</div></td>";
+    }
+
+    // Add row action button
+    if (action) {
+      r += "<td><a class='btn btn-xs btn-" + action.style + " row-action' data-action='" + action.name + "' data-value='" + row[action.dataColumn] + "' href='#'>" + action.title + "</a></td>";
+    }
+
     rows += "<tr>" + r + "</tr>";
   });
 
@@ -471,10 +502,18 @@ function showConnectionPanel() {
 }
 
 function showActivityPanel() {
-  setCurrentTab("table_activity");
+  var options = {
+    action: {
+      name: "stop_query",
+      title: "stop",
+      data: "pid",
+      style: "danger"
+    }
+  }
 
+  setCurrentTab("table_activity");
   apiCall("get", "/activity", {}, function(data) {
-    buildTable(data);
+    buildTable(data, null, null, options);
     $("#input").hide();
     $("#body").addClass("full");
   });
@@ -737,7 +776,7 @@ $(document).ready(function() {
     exportTo("xml");
   });
 
-  $("#results").on("click", "tr", function() {
+  $("#results").on("click", "tr", function(e) {
     $("#results tr.selected").removeClass();
     $(this).addClass("selected");
   });
@@ -764,6 +803,15 @@ $(document).ready(function() {
     showTableInfo();
     showTableContent();
   });
+
+  $("#results").on("click", "a.row-action", function(e) {
+    e.preventDefault();
+
+    var action = $(this).data("action");
+    var value  = $(this).data("value");
+
+    performRowAction(action, value);
+  })
 
   $("#results").on("click", "th", function(e) {
     var sortColumn = this.attributes['data'].value;
