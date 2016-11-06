@@ -1080,6 +1080,10 @@ $(document).ready(function() {
 
       $("#current_database").text(resp.current_database);
       $("#main").show();
+
+      if (!resp.session_lock) {
+        $(".connection-actions").show();
+      }
     }
   });
 });

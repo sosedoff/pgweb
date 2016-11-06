@@ -68,6 +68,11 @@ func GetSessions(c *gin.Context) {
 }
 
 func Connect(c *gin.Context) {
+	if command.Opts.LockSession {
+		c.JSON(400, Error{"Session is locked"})
+		return
+	}
+
 	var sshInfo *shared.SSHInfo
 	url := c.Request.FormValue("url")
 
@@ -114,6 +119,11 @@ func Connect(c *gin.Context) {
 }
 
 func Disconnect(c *gin.Context) {
+	if command.Opts.LockSession {
+		c.JSON(400, Error{"Session is locked"})
+		return
+	}
+
 	conn := DB(c)
 
 	if conn == nil {
@@ -261,7 +271,10 @@ func GetConnectionInfo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, res.Format()[0])
+	info := res.Format()[0]
+	info["session_lock"] = command.Opts.LockSession
+
+	c.JSON(200, info)
 }
 
 func GetActivity(c *gin.Context) {
