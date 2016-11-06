@@ -1097,6 +1097,7 @@ $(document).ready(function() {
     if (resp.error) {
       connected = false;
       showConnectionSettings();
+      $(".connection-actions").show();
     }
     else {
       connected = true;
