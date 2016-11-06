@@ -225,7 +225,29 @@ func (client *Client) Query(query string) (*Result, error) {
 	return res, err
 }
 
+func (client *Client) SetReadOnlyMode() error {
+	var value string
+	if err := client.db.Get(&value, "SHOW default_transaction_read_only;"); err != nil {
+		return err
+	}
+
+	if value == "off" {
+		_, err := client.db.Exec("SET default_transaction_read_only=on;")
+		return err
+	}
+
+	return nil
+}
+
 func (client *Client) query(query string, args ...interface{}) (*Result, error) {
+	// We're going to force-set transaction mode on every query.
+	// This is needed so that default mode could not be changed by user.
+	if command.Opts.ReadOnly {
+		if err := client.SetReadOnlyMode(); err != nil {
+			return nil, err
+		}
+	}
+
 	action := strings.ToLower(strings.Split(query, " ")[0])
 	if action == "update" || action == "delete" {
 		res, err := client.db.Exec(query, args...)

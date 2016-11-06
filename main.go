@@ -64,6 +64,15 @@ func initOptions() {
 		os.Exit(0)
 	}
 
+	if options.ReadOnly {
+		msg := `------------------------------------------------------
+SECURITY WARNING: You are running pgweb in read-only mode.
+This mode is designed for environments where users could potentially delete / change data.
+For proper read-only access please follow postgresql role management documentation.
+------------------------------------------------------`
+		fmt.Println(msg)
+	}
+
 	printVersion()
 }
 

@@ -333,6 +333,18 @@ func test_HistoryUniqueness(t *testing.T) {
 	assert.Equal(t, "SELECT * FROM books WHERE id = 1", client.History[0].Query)
 }
 
+func test_ReadOnlyMode(t *testing.T) {
+	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
+	client, _ := NewFromUrl(url, nil)
+
+	err := client.SetReadOnlyMode()
+	assert.Equal(t, nil, err)
+
+	_, err = client.Query("CREATE TABLE foobar(id integer);")
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "in a read-only transaction")
+}
+
 func TestAll(t *testing.T) {
 	if onWindows() {
 		t.Log("Unit testing on Windows platform is not supported.")
@@ -361,7 +373,9 @@ func TestAll(t *testing.T) {
 	test_TableRowsOrderEscape(t)
 	test_ResultCsv(t)
 	test_History(t)
+	test_HistoryUniqueness(t)
 	test_HistoryError(t)
+	test_ReadOnlyMode(t)
 
 	teardownClient()
 	teardown()
