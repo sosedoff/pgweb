@@ -111,6 +111,7 @@
 
 #sidebar div.tables-list .title span.current-database {
   margin-left: 4px;
+  cursor: pointer;
 }
 
 #sidebar div.tables-list .title:hover span.refresh {
