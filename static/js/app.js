@@ -744,6 +744,20 @@ function bindContextMenus() {
       }
     });
   });
+
+  $("#current_database").contextmenu({
+    target: "#databases_context_menu",
+    onItem: function(context, e) {
+      var name = $(e.target).text();
+      apiCall("post", "/switchdb", { db: name }, function(resp) {
+        if (resp.error) {
+          alert(resp.error);
+          return;
+        }
+        window.location.reload();
+      });
+    }
+  });
 }
 
 $(document).ready(function() {
@@ -929,6 +943,16 @@ $(document).ready(function() {
     }
   });
 
+  $("#current_database").on("click", function(e) {
+    apiCall("get", "/databases", {}, function(resp) {
+      $("#databases_context_menu > ul > li").remove();
+      resp.forEach(function(name) {
+        $("<li><a href='#'>" + name + "</a></li>").appendTo("#databases_context_menu > ul");
+      });
+      $("#current_database").triggerHandler("contextmenu");
+    });
+  });
+
   $("#edit_connection").on("click", function() {
     if (connected) {
       $("#close_connection_window").show();
@@ -1073,6 +1097,7 @@ $(document).ready(function() {
     if (resp.error) {
       connected = false;
       showConnectionSettings();
+      $(".connection-actions").show();
     }
     else {
       connected = true;
