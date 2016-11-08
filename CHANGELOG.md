@@ -1,3 +1,14 @@
+## 0.9.6 - Unreleases
+
+- Fixed bug in query base64-encoding, GH-186
+- Fixed rows pagination visibility bug, GH-190
+- Fixed issue with query order escaping, GH-191
+- Added new flag --readonly to enable read only transaction mode, GH-193
+- Added ability to kill any running query, GH-194
+- Added session database connection locking, GH-195
+- Added ability to switch between databases, GH-196
+- Added feature to keep last selected tab when switching between tables, GH-196
+
 ## 0.9.5 - 2016-10-01
 
 - Only view schema with USAGE privileges, GH-167
