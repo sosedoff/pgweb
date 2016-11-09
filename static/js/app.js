@@ -563,7 +563,7 @@ function runExplain() {
   $("#run, #explain, #csv, #json, #xml").prop("disabled", true);
   $("#query_progress").show();
 
-  var query = $.trim(editor.getValue());
+  var query = $.trim(editor.getSelectedText() || editor.getValue());
 
   if (query.length == 0) {
     $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
@@ -583,7 +583,7 @@ function runExplain() {
 }
 
 function exportTo(format) {
-  var query = $.trim(editor.getValue());
+  var query = $.trim(editor.getSelectedText() || editor.getValue());
 
   if (query.length == 0) {
     return;
