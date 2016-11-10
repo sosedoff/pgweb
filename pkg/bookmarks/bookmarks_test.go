@@ -14,10 +14,6 @@ func Test_Invalid_Bookmark_Files(t *testing.T) {
 	_, err = readServerConfig("../../data/invalid.toml")
 	assert.Error(t, err)
 	assert.Equal(t, "Near line 1, key 'invalid encoding': Near line 2: Expected key separator '=', but got '\\n' instead.", err.Error())
-
-	_, err = readServerConfig("../../data/invalid_port.toml")
-	assert.Error(t, err)
-	assert.Equal(t, "Type mismatch for 'bookmarks.Bookmark.Port': Expected string but found 'int64'.", err.Error())
 }
 
 func Test_Bookmark(t *testing.T) {
@@ -25,7 +21,7 @@ func Test_Bookmark(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "localhost", bookmark.Host)
-	assert.Equal(t, "5432", bookmark.Port)
+	assert.Equal(t, 5432, bookmark.Port)
 	assert.Equal(t, "postgres", bookmark.User)
 	assert.Equal(t, "mydatabase", bookmark.Database)
 	assert.Equal(t, "disable", bookmark.Ssl)
@@ -39,7 +35,7 @@ func Test_Bookmark_URL(t *testing.T) {
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://username:password@host:port/database?sslmode=disable", bookmark.Url)
 	assert.Equal(t, "", bookmark.Host)
-	assert.Equal(t, "", bookmark.Port)
+	assert.Equal(t, 0, bookmark.Port)
 	assert.Equal(t, "", bookmark.User)
 	assert.Equal(t, "", bookmark.Database)
 	assert.Equal(t, "", bookmark.Ssl)
@@ -75,7 +71,7 @@ func Test_GetBookmark(t *testing.T) {
 	expBookmark := Bookmark{
 
 		Host:     "localhost",
-		Port:     "5432",
+		Port:     5432,
 		User:     "postgres",
 		Password: "",
 		Database: "mydatabase",
