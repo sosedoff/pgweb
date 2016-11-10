@@ -9,6 +9,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/mitchellh/go-homedir"
 
+	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
@@ -26,6 +27,19 @@ type Bookmark struct {
 func (b Bookmark) SSHInfoIsEmpty() bool {
 	return b.Ssh.User == "" && b.Ssh.Host == "" && b.Ssh.Port == ""
 }
+
+func (b Bookmark) ConvertToOptions() (command.Options, error) {
+	return command.Options{
+		Url:    b.Url,
+		Host:   b.Host,
+		Port:   b.Port,
+		User:   b.User,
+		Pass:   b.Password,
+		DbName: b.Database,
+		Ssl:    b.Ssl,
+	}, nil
+}
+
 func readServerConfig(path string) (Bookmark, error) {
 	bookmark := Bookmark{}
 
