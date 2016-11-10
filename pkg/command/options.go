@@ -27,6 +27,7 @@ type Options struct {
 	Prefix      string `long:"prefix" description:"Add a url prefix"`
 	ReadOnly    bool   `long:"readonly" description:"Run database connection in readonly mode"`
 	LockSession bool   `long:"lock-session" description:"Lock session to a single database connection" default:"false"`
+	Bookmark    string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
 }
 
 var Opts Options
