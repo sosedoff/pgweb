@@ -71,6 +71,28 @@ func Test_ReadBookmarks(t *testing.T) {
 	assert.Equal(t, 2, len(bookmarks))
 }
 
+func Test_GetBookmark(t *testing.T) {
+	expBookmark := Bookmark{
+
+		Host:     "localhost",
+		Port:     "5432",
+		User:     "postgres",
+		Password: "",
+		Database: "mydatabase",
+		Ssl:      "disable",
+	}
+	b, err := GetBookmark("../../data", "bookmark")
+	if assert.NoError(t, err) {
+		assert.Equal(t, expBookmark, b)
+	}
+
+	_, err = GetBookmark("../../data", "bar")
+	assert.Equal(t, ErrNonExistingBookmark("bar"), err)
+
+	_, err = GetBookmark("foo", "bookmark")
+	assert.Error(t, err)
+}
+
 func Test_Bookmark_SSHInfoIsEmpty(t *testing.T) {
 	emptySSH := shared.SSHInfo{
 		Host: "",
