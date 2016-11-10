@@ -3,6 +3,7 @@ package bookmarks
 import (
 	"testing"
 
+	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -68,4 +69,23 @@ func Test_ReadBookmarks(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 2, len(bookmarks))
+}
+
+func Test_Bookmark_SSHInfoIsEmpty(t *testing.T) {
+	emptySSH := shared.SSHInfo{
+		Host: "",
+		Port: "",
+		User: "",
+	}
+	populatedSSH := shared.SSHInfo{
+		Host: "localhost",
+		Port: "8080",
+		User: "postgres",
+	}
+
+	b := Bookmark{Ssh: emptySSH}
+	assert.True(t, b.SSHInfoIsEmpty())
+
+	b.Ssh = populatedSSH
+	assert.False(t, b.SSHInfoIsEmpty())
 }

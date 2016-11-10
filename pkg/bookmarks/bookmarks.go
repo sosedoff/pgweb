@@ -23,6 +23,9 @@ type Bookmark struct {
 	Ssh      shared.SSHInfo `json:"ssh"`      // SSH tunnel config
 }
 
+func (b Bookmark) SSHInfoIsEmpty() bool {
+	return b.Ssh.User == "" && b.Ssh.Host == "" && b.Ssh.Port == ""
+}
 func readServerConfig(path string) (Bookmark, error) {
 	bookmark := Bookmark{}
 
