@@ -3,6 +3,7 @@ package bookmarks
 import (
 	"testing"
 
+	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/stretchr/testify/assert"
 )
@@ -106,4 +107,30 @@ func Test_Bookmark_SSHInfoIsEmpty(t *testing.T) {
 
 	b.Ssh = populatedSSH
 	assert.False(t, b.SSHInfoIsEmpty())
+}
+
+func Test_ConvertToOptions(t *testing.T) {
+	b := Bookmark{
+		Url:      "postgres://username:password@host:port/database?sslmode=disable",
+		Host:     "localhost",
+		Port:     5432,
+		User:     "postgres",
+		Password: "password",
+		Database: "mydatabase",
+		Ssl:      "disable",
+	}
+
+	expOpt := command.Options{
+		Url:    "postgres://username:password@host:port/database?sslmode=disable",
+		Host:   "localhost",
+		Port:   5432,
+		User:   "postgres",
+		Pass:   "password",
+		DbName: "mydatabase",
+		Ssl:    "disable",
+	}
+	opt, err := b.ConvertToOptions()
+	if assert.NoError(t, err) {
+		assert.Equal(t, expOpt, opt)
+	}
 }
