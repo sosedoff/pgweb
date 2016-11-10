@@ -111,6 +111,7 @@
 
 #sidebar div.tables-list .title span.current-database {
   margin-left: 4px;
+  cursor: pointer;
 }
 
 #sidebar div.tables-list .title:hover span.refresh {
@@ -475,6 +476,7 @@
   position: fixed;
   right: 8px;
   top: 10px;
+  display: none;
 }
 
 #edit_connection, #close_connection {

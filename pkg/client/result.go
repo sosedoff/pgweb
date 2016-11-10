@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 type Row []interface{}
@@ -83,7 +84,12 @@ func (res *Result) CSV() []byte {
 
 		for i, item := range row {
 			if item != nil {
-				record[i] = fmt.Sprintf("%v", item)
+				switch v := item.(type) {
+				case time.Time:
+					record[i] = v.Format("2006-01-02 15:04:05")
+				default:
+					record[i] = fmt.Sprintf("%v", item)
+				}
 			} else {
 				record[i] = ""
 			}

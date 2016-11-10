@@ -4,6 +4,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	neturl "net/url"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -68,6 +70,11 @@ func GetSessions(c *gin.Context) {
 }
 
 func Connect(c *gin.Context) {
+	if command.Opts.LockSession {
+		c.JSON(400, Error{"Session is locked"})
+		return
+	}
+
 	var sshInfo *shared.SSHInfo
 	url := c.Request.FormValue("url")
 
@@ -113,7 +120,68 @@ func Connect(c *gin.Context) {
 	c.JSON(200, info.Format()[0])
 }
 
+func SwitchDb(c *gin.Context) {
+	if command.Opts.LockSession {
+		c.JSON(400, Error{"Session is locked"})
+		return
+	}
+
+	name := c.Request.URL.Query().Get("db")
+	if name == "" {
+		name = c.Request.FormValue("db")
+	}
+	if name == "" {
+		c.JSON(400, Error{"Database name is not provided"})
+		return
+	}
+
+	conn := DB(c)
+	if conn == nil {
+		c.JSON(400, Error{"Not connected"})
+		return
+	}
+
+	currentUrl, err := neturl.Parse(conn.ConnectionString)
+	if err != nil {
+		c.JSON(400, Error{"Unable to parse current connection string"})
+		return
+	}
+
+	newStr := strings.Replace(conn.ConnectionString, currentUrl.Path, "/"+name, 1)
+
+	cl, err := client.NewFromUrl(newStr, nil)
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	err = cl.Test()
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	info, err := cl.Info()
+	if err == nil {
+		err = setClient(c, cl)
+		if err != nil {
+			cl.Close()
+			c.JSON(400, Error{err.Error()})
+			return
+		}
+	}
+
+	conn.Close()
+
+	c.JSON(200, info.Format()[0])
+}
+
 func Disconnect(c *gin.Context) {
+	if command.Opts.LockSession {
+		c.JSON(400, Error{"Session is locked"})
+		return
+	}
+
 	conn := DB(c)
 
 	if conn == nil {
@@ -261,7 +329,10 @@ func GetConnectionInfo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, res.Format()[0])
+	info := res.Format()[0]
+	info["session_lock"] = command.Opts.LockSession
+
+	c.JSON(200, info)
 }
 
 func GetActivity(c *gin.Context) {

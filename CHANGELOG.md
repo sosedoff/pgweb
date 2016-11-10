@@ -1,3 +1,33 @@
+## 0.9.6 - Unreleased
+
+- Fixed bug in query base64-encoding, GH-186
+- Fixed rows pagination visibility bug, GH-190
+- Fixed issue with query order escaping, GH-191
+- Added new flag --readonly to enable read only transaction mode, GH-193
+- Added ability to kill any running query, GH-194
+- Added session database connection locking, GH-195
+- Added ability to switch between databases, GH-196
+- Added feature to keep last selected tab when switching between tables, GH-196
+
+## 0.9.5 - 2016-10-01
+
+- Only view schema with USAGE privileges, GH-167
+- Fixed broken export to CSV/JSON/XML if hashmark in URL, GH-175
+- Added example service configuration for systemd, GH-177
+- Allow setting auth user and pass using variables
+
+## 0.9.4 - 2016-07-29
+
+- Fixes CSV/JSON/XML export buttons when pgweb is running with url prefix, GH-170
+
+## 0.9.3 - 2016-06-30
+
+- Uses Go 1.6 for development, GH-155
+- Fixes timestamp formatting in CSV export, GH-163
+- Included PostgreSQL 9.6 for integration testing
+- Switches docker image to Alpine to reduce image size
+- Adds support for ARMv5
+
 ## 0.9.2 - 2016-03-01
 
 - Fixes bug with unsafe base64 encoded sql queries

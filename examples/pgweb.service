@@ -1,0 +1,11 @@
+[Unit]
+Description=pgweb - Cross-platform client for PostgreSQL databases
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pgweb --bind=0.0.0.0 --listen=8081
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

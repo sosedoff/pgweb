@@ -7,6 +7,7 @@ import (
 	"os/signal"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jessevdk/go-flags"
 
 	"github.com/sosedoff/pgweb/pkg/api"
 	"github.com/sosedoff/pgweb/pkg/client"
@@ -54,6 +55,12 @@ func initClient() {
 func initOptions() {
 	err := command.ParseOptions()
 	if err != nil {
+		switch err.(type) {
+		case *flags.Error:
+			// no need to print error, flags package already does that
+		default:
+			fmt.Println(err.Error())
+		}
 		os.Exit(1)
 	}
 
@@ -62,6 +69,15 @@ func initOptions() {
 	if options.Version {
 		printVersion()
 		os.Exit(0)
+	}
+
+	if options.ReadOnly {
+		msg := `------------------------------------------------------
+SECURITY WARNING: You are running pgweb in read-only mode.
+This mode is designed for environments where users could potentially delete / change data.
+For proper read-only access please follow postgresql role management documentation.
+------------------------------------------------------`
+		fmt.Println(msg)
 	}
 
 	printVersion()
