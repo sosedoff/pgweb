@@ -90,12 +90,6 @@ func ReadAll(path string) (map[string]Bookmark, error) {
 	return results, nil
 }
 
-type ErrNonExistingBookmark string
-
-func (e ErrNonExistingBookmark) Error() string {
-	return fmt.Sprintf("couldn't find a bookmark with name %s", e)
-}
-
 func GetBookmark(bookmarkPath string, bookmarkName string) (Bookmark, error) {
 	bookmarks, err := ReadAll(bookmarkPath)
 	if err != nil {
@@ -103,7 +97,7 @@ func GetBookmark(bookmarkPath string, bookmarkName string) (Bookmark, error) {
 	}
 	bookmark, ok := bookmarks[bookmarkName]
 	if !ok {
-		return Bookmark{}, ErrNonExistingBookmark(bookmarkName)
+		return Bookmark{}, fmt.Errorf("couldn't find a bookmark with name %s", bookmarkName)
 	}
 	return bookmark, nil
 

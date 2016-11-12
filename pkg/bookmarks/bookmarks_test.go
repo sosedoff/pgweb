@@ -84,7 +84,8 @@ func Test_GetBookmark(t *testing.T) {
 	}
 
 	_, err = GetBookmark("../../data", "bar")
-	assert.Equal(t, ErrNonExistingBookmark("bar"), err)
+	expErrStr := "couldn't find a bookmark with name bar"
+	assert.Equal(t, expErrStr, err.Error())
 
 	_, err = GetBookmark("foo", "bookmark")
 	assert.Error(t, err)
