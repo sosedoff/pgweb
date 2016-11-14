@@ -1,11 +1,16 @@
 package api
 
 import (
+	"fmt"
 	"mime"
+	"net/http"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sosedoff/pgweb/pkg/data"
+
+	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
 var extraMimeTypes = map[string]string{
@@ -17,8 +22,106 @@ var extraMimeTypes = map[string]string{
 	".html": "text/html; charset-utf-8",
 }
 
+// Paths that dont require database connection
+var allowedPaths = map[string]bool{
+	"/api/sessions":  true,
+	"/api/info":      true,
+	"/api/connect":   true,
+	"/api/bookmarks": true,
+	"/api/history":   true,
+}
+
+// List of characters replaced by javascript code to make queries url-safe.
+var base64subs = map[string]string{
+	"-": "+",
+	"_": "/",
+	".": "=",
+}
+
 type Error struct {
 	Message string `json:"error"`
+}
+
+func NewError(err error) Error {
+	return Error{err.Error()}
+}
+
+// Returns a clean query without any comment statements
+func cleanQuery(query string) string {
+	lines := []string{}
+
+	for _, line := range strings.Split(query, "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "--") {
+			continue
+		}
+		lines = append(lines, line)
+	}
+
+	return strings.TrimSpace(strings.Join(lines, "\n"))
+}
+
+func desanitize64(query string) string {
+	// Before feeding the string into decoded, we must "reconstruct" the base64 data.
+	// Javascript replaces a few characters to be url-safe.
+	for olds, news := range base64subs {
+		query = strings.Replace(query, olds, news, -1)
+	}
+
+	return query
+}
+
+func getSessionId(req *http.Request) string {
+	id := req.Header.Get("x-session-id")
+	if id == "" {
+		id = req.URL.Query().Get("_session_id")
+	}
+	return id
+}
+
+func getQueryParam(c *gin.Context, name string) string {
+	result := ""
+	q := c.Request.URL.Query()
+
+	if len(q[name]) > 0 {
+		result = q[name][0]
+	}
+
+	return result
+}
+
+func parseIntFormValue(c *gin.Context, name string, defValue int) (int, error) {
+	val := c.Request.FormValue(name)
+
+	if val == "" {
+		return defValue, nil
+	}
+
+	num, err := strconv.Atoi(val)
+	if err != nil {
+		return defValue, fmt.Errorf("%s must be a number", name)
+	}
+
+	if num < 1 && defValue != 0 {
+		return defValue, fmt.Errorf("%s must be greater than 0", name)
+	}
+
+	return num, nil
+}
+
+func parseSshInfo(c *gin.Context) *shared.SSHInfo {
+	info := shared.SSHInfo{
+		Host:     c.Request.FormValue("ssh_host"),
+		Port:     c.Request.FormValue("ssh_port"),
+		User:     c.Request.FormValue("ssh_user"),
+		Password: c.Request.FormValue("ssh_password"),
+	}
+
+	if info.Port == "" {
+		info.Port = "22"
+	}
+
+	return &info
 }
 
 func assetContentType(name string) string {
@@ -34,63 +137,4 @@ func assetContentType(name string) string {
 	}
 
 	return result
-}
-
-func NewError(err error) Error {
-	return Error{err.Error()}
-}
-
-// Middleware function to check database connection status before running queries
-func dbCheckMiddleware() gin.HandlerFunc {
-	allowedPaths := []string{
-		"/api/info",
-		"/api/connect",
-		"/api/bookmarks",
-		"/api/history",
-	}
-
-	return func(c *gin.Context) {
-		if DbClient != nil {
-			c.Next()
-			return
-		}
-
-		currentPath := c.Request.URL.Path
-		allowed := false
-
-		for _, path := range allowedPaths {
-			if path == currentPath {
-				allowed = true
-				break
-			}
-		}
-
-		if allowed {
-			c.Next()
-		} else {
-			c.JSON(400, Error{"Not connected"})
-			c.Abort()
-		}
-
-		return
-	}
-}
-
-func serveStaticAsset(path string, c *gin.Context) {
-	data, err := data.Asset("static" + path)
-	if err != nil {
-		c.String(400, err.Error())
-		return
-	}
-
-	c.Data(200, assetContentType(path), data)
-}
-
-func serveResult(result interface{}, err error, c *gin.Context) {
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, result)
 }

@@ -7,6 +7,8 @@ import (
 	"os/signal"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jessevdk/go-flags"
+
 	"github.com/sosedoff/pgweb/pkg/api"
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
@@ -41,8 +43,8 @@ func initClient() {
 		exitWithMessage(err.Error())
 	}
 
-	fmt.Println("Checking tables...")
-	_, err = cl.Tables()
+	fmt.Println("Checking database objects...")
+	_, err = cl.Objects()
 	if err != nil {
 		exitWithMessage(err.Error())
 	}
@@ -53,6 +55,12 @@ func initClient() {
 func initOptions() {
 	err := command.ParseOptions()
 	if err != nil {
+		switch err.(type) {
+		case *flags.Error:
+			// no need to print error, flags package already does that
+		default:
+			fmt.Println(err.Error())
+		}
 		os.Exit(1)
 	}
 
@@ -61,6 +69,15 @@ func initOptions() {
 	if options.Version {
 		printVersion()
 		os.Exit(0)
+	}
+
+	if options.ReadOnly {
+		msg := `------------------------------------------------------
+SECURITY WARNING: You are running pgweb in read-only mode.
+This mode is designed for environments where users could potentially delete / change data.
+For proper read-only access please follow postgresql role management documentation.
+------------------------------------------------------`
+		fmt.Println(msg)
 	}
 
 	printVersion()
@@ -103,7 +120,7 @@ func handleSignals() {
 }
 
 func openPage() {
-	url := fmt.Sprintf("http://%v:%v", options.HttpHost, options.HttpPort)
+	url := fmt.Sprintf("http://%v:%v/%s", options.HttpHost, options.HttpPort, options.Prefix)
 	fmt.Println("To view database open", url, "in browser")
 
 	if options.SkipOpen {

@@ -1,13 +1,15 @@
 clone_folder: c:\go\src\github.com\sosedoff\pgweb
 
 environment:
-  GOPATH: c:\go
+  GOPATH: c:\gopath
 
 services:
   - postgresql
 
 install:
   - set PATH=%GOPATH%\bin;%PATH%
+  - echo %PATH%
+  - echo %GOPATH%
   - cd %APPVEYOR_BUILD_FOLDER%
   - go env
   - go version

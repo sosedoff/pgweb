@@ -18,18 +18,23 @@ application to work with local or remote PostgreSQL databases.
 
 ## Features
 
-- Works on OSX, Linux and Windows
+- Cross-platform support OSX/Linux/Windows 32/64-bit
+- Simple installation (distributed as a single binary)
 - Zero dependencies
-- Simple installation (distributes as a single binary)
-- Connect to local or remote servers
-- Browse tables and table rows
-- Get table details: structure, size, indeces, row count
-- Run and analyze custom SQL queries
-- Export table rows and query results as CSV
+- Works with PostgreSQL 9.1+
+- SSH Connections
+- Multiple database sessions
+- Simple database browser
+- Execute and analyze custom SQL queries
+- Table and query data export to CSV/JSON/XML
 - Query history
 - Server bookmarks
 
 Visit [WIKI](https://github.com/sosedoff/pgweb/wiki) for more details
+
+## Demo
+
+Visit https://pgweb-demo.herokuapp.com to see pgweb in action.
 
 ## Installation
 
@@ -58,9 +63,23 @@ Connection URL scheme is also supported:
 pgweb --url postgres://user:password@host:port/database?sslmode=[mode]
 ```
 
+### Multiple database sessions
+
+To enable multiple database sessions in pgweb, start the server with:
+
+```
+pgweb --sessions
+```
+
+Or set environment variable:
+
+```
+SESSIONS=1 pgweb
+```
+
 ## Deploy on Heroku
 
-[![Heroku Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/sosedoff/pgweb)
+[![Heroku Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/sosedoff/pgweb)
 
 ## Testing
 
@@ -72,6 +91,13 @@ Execute test suite:
 
 ```
 make test
+```
+
+If you're using Docker locally, you might also run pgweb test suite against
+all supported PostgreSQL version with a single command:
+
+```
+make test-all
 ```
 
 ## Contribute
@@ -94,4 +120,4 @@ make test
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2015 Dan Sosedoff, <dan.sosedoff@gmail.com>
+Copyright (c) 2014-2016 Dan Sosedoff, <dan.sosedoff@gmail.com>

@@ -17,6 +17,15 @@ CREATE DATABASE "booktown";
 -- Name: DATABASE "booktown" Type: COMMENT Owner: 
 --
 
+CREATE TABLE "dummies" (
+  "id" integer NOT NULL,
+  "isDummy" boolean
+);
+
+INSERT INTO "dummies" VALUES (1, true);
+INSERT INTO "dummies" VALUES (2, true);
+
+
 COMMENT ON DATABASE "booktown" IS 'The Book Town Database.';
 
 --
@@ -906,6 +915,8 @@ CREATE FUNCTION "check_book_addition" () RETURNS opaque AS '
 --
 
 CREATE VIEW "stock_view" as SELECT stock.isbn, stock.retail, stock.stock FROM stock;
+
+CREATE MATERIALIZED VIEW "m_stock_view" as SELECT stock.isbn, stock.retail, stock.stock FROM stock;
 
 --
 -- TOC Entry ID 30 (OID 3628247)

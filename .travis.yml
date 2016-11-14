@@ -1,15 +1,26 @@
+sudo: required
+
 language: go
 
+services:
+  - docker
+
 addons:
-  postgresql: "9.3"
+  postgresql: "9.4"
 
 go:
-- 1.4.1
-- 1.4.2
+  - 1.5.4
+  - 1.6.3
+  - 1.7
+
+env:
+  - GO15VENDOREXPERIMENT=1
 
 install:
   - make setup
-  
+
 script:
   - make build
   - make test
+  - make test-all
+  - make docker-release

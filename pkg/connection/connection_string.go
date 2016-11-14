@@ -3,6 +3,7 @@ package connection
 import (
 	"errors"
 	"fmt"
+	neturl "net/url"
 	"os"
 	"os/user"
 	"strings"
@@ -28,7 +29,7 @@ func FormatUrl(opts command.Options) (string, error) {
 	url := opts.Url
 
 	// Make sure to only accept urls in a standard format
-	if !strings.Contains(url, "postgres://") {
+	if !strings.HasPrefix(url, "postgres://") && !strings.HasPrefix(url, "postgresql://") {
 		return "", errors.New("Invalid URL. Valid format: postgres://user:password@host:port/db?sslmode=mode")
 	}
 
@@ -83,7 +84,7 @@ func BuildString(opts command.Options) (string, error) {
 	}
 
 	if opts.Pass != "" {
-		url += fmt.Sprintf(":%s", opts.Pass)
+		url += fmt.Sprintf(":%s", neturl.QueryEscape(opts.Pass))
 	}
 
 	url += fmt.Sprintf("@%s:%d", opts.Host, opts.Port)

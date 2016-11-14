@@ -1,5 +1,8 @@
 # Screenshots
 
+### Connect
+<img src="screenshots/connect.png" />
+
 ### Browse table rows
 <img src="screenshots/browse.png" />
 

@@ -1,10 +1,95 @@
+## 0.9.6 - Unreleased
+
+- Fixed bug in query base64-encoding, GH-186
+- Fixed rows pagination visibility bug, GH-190
+- Fixed issue with query order escaping, GH-191
+- Added new flag --readonly to enable read only transaction mode, GH-193
+- Added ability to kill any running query, GH-194
+- Added session database connection locking, GH-195
+- Added ability to switch between databases, GH-196
+- Added feature to keep last selected tab when switching between tables, GH-196
+
+## 0.9.5 - 2016-10-01
+
+- Only view schema with USAGE privileges, GH-167
+- Fixed broken export to CSV/JSON/XML if hashmark in URL, GH-175
+- Added example service configuration for systemd, GH-177
+- Allow setting auth user and pass using variables
+
+## 0.9.4 - 2016-07-29
+
+- Fixes CSV/JSON/XML export buttons when pgweb is running with url prefix, GH-170
+
+## 0.9.3 - 2016-06-30
+
+- Uses Go 1.6 for development, GH-155
+- Fixes timestamp formatting in CSV export, GH-163
+- Included PostgreSQL 9.6 for integration testing
+- Switches docker image to Alpine to reduce image size
+- Adds support for ARMv5
+
+## 0.9.2 - 2016-03-01
+
+- Fixes bug with unsafe base64 encoded sql queries
+- Fixes issue with session id not being included in multi-session mode
+- Fixes visual issue with long table names in sidebar
+- Fixes visual issue with a scrollbar in table information widget
+- Fixes issue with database connection form being reset by clicking on 'cancel' button
+- Adds ability to close connection
+- Adds display message for number of affected rows for update/delete queries, GH-133
+- Adds web server url prefix as a CLI option, GH-135
+
+## 0.9.1 - 2016-01-25
+
+- Fixes bug with tables context menu
+- Fixes JS bug when query returns no rows
+- Fixes bug with switching between different connection modes
+- Adds AJAX timeout to 5s
+- Adds sidebar reload action on any CREATE/DROP action
+
+## 0.9.0 - 2016-01-19
+
+- Add support for multiple schemas. GH-112
+- Add support for native ssh tunnes. GH-114
+- Add materialized views to list of schema objects
+- Adds a few design tweaks and cleanups
+- Fixes bug with nil result set when fetching rows
+
+## 0.8.0 - 2016-01-11
+
+- Fixes bug with bigint conversions in javascript. Now bigints are encoded as strings. GH-109
+- Adds pagination and simple column filtering to table rows browser. GH-110
+- Adds ability to use pgweb with multiple database sessions. GH-111
+- Adds a few design tweaks and cleanups
+
+## 0.7.0 - 2016-01-05
+
+- Adds sequences to the sidebar panel - GH-100
+- Adds table constrains view - GH-104
+- Adds ability to export table and query rows as JSON/XML - GH-107
+- Updates to UI theme and SQL editor
+
+## 0.6.3 - 2015-08-16
+
+- Adds PostgreSQL password escaping in web ui, GH-96
+- Adds base64 query encoding for CSV export, GH-95
+- Adds automatic saving of last executed query to localStorage
+- Adds request middleware to log incoming form params in debug mode
+
+## 0.6.2 - 2015-07-15
+
+- Adds ability to specify connection strings prefixed by `postgresql://`, [GH-92]
+- Updates configuration for Heroku, [GH-89], [GH-90]
+- Updates postgresql library dependency to latest, [GH-91]
+- Fixes password field to not display plaintext passwords, [GH-87]
+
 ## 0.6.1 - 2015-06-18
 
 - This release is repackage-release targeted to fix binary downloads
 
 ## 0.6.0 - 2015-05-31
 
-- Adds ability to execute only selected SQL query in run command view, GH-85
+- Adds ability to execute only selected SQL query in run command view, [GH-85]
 - Adds ability to delete/truncate table via context meny on sidebar view 
 - Adds ability to export table contents to CSV via context menu on sidebar view
 - Changes sidebar color scheme to a lighter and better looking one

@@ -5,15 +5,15 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="Content-Language" content="en">
-  <link rel="stylesheet" href="/static/css/bootstrap.css"></link>
-  <link rel="stylesheet" href="/static/css/font-awesome.css"></link>
-  <link rel="stylesheet" href="/static/css/app.css"></link>
-  <link rel="icon" type="image/x-icon" href="/static/img/icon.ico" />
-  <script type="text/javascript" src="/static/js/jquery.js"></script>
-  <script type="text/javascript" src="/static/js/ace.js"></script>
-  <script type="text/javascript" src="/static/js/ace-pgsql.js"></script>
-  <script type="text/javascript" src="/static/js/bootstrap-contextmenu.js"></script>
-  <script type="text/javascript" src="/static/js/app.js"></script>
+  <link rel="stylesheet" href="static/css/bootstrap.css"></link>
+  <link rel="stylesheet" href="static/css/font-awesome.css"></link>
+  <link rel="stylesheet" href="static/css/app.css"></link>
+  <link rel="icon" type="image/x-icon" href="static/img/icon.ico" />
+  <script type="text/javascript" src="static/js/jquery.js"></script>
+  <script type="text/javascript" src="static/js/ace.js"></script>
+  <script type="text/javascript" src="static/js/ace-pgsql.js"></script>
+  <script type="text/javascript" src="static/js/bootstrap-contextmenu.js"></script>
+  <script type="text/javascript" src="static/js/app.js"></script>
 </head>
 <body>
   <div id="main">
@@ -22,22 +22,26 @@
         <li id="table_content">Rows</li>
         <li id="table_structure">Structure</li>
         <li id="table_indexes">Indexes</li>
+        <li id="table_constraints">Constraints</li>
         <li id="table_query" class="selected">SQL Query</li>
         <li id="table_history">History</li>
         <li id="table_activity">Activity</li>
         <li id="table_connection">Connection</li>
       </ul>
 
-      <a href="#" id="edit_connection" class="btn btn-primary btn-sm"><i class="fa fa-gear"></i> Edit Connection</a>
+      <div class="connection-actions">
+        <a href="#" id="edit_connection" class="btn btn-default btn-sm"><i class="fa fa-database"></i> Connect</a>
+        <a href="#" id="close_connection" class="btn btn-default btn-sm">Disconnect</a>
+      </div>
     </div>
     <div id="sidebar">
       <div class="tables-list">
         <div class="wrap">
-          <div class="title">
+          <div class="title main">
             <i class="fa fa-database"></i> <span class="current-database" id="current_database"></span>
             <span class="refresh" id="refresh_tables" title="Refresh tables list"><i class="fa fa-refresh"></i></span>
           </div>
-          <ul id="tables"></ul>
+          <div id="objects"></div>
         </div>
       </div>
       <div class="table-information">
@@ -59,15 +63,48 @@
           <div class="actions">
             <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
             <input type="button" id="explain" value="Explain Query" class="btn btn-sm btn-default" />
-            <input type="button" id="csv" value="Download CSV" class="btn btn-sm btn-default" />
-
             <div id="query_progress">Please wait, query is executing...</div>
+            <div class="pull-right">
+              <input type="button" id="json" value="JSON" class="btn btn-sm btn-default" />
+              <input type="button" id="csv" value="CSV" class="btn btn-sm btn-default" />
+              <input type="button" id="xml" value="XML" class="btn btn-sm btn-default" />
+            </div>
           </div>
         </div>
       </div>
       <div id="output">
         <div class="wrapper">
           <table id="results" class="table"></table>
+        </div>
+      </div>
+      <div id="pagination">
+        <form class="filters" action="#" id="rows_filter">
+          <span>Search</span>
+          <select class="column form-control"></select>
+          <select class="filter form-control">
+            <option value="">Select filter</option>
+            <option value="equal">=</option>
+            <option value="not_equal">&ne;</option>
+            <option value="greater">&gt;</option>
+            <option value="greater_eq">&ge;</option>
+            <option value="less">&lt;</option>
+            <option value="less_eq">&le;</option>
+            <option value="like">LIKE</option>
+            <option value="ilike">ILIKE</option>
+            <option value="null">IS NULL</option>
+            <option value="not_null">NOT NULL</option>
+          </select>
+          <input type="text" class="form-control" placeholder="Search query" />
+          <button class="btn btn-primary btn-sm apply-filters" type="submit">Apply</button>
+          <button class="btn btn-default btn-sm reset-filters"><i class="fa fa-times"></i></button>
+        </form>
+        <div class="btn-group">
+          <button type="button" class="btn btn-default btn-sm prev-page" disabled="disabled"><i class="fa fa-angle-left"></i></button>
+          <button type="button" class="btn btn-default btn-sm page change-limit" title="Click to change row limit"></button>
+          <button type="button" class="btn btn-default btn-sm next-page"><i class="fa fa-angle-right"></i></button>
+        </div>
+        <div class="current-page" data-page="1" data-pages="1">
+          <span id="total_records"></span> rows
         </div>
       </div>
     </div>
@@ -82,6 +119,7 @@
           <div class="btn-group btn-group-sm connection-group-switch">
             <button type="button" data="scheme" class="btn btn-default" id="connection_scheme">Scheme</button>
             <button type="button" data="standard" class="btn btn-default active" id="connection_standard">Standard</button>
+            <button type="button" data="ssh" class="btn btn-default" id="connection_ssh">SSH</button>
           </div>
         </div>
 
@@ -122,7 +160,7 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Password</label>
             <div class="col-sm-9">
-              <input type="text" id="pg_password" class="form-control" />
+              <input type="password" id="pg_password" class="form-control" />
             </div>
           </div>
 
@@ -170,14 +208,14 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">SSH Password</label>
             <div class="col-sm-9">
-              <input type="text" id="ssh_password" class="form-control" placeholder="optional" />
+              <input type="password" id="ssh_password" class="form-control" placeholder="optional" />
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-sm-3 control-label">SSH Port</label>
             <div class="col-sm-9">
-              <input type="text" id="pg_host" class="form-control" placeholder="optional" />
+              <input type="text" id="ssh_port" class="form-control" placeholder="optional" />
             </div>
           </div>
         </div>
@@ -186,8 +224,8 @@
 
         <div class="form-group">
           <div class="col-sm-12">
-            <button type="submit" class="btn btn-block btn-primary">Connect</button>
-            <button type="reset" id="close_connection_window" class="btn btn-block btn-default">Cancel</button>
+            <button type="submit" class="btn btn-block btn-primary open-connection">Connect</button>
+            <button type="button" id="close_connection_window" class="btn btn-block btn-default">Cancel</button>
           </div>
         </div>
       </form>
@@ -195,11 +233,16 @@
   </div>
   <div id="tables_context_menu">
     <ul class="dropdown-menu" role="menu">
-      <li><a href="#" data-action="export">Export to CSV</a></li>
+      <li><a href="#" data-action="export" data-format="json">Export to JSON</a></li>
+      <li><a href="#" data-action="export" data-format="csv">Export to CSV</a></li>
+      <li><a href="#" data-action="export" data-format="xml">Export to XML</a></li>
       <li class="divider"></li>
       <li><a href="#" data-action="truncate">Truncate table</a></li>
       <li><a href="#" data-action="delete">Delete table</a></li>
     </ul>
+  </div>
+  <div id="databases_context_menu">
+    <ul class="dropdown-menu" role="menu"></ul>
   </div>
 </body>
 </html>
