@@ -36,7 +36,7 @@ func Test_Bookmark_URL(t *testing.T) {
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://username:password@host:port/database?sslmode=disable", bookmark.Url)
 	assert.Equal(t, "", bookmark.Host)
-	assert.Equal(t, 0, bookmark.Port)
+	assert.Equal(t, 5432, bookmark.Port)
 	assert.Equal(t, "", bookmark.User)
 	assert.Equal(t, "", bookmark.Database)
 	assert.Equal(t, "", bookmark.Ssl)

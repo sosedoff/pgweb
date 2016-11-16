@@ -49,6 +49,11 @@ func readServerConfig(path string) (Bookmark, error) {
 	}
 
 	_, err = toml.Decode(string(buff), &bookmark)
+
+	if bookmark.Port == 0 {
+		bookmark.Port = 5432
+	}
+
 	return bookmark, err
 }
 
@@ -99,10 +104,6 @@ func GetBookmark(bookmarkPath string, bookmarkName string) (Bookmark, error) {
 	bookmark, ok := bookmarks[bookmarkName]
 	if !ok {
 		return Bookmark{}, fmt.Errorf("couldn't find a bookmark with name %s", bookmarkName)
-	}
-
-	if bookmark.Port == 0 {
-		bookmark.Port = 5432
 	}
 
 	return bookmark, nil
