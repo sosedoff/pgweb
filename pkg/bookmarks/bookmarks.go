@@ -9,18 +9,35 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/mitchellh/go-homedir"
 
+	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
 type Bookmark struct {
 	Url      string         `json:"url"`      // Postgres connection URL
 	Host     string         `json:"host"`     // Server hostname
-	Port     string         `json:"port"`     // Server port
+	Port     int            `json:"port"`     // Server port
 	User     string         `json:"user"`     // Database user
 	Password string         `json:"password"` // User password
 	Database string         `json:"database"` // Database name
 	Ssl      string         `json:"ssl"`      // Connection SSL mode
 	Ssh      shared.SSHInfo `json:"ssh"`      // SSH tunnel config
+}
+
+func (b Bookmark) SSHInfoIsEmpty() bool {
+	return b.Ssh.User == "" && b.Ssh.Host == "" && b.Ssh.Port == ""
+}
+
+func (b Bookmark) ConvertToOptions() command.Options {
+	return command.Options{
+		Url:    b.Url,
+		Host:   b.Host,
+		Port:   b.Port,
+		User:   b.User,
+		Pass:   b.Password,
+		DbName: b.Database,
+		Ssl:    b.Ssl,
+	}
 }
 
 func readServerConfig(path string) (Bookmark, error) {
@@ -71,4 +88,17 @@ func ReadAll(path string) (map[string]Bookmark, error) {
 	}
 
 	return results, nil
+}
+
+func GetBookmark(bookmarkPath string, bookmarkName string) (Bookmark, error) {
+	bookmarks, err := ReadAll(bookmarkPath)
+	if err != nil {
+		return Bookmark{}, err
+	}
+	bookmark, ok := bookmarks[bookmarkName]
+	if !ok {
+		return Bookmark{}, fmt.Errorf("couldn't find a bookmark with name %s", bookmarkName)
+	}
+	return bookmark, nil
+
 }

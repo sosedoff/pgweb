@@ -10,9 +10,11 @@ import (
 	"github.com/jessevdk/go-flags"
 
 	"github.com/sosedoff/pgweb/pkg/api"
+	"github.com/sosedoff/pgweb/pkg/bookmarks"
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
+	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/pkg/util"
 )
 
@@ -23,14 +25,45 @@ func exitWithMessage(message string) {
 	os.Exit(1)
 }
 
+func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client, error) {
+	bookmark, err := bookmarks.GetBookmark(bookmarkPath, bookmarkName)
+	if err != nil {
+		return nil, err
+	}
+	opt := bookmark.ConvertToOptions()
+	var connStr string
+	if opt.Url != "" { // if the bookmark has url set, use it
+		connStr = opt.Url
+	} else {
+		connStr, err = connection.BuildString(opt)
+		if err != nil {
+			return nil, fmt.Errorf("error building connection string: %v", err)
+		}
+	}
+	var ssh *shared.SSHInfo
+	if !bookmark.SSHInfoIsEmpty() {
+		ssh = &bookmark.Ssh
+	}
+	return client.NewFromUrl(connStr, ssh)
+}
+
 func initClient() {
-	if connection.IsBlank(command.Opts) {
+	if connection.IsBlank(command.Opts) && options.Bookmark == "" {
 		return
 	}
 
-	cl, err := client.New()
-	if err != nil {
-		exitWithMessage(err.Error())
+	var cl *client.Client
+	var err error
+	if options.Bookmark != "" {
+		cl, err = initClientUsingBookmark(bookmarks.Path(), options.Bookmark)
+		if err != nil {
+			exitWithMessage(err.Error())
+		}
+	} else {
+		cl, err = client.New()
+		if err != nil {
+			exitWithMessage(err.Error())
+		}
 	}
 
 	if command.Opts.Debug {
