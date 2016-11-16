@@ -30,8 +30,10 @@ func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client,
 	if err != nil {
 		return nil, err
 	}
+
 	opt := bookmark.ConvertToOptions()
 	var connStr string
+
 	if opt.Url != "" { // if the bookmark has url set, use it
 		connStr = opt.Url
 	} else {
@@ -40,10 +42,12 @@ func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client,
 			return nil, fmt.Errorf("error building connection string: %v", err)
 		}
 	}
+
 	var ssh *shared.SSHInfo
 	if !bookmark.SSHInfoIsEmpty() {
 		ssh = &bookmark.Ssh
 	}
+
 	return client.NewFromUrl(connStr, ssh)
 }
 
@@ -54,16 +58,15 @@ func initClient() {
 
 	var cl *client.Client
 	var err error
+
 	if options.Bookmark != "" {
 		cl, err = initClientUsingBookmark(bookmarks.Path(), options.Bookmark)
-		if err != nil {
-			exitWithMessage(err.Error())
-		}
 	} else {
 		cl, err = client.New()
-		if err != nil {
-			exitWithMessage(err.Error())
-		}
+	}
+
+	if err != nil {
+		exitWithMessage(err.Error())
 	}
 
 	if command.Opts.Debug {

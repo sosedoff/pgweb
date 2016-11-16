@@ -95,10 +95,15 @@ func GetBookmark(bookmarkPath string, bookmarkName string) (Bookmark, error) {
 	if err != nil {
 		return Bookmark{}, err
 	}
+
 	bookmark, ok := bookmarks[bookmarkName]
 	if !ok {
 		return Bookmark{}, fmt.Errorf("couldn't find a bookmark with name %s", bookmarkName)
 	}
-	return bookmark, nil
 
+	if bookmark.Port == 0 {
+		bookmark.Port = 5432
+	}
+
+	return bookmark, nil
 }
