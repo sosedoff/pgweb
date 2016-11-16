@@ -28,7 +28,7 @@ func (b Bookmark) SSHInfoIsEmpty() bool {
 	return b.Ssh.User == "" && b.Ssh.Host == "" && b.Ssh.Port == ""
 }
 
-func (b Bookmark) ConvertToOptions() (command.Options, error) {
+func (b Bookmark) ConvertToOptions() command.Options {
 	return command.Options{
 		Url:    b.Url,
 		Host:   b.Host,
@@ -37,7 +37,7 @@ func (b Bookmark) ConvertToOptions() (command.Options, error) {
 		Pass:   b.Password,
 		DbName: b.Database,
 		Ssl:    b.Ssl,
-	}, nil
+	}
 }
 
 func readServerConfig(path string) (Bookmark, error) {

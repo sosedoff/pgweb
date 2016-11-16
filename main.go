@@ -30,10 +30,7 @@ func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client,
 	if err != nil {
 		return nil, err
 	}
-	opt, err := bookmark.ConvertToOptions()
-	if err != nil {
-		return nil, err
-	}
+	opt := bookmark.ConvertToOptions()
 	var connStr string
 	if opt.Url != "" { // if the bookmark has url set, use it
 		connStr = opt.Url

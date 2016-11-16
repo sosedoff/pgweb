@@ -130,8 +130,6 @@ func Test_ConvertToOptions(t *testing.T) {
 		DbName: "mydatabase",
 		Ssl:    "disable",
 	}
-	opt, err := b.ConvertToOptions()
-	if assert.NoError(t, err) {
-		assert.Equal(t, expOpt, opt)
-	}
+	opt := b.ConvertToOptions()
+	assert.Equal(t, expOpt, opt)
 }
