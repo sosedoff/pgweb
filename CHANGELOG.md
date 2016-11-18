@@ -1,4 +1,4 @@
-## 0.9.6 - Unreleased
+## 0.9.6 - 2016-11-18
 
 - Fixed bug in query base64-encoding, GH-186
 - Fixed rows pagination visibility bug, GH-190
