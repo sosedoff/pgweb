@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -49,11 +48,6 @@ func ParseOptions() error {
 	if os.Getenv("LOCK_SESSION") != "" {
 		Opts.LockSession = true
 		Opts.Sessions = false
-	}
-
-	// When session is locked, connection UI is not displayed.
-	if Opts.LockSession && Opts.Url == "" {
-		return fmt.Errorf("Please provide connection url")
 	}
 
 	if Opts.Prefix != "" && !strings.Contains(Opts.Prefix, "/") {
