@@ -81,18 +81,34 @@
   line-height: 33px;
   height: 33px;
   padding: 0px 8px;
-  padding-left: 12px;
   color: #555;
   font-weight: bold;
   font-size: 13px;
 }
 
 #sidebar .title.main {
-  line-height: 50px;
   height: 50px;
+  line-height: 50px;
+  font-size: 14px;
   background: #79589f;
   color: #fff;
-  font-size: 14px;
+  padding: 0px;
+}
+
+#sidebar .title.main i.fa-database {
+  position: absolute;
+  left: 8px;
+  top: 18px;
+}
+
+#sidebar span.current-database {
+  margin-left: 30px;
+  display: inline-block;
+  width: 200px;
+  height: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #sidebar div.tables-list {
@@ -110,7 +126,6 @@
 }
 
 #sidebar div.tables-list .title span.current-database {
-  margin-left: 4px;
   cursor: pointer;
 }
 
@@ -119,8 +134,9 @@
 }
 
 #sidebar div.tables-list .title span.refresh {
-  float: right;
-  margin-right: 4px;
+  position: absolute;
+  top: 0px;
+  right: 6px;
   cursor: pointer;
   color: #fff;
   display: none;
