@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	neturl "net/url"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -147,9 +146,9 @@ func SwitchDb(c *gin.Context) {
 		return
 	}
 
-	newStr := strings.Replace(conn.ConnectionString, currentUrl.Path, "/"+name, 1)
+	currentUrl.Path = name
 
-	cl, err := client.NewFromUrl(newStr, nil)
+	cl, err := client.NewFromUrl(currentUrl.String(), nil)
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
 		return
