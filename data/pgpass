@@ -1,0 +1,5 @@
+# valid line
+host:port:database:user:password
+
+# the following line should be skipped
+host:port
