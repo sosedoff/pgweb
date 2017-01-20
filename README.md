@@ -120,4 +120,4 @@ make test-all
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2016 Dan Sosedoff, <dan.sosedoff@gmail.com>
+Copyright (c) 2014-2017 Dan Sosedoff, <dan.sosedoff@gmail.com>
