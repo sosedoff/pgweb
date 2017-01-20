@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/sosedoff/pgweb",
-	"GoVersion": "go1.6",
-	"GodepVersion": "v71",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v75",
 	"Packages": [
 		"./..."
 	],
