@@ -60,7 +60,7 @@ func initClient() {
 	var err error
 
 	if options.Bookmark != "" {
-		cl, err = initClientUsingBookmark(bookmarks.Path(), options.Bookmark)
+		cl, err = initClientUsingBookmark(bookmarks.Path(options.BookmarksDir), options.Bookmark)
 	} else {
 		cl, err = client.New()
 	}
