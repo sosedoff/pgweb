@@ -44,7 +44,7 @@ func Test_Bookmark_URL(t *testing.T) {
 }
 
 func Test_Bookmarks_Path(t *testing.T) {
-	assert.NotEqual(t, "/.pgweb/bookmarks", Path())
+	assert.NotEqual(t, "/.pgweb/bookmarks", Path(""))
 }
 
 func Test_Basename(t *testing.T) {
