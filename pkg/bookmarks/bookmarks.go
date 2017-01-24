@@ -62,9 +62,13 @@ func fileBasename(path string) string {
 	return strings.Replace(filename, filepath.Ext(path), "", 1)
 }
 
-func Path() string {
-	path, _ := homedir.Dir()
-	return fmt.Sprintf("%s/.pgweb/bookmarks", path)
+func Path(overrideDir string) string {
+	if overrideDir == "" {
+		path, _ := homedir.Dir()
+		return fmt.Sprintf("%s/.pgweb/bookmarks", path)
+	}
+
+	return overrideDir
 }
 
 func ReadAll(path string) (map[string]Bookmark, error) {

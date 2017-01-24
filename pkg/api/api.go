@@ -376,7 +376,7 @@ func HandleQuery(query string, c *gin.Context) {
 	case "csv":
 		c.Data(200, "text/csv", result.CSV())
 	case "json":
-		c.Data(200, "applicaiton/json", result.JSON())
+		c.Data(200, "application/json", result.JSON())
 	case "xml":
 		c.XML(200, result)
 	default:
@@ -385,7 +385,7 @@ func HandleQuery(query string, c *gin.Context) {
 }
 
 func GetBookmarks(c *gin.Context) {
-	bookmarks, err := bookmarks.ReadAll(bookmarks.Path())
+	bookmarks, err := bookmarks.ReadAll(bookmarks.Path(command.Opts.BookmarksDir))
 	serveResult(bookmarks, err, c)
 }
 
