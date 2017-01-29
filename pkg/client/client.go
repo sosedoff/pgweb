@@ -33,7 +33,7 @@ type RowsOptions struct {
 }
 
 func getSchemaAndTable(str string) (string, string) {
-	chunks := strings.Split(str, ".")
+	chunks := strings.SplitN(str, ".", 2)
 	if len(chunks) == 1 {
 		return "public", chunks[0]
 	}
@@ -184,7 +184,8 @@ func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, e
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
-	return client.query(statements.TableInfo, table)
+	schema, table := getSchemaAndTable(table)
+	return client.query(statements.TableInfo, schema, table)
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
