@@ -489,6 +489,10 @@ function showTableStructure() {
 }
 
 function showQueryPanel() {
+  if (!$("#table_query").hasClass("selected")) {
+    resetTable();
+  }
+
   setCurrentTab("table_query");
   editor.focus();
 
