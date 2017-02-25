@@ -212,6 +212,16 @@
   border-bottom: solid 1px #ddd;
 }
 
+#input .actions #result-rows-count {
+  font-size: 12px;
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  float: left;
+  margin-right: 10px;
+  color: #999;
+}
+
 #input .actions .btn {
   line-height: 30px;
   height: 30px;

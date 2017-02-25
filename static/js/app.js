@@ -303,6 +303,9 @@ function buildTable(results, sortColumn, sortOrder, options) {
   });
 
   $("<thead>" + cols + "</thead><tbody>" + rows + "</tobdy>").appendTo("#results");
+
+  // Show number of rows rendered on the page
+  $("#result-rows-count").html(results.rows.length + " rows");
 }
 
 function setCurrentTab(id) {
