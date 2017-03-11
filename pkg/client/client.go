@@ -19,6 +19,7 @@ import (
 type Client struct {
 	db               *sqlx.DB
 	tunnel           *Tunnel
+	serverVersion    string
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
 }
@@ -62,6 +63,7 @@ func New() (*Client, error) {
 		History:          history.New(),
 	}
 
+	client.setServerVersion()
 	return &client, nil
 }
 
@@ -113,7 +115,18 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 		History:          history.New(),
 	}
 
+	client.setServerVersion()
 	return &client, nil
+}
+
+func (client *Client) setServerVersion() {
+	res, err := client.query("SELECT version()")
+	if err != nil || len(res.Rows) < 1 {
+		return
+	}
+
+	version := res.Rows[0][0].(string)
+	client.serverVersion = strings.Split(version, " ")[1]
 }
 
 func (client *Client) Test() error {
