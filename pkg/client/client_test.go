@@ -159,6 +159,13 @@ func test_Info(t *testing.T) {
 	assert.NotEqual(t, nil, res)
 }
 
+func test_Activity(t *testing.T) {
+	res, err := testClient.Activity()
+
+	assert.Equal(t, nil, err)
+	assert.NotEqual(t, nil, res)
+}
+
 func test_Databases(t *testing.T) {
 	res, err := testClient.Databases()
 
@@ -360,6 +367,7 @@ func TestAll(t *testing.T) {
 	test_NewClientFromUrl(t)
 	test_Test(t)
 	test_Info(t)
+	test_Activity(t)
 	test_Databases(t)
 	test_Objects(t)
 	test_Table(t)
