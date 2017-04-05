@@ -1,3 +1,12 @@
+## 0.9.7 - 2017-04-04
+
+- Fixed issue with locked session and empty db url, GH-206
+- Fixed path rewrite on DB change, GH-212
+- Upgraded dependencies, GH-217
+- Added ability to specify bookmarks path, GH-218
+- Added counter for the number of rows from a custom SQL query, GH-224
+- Added new behavior for removing table rows view on custom SQL query page, GH-225
+
 ## 0.9.6 - 2016-11-18
 
 - Fixed bug in query base64-encoding, GH-186
