@@ -359,7 +359,7 @@ func staticJsAppJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/app.js", size: 29753, mode: os.FileMode(420), modTime: time.Unix(1488054191, 0)}
+	info := bindataFileInfo{name: "static/js/app.js", size: 29753, mode: os.FileMode(420), modTime: time.Unix(1491361683, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
