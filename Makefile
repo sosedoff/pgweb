@@ -11,7 +11,6 @@ usage:
 	@echo "-----------------    : -------------------"
 	@echo "make setup           : Install all necessary dependencies"
 	@echo "make dev             : Generate development build"
-	@echo "make test            : Run tests"
 	@echo "make build           : Generate production build for current OS"
 	@echo "make bootstrap       : Install cross-compilation toolchain"
 	@echo "make release         : Generate binaries for all supported OSes"
