@@ -109,11 +109,11 @@ func Connect(c *gin.Context) {
 	info, err := cl.Info()
 	if err == nil {
 		err = setClient(c, cl)
-		if err != nil {
-			cl.Close()
-			c.JSON(400, Error{err.Error()})
-			return
-		}
+	}
+	if err != nil {
+		cl.Close()
+		c.JSON(400, Error{err.Error()})
+		return
 	}
 
 	c.JSON(200, info.Format()[0])
@@ -163,11 +163,11 @@ func SwitchDb(c *gin.Context) {
 	info, err := cl.Info()
 	if err == nil {
 		err = setClient(c, cl)
-		if err != nil {
-			cl.Close()
-			c.JSON(400, Error{err.Error()})
-			return
-		}
+	}
+	if err != nil {
+		cl.Close()
+		c.JSON(400, Error{err.Error()})
+		return
 	}
 
 	conn.Close()
