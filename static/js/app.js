@@ -999,6 +999,7 @@ $(document).ready(function() {
   $("#close_connection").on("click", function() {
     disconnect(function() {
       showConnectionSettings();
+      resetTable();
       $("#close_connection_window").hide();
     });
   });
