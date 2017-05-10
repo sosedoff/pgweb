@@ -136,7 +136,7 @@ ORDER BY 1, 2`
 var (
 	Activity = map[string]string{
 		"default": "SELECT * FROM pg_stat_activity",
-		"9.1":     "SELECT datname, current_query, waiting, query_start, procpid, datid, application_name, client_addr FROM pg_stat_activity",
+		"9.1":     "SELECT datname, current_query, waiting, query_start, procpid as pid, datid, application_name, client_addr FROM pg_stat_activity",
 		"9.2":     "SELECT datname, query, state, waiting, query_start, state_change, pid, datid, application_name, client_addr FROM pg_stat_activity",
 		"9.3":     "SELECT datname, query, state, waiting, query_start, state_change, pid, datid, application_name, client_addr FROM pg_stat_activity",
 		"9.4":     "SELECT datname, query, state, waiting, query_start, state_change, pid, datid, application_name, client_addr FROM pg_stat_activity",
