@@ -224,7 +224,15 @@ func (client *Client) TableConstraints(table string) (*Result, error) {
 
 // Returns all active queriers on the server
 func (client *Client) Activity() (*Result, error) {
-	return client.query(statements.Activity)
+	chunks := strings.Split(client.serverVersion, ".")
+	version := strings.Join(chunks[0:2], ".")
+
+	query := statements.Activity[version]
+	if query == "" {
+		query = statements.Activity["default"]
+	}
+
+	return client.query(query)
 }
 
 func (client *Client) Query(query string) (*Result, error) {
