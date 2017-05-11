@@ -19,6 +19,7 @@ import (
 type Client struct {
 	db               *sqlx.DB
 	tunnel           *Tunnel
+	serverVersion    string
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
 }
@@ -62,6 +63,7 @@ func New() (*Client, error) {
 		History:          history.New(),
 	}
 
+	client.setServerVersion()
 	return &client, nil
 }
 
@@ -113,7 +115,18 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 		History:          history.New(),
 	}
 
+	client.setServerVersion()
 	return &client, nil
+}
+
+func (client *Client) setServerVersion() {
+	res, err := client.query("SELECT version()")
+	if err != nil || len(res.Rows) < 1 {
+		return
+	}
+
+	version := res.Rows[0][0].(string)
+	client.serverVersion = strings.Split(version, " ")[1]
 }
 
 func (client *Client) Test() error {
@@ -211,7 +224,15 @@ func (client *Client) TableConstraints(table string) (*Result, error) {
 
 // Returns all active queriers on the server
 func (client *Client) Activity() (*Result, error) {
-	return client.query(statements.Activity)
+	chunks := strings.Split(client.serverVersion, ".")
+	version := strings.Join(chunks[0:2], ".")
+
+	query := statements.Activity[version]
+	if query == "" {
+		query = statements.Activity["default"]
+	}
+
+	return client.query(query)
 }
 
 func (client *Client) Query(query string) (*Result, error) {
