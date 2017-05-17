@@ -271,10 +271,10 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
   results.columns.forEach(function(col) {
     if (col === sortColumn) {
-      cols += "<th class='active' data='" + col + "'" + "data-sort-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
+      cols += "<th class='active' data-name='" + col + "'" + "data-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
     }
     else {
-      cols += "<th data='" + col + "'>" + col + "</th>";
+      cols += "<th data-name='" + col + "'>" + col + "</th>";
     }
   });
 
@@ -467,6 +467,19 @@ function showTableContent(sortColumn, sortOrder) {
   });
 }
 
+function showPaginatedTableContent() {
+  var activeColumn = $("#results th.active");
+  var sortColumn = null;
+  var sortOrder = null;
+
+  if (activeColumn.length) {
+    sortColumn = activeColumn.data("name");
+    sortOrder = activeColumn.data("order");
+  }
+
+  showTableContent(sortColumn, sortOrder);
+}
+
 function showTableStructure() {
   var name = getCurrentObject().name;
 
@@ -479,8 +492,6 @@ function showTableStructure() {
   
   $("#input").hide();
   $("#body").prop("class", "full");
-
-  console.log(getCurrentObject());
 
   getTableStructure(name, { type: getCurrentObject().type }, function(data) {
     buildTable(data);
@@ -863,21 +874,13 @@ $(document).ready(function() {
   })
 
   $("#results").on("click", "th", function(e) {
-    var sortColumn = this.attributes['data'].value;
-    var contentTab = $('#table_content').hasClass('selected');
+    if (!$("#table_content").hasClass("selected")) return;
 
-    if (!contentTab) {
-      return;
-    }
+    var sortColumn = $(this).data("name");
+    var sortOrder  = $(this).data("order") === "ASC" ? "DESC" : "ASC";
 
-    if (this.dataset.sortOrder === "ASC") {
-      this.dataset.sortOrder = "DESC"
-    }
-    else {
-      this.dataset.sortOrder = "ASC"
-    }
-
-    showTableContent(sortColumn, this.dataset.sortOrder);
+    $(this).data("order", sortOrder);
+    showTableContent(sortColumn, sortOrder);
   });
 
   $("#results").on("dblclick", "td > div", function() {
@@ -952,7 +955,7 @@ $(document).ready(function() {
 
     if (total > current) {
       $(".current-page").data("page", current + 1);
-      showTableContent();
+      showPaginatedTableContent();
 
       if (current + 1 == total) {
         $(this).prop("disabled", "disabled");
@@ -970,7 +973,7 @@ $(document).ready(function() {
     if (current > 1) {
       $(".current-page").data("page", current - 1);
       $(".next-page").prop("disabled", "");
-      showTableContent();
+      showPaginatedTableContent();
     }
 
     if (current == 1) {
