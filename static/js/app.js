@@ -1012,6 +1012,8 @@ $(document).ready(function() {
   });
 
   $("#close_connection").on("click", function() {
+    if (!confirm("Are you sure you want to disconnect?")) return;
+
     disconnect(function() {
       showConnectionSettings();
       resetTable();
