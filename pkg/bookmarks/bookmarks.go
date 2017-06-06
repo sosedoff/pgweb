@@ -54,6 +54,23 @@ func readServerConfig(path string) (Bookmark, error) {
 		bookmark.Port = 5432
 	}
 
+	// List of all supported by portgres modes
+	modes := []string{"disable", "allow", "prefer", "required", "verify-ca", "verify-full"}
+	valid := false
+
+	for _, mode := range modes {
+		if bookmark.Ssl == mode {
+			valid = true
+			break
+		}
+	}
+
+	// Fall back to a default mode if mode is not set or invalid
+	// Typical typo: ssl mode set to "disabled"
+	if bookmark.Ssl == "" || !valid {
+		bookmark.Ssl = "disable"
+	}
+
 	return bookmark, err
 }
 
