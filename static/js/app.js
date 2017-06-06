@@ -4,6 +4,16 @@ var bookmarks          = {};
 var default_rows_limit = 100;
 var currentObject      = null;
 
+if (!Array.prototype.forEach) {
+  // Simplified iterator for browsers without forEach support
+  Array.prototype.forEach = function(cb) {
+    if (typeof this.length != 'number') return;
+    if (typeof callback != 'function') return;
+
+    for (var i = 0; i < this.length; i++) cb(this[i]);
+  }
+}
+
 var filterOptions = {
   "equal":      "= 'DATA'",
   "not_equal":  "!= 'DATA'",
@@ -123,7 +133,7 @@ function buildSchemaSection(name, objects) {
   section += "<div class='schema-name'><i class='fa fa-folder-o'></i><i class='fa fa-folder-open-o'></i> " + name + "</div>";
   section += "<div class='schema-container'>";
 
-  for (group of ["table", "view", "materialized_view", "sequence"]) {
+  ["table", "view", "materialized_view", "sequence"].forEach(function(group) {
     group_klass = "";
     if (name == "public" && group == "table") group_klass = "expanded";
 
@@ -131,14 +141,14 @@ function buildSchemaSection(name, objects) {
     section += "<div class='schema-group-title'><i class='fa fa-chevron-right'></i><i class='fa fa-chevron-down'></i> " + titles[group] + " (" + objects[group].length + ")</div>";
     section += "<ul>"
 
-    if (!objects[group]) continue;
-
-    for (item of objects[group]) {
-      var id = name + "." + item;
-      section += "<li class='schema-" + group + "' data-type='" + group + "' data-id='" + id + "'>" + icons[group] + "&nbsp;" + item + "</li>";
+    if (objects[group]) {
+      objects[group].forEach(function(item) {
+        var id = name + "." + item;
+        section += "<li class='schema-" + group + "' data-type='" + group + "' data-id='" + id + "'>" + icons[group] + "&nbsp;" + item + "</li>";
+      });
+      section += "</ul></div>";
     }
-    section += "</ul></div>";
-  }
+  });
 
   section += "</div></div>";
 
@@ -634,7 +644,9 @@ function buildTableFilters(name, type) {
 
     $("#pagination select.column").html("<option value='' selected>Select column</option>");
 
-    for (row of data.rows) {
+    for (var i = 0; i < data.rows.length; i++) {
+      var row = data.rows[i];
+
       var el = $("<option/>").attr("value", row[0]).text(row[0]);
       $("#pagination select.column").append(el);
     }
@@ -1050,15 +1062,12 @@ $(document).ready(function() {
 
   $("#connection_bookmarks").on("change", function(e) {
     var name = $.trim($(this).val());
+    if (name == "") return;
 
-    if (name == "") {
-      return;
-    }
-
-    item = bookmarks[name];
+    var item = bookmarks[name];
 
     // Check if bookmark only has url set
-    if (item.url != "") {
+    if (item.url && item.url != "") {
       $("#connection_url").val(item.url);
       $("#connection_scheme").click();
       return;
@@ -1072,7 +1081,7 @@ $(document).ready(function() {
     $("#pg_db").val(item.database);
     $("#connection_ssl").val(item.ssl);
     
-    if (Object.keys(item.ssh).length > 0) {
+    if (item.ssh && Object.keys(item.ssh).length > 0) {
       $("#ssh_host").val(item.ssh.host);
       $("#ssh_port").val(item.ssh.port);
       $("#ssh_user").val(item.ssh.user);
