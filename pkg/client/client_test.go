@@ -230,7 +230,7 @@ func test_Table(t *testing.T) {
 		"character_maximum_length",
 		"character_set_catalog",
 		"column_default",
-		"comment"
+		"comment",
 	}
 
 	assert.Equal(t, nil, err)

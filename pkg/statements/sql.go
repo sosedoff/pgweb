@@ -82,7 +82,7 @@ SELECT
   character_maximum_length,
   character_set_catalog,
   column_default,
-  pg_catalog.col_description(concat($1, '.', $2)::regclass::oid, ordinal_position) as comment
+  pg_catalog.col_description(($1::text || '.' || $2::text)::regclass::oid, ordinal_position) as comment
 FROM
   information_schema.columns
 WHERE
