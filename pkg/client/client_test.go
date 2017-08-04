@@ -206,7 +206,7 @@ func test_Objects(t *testing.T) {
 	}
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, []string{"schema", "name", "type", "owner"}, res.Columns)
+	assert.Equal(t, []string{"schema", "name", "type", "owner", "comment"}, res.Columns)
 	assert.Equal(t, []string{"public"}, mapKeys(objects))
 	assert.Equal(t, tables, objects["public"].Tables)
 	assert.Equal(t, []string{"recent_shipments", "stock_view"}, objects["public"].Views)
@@ -230,6 +230,7 @@ func test_Table(t *testing.T) {
 		"character_maximum_length",
 		"character_set_catalog",
 		"column_default",
+		"comment"
 	}
 
 	assert.Equal(t, nil, err)
