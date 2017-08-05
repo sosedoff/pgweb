@@ -81,7 +81,8 @@ SELECT
   is_nullable,
   character_maximum_length,
   character_set_catalog,
-  column_default
+  column_default,
+  pg_catalog.col_description(($1::text || '.' || $2::text)::regclass::oid, ordinal_position) as comment
 FROM
   information_schema.columns
 WHERE
@@ -120,7 +121,8 @@ SELECT
     WHEN 's' THEN 'special'
     WHEN 'f' THEN 'foreign_table'
   END as "type",
-  pg_catalog.pg_get_userbyid(c.relowner) as "owner"
+  pg_catalog.pg_get_userbyid(c.relowner) as "owner",
+  pg_catalog.obj_description(c.oid) as "comment"
 FROM
   pg_catalog.pg_class c
 LEFT JOIN
