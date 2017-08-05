@@ -108,7 +108,7 @@ func (res *Result) CSV() []byte {
 }
 
 func (res *Result) JSON() []byte {
-	data, _ := json.Marshal(res.Format())
+	data, _ := json.MarshalIndent(res.Format(), "", " ")
 	return data
 }
 
