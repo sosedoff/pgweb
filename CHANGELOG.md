@@ -1,3 +1,13 @@
+## 0.9.8 - 2017-08-04
+
+- Fixed error checking in the API, GH-234
+- Fixed activity tab to support PG 9.x versions, GH-237
+- Remember sort column and order for pagination, GH-240
+- Use `sslmode=disable` for bookmarks without sslmode option, GH-244
+- Javascript fixes for IE9-11, GH-245
+- Require confirmation for the disconnect, GH-246
+- Clean the results table on manual disconnect
+
 ## 0.9.7 - 2017-04-04
 
 - Fixed issue with locked session and empty db url, GH-206

@@ -1,7 +1,7 @@
 FROM alpine:3.3
 MAINTAINER Dan Sosedoff <dan.sosedoff@gmail.com>
 
-ENV PGWEB_VERSION 0.9.7
+ENV PGWEB_VERSION 0.9.8
 
 RUN \
   apk update && \
