@@ -260,6 +260,10 @@ func (client *Client) SetReadOnlyMode() error {
 	return nil
 }
 
+func (client *Client) ServerVersion() string {
+	return client.serverVersion
+}
+
 func (client *Client) query(query string, args ...interface{}) (*Result, error) {
 	// We're going to force-set transaction mode on every query.
 	// This is needed so that default mode could not be changed by user.

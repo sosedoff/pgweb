@@ -79,6 +79,10 @@ func initClient() {
 		exitWithMessage(err.Error())
 	}
 
+	if !command.Opts.Sessions {
+		fmt.Printf("Server runs PostgreSQL v%s\n", cl.ServerVersion())
+	}
+
 	fmt.Println("Checking database objects...")
 	_, err = cl.Objects()
 	if err != nil {
