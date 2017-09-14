@@ -8,6 +8,8 @@ import (
 	"reflect"
 	"strconv"
 	"time"
+
+	"github.com/sosedoff/pgweb/pkg/command"
 )
 
 type Row []interface{}
@@ -108,7 +110,13 @@ func (res *Result) CSV() []byte {
 }
 
 func (res *Result) JSON() []byte {
-	data, _ := json.Marshal(res.Format())
+	var data []byte
+
+	if command.Opts.EnablePrettyJson {
+		data, _ = json.MarshalIndent(res.Format(), "", " ")
+	} else {
+		data, _ = json.Marshal(res.Format())
+	}
 	return data
 }
 
