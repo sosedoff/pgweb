@@ -5,6 +5,7 @@ import (
 	neturl "net/url"
 	"reflect"
 	"strings"
+	"time"
 
 	_ "github.com/lib/pq"
 
@@ -20,6 +21,7 @@ type Client struct {
 	db               *sqlx.DB
 	tunnel           *Tunnel
 	serverVersion    string
+	lastQueryTime    time.Time
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
 }
@@ -265,6 +267,11 @@ func (client *Client) ServerVersion() string {
 }
 
 func (client *Client) query(query string, args ...interface{}) (*Result, error) {
+	// Update the last usage time
+	defer func() {
+		client.lastQueryTime = time.Now().UTC()
+	}()
+
 	// We're going to force-set transaction mode on every query.
 	// This is needed so that default mode could not be changed by user.
 	if command.Opts.ReadOnly {
