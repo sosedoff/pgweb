@@ -2,13 +2,17 @@ package api
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	neturl "net/url"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tuvistavie/securerandom"
 
 	"github.com/sosedoff/pgweb/pkg/bookmarks"
 	"github.com/sosedoff/pgweb/pkg/client"
@@ -67,6 +71,59 @@ func GetSessions(c *gin.Context) {
 	}
 
 	c.JSON(200, map[string]int{"sessions": len(DbSessions)})
+}
+
+func ConnectWithBackend(c *gin.Context) {
+	resp, err := http.PostForm(command.Opts.ConnectBackend, neturl.Values{
+		"resource": {c.Param("resource")},
+		"token":    {command.Opts.ConnectToken},
+	})
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	sessionId, err := securerandom.Uuid()
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+	c.Request.Header.Add("x-session-id", sessionId)
+
+	config := struct {
+		DatabaseUrl string `json:"database_url"`
+	}{}
+
+	if err := json.Unmarshal(data, &config); err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	cl, err := client.NewFromUrl(config.DatabaseUrl, nil)
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+	cl.External = true
+
+	_, err = cl.Info()
+	if err == nil {
+		err = setClient(c, cl)
+	}
+	if err != nil {
+		cl.Close()
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	c.Redirect(301, fmt.Sprintf("/%s?session=%s", command.Opts.Prefix, sessionId))
 }
 
 func Connect(c *gin.Context) {
@@ -141,6 +198,12 @@ func SwitchDb(c *gin.Context) {
 		return
 	}
 
+	// Do not allow switching databases for connections from third-party backends
+	if conn.External {
+		c.JSON(400, Error{"Session is locked"})
+		return
+	}
+
 	currentUrl, err := neturl.Parse(conn.ConnectionString)
 	if err != nil {
 		c.JSON(400, Error{"Unable to parse current connection string"})
@@ -199,6 +262,12 @@ func Disconnect(c *gin.Context) {
 }
 
 func GetDatabases(c *gin.Context) {
+	conn := DB(c)
+	if conn.External {
+		c.JSON(403, Error{"Not permitted"})
+		return
+	}
+
 	names, err := DB(c).Databases()
 	serveResult(names, err, c)
 }

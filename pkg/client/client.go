@@ -22,6 +22,7 @@ type Client struct {
 	tunnel           *Tunnel
 	serverVersion    string
 	lastQueryTime    time.Time
+	External         bool
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
 }

@@ -1,6 +1,7 @@
 package command
 
 import (
+	"errors"
 	"os"
 	"strings"
 
@@ -29,6 +30,8 @@ type Options struct {
 	Bookmark          string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
 	BookmarksDir      string `long:"bookmarks-dir" description:"Overrides default directory for bookmark files to search" default:""`
 	DisablePrettyJson bool   `long:"no-pretty-json" description:"Disable JSON formatting feature for result export" default:"false"`
+	ConnectBackend    string `long:"connect-backend"`
+	ConnectToken      string `long:"connect-token"`
 }
 
 var Opts Options
@@ -62,6 +65,15 @@ func ParseOptions() error {
 
 	if Opts.AuthPass == "" && os.Getenv("AUTH_PASS") != "" {
 		Opts.AuthPass = os.Getenv("AUTH_PASS")
+	}
+
+	if Opts.ConnectBackend != "" {
+		if !Opts.Sessions {
+			return errors.New("--sessions flag must be set")
+		}
+		if Opts.ConnectToken == "" {
+			return errors.New("--connect-token flag must be set")
+		}
 	}
 
 	return nil
