@@ -404,11 +404,21 @@
   line-height: 24px;
   color: #333;
   font-weight: bold;
+  cursor: pointer;
+
   -webkit-font-smoothing: antialiased;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#results th:hover {
+  background: #f8f8f8;
 }
 
 #results th.active {
-  background: #f3f3f3;
+  background: #f3faff;
 }
 
 #results[data-mode="browse"] th:hover {
