@@ -84,6 +84,11 @@ func ConnectWithBackend(c *gin.Context) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != 200 {
+		c.JSON(400, Error{"Unable to fetch connection settings"})
+		return
+	}
+
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		c.JSON(400, err)
