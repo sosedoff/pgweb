@@ -4,16 +4,6 @@ var bookmarks          = {};
 var default_rows_limit = 100;
 var currentObject      = null;
 
-if (!Array.prototype.forEach) {
-  // Simplified iterator for browsers without forEach support
-  Array.prototype.forEach = function(cb) {
-    if (typeof this.length != 'number') return;
-    if (typeof callback != 'function') return;
-
-    for (var i = 0; i < this.length; i++) cb(this[i]);
-  }
-}
-
 var filterOptions = {
   "equal":      "= 'DATA'",
   "not_equal":  "!= 'DATA'",
@@ -26,11 +16,6 @@ var filterOptions = {
   "null":       "IS NULL",
   "not_null":   "IS NOT NULL"
 };
-
-function guid() {
-  function s4() { return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1); }
-  return [s4(), s4(), "-", s4(), "-", s4(), "-", s4(), "-", s4(), s4(), s4()].join("");
-}
 
 function getSessionId() {
   var id = sessionStorage.getItem("session_id");
