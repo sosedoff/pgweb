@@ -4,16 +4,6 @@ var bookmarks          = {};
 var default_rows_limit = 100;
 var currentObject      = null;
 
-if (!Array.prototype.forEach) {
-  // Simplified iterator for browsers without forEach support
-  Array.prototype.forEach = function(cb) {
-    if (typeof this.length != 'number') return;
-    if (typeof callback != 'function') return;
-
-    for (var i = 0; i < this.length; i++) cb(this[i]);
-  }
-}
-
 var filterOptions = {
   "equal":      "= 'DATA'",
   "not_equal":  "!= 'DATA'",
@@ -26,11 +16,6 @@ var filterOptions = {
   "null":       "IS NULL",
   "not_null":   "IS NOT NULL"
 };
-
-function guid() {
-  function s4() { return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1); }
-  return [s4(), s4(), "-", s4(), "-", s4(), "-", s4(), "-", s4(), s4(), s4()].join("");
-}
 
 function getSessionId() {
   var id = sessionStorage.getItem("session_id");
@@ -200,7 +185,7 @@ function getCurrentObject() {
 
 function resetTable() {
   $("#results").
-    attr("data-mode", "").
+    data("mode", "").
     text("").
     removeClass("empty").
     removeClass("no-crop");
@@ -467,13 +452,14 @@ function showTableContent(sortColumn, sortOrder) {
   }
 
   getTableRows(name, opts, function(data) {
-    $("#results").attr("data-mode", "browse");
     $("#input").hide();
     $("#body").prop("class", "with-pagination");
 
     buildTable(data, sortColumn, sortOrder);
     setCurrentTab("table_content");
     updatePaginator(data.pagination);
+
+    $("#results").data("mode", "browse").data("table", name);
   });
 }
 
@@ -580,15 +566,14 @@ function runQuery() {
     $("#query_progress").hide();
     $("#input").show();
     $("#body").removeClass("full");
+    $("#results").data("mode", "query");
 
     if (query.toLowerCase().indexOf("explain") != -1) {
       $("#results").addClass("no-crop");
     }
 
-    var re = /(create|drop)\s/i;
-
     // Reload objects list if anything was created/deleted
-    if (query.match(re)) {
+    if (query.match(/(create|drop)\s/i)) {
       loadSchemas();
     }
   });
@@ -631,6 +616,24 @@ function exportTo(format) {
 
   setCurrentTab("table_query");
   win.focus();
+}
+
+// Fetch all unique values for the selected column in the table
+function showUniqueColumnsValues(table, column, showCounts) {
+  var query = 'SELECT DISTINCT "' + column + '" FROM ' + table;
+
+  // Display results ordered by counts.
+  // This could be slow on large sets without an index.
+  if (showCounts) {
+    query = 'SELECT DISTINCT "' + column + '", COUNT(1) AS total_count FROM ' + table + ' GROUP BY "' + column + '" ORDER BY total_count DESC';
+  }
+
+  executeQuery(query, function(data) {
+    $("#input").hide();
+    $("#body").prop("class", "full");
+    $("#results").data("mode", "query");
+    buildTable(data);
+  });
 }
 
 function buildTableFilters(name, type) {
@@ -773,7 +776,42 @@ function getConnectionString() {
   return url;
 }
 
+// Add a context menu to the results table header columns
+function bindTableHeaderMenu() {
+  $("#results").contextmenu({
+    scopes: "th",
+    target: "#results_header_menu",
+    before: function(e, element, target) {
+      // Enable menu for browsing table rows view only.
+      if ($("#results").data("mode") != "browse") {
+        e.preventDefault();
+        this.closemenu();
+        return false;
+      }
+    },
+    onItem: function(context, e) {
+      var menuItem = $(e.target);
+
+      switch(menuItem.data("action")) {
+        case "copy_name":
+          copyToClipboard($(context).data("name"));
+          break;
+
+        case "unique_values":
+          showUniqueColumnsValues(
+            $("#results").data("table"), // table name
+            $(context).data("name"),     // column name
+            menuItem.data("counts")      // display counts
+          );
+          break;
+      }
+    }
+  });
+}
+
 function bindContextMenus() {
+  bindTableHeaderMenu();
+
   $(".schema-group ul").each(function(id, el) {
     $(el).contextmenu({
       target: "#tables_context_menu",

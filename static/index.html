@@ -13,6 +13,7 @@
   <script type="text/javascript" src="static/js/ace.js"></script>
   <script type="text/javascript" src="static/js/ace-pgsql.js"></script>
   <script type="text/javascript" src="static/js/bootstrap-contextmenu.js"></script>
+  <script type="text/javascript" src="static/js/utils.js"></script>
   <script type="text/javascript" src="static/js/app.js"></script>
 </head>
 <body>
@@ -238,12 +239,19 @@
       <li><a href="#" data-action="export" data-format="csv">Export to CSV</a></li>
       <li><a href="#" data-action="export" data-format="xml">Export to XML</a></li>
       <li class="divider"></li>
-      <li><a href="#" data-action="truncate">Truncate table</a></li>
-      <li><a href="#" data-action="delete">Delete table</a></li>
+      <li><a href="#" data-action="truncate">Truncate Table</a></li>
+      <li><a href="#" data-action="delete">Delete Table</a></li>
     </ul>
   </div>
   <div id="databases_context_menu">
     <ul class="dropdown-menu" role="menu"></ul>
+  </div>
+  <div id="results_header_menu">
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="#" data-action="unique_values" data-counts="false">Unique Values</a></li>
+      <li><a href="#" data-action="unique_values" data-counts="true">Unique Values + Counts</a></li>
+      <li><a href="#" data-action="copy_name">Copy Column Name</a></li>
+    </ul>
   </div>
 </body>
 </html>
