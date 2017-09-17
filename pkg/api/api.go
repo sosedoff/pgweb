@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	neturl "net/url"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -397,4 +398,33 @@ func GetInfo(c *gin.Context) {
 	}
 
 	c.JSON(200, info)
+}
+
+// Export database or table data
+func DataExport(c *gin.Context) {
+	db := DB(c)
+
+	info, err := db.Info()
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	dump := client.Dump{
+		Table: strings.TrimSpace(c.Request.FormValue("table")),
+	}
+
+	formattedInfo := info.Format()[0]
+	filename := formattedInfo["current_database"].(string)
+	if dump.Table != "" {
+		filename = filename + "_" + dump.Table
+	}
+
+	attachment := fmt.Sprintf(`attachment; filename="%s.sql.gz"`, filename)
+	c.Header("Content-Disposition", attachment)
+
+	err = dump.Export(db.ConnectionString, c.Writer)
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+	}
 }

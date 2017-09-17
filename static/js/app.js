@@ -219,6 +219,11 @@ function performTableAction(table, action, el) {
       var win  = window.open(url, "_blank");
       win.focus();
       break;
+    case "dump":
+      var url = window.location.href.split("#")[0] + "api/export?table=" + table + "&_session_id=" + getSessionId();
+      var win  = window.open(url, "_blank");
+      win.focus();
+      break;
   }
 }
 
@@ -809,8 +814,26 @@ function bindTableHeaderMenu() {
   });
 }
 
+function bindCurrentDatabaseMenu() {
+  $("#current_database").contextmenu({
+    target: "#current_database_context_menu",
+    onItem: function(context, e) {
+      var menuItem = $(e.target);
+
+      switch(menuItem.data("action")) {
+        case "export":
+          var url = window.location.href.split("#")[0] + "api/export?_session_id=" + getSessionId();
+          var win  = window.open(url, "_blank");
+          win.focus();
+          break;
+      }
+    }
+  });
+}
+
 function bindContextMenus() {
   bindTableHeaderMenu();
+  bindCurrentDatabaseMenu();
 
   $(".schema-group ul").each(function(id, el) {
     $(el).contextmenu({
@@ -825,7 +848,7 @@ function bindContextMenus() {
     });
   });
 
-  $("#current_database").contextmenu({
+  $(".tables-list .title").contextmenu({
     target: "#databases_context_menu",
     onItem: function(context, e) {
       var name = $(e.target).text();
@@ -1037,7 +1060,7 @@ $(document).ready(function() {
       resp.forEach(function(name) {
         $("<li><a href='#'>" + name + "</a></li>").appendTo("#databases_context_menu > ul");
       });
-      $("#current_database").triggerHandler("contextmenu");
+      $(".tables-list .title").triggerHandler("contextmenu");
     });
   });
 
