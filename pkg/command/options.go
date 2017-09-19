@@ -30,8 +30,8 @@ type Options struct {
 	Bookmark          string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
 	BookmarksDir      string `long:"bookmarks-dir" description:"Overrides default directory for bookmark files to search" default:""`
 	DisablePrettyJson bool   `long:"no-pretty-json" description:"Disable JSON formatting feature for result export" default:"false"`
-	ConnectBackend    string `long:"connect-backend"`
-	ConnectToken      string `long:"connect-token"`
+	ConnectBackend    string `long:"connect-backend" description:"Enable database authentication through a third party backend"`
+	ConnectToken      string `long:"connect-token" description:"Authentication token for the third-party connect backend"`
 }
 
 var Opts Options
