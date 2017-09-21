@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jessevdk/go-flags"
@@ -148,6 +149,9 @@ func startServer() {
 		err := router.Run(fmt.Sprintf("%v:%v", options.HttpHost, options.HttpPort))
 		if err != nil {
 			fmt.Println("Cant start server:", err)
+			if strings.Contains(err.Error(), "address already in use") {
+				openPage()
+			}
 			os.Exit(1)
 		}
 	}()
