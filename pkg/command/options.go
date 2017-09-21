@@ -32,6 +32,7 @@ type Options struct {
 	DisablePrettyJson bool   `long:"no-pretty-json" description:"Disable JSON formatting feature for result export" default:"false"`
 	ConnectBackend    string `long:"connect-backend" description:"Enable database authentication through a third party backend"`
 	ConnectToken      string `long:"connect-token" description:"Authentication token for the third-party connect backend"`
+	ConnectHeaders    string `long:"connect-headers" description:"List of headers to pass to the connect backend"`
 }
 
 var Opts Options

@@ -2,11 +2,8 @@ package api
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	neturl "net/url"
 	"strings"
 	"time"
@@ -74,27 +71,21 @@ func GetSessions(c *gin.Context) {
 }
 
 func ConnectWithBackend(c *gin.Context) {
-	resp, err := http.PostForm(command.Opts.ConnectBackend, neturl.Values{
-		"resource": {c.Param("resource")},
-		"token":    {command.Opts.ConnectToken},
-	})
+	// Setup a new backend client
+	backend := Backend{
+		Endpoint:    command.Opts.ConnectBackend,
+		Token:       command.Opts.ConnectToken,
+		PassHeaders: command.Opts.ConnectHeaders,
+	}
+
+	// Fetch connection credentials
+	cred, err := backend.FetchCredential(c.Param("resource"), c)
 	if err != nil {
-		c.JSON(400, err)
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		c.JSON(400, Error{"Unable to fetch connection settings"})
+		c.JSON(400, Error{err.Error()})
 		return
 	}
 
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		c.JSON(400, err)
-		return
-	}
-
+	// Make the new session
 	sessionId, err := securerandom.Uuid()
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
@@ -102,22 +93,15 @@ func ConnectWithBackend(c *gin.Context) {
 	}
 	c.Request.Header.Add("x-session-id", sessionId)
 
-	config := struct {
-		DatabaseUrl string `json:"database_url"`
-	}{}
-
-	if err := json.Unmarshal(data, &config); err != nil {
-		c.JSON(400, Error{err.Error()})
-		return
-	}
-
-	cl, err := client.NewFromUrl(config.DatabaseUrl, nil)
+	// Connect to the database
+	cl, err := client.NewFromUrl(cred.DatabaseUrl, nil)
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
 		return
 	}
 	cl.External = true
 
+	// Finalize session seetup
 	_, err = cl.Info()
 	if err == nil {
 		err = setClient(c, cl)
