@@ -75,6 +75,10 @@ func ParseOptions() error {
 		if Opts.ConnectToken == "" {
 			return errors.New("--connect-token flag must be set")
 		}
+	} else {
+		if Opts.ConnectToken != "" || Opts.ConnectHeaders != "" {
+			return errors.New("--connect-backend flag must be set")
+		}
 	}
 
 	return nil
