@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tuvistavie/securerandom"
 
 	"github.com/sosedoff/pgweb/pkg/bookmarks"
 	"github.com/sosedoff/pgweb/pkg/client"
@@ -67,6 +68,51 @@ func GetSessions(c *gin.Context) {
 	}
 
 	c.JSON(200, map[string]int{"sessions": len(DbSessions)})
+}
+
+func ConnectWithBackend(c *gin.Context) {
+	// Setup a new backend client
+	backend := Backend{
+		Endpoint:    command.Opts.ConnectBackend,
+		Token:       command.Opts.ConnectToken,
+		PassHeaders: command.Opts.ConnectHeaders,
+	}
+
+	// Fetch connection credentials
+	cred, err := backend.FetchCredential(c.Param("resource"), c)
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	// Make the new session
+	sessionId, err := securerandom.Uuid()
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+	c.Request.Header.Add("x-session-id", sessionId)
+
+	// Connect to the database
+	cl, err := client.NewFromUrl(cred.DatabaseUrl, nil)
+	if err != nil {
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+	cl.External = true
+
+	// Finalize session seetup
+	_, err = cl.Info()
+	if err == nil {
+		err = setClient(c, cl)
+	}
+	if err != nil {
+		cl.Close()
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	c.Redirect(301, fmt.Sprintf("/%s?session=%s", command.Opts.Prefix, sessionId))
 }
 
 func Connect(c *gin.Context) {
@@ -141,6 +187,12 @@ func SwitchDb(c *gin.Context) {
 		return
 	}
 
+	// Do not allow switching databases for connections from third-party backends
+	if conn.External {
+		c.JSON(400, Error{"Session is locked"})
+		return
+	}
+
 	currentUrl, err := neturl.Parse(conn.ConnectionString)
 	if err != nil {
 		c.JSON(400, Error{"Unable to parse current connection string"})
@@ -199,6 +251,12 @@ func Disconnect(c *gin.Context) {
 }
 
 func GetDatabases(c *gin.Context) {
+	conn := DB(c)
+	if conn.External {
+		c.JSON(403, Error{"Not permitted"})
+		return
+	}
+
 	names, err := DB(c).Databases()
 	serveResult(names, err, c)
 }

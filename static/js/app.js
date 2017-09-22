@@ -1204,6 +1204,15 @@ $(document).ready(function() {
   initEditor();
   addShortcutTooltips();
 
+  // Set session from the url
+  var reqUrl = new URL(window.location);
+  var sessionId = reqUrl.searchParams.get("session");
+
+  if (sessionId && sessionId != "") {
+    sessionStorage.setItem("session_id", sessionId);
+    window.history.pushState({}, document.title, window.location.pathname);
+  }
+
   apiCall("get", "/connection", {}, function(resp) {
     if (resp.error) {
       connected = false;

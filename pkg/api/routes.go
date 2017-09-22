@@ -49,4 +49,6 @@ func SetupRoutes(router *gin.Engine) {
 		api.GET("/bookmarks", GetBookmarks)
 		api.GET("/export", DataExport)
 	}
+
+	group.GET("/connect/:resource", ConnectWithBackend)
 }
