@@ -196,6 +196,11 @@ func Run() {
 		util.StartProfiler()
 	}
 
+	// Start session cleanup worker
+	if options.Sessions {
+		go api.StartSessionCleanup()
+	}
+
 	startServer()
 	openPage()
 	handleSignals()

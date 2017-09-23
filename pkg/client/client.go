@@ -363,6 +363,10 @@ func (client *Client) Close() error {
 	return nil
 }
 
+func (client *Client) IsIdle() bool {
+	return time.Since(client.lastQueryTime).Hours() > 1
+}
+
 // Fetch all rows as strings for a single column
 func (client *Client) fetchRows(q string) ([]string, error) {
 	res, err := client.query(q)
