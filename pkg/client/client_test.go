@@ -385,6 +385,7 @@ func TestAll(t *testing.T) {
 	test_HistoryUniqueness(t)
 	test_HistoryError(t)
 	test_ReadOnlyMode(t)
+	test_DumpExport(t)
 
 	teardownClient()
 	teardown()
