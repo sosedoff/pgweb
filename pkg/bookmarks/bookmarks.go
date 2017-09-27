@@ -14,14 +14,14 @@ import (
 )
 
 type Bookmark struct {
-	Url      string         `json:"url"`      // Postgres connection URL
-	Host     string         `json:"host"`     // Server hostname
-	Port     int            `json:"port"`     // Server port
-	User     string         `json:"user"`     // Database user
-	Password string         `json:"password"` // User password
-	Database string         `json:"database"` // Database name
-	Ssl      string         `json:"ssl"`      // Connection SSL mode
-	Ssh      shared.SSHInfo `json:"ssh"`      // SSH tunnel config
+	Url      string          `json:"url"`      // Postgres connection URL
+	Host     string          `json:"host"`     // Server hostname
+	Port     int             `json:"port"`     // Server port
+	User     string          `json:"user"`     // Database user
+	Password string          `json:"password"` // User password
+	Database string          `json:"database"` // Database name
+	Ssl      string          `json:"ssl"`      // Connection SSL mode
+	Ssh      *shared.SSHInfo `json:"ssh"`      // SSH tunnel config
 }
 
 func (b Bookmark) SSHInfoIsEmpty() bool {
@@ -69,6 +69,10 @@ func readServerConfig(path string) (Bookmark, error) {
 	// Typical typo: ssl mode set to "disabled"
 	if bookmark.Ssl == "" || !valid {
 		bookmark.Ssl = "disable"
+	}
+
+	if bookmark.Ssh != nil && bookmark.Ssh.Port == "" {
+		bookmark.Ssh.Port = "22"
 	}
 
 	return bookmark, err

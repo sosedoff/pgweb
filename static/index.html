@@ -147,8 +147,11 @@
 
           <div class="form-group">
             <label class="col-sm-3 control-label">Host</label>
-            <div class="col-sm-9">
+            <div class="col-sm-7">
               <input type="text" id="pg_host" class="form-control" />
+            </div>
+            <div class="col-sm-2 no-left-padding">
+              <input type="text" id="pg_port" class="form-control" placeholder="5432" />
             </div>
           </div>
 
@@ -174,14 +177,7 @@
           </div>
 
           <div class="form-group">
-            <label class="col-sm-3 control-label">Port</label>
-            <div class="col-sm-9">
-              <input type="text" id="pg_port" class="form-control" placeholder="5432" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-sm-3 control-label">SSL</label>
+            <label class="col-sm-3 control-label">SSL Mode</label>
             <div class="col-sm-9">
               <select class="form-control" id="connection_ssl">
                 <option value="disable">disable</option>
@@ -193,13 +189,18 @@
         </div>
 
         <div class="connection-ssh-group">
+          <hr/>
+          
           <div class="form-group">
             <label class="col-sm-3 control-label">SSH Host</label>
-            <div class="col-sm-9">
+            <div class="col-sm-7">
               <input type="text" id="ssh_host" class="form-control" />
             </div>
+            <div class="col-sm-2 no-left-padding">
+              <input type="text" id="ssh_port" class="form-control" placeholder="22" />
+            </div>
           </div>
-
+            
           <div class="form-group">
             <label class="col-sm-3 control-label">SSH User</label>
             <div class="col-sm-9">
@@ -215,9 +216,9 @@
           </div>
 
           <div class="form-group">
-            <label class="col-sm-3 control-label">SSH Port</label>
+            <label class="col-sm-3 control-label">SSH Key</label>
             <div class="col-sm-9">
-              <input type="text" id="ssh_port" class="form-control" placeholder="optional" />
+              <input type="text" id="ssh_key" class="form-control" placeholder="optional" />
             </div>
           </div>
         </div>

@@ -1149,6 +1149,7 @@ $(document).ready(function() {
       $("#ssh_port").val(item.ssh.port);
       $("#ssh_user").val(item.ssh.user);
       $("#ssh_password").val(item.ssh.password);
+      $("#ssh_key").val(item.ssh.key);
       $("#connection_ssh").click();
     }
     else {
@@ -1156,6 +1157,7 @@ $(document).ready(function() {
       $("#ssh_port").val("");
       $("#ssh_user").val("");
       $("#ssh_password").val("");
+      $("#ssh_key").val("");
       $(".connection-ssh-group").hide();
     }
   });
@@ -1178,6 +1180,7 @@ $(document).ready(function() {
       params["ssh_port"]     = $("#ssh_port").val();
       params["ssh_user"]     = $("#ssh_user").val();
       params["ssh_password"] = $("#ssh_password").val();
+      params["ssh_key"]      = $("#ssh_key").val();
     }
 
     $("#connection_error").hide();
