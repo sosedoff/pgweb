@@ -74,6 +74,9 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 	var tunnel *Tunnel
 
 	if sshInfo != nil {
+		if command.Opts.DisableSSH {
+			return nil, fmt.Errorf("ssh connections are disabled")
+		}
 		if command.Opts.Debug {
 			fmt.Println("Opening SSH tunnel for:", sshInfo)
 		}
