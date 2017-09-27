@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"golang.org/x/crypto/ssh"
 
@@ -36,6 +37,14 @@ func privateKeyPath() string {
 	return os.Getenv("HOME") + "/.ssh/id_rsa"
 }
 
+func expandKeyPath(path string) string {
+	home := os.Getenv("HOME")
+	if home == "" {
+		return path
+	}
+	return strings.Replace(path, "~", home, 1)
+}
+
 func fileExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
@@ -53,7 +62,14 @@ func parsePrivateKey(keyPath string) (ssh.Signer, error) {
 func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
 	methods := []ssh.AuthMethod{}
 
-	keyPath := privateKeyPath()
+	// Try to use user-provided key, fallback to system default key
+	keyPath := info.Key
+	if keyPath == "" {
+		keyPath = privateKeyPath()
+	} else {
+		keyPath = expandKeyPath(keyPath)
+	}
+
 	if fileExists(keyPath) {
 		key, err := parsePrivateKey(keyPath)
 		if err != nil {
@@ -65,7 +81,13 @@ func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
 
 	methods = append(methods, ssh.Password(info.Password))
 
-	return &ssh.ClientConfig{User: info.User, Auth: methods}, nil
+	cfg := &ssh.ClientConfig{
+		User:    info.User,
+		Auth:    methods,
+		Timeout: time.Second * 10,
+	}
+
+	return cfg, nil
 }
 
 func (tunnel *Tunnel) sshEndpoint() string {

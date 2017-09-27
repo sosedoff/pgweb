@@ -115,6 +115,7 @@ func parseSshInfo(c *gin.Context) *shared.SSHInfo {
 		Port:     c.Request.FormValue("ssh_port"),
 		User:     c.Request.FormValue("ssh_user"),
 		Password: c.Request.FormValue("ssh_password"),
+		Key:      c.Request.FormValue("ssh_key"),
 	}
 
 	if info.Port == "" {

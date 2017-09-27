@@ -563,6 +563,10 @@
   font-size: 12px;
 }
 
+.connection-settings form .no-left-padding {
+  padding-left: 0;
+}
+
 .connection-scheme-group {
   display: none;
 }

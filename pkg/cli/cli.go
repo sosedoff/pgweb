@@ -46,7 +46,7 @@ func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client,
 
 	var ssh *shared.SSHInfo
 	if !bookmark.SSHInfoIsEmpty() {
-		ssh = &bookmark.Ssh
+		ssh = bookmark.Ssh
 	}
 
 	return client.NewFromUrl(connStr, ssh)
