@@ -1,16 +1,16 @@
 ## 0.9.9 - 2017-09-28
 
-- Automatically format JSON data exports, [GH-255]
-- Update Docker image to alpine:3.6, [GH-256]
-- Print out PostgreSQL server version on start in a single-session mode, [GH-264]
-- Record last query timestamp for the client connection, [GH-265]
-- Add context menu for table headers in browse mode (copy name, see unique values), [GH-268]
-- Add ability to export current database dump, [GH-270]
-- Automatically open pgweb in browser on start if its already running, [GH-272]
-- Connect to the database with credentials provided by a third-party backend, [GH-266]
-- Automatically close idle sessions (no activity in 24), [GH-275]
-- Allow connecting via SSH with a custom private key and other fixes, [GH-277]
-- Add options to disable SSH connections, [GH-279]
+- Automatically format JSON data exports, GH-255
+- Update Docker image to alpine:3.6, GH-256
+- Print out PostgreSQL server version on start in a single-session mode, GH-264
+- Record last query timestamp for the client connection, GH-265
+- Add context menu for table headers in browse mode (copy name, see unique values), GH-268
+- Add ability to export current database dump, GH-270
+- Automatically open pgweb in browser on start if its already running, GH-272
+- Connect to the database with credentials provided by a third-party backend, GH-266
+- Automatically close idle sessions (no activity in 24), GH-275
+- Allow connecting via SSH with a custom private key and other fixes, GH-277
+- Add options to disable SSH connections, GH-279
 
 ## 0.9.8 - 2017-08-04
 
