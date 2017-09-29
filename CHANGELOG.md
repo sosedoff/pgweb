@@ -8,7 +8,7 @@
 - Add ability to export current database dump, GH-270
 - Automatically open pgweb in browser on start if its already running, GH-272
 - Connect to the database with credentials provided by a third-party backend, GH-266
-- Automatically close idle sessions (no activity in 24), GH-275
+- Automatically close idle sessions (no activity in 1 hour), GH-275
 - Allow connecting via SSH with a custom private key and other fixes, GH-277
 - Add options to disable SSH connections, GH-279
 
