@@ -17,6 +17,7 @@ env:
   - GO15VENDOREXPERIMENT=1
 
 install:
+  - ln -s $GOPATH/src/github.com/icalF $GOPATH/src/github.com/sosedoff
   - make setup
 
 script:
