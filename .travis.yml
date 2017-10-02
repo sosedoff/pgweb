@@ -18,6 +18,7 @@ env:
 
 install:
   - ln -s $GOPATH/src/github.com/icalF $GOPATH/src/github.com/sosedoff
+  - cd $GOPATH/src/github.com/sosedoff/pgweb
   - make setup
 
 script:
