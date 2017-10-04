@@ -25,7 +25,7 @@ type Bookmark struct {
 }
 
 func (b Bookmark) SSHInfoIsEmpty() bool {
-	return b.Ssh.User == "" && b.Ssh.Host == "" && b.Ssh.Port == ""
+	return b.Ssh == nil || b.Ssh.User == "" && b.Ssh.Host == "" && b.Ssh.Port == ""
 }
 
 func (b Bookmark) ConvertToOptions() command.Options {
