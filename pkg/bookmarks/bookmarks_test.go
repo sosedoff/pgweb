@@ -106,7 +106,10 @@ func Test_Bookmark_SSHInfoIsEmpty(t *testing.T) {
 		User: "postgres",
 	}
 
-	b := Bookmark{Ssh: emptySSH}
+	b := Bookmark{Ssh: nil}
+	assert.True(t, b.SSHInfoIsEmpty())
+
+	b = Bookmark{Ssh: emptySSH}
 	assert.True(t, b.SSHInfoIsEmpty())
 
 	b.Ssh = populatedSSH
