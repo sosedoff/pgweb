@@ -313,7 +313,7 @@ function setCurrentTab(id) {
   if (id != "table_content") {
     $("#body").removeClass("with-pagination");
   }
-  
+
   $("#nav ul li.selected").removeClass("selected");
   $("#" + id).addClass("selected");
 
@@ -490,7 +490,7 @@ function showTableStructure() {
   }
 
   setCurrentTab("table_structure");
-  
+
   $("#input").hide();
   $("#body").prop("class", "full");
 
@@ -698,11 +698,11 @@ function initEditor() {
     }
 
     writeQueryTimeout = setTimeout(function() {
-      localStorage.setItem("pgweb_query", editor.getValue());
+      sessionStorage.setItem("pgweb_query", editor.getValue());
     }, 1000);
   });
 
-  var query = localStorage.getItem("pgweb_query");
+  var query = sessionStorage.getItem("pgweb_query");
   if (query && query.length > 0) {
     editor.setValue(query);
     editor.clearSelection();
@@ -1143,7 +1143,7 @@ $(document).ready(function() {
     $("#pg_password").val(item.password);
     $("#pg_db").val(item.database);
     $("#connection_ssl").val(item.ssl);
-    
+
     if (item.ssh && Object.keys(item.ssh).length > 0) {
       $("#ssh_host").val(item.ssh.host);
       $("#ssh_port").val(item.ssh.port);
