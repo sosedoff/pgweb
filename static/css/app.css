@@ -101,7 +101,8 @@
   top: 18px;
 }
 
-#sidebar span.current-database {
+#sidebar span.current-database,
+#sidebar input.typeahead {
   margin-left: 30px;
   display: inline-block;
   width: 200px;
@@ -109,6 +110,20 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+#sidebar input.typeahead {
+  display: none;
+  width: 160px;
+  height: 22px;
+  color: black;
+  font-weight: normal;
+}
+
+#sidebar ul.typeahead {
+  margin-left: 30px;
+  overflow-y: auto;
+  max-height: 300px;
 }
 
 #sidebar div.tables-list {

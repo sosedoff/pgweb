@@ -14,7 +14,8 @@
   <script type="text/javascript" src="static/js/ace-pgsql.js"></script>
   <script type="text/javascript" src="static/js/bootstrap-contextmenu.js"></script>
   <script type="text/javascript" src="static/js/utils.js"></script>
-  <script type="text/javascript" src="static/js/app.js"></script>
+  <script type="text/javascript" src="static/js/bootstrap3-typeahead.min.js"></script>
+  <script type="text/javascript" src="static/js/app.js"></script> 
 </head>
 <body>
   <div id="main">
@@ -38,8 +39,9 @@
     <div id="sidebar">
       <div class="tables-list">
         <div class="wrap">
-          <div class="title main">
+          <div class="title main"> 
             <i class="fa fa-database"></i> <span class="current-database" id="current_database"></span>
+            <input class="typeahead current_database" id="database_search" type="text" placeholder="Search...">
             <span class="refresh" id="refresh_tables" title="Refresh tables list"><i class="fa fa-refresh"></i></span>
           </div>
           <div id="objects"></div>
@@ -245,9 +247,6 @@
       <li><a href="#" data-action="truncate">Truncate Table</a></li>
       <li><a href="#" data-action="delete">Delete Table</a></li>
     </ul>
-  </div>
-  <div id="databases_context_menu">
-    <ul class="dropdown-menu" role="menu"></ul>
   </div>
   <div id="current_database_context_menu">
     <ul class="dropdown-menu" role="menu">
