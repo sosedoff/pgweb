@@ -69,6 +69,10 @@ func ParseOptions() error {
 		Opts.AuthPass = os.Getenv("AUTH_PASS")
 	}
 
+	if Opts.Bookmark != "" && Opts.Sessions {
+		return errors.New("--bookmark is not allowed in multi-session mode")
+	}
+
 	if Opts.ConnectBackend != "" {
 		if !Opts.Sessions {
 			return errors.New("--sessions flag must be set")
