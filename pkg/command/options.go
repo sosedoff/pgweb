@@ -70,7 +70,7 @@ func ParseOptions() error {
 	}
 
 	if Opts.Bookmark != "" && Opts.Sessions {
-		return errors.New("--bookmark is not allowed in multi-session")
+		return errors.New("--bookmark is not allowed in multi-session mode")
 	}
 
 	if Opts.ConnectBackend != "" {
