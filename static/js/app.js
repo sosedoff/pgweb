@@ -191,6 +191,8 @@ function resetTable() {
     removeClass("no-crop");
 }
 
+var tableNameRegExp = /(?:\.([^.]+))?$/;
+
 function performTableAction(table, action, el) {
   if (action == "truncate" || action == "delete") {
     var message = "Are you sure you want to " + action + " table " + table + " ?";
@@ -223,6 +225,9 @@ function performTableAction(table, action, el) {
       var url = window.location.href.split("#")[0] + "api/export?table=" + table + "&_session_id=" + getSessionId();
       var win  = window.open(url, "_blank");
       win.focus();
+      break;
+    case "copy":
+      copyToClipboard(tableNameRegExp.exec(table)[1]);
       break;
   }
 }
@@ -313,7 +318,7 @@ function setCurrentTab(id) {
   if (id != "table_content") {
     $("#body").removeClass("with-pagination");
   }
-  
+
   $("#nav ul li.selected").removeClass("selected");
   $("#" + id).addClass("selected");
 
@@ -490,7 +495,7 @@ function showTableStructure() {
   }
 
   setCurrentTab("table_structure");
-  
+
   $("#input").hide();
   $("#body").prop("class", "full");
 
@@ -1143,7 +1148,7 @@ $(document).ready(function() {
     $("#pg_password").val(item.password);
     $("#pg_db").val(item.database);
     $("#connection_ssl").val(item.ssl);
-    
+
     if (item.ssh && Object.keys(item.ssh).length > 0) {
       $("#ssh_host").val(item.ssh.host);
       $("#ssh_port").val(item.ssh.port);
