@@ -857,6 +857,27 @@ function toggleDatabaseSearch() {
   $("#database_search").toggle();  
 }
 
+function enableDatabaseSearch(data) {
+  var input = $("#database_search");
+
+  input.typeahead("destroy");
+
+  input.typeahead({ 
+    source: data, 
+    minLength: 0, 
+    items: "all", 
+    autoSelect: false,
+    fitToElement: true
+  });
+
+  input.typeahead("lookup").focus();
+
+  input.on("focusout", function(e){
+    toggleDatabaseSearch();
+    input.off("focusout");
+  });
+}
+
 $(document).ready(function() {
   $("#table_content").on("click",     function() { showTableContent();     });
   $("#table_structure").on("click",   function() { showTableStructure();   });
@@ -1051,20 +1072,7 @@ $(document).ready(function() {
   $("#current_database").on("click", function(e) {
     apiCall("get", "/databases", {}, function(resp) {
       toggleDatabaseSearch();
-      var input = $("#database_search");
-      input.typeahead("destroy");
-      input.typeahead({ 
-        source: resp, 
-        minLength: 0, 
-        items: "all", 
-        autoSelect: false,
-        fitToElement: true
-      });
-      input.typeahead("lookup").focus();
-      input.on("focusout", function(e){
-           toggleDatabaseSearch();
-           input.off("focusout");
-      });
+      enableDatabaseSearch(resp);
     });
   });
   
