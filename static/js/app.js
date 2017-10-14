@@ -191,8 +191,6 @@ function resetTable() {
     removeClass("no-crop");
 }
 
-var tableNameRegExp = /(?:\.([^.]+))?$/;
-
 function performTableAction(table, action, el) {
   if (action == "truncate" || action == "delete") {
     var message = "Are you sure you want to " + action + " table " + table + " ?";
@@ -227,7 +225,7 @@ function performTableAction(table, action, el) {
       win.focus();
       break;
     case "copy":
-      copyToClipboard(tableNameRegExp.exec(table)[1]);
+      copyToClipboard(table.split('.')[1]);
       break;
   }
 }
