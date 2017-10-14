@@ -850,19 +850,31 @@ function bindContextMenus() {
       }
     });
   });
+}
 
-  $(".tables-list .title").contextmenu({
-    target: "#databases_context_menu",
-    onItem: function(context, e) {
-      var name = $(e.target).text();
-      apiCall("post", "/switchdb", { db: name }, function(resp) {
-        if (resp.error) {
-          alert(resp.error);
-          return;
-        }
-        window.location.reload();
-      });
-    }
+function toggleDatabaseSearch() {
+  $("#current_database").toggle();
+  $("#database_search").toggle();  
+}
+
+function enableDatabaseSearch(data) {
+  var input = $("#database_search");
+
+  input.typeahead("destroy");
+
+  input.typeahead({ 
+    source: data, 
+    minLength: 0, 
+    items: "all", 
+    autoSelect: false,
+    fitToElement: true
+  });
+
+  input.typeahead("lookup").focus();
+
+  input.on("focusout", function(e){
+    toggleDatabaseSearch();
+    input.off("focusout");
   });
 }
 
@@ -1059,12 +1071,22 @@ $(document).ready(function() {
 
   $("#current_database").on("click", function(e) {
     apiCall("get", "/databases", {}, function(resp) {
-      $("#databases_context_menu > ul > li").remove();
-      resp.forEach(function(name) {
-        $("<li><a href='#'>" + name + "</a></li>").appendTo("#databases_context_menu > ul");
-      });
-      $(".tables-list .title").triggerHandler("contextmenu");
+      toggleDatabaseSearch();
+      enableDatabaseSearch(resp);
     });
+  });
+  
+  $("#database_search").change(function(e) {
+    var current = $("#database_search").typeahead("getActive");
+    if (current && current == $("#database_search").val()) {
+      apiCall("post", "/switchdb", { db: current }, function(resp) {
+        if (resp.error) {
+          alert(resp.error);            
+          return;
+        };
+        window.location.reload();
+      });
+    };
   });
 
   $("#edit_connection").on("click", function() {
