@@ -224,6 +224,9 @@ function performTableAction(table, action, el) {
       var win  = window.open(url, "_blank");
       win.focus();
       break;
+    case "copy":
+      copyToClipboard(table.split('.')[1]);
+      break;
   }
 }
 
@@ -313,7 +316,7 @@ function setCurrentTab(id) {
   if (id != "table_content") {
     $("#body").removeClass("with-pagination");
   }
-  
+
   $("#nav ul li.selected").removeClass("selected");
   $("#" + id).addClass("selected");
 
@@ -490,7 +493,7 @@ function showTableStructure() {
   }
 
   setCurrentTab("table_structure");
-  
+
   $("#input").hide();
   $("#body").prop("class", "full");
 
@@ -1143,7 +1146,7 @@ $(document).ready(function() {
     $("#pg_password").val(item.password);
     $("#pg_db").val(item.database);
     $("#connection_ssl").val(item.ssl);
-    
+
     if (item.ssh && Object.keys(item.ssh).length > 0) {
       $("#ssh_host").val(item.ssh.host);
       $("#ssh_port").val(item.ssh.port);
