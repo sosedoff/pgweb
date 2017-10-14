@@ -101,7 +101,8 @@
   top: 18px;
 }
 
-#sidebar span.current-database {
+#sidebar span.current-database,
+#sidebar input.typeahead {
   margin-left: 30px;
   display: inline-block;
   width: 200px;
@@ -109,6 +110,33 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+#sidebar input.typeahead {
+  display: none;
+  background: #79589f;
+  width: 200px;
+  height: 22px;
+  color: #fff;
+  font-weight: normal;
+  outline: none;
+  border: 0px none;
+}
+
+#sidebar input.typeahead::-webkit-input-placeholder {
+  color: #d6cce2;
+}
+
+#sidebar ul.typeahead {
+  margin-left: 30px;
+  overflow-y: auto;
+  max-height: 300px;
+  z-index: 999;
+}
+
+#sidebar ul.typeahead a {
+  font-size: 13px;
+  padding: 3px 10px;
 }
 
 #sidebar div.tables-list {

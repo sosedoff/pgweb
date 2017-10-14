@@ -224,6 +224,9 @@ function performTableAction(table, action, el) {
       var win  = window.open(url, "_blank");
       win.focus();
       break;
+    case "copy":
+      copyToClipboard(table.split('.')[1]);
+      break;
   }
 }
 
@@ -313,7 +316,7 @@ function setCurrentTab(id) {
   if (id != "table_content") {
     $("#body").removeClass("with-pagination");
   }
-  
+
   $("#nav ul li.selected").removeClass("selected");
   $("#" + id).addClass("selected");
 
@@ -490,7 +493,7 @@ function showTableStructure() {
   }
 
   setCurrentTab("table_structure");
-  
+
   $("#input").hide();
   $("#body").prop("class", "full");
 
@@ -847,19 +850,31 @@ function bindContextMenus() {
       }
     });
   });
+}
 
-  $(".tables-list .title").contextmenu({
-    target: "#databases_context_menu",
-    onItem: function(context, e) {
-      var name = $(e.target).text();
-      apiCall("post", "/switchdb", { db: name }, function(resp) {
-        if (resp.error) {
-          alert(resp.error);
-          return;
-        }
-        window.location.reload();
-      });
-    }
+function toggleDatabaseSearch() {
+  $("#current_database").toggle();
+  $("#database_search").toggle();  
+}
+
+function enableDatabaseSearch(data) {
+  var input = $("#database_search");
+
+  input.typeahead("destroy");
+
+  input.typeahead({ 
+    source: data, 
+    minLength: 0, 
+    items: "all", 
+    autoSelect: false,
+    fitToElement: true
+  });
+
+  input.typeahead("lookup").focus();
+
+  input.on("focusout", function(e){
+    toggleDatabaseSearch();
+    input.off("focusout");
   });
 }
 
@@ -1056,12 +1071,22 @@ $(document).ready(function() {
 
   $("#current_database").on("click", function(e) {
     apiCall("get", "/databases", {}, function(resp) {
-      $("#databases_context_menu > ul > li").remove();
-      resp.forEach(function(name) {
-        $("<li><a href='#'>" + name + "</a></li>").appendTo("#databases_context_menu > ul");
-      });
-      $(".tables-list .title").triggerHandler("contextmenu");
+      toggleDatabaseSearch();
+      enableDatabaseSearch(resp);
     });
+  });
+  
+  $("#database_search").change(function(e) {
+    var current = $("#database_search").typeahead("getActive");
+    if (current && current == $("#database_search").val()) {
+      apiCall("post", "/switchdb", { db: current }, function(resp) {
+        if (resp.error) {
+          alert(resp.error);            
+          return;
+        };
+        window.location.reload();
+      });
+    };
   });
 
   $("#edit_connection").on("click", function() {
@@ -1143,7 +1168,7 @@ $(document).ready(function() {
     $("#pg_password").val(item.password);
     $("#pg_db").val(item.database);
     $("#connection_ssl").val(item.ssl);
-    
+
     if (item.ssh && Object.keys(item.ssh).length > 0) {
       $("#ssh_host").val(item.ssh.host);
       $("#ssh_port").val(item.ssh.port);
