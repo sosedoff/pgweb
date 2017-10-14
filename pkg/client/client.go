@@ -368,7 +368,7 @@ func (client *Client) Close() error {
 
 func (client *Client) IsIdle() bool {
 	if command.Opts.ConnectionIdleTimeoutDisabled {
-		return true
+		return false
 	}
 	return time.Since(client.lastQueryTime).Minutes() > command.Opts.ConnectionIdleTimeout
 }
