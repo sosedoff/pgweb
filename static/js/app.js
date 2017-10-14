@@ -701,11 +701,11 @@ function initEditor() {
     }
 
     writeQueryTimeout = setTimeout(function() {
-      localStorage.setItem("pgweb_query", editor.getValue());
+      sessionStorage.setItem("pgweb_query", editor.getValue());
     }, 1000);
   });
 
-  var query = localStorage.getItem("pgweb_query");
+  var query = sessionStorage.getItem("pgweb_query");
   if (query && query.length > 0) {
     editor.setValue(query);
     editor.clearSelection();
