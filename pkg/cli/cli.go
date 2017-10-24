@@ -197,7 +197,7 @@ func Run() {
 	}
 
 	// Start session cleanup worker
-	if options.Sessions {
+	if options.Sessions && !command.Opts.DisableConnectionIdleTimeout {
 		go api.StartSessionCleanup()
 	}
 
