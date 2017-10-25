@@ -2,8 +2,10 @@ package api
 
 import (
 	"encoding/base64"
+	"encoding/csv"
 	"errors"
 	"fmt"
+	"log"
 	neturl "net/url"
 	"strings"
 	"time"
@@ -17,9 +19,6 @@ import (
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/pkg/statements"
-	
-	"log"
-	"encoding/csv"
 )
 
 var (
@@ -492,23 +491,38 @@ func DataExport(c *gin.Context) {
 }
 
 func DataImport(c *gin.Context) {
-	body := c.Request.Body
+	c.Request.ParseMultipartForm(0)
+	table := c.Request.FormValue("table")
 
-	defer body.Close()
-	reader := csv.NewReader(body)
+	file, _, err := c.Request.FormFile("file")
+	if err != nil {
+		log.Print(err)
+		c.JSON(400, err.Error())
+	}
+
+	defer file.Close()
+	reader := csv.NewReader(file)
 
 	header, err := reader.Read()
 	if err != nil {
 		log.Print(err)
+		c.JSON(400, err.Error())
 	}
 
 	data, err := reader.ReadAll()
 	if err != nil {
 		log.Print(err)
+		c.JSON(400, err.Error())
 	}
 
-	query := statements.BulkInsert("example", header, len(data))
+	query := statements.GenerateBulkInsertQuery(table, header, len(data))
+	db := DB(c)
 
-	//db := DB(c)
-	c.JSON(200, query)
+	result, err := db.BulkInsert(query, statements.Flatten(data))
+	if err != nil {
+		log.Print(err)
+		c.JSON(500, err.Error())
+	}
+
+	c.JSON(200, result)
 }

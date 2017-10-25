@@ -400,3 +400,8 @@ func (client *Client) hasHistoryRecord(query string) bool {
 
 	return result
 }
+
+func (client *Client) BulkInsert(queryStmt string, params []interface{}) (*Result, error) {
+	queryStmt = client.db.Rebind(queryStmt)
+	return client.query(queryStmt, params...)
+}
