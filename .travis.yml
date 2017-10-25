@@ -16,6 +16,9 @@ go:
 env:
   - GO15VENDOREXPERIMENT=1
 
+before_install:
+  - ./script/check_assets.sh
+
 install:
   - make setup
 
