@@ -6,21 +6,19 @@ import (
 )
 
 func JoinRecord(record []string) string {
-	return fmt.Sprintf("(%s)", strings.Join(record, ", "))
+	return fmt.Sprintf(`(%s)`, strings.Join(record, `, `))
 }
 
 func CreateBinding(fieldsNum int, rowNum int) string {
 	rowBindings := make([]string, rowNum)
 	for i := 0; i < rowNum; i++ {
-		rowBindings[i] = JoinRecord(strings.Split(strings.Repeat("?", fieldsNum), ""))
+		rowBindings[i] = JoinRecord(strings.Split(strings.Repeat(`?`, fieldsNum), ``))
 	}
-	return strings.Join(rowBindings, ", ")
+	return strings.Join(rowBindings, `, `)
 }
 
 func GenerateBulkInsertQuery(table string, header []string, rowNum int) string {
-	ical := fmt.Sprintf("insert into %s %s values %s", table, JoinRecord(header), CreateBinding(len(header), rowNum))
-	fmt.Print(ical)
-	return ical
+	return fmt.Sprintf(`INSERT INTO %s %s VALUES %s;`, table, JoinRecord(header), CreateBinding(len(header), rowNum))
 }
 
 func Flatten(records [][]string) []interface{} {
@@ -33,4 +31,13 @@ func Flatten(records [][]string) []interface{} {
 		}
 	}
 	return flattenList
+}
+
+func CreateNewTableQuery(table string, header []string) string {
+	newHeader := make([]string, len(header)+1)
+	for i, field := range header {
+		newHeader[i] = fmt.Sprintf(`%s TEXT`, field)
+	}
+	newHeader[len(header)] = `id SERIAL PRIMARY KEY`
+	return fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s %s;`, table, JoinRecord(newHeader))
 }

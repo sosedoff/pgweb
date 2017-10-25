@@ -515,10 +515,17 @@ func DataImport(c *gin.Context) {
 		c.JSON(400, err.Error())
 	}
 
-	query := statements.GenerateBulkInsertQuery(table, header, len(data))
 	db := DB(c)
+	createQuery := statements.CreateNewTableQuery(table, header)
+	insertQuery := statements.GenerateBulkInsertQuery(table, header, len(data))
 
-	result, err := db.BulkInsert(query, statements.Flatten(data))
+	_, err = db.NewTable(createQuery)
+	if err != nil {
+		log.Print(err)
+		c.JSON(500, err.Error())
+	}
+
+	result, err := db.BulkInsert(insertQuery, statements.Flatten(data))
 	if err != nil {
 		log.Print(err)
 		c.JSON(500, err.Error())
