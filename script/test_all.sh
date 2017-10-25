@@ -15,6 +15,15 @@ export PGPASSWORD=""
 export PGDATABASE="booktown"
 export PGPORT="15432"
 
+if grep -q 'go/src/github.com/sosedoff/pgweb' ./pkg/data/bindata.go
+then
+  echo "=========================================================="
+  echo "ERROR: Bindata contains development references to assets!"
+  echo "Fix with 'make assets' and commit the change."
+  echo "=========================================================="
+  exit 1
+fi
+
 for i in {1..6}
 do
   export PGVERSION="9.$i"
