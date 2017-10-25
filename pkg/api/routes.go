@@ -48,6 +48,7 @@ func SetupRoutes(router *gin.Engine) {
 		api.GET("/history", GetHistory)
 		api.GET("/bookmarks", GetBookmarks)
 		api.GET("/export", DataExport)
+		api.POST("/import", DataImport)
 	}
 
 	group.GET("/connect/:resource", ConnectWithBackend)

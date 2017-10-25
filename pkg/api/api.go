@@ -16,6 +16,10 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/shared"
+	"github.com/sosedoff/pgweb/pkg/statements"
+	
+	"log"
+	"encoding/csv"
 )
 
 var (
@@ -485,4 +489,26 @@ func DataExport(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
 	}
+}
+
+func DataImport(c *gin.Context) {
+	body := c.Request.Body
+
+	defer body.Close()
+	reader := csv.NewReader(body)
+
+	header, err := reader.Read()
+	if err != nil {
+		log.Print(err)
+	}
+
+	data, err := reader.ReadAll()
+	if err != nil {
+		log.Print(err)
+	}
+
+	query := statements.BulkInsert("example", header, len(data))
+
+	//db := DB(c)
+	c.JSON(200, query)
 }
