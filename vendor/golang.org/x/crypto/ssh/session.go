@@ -151,7 +151,10 @@ type Session struct {
 func (s *Session) SendRequest(name string, wantReply bool, payload []byte) (bool, error) {
 	return s.ch.SendRequest(name, wantReply, payload)
 }
-
+type sessionInfo struct {
+ 	s *Session
+ 	e error
+  }		  }
 func (s *Session) Close() error {
 	return s.ch.Close()
 }
