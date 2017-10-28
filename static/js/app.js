@@ -53,10 +53,10 @@ function getPagesCount(rowsCount) {
   return num;
 }
 
-function apiCall(method, path, params, cb) {
+function apiCall(method, path, params, cb, multipart) {
   var timeout = 300000; // 5 mins is enough
 
-  $.ajax({
+  var config = {
     timeout: timeout,
     url: "api" + path,
     method: method,
@@ -75,7 +75,13 @@ function apiCall(method, path, params, cb) {
 
       cb(jQuery.parseJSON(xhr.responseText));
     }
-  });
+  };
+  if (multipart) {
+    config.contentType = false;
+    config.processData = false;
+  }
+
+  $.ajax(config);
 }
 
 function getObjects(cb)                     { apiCall("get", "/objects", {}, cb); }
@@ -543,11 +549,8 @@ function showConnectionPanel() {
 }
 
 function showImportPanel() {
-  if (!$("#table_query").hasClass("selected")) {
-    resetTable();
-  }
-
   setCurrentTab("table_import");
+  resetTable();
   editor.focus();
 
   $("#input").hide();
@@ -606,6 +609,16 @@ function runQuery() {
       loadSchemas();
     }
   });
+}
+
+function importFile() {
+  setCurrentTab("table_import");
+  var form = new FormData();
+
+  form.append("table", $("#table_name")[0].value)
+  form.append("file", $("#table_file")[0].files[0])
+  
+  apiCall("post", "/import", form, function() {}, true);
 }
 
 function runExplain() {
@@ -909,7 +922,7 @@ $(document).ready(function() {
   $("#table_query").on("click",       function() { showQueryPanel();       });
   $("#table_connection").on("click",  function() { showConnectionPanel();  });
   $("#table_activity").on("click",    function() { showActivityPanel();    });
-  $("#table_import").on("click",      function() { showImportPanel();    });
+  $("#table_import").on("click",      function() { showImportPanel();      });
 
   $("#run").on("click", function() {
     runQuery();
@@ -982,6 +995,12 @@ $(document).ready(function() {
     var value  = $(this).data("value");
 
     performRowAction(action, value);
+  })
+
+  $("#upload").on("click", function(e) {
+    e.preventDefault();
+
+    importFile();
   })
 
   $("#results").on("click", "th", function(e) {
