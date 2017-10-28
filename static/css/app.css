@@ -224,6 +224,10 @@
   overflow: auto;
 }
 
+#import .wrapper {
+  padding: 20px;
+}
+
 #input {
   height: 255px;
   overflow: hidden;
@@ -250,7 +254,7 @@
   color: #999;
 }
 
-#input .actions .btn {
+#input .actions .btn, #import .btn {
   line-height: 30px;
   height: 30px;
   padding: 0px 13px;
@@ -270,7 +274,7 @@
   color: #7eb54e;
 }
 
-#input .actions .btn:hover {
+#input .actions .btn:hover, #import .btn:hover {
   background: transparent !important;
   border-color: #444;
   color: #000;

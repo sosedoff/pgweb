@@ -29,6 +29,7 @@
         <li id="table_history">History</li>
         <li id="table_activity">Activity</li>
         <li id="table_connection">Connection</li>
+        <li id="table_import">Import</li>
       </ul>
 
       <div class="connection-actions">
@@ -109,6 +110,20 @@
         </div>
         <div class="current-page" data-page="1" data-pages="1">
           <span id="total_records"></span> rows
+        </div>
+      </div>
+      <div id="import" style="display:none;">
+        <div class="wrapper">
+          <div class="form-group">
+            <label for="table_name">Table name</label>
+            <input type="text" class="form-control" id="table_name" placeholder="Enter table name">
+          </div>
+          <div class="form-group">
+            <input type="file" id="table_file">
+          </div>
+          <div class="form-group">
+            <input type="button" id="upload" value="Import" class="btn btn-sm btn-primary" />
+          </div>
         </div>
       </div>
     </div>

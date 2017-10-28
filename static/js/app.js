@@ -336,6 +336,7 @@ function showQueryHistory() {
 
     setCurrentTab("table_history");
     $("#input").hide();
+    $("#import").hide();
     $("#body").prop("class", "full");
     $("#results").addClass("no-crop");
   });
@@ -354,6 +355,7 @@ function showTableIndexes() {
     buildTable(data);
 
     $("#input").hide();
+    $("#import").hide();
     $("#body").prop("class", "full");
     $("#results").addClass("no-crop");
   });
@@ -372,6 +374,7 @@ function showTableConstraints() {
     buildTable(data);
 
     $("#input").hide();
+    $("#import").hide();
     $("#body").prop("class", "full");
     $("#results").addClass("no-crop");
   });
@@ -461,6 +464,7 @@ function showTableContent(sortColumn, sortOrder) {
 
   getTableRows(name, opts, function(data) {
     $("#input").hide();
+    $("#import").hide();
     $("#body").prop("class", "with-pagination");
 
     buildTable(data, sortColumn, sortOrder);
@@ -495,6 +499,7 @@ function showTableStructure() {
   setCurrentTab("table_structure");
 
   $("#input").hide();
+  $("#import").hide();
   $("#body").prop("class", "full");
 
   getTableStructure(name, { type: getCurrentObject().type }, function(data) {
@@ -512,6 +517,7 @@ function showQueryPanel() {
   editor.focus();
 
   $("#input").show();
+  $("#import").hide();
   $("#body").prop("class", "")
 }
 
@@ -531,8 +537,22 @@ function showConnectionPanel() {
     });
 
     $("#input").hide();
+    $("#import").hide();
     $("#body").addClass("full");
   });
+}
+
+function showImportPanel() {
+  if (!$("#table_query").hasClass("selected")) {
+    resetTable();
+  }
+
+  setCurrentTab("table_import");
+  editor.focus();
+
+  $("#input").hide();
+  $("#import").show();
+  $("#body").prop("class", "")
 }
 
 function showActivityPanel() {
@@ -549,6 +569,7 @@ function showActivityPanel() {
   apiCall("get", "/activity", {}, function(data) {
     buildTable(data, null, null, options);
     $("#input").hide();
+    $("#import").hide();
     $("#body").addClass("full");
   });
 }
@@ -638,6 +659,7 @@ function showUniqueColumnsValues(table, column, showCounts) {
 
   executeQuery(query, function(data) {
     $("#input").hide();
+    $("#import").hide();
     $("#body").prop("class", "full");
     $("#results").data("mode", "query");
     buildTable(data);
@@ -887,6 +909,7 @@ $(document).ready(function() {
   $("#table_query").on("click",       function() { showQueryPanel();       });
   $("#table_connection").on("click",  function() { showConnectionPanel();  });
   $("#table_activity").on("click",    function() { showActivityPanel();    });
+  $("#table_import").on("click",      function() { showImportPanel();    });
 
   $("#run").on("click", function() {
     runQuery();
