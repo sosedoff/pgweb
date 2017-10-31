@@ -50,13 +50,13 @@ func fileExists(path string) bool {
 	return err == nil
 }
 
-func parsePrivateKey(keyPath string) (ssh.Signer, error) {
+func parsePrivateKey(keyPath, password string) (ssh.Signer, error) {
 	buff, err := ioutil.ReadFile(keyPath)
 	if err != nil {
 		return nil, err
 	}
 
-	return ssh.ParsePrivateKey(buff)
+	return ssh.ParsePrivateKey(buff, []byte(password))
 }
 
 func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
@@ -71,7 +71,7 @@ func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
 	}
 
 	if fileExists(keyPath) {
-		key, err := parsePrivateKey(keyPath)
+		key, err := parsePrivateKey(keyPath, info.Password)
 		if err != nil {
 			return nil, err
 		}

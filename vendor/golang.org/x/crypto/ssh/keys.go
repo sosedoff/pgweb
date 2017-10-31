@@ -747,8 +747,8 @@ func NewPublicKey(key interface{}) (PublicKey, error) {
 
 // ParsePrivateKey returns a Signer from a PEM encoded private key. It supports
 // the same keys as ParseRawPrivateKey.
-func ParsePrivateKey(pemBytes []byte) (Signer, error) {
-	key, err := ParseRawPrivateKey(pemBytes)
+func ParsePrivateKey(pemBytes, password []byte) (Signer, error) {
+	key, err := ParseRawPrivateKey(pemBytes, password)
 	if err != nil {
 		return nil, err
 	}
@@ -764,16 +764,32 @@ func encryptedBlock(block *pem.Block) bool {
 	return strings.Contains(block.Headers["Proc-Type"], "ENCRYPTED")
 }
 
+//decodePrivateKey decodes encrypted private key using password
+func decodePrivateKey(block *pem.Block, password []byte) (*pem.Block, error) {
+	if x509.IsEncryptedPEMBlock(block) {
+		der, err := x509.DecryptPEMBlock(block, password)
+		if err != nil {
+			return nil, err
+		}
+		return &pem.Block{Type: block.Type, Bytes: der}, nil
+	}
+	return nil, errors.New("ssh: cannot decode encrypted private key")
+}
+
 // ParseRawPrivateKey returns a private key from a PEM encoded private key. It
 // supports RSA (PKCS#1), DSA (OpenSSL), and ECDSA private keys.
-func ParseRawPrivateKey(pemBytes []byte) (interface{}, error) {
+func ParseRawPrivateKey(pemBytes, password []byte) (interface{}, error) {
 	block, _ := pem.Decode(pemBytes)
 	if block == nil {
 		return nil, errors.New("ssh: no key found")
 	}
 
 	if encryptedBlock(block) {
-		return nil, errors.New("ssh: cannot decode encrypted private keys")
+		tmpBlock, err := decodePrivateKey(block, password)
+		if err != nil {
+			return nil, err
+		}
+		block = tmpBlock
 	}
 
 	switch block.Type {
