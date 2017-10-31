@@ -5,6 +5,8 @@ Web-based PostgreSQL database browser written in Go.
 [![Release](https://img.shields.io/github/release/sosedoff/pgweb.svg?label=Release)](https://github.com/sosedoff/pgweb/releases)
 [![Linux Build](https://img.shields.io/travis/sosedoff/pgweb/master.svg?label=Linux)](https://travis-ci.org/sosedoff/pgweb)
 [![Windows Build](https://img.shields.io/appveyor/ci/sosedoff/pgweb/master.svg?label=Windows)](https://ci.appveyor.com/project/sosedoff/pgweb)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sosedoff/pgweb)](https://goreportcard.com/report/github.com/sosedoff/pgweb)
+[![GoDoc](https://godoc.org/github.com/sosedoff/pgweb?status.svg)](https://godoc.org/github.com/sosedoff/pgweb)
 
 ## Overview
 
@@ -135,6 +137,6 @@ Any contribution is much appreciated.
 
 ## License
 
-The MIT License (MIT). See `LICENSE` file for more details.
+The MIT License (MIT). See [LICENSE](LICENSE) file for more details.
 
 Copyright (c) 2014-2017 Dan Sosedoff, <dan.sosedoff@gmail.com>
