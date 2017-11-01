@@ -11,9 +11,7 @@
     "golang",
     "frontend"
   ],
-  "addons": [
-    "heroku-postgresql"
-  ],
+  "heroku addons":"create heroku-postgresql":"hobby-dev",
   "env": {
     "AUTH_USER": {
       "description": "A username to log into pgweb.",
