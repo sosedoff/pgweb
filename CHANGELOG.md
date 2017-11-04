@@ -1,3 +1,10 @@
+## 0.9.10 - 2017-11-03
+
+- Make idle connection timeout configurable, [GH-282]
+- Fix panics when sshinfo is not set on bookmarks, [GH-296]
+- Dot now allow using startup bookmark in multi-session mode, [GH-300]
+- Add ability to copy table name from the sidebar, [GH-301]
+
 ## 0.9.9 - 2017-09-28
 
 - Automatically format JSON data exports, GH-255
