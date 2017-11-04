@@ -101,7 +101,7 @@ func staticCssAppCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/css/app.css", size: 11385, mode: os.FileMode(420), modTime: time.Unix(1507953892, 0)}
+	info := bindataFileInfo{name: "static/css/app.css", size: 11385, mode: os.FileMode(420), modTime: time.Unix(1509762282, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -301,7 +301,7 @@ func staticIndexHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/index.html", size: 11321, mode: os.FileMode(420), modTime: time.Unix(1507953892, 0)}
+	info := bindataFileInfo{name: "static/index.html", size: 11321, mode: os.FileMode(420), modTime: time.Unix(1509762282, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -361,7 +361,7 @@ func staticJsAppJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/app.js", size: 33039, mode: os.FileMode(420), modTime: time.Unix(1507953892, 0)}
+	info := bindataFileInfo{name: "static/js/app.js", size: 33039, mode: os.FileMode(420), modTime: time.Unix(1509762282, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -401,7 +401,7 @@ func staticJsBootstrap3TypeaheadMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/bootstrap3-typeahead.min.js", size: 9335, mode: os.FileMode(420), modTime: time.Unix(1507953892, 0)}
+	info := bindataFileInfo{name: "static/js/bootstrap3-typeahead.min.js", size: 9335, mode: os.FileMode(420), modTime: time.Unix(1509762282, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -461,7 +461,7 @@ func staticJsUtilsJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/utils.js", size: 831, mode: os.FileMode(420), modTime: time.Unix(1505595599, 0)}
+	info := bindataFileInfo{name: "static/js/utils.js", size: 831, mode: os.FileMode(420), modTime: time.Unix(1509582243, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
