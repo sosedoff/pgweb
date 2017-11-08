@@ -1,8 +1,8 @@
 package spec
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	_ "github.com/onsi/ginkgo"
+	_ "github.com/onsi/gomega"
 	"github.com/sclevine/agouti"
 
 	"testing"

@@ -27,6 +27,9 @@ usage:
 test:
 	go test -cover ./pkg/...
 
+test-acceptance:
+	@./script/test_ginkgo.sh
+
 test-all:
 	@./script/test_all.sh
 
@@ -67,6 +70,9 @@ setup:
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/mitchellh/gox
 	go get github.com/jteeuwen/go-bindata/...
+	go get github.com/sclevine/agouti
+	go get github.com/onsi/ginkgo/ginkgo
+	go get github.com/onsi/gomega
 	godep restore
 
 clean:

@@ -18,9 +18,9 @@ export PGDATABASE="booktown"
 export PGPORT="15432"
 
 echo "---------------- SETUP ----------------"
-docker rm -f pgweb || true
-docker build -t pgweb:${PGWEB_VERSION}
-docker run -p ${PGWEB_PORT}:${PGWEB_PORT} -d pgweb:${PGWEB_VERSION}
+docker rm -f pgweb_${PGWEB_VERSION} || true
+docker build -t pgweb:${PGWEB_VERSION} .
+docker run --name pgweb_${PGWEB_VERSION} -p ${PGWEB_PORT}:${PGWEB_PORT} -d pgweb:${PGWEB_VERSION}
 echo "---------------- END SETUP ------------------"
 
 

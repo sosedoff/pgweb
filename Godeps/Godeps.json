@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/varp/pgweb",
+	"ImportPath": "github.com/sosedoff/pgweb",
 	"GoVersion": "go1.9",
 	"GodepVersion": "v79",
 	"Deps": [
@@ -59,61 +59,6 @@
 		{
 			"ImportPath": "github.com/mitchellh/go-homedir",
 			"Rev": "7d2d8c8a4e078ce3c58736ab521a40b37a504c52"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/api",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/bookmarks",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/cli",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/client",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/command",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/connection",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/data",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/history",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/shared",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/statements",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
-		},
-		{
-			"ImportPath": "github.com/sosedoff/pgweb/pkg/util",
-			"Comment": "v0.9.9-30-gd123f8f",
-			"Rev": "d123f8fc07d228ac9955c6ef7458ddc0b499dd3a"
 		},
 		{
 			"ImportPath": "github.com/tuvistavie/securerandom",
