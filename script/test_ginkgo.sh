@@ -17,11 +17,11 @@ export PGPASSWORD=""
 export PGDATABASE="booktown"
 export PGPORT="15432"
 
-echo "---------------- SETUP ----------------"
+echo "-------------- RUN PGWEB GUI-------------------"
 docker rm -f pgweb_${PGWEB_VERSION} || true
 docker build -t pgweb:${PGWEB_VERSION} .
 docker run --name pgweb_${PGWEB_VERSION} -p ${PGWEB_PORT}:${PGWEB_PORT} -d pgweb:${PGWEB_VERSION}
-echo "---------------- END SETUP ------------------"
+echo "------------ PGWEB GUI IS READY ---------------"
 
 
 
@@ -35,6 +35,6 @@ do
   docker rm -f postgres || true
   docker run -p $PGPORT:5432 --name postgres -e POSTGRES_PASSWORD=$PGPASSWORD -d postgres:$PGVERSION
   sleep 5
-  ginkgo spec/...
+  ginkgo ./spec/...
   echo "---------------- END TEST ------------------"
 done
