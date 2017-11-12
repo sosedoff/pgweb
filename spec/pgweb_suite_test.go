@@ -1,10 +1,7 @@
 package spec
 
 import (
-	"fmt"
 	"os"
-	"os/exec"
-	"runtime"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
@@ -56,4 +53,22 @@ var _ = BeforeSuite(func() {
 
 var _ = AfterSuite(func() {
 	Expect(agoutiDriver.Stop()).To(Succeed())
+})
+
+
+var _ = BeforeEach(func() {
+	var (
+		err error
+		page *agouti.Page
+	)
+	page, err = agoutiDriver.NewPage()
+	Expect(page.Navigate("http://localhost:8081")).To(Succeed())
+
+	if visible, _ := page.Find("#close_connection").Visible(); visible {
+		Expect(page.Find("#close_connection").Click()).To(Succeed())
+		page.ConfirmPopup()
+	}
+
+
+	Expect(err).NotTo(HaveOccurred())
 })
