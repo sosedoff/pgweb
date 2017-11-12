@@ -5,23 +5,20 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/sclevine/agouti"
 	. "github.com/sclevine/agouti/matchers"
 )
 
+
 var _ = Describe("DbConnection", func() {
-	var page *agouti.Page
+	var (
+		selErrorBlock = "#connection_error"
+		selCurrentDb = "#current_database"
+	)
 
-	BeforeEach(func() {
-		var err error
-		page, err = agoutiDriver.NewPage()
-		Expect(page.Navigate("http://localhost:8081")).To(Succeed())
-		Expect(err).NotTo(HaveOccurred())
-	})
+	var	txtConnectBtn = "Connect"
 
-	AfterEach(func() {
-		Expect(page.Destroy()).To(Succeed())
-	})
+	var errorMsg = "pq: password authentication failed for user \"postgres\""
+	var dbName = "booktown"
 
 	It("connects to DB by connection string tab", func() {
 		var (
@@ -33,15 +30,52 @@ var _ = Describe("DbConnection", func() {
 
 		Expect(page.Find("#connection_scheme").Click()).To(Succeed())
 
-		page.Find("#connection_url").Fill(wrongConnStr)
-		Expect(page.FindByButton("Connect").Click()).To(Succeed())
-		Expect(page.Find("#connection_error")).To(
-								HaveText("pq: password authentication failed for user \"postgres\""))
+		Context("using wrong password", func() {
+			page.Find("#connection_url").Fill(wrongConnStr)
+			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
+			screenshot(page, "scheme_wrong_password_after_connect")
+			Expect(page.Find(selErrorBlock)).To(HaveText(errorMsg))
+		})
 
 
-		page.Find("#connection_url").Fill(correctConnStr)
-		Expect(page.FindByButton("Connect").Click()).To(Succeed())
-		Expect(page.Find("#current_database")).To(BeVisible())
-		Expect(page.Find("#current_database")).Should(HaveText("booktown"))
+		Context("using correct password", func() {
+			page.Find("#connection_url").Fill(correctConnStr)
+			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
+			Expect(page.Find(selCurrentDb)).To(BeVisible())
+			Expect(page.Find(selCurrentDb)).Should(HaveText(dbName))
+		})
+
+	})
+
+	It("connects to DB by Standard tab", func() {
+		// Filling the form
+		data := map[string]string {
+			"#pg_user": serverUser,
+			"#pg_password": "wrongpassword",
+			"#pg_host": serverHost,
+			"#pg_db": serverDatabase,
+		}
+
+
+		Context("using wrong password", func() {
+			for selector, value := range data {
+				page.Find(selector).Fill(value)
+			}
+
+			page.Find("#connection_ssl").Select("disable")
+
+			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
+			Expect(page.Find(selErrorBlock)).To(HaveText(errorMsg))
+		})
+
+
+		Context("using correct password", func() {
+			page.Find("#pg_password").Fill(serverPassword)
+
+			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
+			//screenshot(page, "standard_correct_password_after_connect")
+			Expect(page.Find(selCurrentDb)).To(HaveText(dbName))
+		})
+
 	})
 })

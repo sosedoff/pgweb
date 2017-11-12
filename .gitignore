@@ -4,3 +4,4 @@ bin
 tmp/
 cover.out
 .idea
+spec/_output/*.png

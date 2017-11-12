@@ -4,6 +4,8 @@ import (
 	"os"
 	"testing"
 
+	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/sclevine/agouti"
@@ -11,7 +13,6 @@ import (
 
 
 var (
-	testCommands   map[string]string
 	serverHost     string
 	serverPort     string
 	serverUser     string
@@ -19,6 +20,10 @@ var (
 	serverDatabase string
 )
 
+
+func screenshot(page *agouti.Page, name string) {
+	page.Screenshot(fmt.Sprintf("_output/%s.png", name))
+}
 
 
 func getVar(name, def string) string {
@@ -55,12 +60,11 @@ var _ = AfterSuite(func() {
 	Expect(agoutiDriver.Stop()).To(Succeed())
 })
 
+var page *agouti.Page
 
 var _ = BeforeEach(func() {
-	var (
-		err error
-		page *agouti.Page
-	)
+	var err error
+
 	page, err = agoutiDriver.NewPage()
 	Expect(page.Navigate("http://localhost:8081")).To(Succeed())
 
@@ -71,4 +75,9 @@ var _ = BeforeEach(func() {
 
 
 	Expect(err).NotTo(HaveOccurred())
+})
+
+
+var _ = AfterEach(func() {
+	Expect(page.Destroy()).To(Succeed())
 })
