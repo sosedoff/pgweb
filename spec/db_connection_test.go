@@ -33,6 +33,14 @@ var _ = Describe("DbConnection", func() {
 		Context("using wrong password", func() {
 			page.Find("#connection_url").Fill(wrongConnStr)
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
+
+
+			// TODO: find out the problem of chaotic test failure
+			//
+			// if I remove screenshot statement. the spec will fail
+			// Maybe it is related to timeouts when we dealing AJAX;
+			// clicking an element that will trigger AJAX. which take
+			// arbitrary long time (see Codeception waitFor functions)
 			screenshot(page, "scheme_wrong_password_after_connect")
 			Expect(page.Find(selErrorBlock)).To(HaveText(errorMsg))
 		})
@@ -73,7 +81,7 @@ var _ = Describe("DbConnection", func() {
 			page.Find("#pg_password").Fill(serverPassword)
 
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
-			//screenshot(page, "standard_correct_password_after_connect")
+			screenshot(page, "standard_correct_password_after_connect")
 			Expect(page.Find(selCurrentDb)).To(HaveText(dbName))
 		})
 
