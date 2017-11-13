@@ -55,7 +55,7 @@ func readServerConfig(path string) (Bookmark, error) {
 	}
 
 	// List of all supported by portgres modes
-	modes := []string{"disable", "allow", "prefer", "required", "verify-ca", "verify-full"}
+	modes := []string{"disable", "allow", "prefer", "require", "verify-ca", "verify-full"}
 	valid := false
 
 	for _, mode := range modes {
