@@ -10,6 +10,10 @@ func SetupMiddlewares(group *gin.RouterGroup) {
 		group.Use(requestInspectMiddleware())
 	}
 
+	if command.Opts.CORS {
+		group.Use(corsMiddleware())
+	}
+
 	group.Use(dbCheckMiddleware())
 }
 
