@@ -9,6 +9,50 @@ import (
 )
 
 
+var _ = Describe("NavigateToApp", func() {
+
+	It("should navigate to pgweb page", func () {
+		Expect(page.Navigate("http://localhost:8081")).To(Succeed())
+		Expect(page).To(HaveTitle("pgweb"))
+		Expect(page.Find(".connection-settings h1")).To(HaveText("pgweb"))
+	})
+})
+
+
+
+var _ = Describe("ConnectionOptions", func() {
+
+	Context("Switching connections options tabs", func () {
+		It("clicks on Standard tab", func () {
+			Expect(page.Find("#connection_standard").Click()).To(Succeed())
+			Expect(page.Find("#pg_user")).Should(BeVisible())
+			Expect(page.Find("#pg_host")).Should(BeVisible())
+			Expect(page.Find("#pg_db")).Should(BeVisible())
+
+			Expect(page.Find("#connection_url")).ShouldNot(BeVisible())
+
+			Expect(page.Find("#ssh_host")).ShouldNot(BeVisible())
+		})
+
+		It("clicks on Scheme tab", func() {
+			Expect(page.Find("#connection_scheme").Click()).To(Succeed())
+			Expect(page.Find("#connection_url")).Should(BeVisible())
+
+			Expect(page.Find("#ssh_host")).ShouldNot(BeVisible())
+		})
+
+
+		It("clicks on SSH tab", func () {
+			Expect(page.Find("#connection_ssh").Click()).To(Succeed())
+			Expect(page.Find("#ssh_host")).Should(BeVisible())
+
+			Expect(page.Find("#connection_url")).ShouldNot(BeVisible())
+		})
+	})
+})
+
+
+
 var _ = Describe("DbConnection", func() {
 	var (
 		selErrorBlock = "#connection_error"
@@ -23,7 +67,7 @@ var _ = Describe("DbConnection", func() {
 	It("connects to DB by connection string tab", func() {
 		var (
 			correctConnStr = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-						serverUser, serverPassword, serverHost, serverPort, serverDatabase)
+				serverUser, serverPassword, serverHost, serverPort, serverDatabase)
 			wrongConnStr = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 				serverUser, "wrongpassword", serverHost, serverPort, serverDatabase)
 		)
@@ -37,7 +81,7 @@ var _ = Describe("DbConnection", func() {
 
 			// TODO: find out the problem of chaotic test failure
 			//
-			// if I remove screenshot statement. the spec will fail
+			// If I'll remove screenshot statement the spec will fail.
 			// Maybe it is related to timeouts when we dealing AJAX;
 			// clicking an element that will trigger AJAX. which take
 			// arbitrary long time (see Codeception waitFor functions)
