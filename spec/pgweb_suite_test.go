@@ -4,8 +4,6 @@ import (
 	"os"
 	"testing"
 
-	"fmt"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/sclevine/agouti"
@@ -19,11 +17,6 @@ var (
 	serverPassword string
 	serverDatabase string
 )
-
-
-func screenshot(page *agouti.Page, name string) {
-	page.Screenshot(fmt.Sprintf("_output/%s.png", name))
-}
 
 
 func getVar(name, def string) string {
