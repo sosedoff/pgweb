@@ -6,13 +6,14 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/sclevine/agouti/matchers"
+
+	"github.com/sosedoff/pgweb/spec/helpers"
 )
 
 
 var _ = Describe("NavigateToApp", func() {
 
 	It("should navigate to pgweb page", func () {
-		Expect(page.Navigate("http://localhost:8081")).To(Succeed())
 		Expect(page).To(HaveTitle("pgweb"))
 		Expect(page.Find(".connection-settings h1")).To(HaveText("pgweb"))
 	})
@@ -85,7 +86,7 @@ var _ = Describe("DbConnection", func() {
 			// Maybe it is related to timeouts when we dealing AJAX;
 			// clicking an element that will trigger AJAX. which take
 			// arbitrary long time (see Codeception waitFor functions)
-			screenshot(page, "scheme_wrong_password_after_connect")
+			helpers.Screenshot(page, "scheme_wrong_password_after_connect")
 			Expect(page.Find(selErrorBlock)).To(HaveText(errorMsg))
 		})
 
@@ -110,9 +111,7 @@ var _ = Describe("DbConnection", func() {
 
 
 		Context("using wrong password", func() {
-			for selector, value := range data {
-				page.Find(selector).Fill(value)
-			}
+			helpers.FillConnectionForm(page, data)
 
 			page.Find("#connection_ssl").Select("disable")
 
@@ -122,10 +121,14 @@ var _ = Describe("DbConnection", func() {
 
 
 		Context("using correct password", func() {
+			helpers.FillConnectionForm(page, map[string]string {
+				"#pg_password": serverPassword,
+			})
+
 			page.Find("#pg_password").Fill(serverPassword)
 
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
-			screenshot(page, "standard_correct_password_after_connect")
+			helpers.Screenshot(page, "standard_correct_password_after_connect")
 			Expect(page.Find(selCurrentDb)).To(HaveText(dbName))
 		})
 
