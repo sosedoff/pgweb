@@ -36,7 +36,8 @@ type Options struct {
 	ConnectHeaders               string  `long:"connect-headers" description:"List of headers to pass to the connect backend"`
 	DisableConnectionIdleTimeout bool    `long:"no-idle-timeout" description:"Disable connection idle timeout" default:"false"`
 	ConnectionIdleTimeout        float64 `long:"idle-timeout" description:"Set connection idle timeout in minutes" default:"180"`
-	CORS                         bool    `long:"cors" description:"Enable Cross-Origin Resource Sharing (CORS)" default:"false"`
+	Cors                         bool    `long:"cors" description:"Enable Cross-Origin Resource Sharing (CORS)" default:"false"`
+	CorsOrigin                   string  `long:"cors-origin" description:"Allowed CORS origins" default:"*"`
 }
 
 var Opts Options

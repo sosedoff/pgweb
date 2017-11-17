@@ -80,7 +80,7 @@ func serveResult(result interface{}, err error, c *gin.Context) {
 func corsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Expose-Headers", "*")
+		c.Header("Access-Control-Allow-Origin", command.Opts.CorsOrigin)
 	}
 }
