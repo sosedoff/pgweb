@@ -82,13 +82,18 @@ var _ = Describe("DbConnection", func() {
 			// clicking an element that will trigger AJAX. which take
 			// arbitrary long time (see Codeception waitFor functions)
 			helpers.Screenshot(page, "scheme_wrong_password_after_connect")
-			Eventually(page.Find(helpers.ConnectionErrorSelector),  "1m").Should(HaveText(errorMsg))
+			Eventually(page.FindByButton(txtConnectBtn),  "1m").Should(HaveText(txtConnectBtn))
+			helpers.Screenshot(page, "scheme_wrong_password_after_wait")
+			Expect(page.Find(helpers.ConnectionErrorSelector)).To(HaveText(errorMsg))
 		})
 
 
 		Context("using correct password", func() {
 			page.Find("#connection_url").Fill(correctConnStr)
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
+
+			helpers.Screenshot(page, "scheme_correct_password_after_connect")
+
 			Expect(page.Find(helpers.CurrentDbSelector)).To(BeVisible())
 			Expect(page.Find(helpers.CurrentDbSelector)).Should(HaveText(dbName))
 		})
