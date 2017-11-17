@@ -26,18 +26,18 @@ var _ = Describe("ConnectionOptions", func() {
 	Context("Switching connections options tabs", func () {
 		It("clicks on Standard tab", func () {
 			Expect(page.Find("#connection_standard").Click()).To(Succeed())
-			Expect(page.Find("#pg_user")).Should(BeVisible())
-			Expect(page.Find("#pg_host")).Should(BeVisible())
-			Expect(page.Find("#pg_db")).Should(BeVisible())
+			Expect(page.Find(helpers.PgUserSelector)).Should(BeVisible())
+			Expect(page.Find(helpers.PgHostSelector)).Should(BeVisible())
+			Expect(page.Find(helpers.PgDbSelector)).Should(BeVisible())
 
-			Expect(page.Find("#connection_url")).ShouldNot(BeVisible())
+			Expect(page.Find(helpers.PgConnUrlSelector)).ShouldNot(BeVisible())
 
 			Expect(page.Find("#ssh_host")).ShouldNot(BeVisible())
 		})
 
 		It("clicks on Scheme tab", func() {
 			Expect(page.Find("#connection_scheme").Click()).To(Succeed())
-			Expect(page.Find("#connection_url")).Should(BeVisible())
+			Expect(page.Find(helpers.PgConnUrlSelector)).Should(BeVisible())
 
 			Expect(page.Find("#ssh_host")).ShouldNot(BeVisible())
 		})
@@ -47,7 +47,7 @@ var _ = Describe("ConnectionOptions", func() {
 			Expect(page.Find("#connection_ssh").Click()).To(Succeed())
 			Expect(page.Find("#ssh_host")).Should(BeVisible())
 
-			Expect(page.Find("#connection_url")).ShouldNot(BeVisible())
+			Expect(page.Find(helpers.PgConnUrlSelector)).ShouldNot(BeVisible())
 		})
 	})
 })
@@ -55,11 +55,6 @@ var _ = Describe("ConnectionOptions", func() {
 
 
 var _ = Describe("DbConnection", func() {
-	var (
-		selErrorBlock = "#connection_error"
-		selCurrentDb = "#current_database"
-	)
-
 	var	txtConnectBtn = "Connect"
 
 	var errorMsg = "pq: password authentication failed for user \"postgres\""
@@ -76,7 +71,7 @@ var _ = Describe("DbConnection", func() {
 		Expect(page.Find("#connection_scheme").Click()).To(Succeed())
 
 		Context("using wrong password", func() {
-			page.Find("#connection_url").Fill(wrongConnStr)
+			page.Find(helpers.PgConnUrlSelector).Fill(wrongConnStr)
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
 
 
@@ -87,15 +82,15 @@ var _ = Describe("DbConnection", func() {
 			// clicking an element that will trigger AJAX. which take
 			// arbitrary long time (see Codeception waitFor functions)
 			helpers.Screenshot(page, "scheme_wrong_password_after_connect")
-			Expect(page.Find(selErrorBlock)).To(HaveText(errorMsg))
+			Eventually(page.Find(helpers.ConnectionErrorSelector),  "1m").Should(HaveText(errorMsg))
 		})
 
 
 		Context("using correct password", func() {
 			page.Find("#connection_url").Fill(correctConnStr)
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
-			Expect(page.Find(selCurrentDb)).To(BeVisible())
-			Expect(page.Find(selCurrentDb)).Should(HaveText(dbName))
+			Expect(page.Find(helpers.CurrentDbSelector)).To(BeVisible())
+			Expect(page.Find(helpers.CurrentDbSelector)).Should(HaveText(dbName))
 		})
 
 	})
@@ -103,33 +98,31 @@ var _ = Describe("DbConnection", func() {
 	It("connects to DB by Standard tab", func() {
 		// Filling the form
 		data := map[string]string {
-			"#pg_user": serverUser,
-			"#pg_password": "wrongpassword",
-			"#pg_host": serverHost,
-			"#pg_db": serverDatabase,
+			helpers.PgUserSelector: serverUser,
+			helpers.PgPassSelector: "wrongpassword",
+			helpers.PgHostSelector: serverHost,
+			helpers.PgDbSelector: serverDatabase,
 		}
 
 
 		Context("using wrong password", func() {
 			helpers.FillConnectionForm(page, data)
 
-			page.Find("#connection_ssl").Select("disable")
+			page.Find(helpers.PgSslSelector).Select("disable")
 
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
-			Expect(page.Find(selErrorBlock)).To(HaveText(errorMsg))
+			Expect(page.Find(helpers.ConnectionErrorSelector)).To(HaveText(errorMsg))
 		})
 
 
 		Context("using correct password", func() {
 			helpers.FillConnectionForm(page, map[string]string {
-				"#pg_password": serverPassword,
+				helpers.PgPassSelector: serverPassword,
 			})
-
-			page.Find("#pg_password").Fill(serverPassword)
 
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
 			helpers.Screenshot(page, "standard_correct_password_after_connect")
-			Expect(page.Find(selCurrentDb)).To(HaveText(dbName))
+			Expect(page.Find(helpers.CurrentDbSelector)).To(HaveText(dbName))
 		})
 
 	})

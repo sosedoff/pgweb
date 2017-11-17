@@ -35,13 +35,4 @@ echo "-------------- RUN PGWEB GUI-------------------"
 docker rm -f pgweb_${PGWEB_VERSION} || true
 docker build -t pgweb:${PGWEB_VERSION} .
 docker run --name pgweb_${PGWEB_VERSION} --link=postgres -p ${PGWEB_PORT}:${PGWEB_PORT} -d pgweb:${PGWEB_VERSION}
-
-if [[ $# -gt 0 && $1 == "-d" ]]; then
-  echo "!!! running dev version fo pgweb !!!"
-  docker exec pgweb_${PGWEB_VERSION} killall pgweb
-  docker cp ./pgweb pgweb_${PGWEB_VERSION}:/pgweb
-  docker exec pgweb_${PGWEB_VERSION} /pgweb --bind=0.0.0.0 --listen=8081
-fi
-
-
 echo "------------ PGWEB GUI IS READY ---------------"
