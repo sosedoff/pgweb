@@ -265,6 +265,7 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
   if (results.rows.length == 0) {
     $("<tr><td>No records found</tr></tr>").appendTo("#results");
+    $("#result-rows-count").html("");
     $("#results").addClass("empty");
     return;
   }
