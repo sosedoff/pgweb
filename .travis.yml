@@ -7,7 +7,7 @@ go:
   - 1.8.3
   - 1.9
 
-go_import_path: github.com/sosedoff/pgweb/pkg
+go_import_path: github.com/sosedoff/pgweb
 
 
 services:
