@@ -33,11 +33,12 @@ do
 
   sleep 5
 
+
   killall pgweb || true
   ./pgweb -s 2>&1 > /dev/null &
 
   sleep 5
 
-  ginkgo ./spec/...
+  ginkgo -cover ./spec/...
   echo "---------------- END TEST ------------------"
 done
