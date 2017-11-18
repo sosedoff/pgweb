@@ -25,6 +25,7 @@ addons:
       - google-chrome
     packages:
       - google-chrome-stable
+      - chromium-chromedriver
 
 before_script:
   - |
@@ -34,7 +35,6 @@ before_script:
 
 before_install:
   - ./script/check_assets.sh
-  - ls -l $HOME/gopath/src/github.com/sosedoff/pgweb/pkg
 
 install:
   - make setup
