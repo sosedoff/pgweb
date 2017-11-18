@@ -6,7 +6,12 @@ environment:
 services:
   - postgresql
 
+
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
 install:
+  - choco install chromedriver
   - set PATH=%GOPATH%\bin;%PATH%
   - echo %PATH%
   - echo %GOPATH%
@@ -14,6 +19,9 @@ install:
   - go env
   - go version
   - go get github.com/tools/godep
+  - go get github.com/sclevine/agouti
+  - go get github.com/onsi/ginkgo/ginkgo
+  - go get github.com/onsi/gomega
   - godep get github.com/mitchellh/gox
   - godep get github.com/jteeuwen/go-bindata/...
   - godep restore
@@ -23,5 +31,6 @@ build_script:
 
 test_script:
   - godep go test -cover ./pkg/...
+  - godep gikngo -cover ./spec/....
 
 deploy: off

@@ -7,6 +7,11 @@ services:
 
 addons:
   postgresql: "9.6"
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
 
 go:
   - 1.7.6
@@ -15,6 +20,14 @@ go:
 
 env:
   - GO15VENDOREXPERIMENT=1
+  - DISPLAY=':99.0'
+
+
+before_script:
+  - |
+    if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      sh -e /etc/init.d/xvfb start
+    fi
 
 before_install:
   - ./script/check_assets.sh
