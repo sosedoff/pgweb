@@ -36,10 +36,7 @@ echo "-------------- RUN PGWEB GUI-------------------"
 if [[ -f ./pgweb ]]; then
   echo "Starting dev build of pgweb"
   killall pgweb || true
+  make build 2>&1 > /dev/null
   ./pgweb -s 2>&1 > /dev/null &
-else
-  docker rm -f pgweb_${PGWEB_VERSION} || true
-  docker build -t pgweb:${PGWEB_VERSION} .
-  docker run --name pgweb_${PGWEB_VERSION} --link=postgres -p ${PGWEB_PORT}:${PGWEB_PORT} -d pgweb:${PGWEB_VERSION}
 fi
 echo "------------ PGWEB GUI IS READY ---------------"

@@ -103,6 +103,7 @@ var _ = Describe("DbConnection", func() {
 			helpers.PgUserSelector: serverUser,
 			helpers.PgPassSelector: "wrongpassword",
 			helpers.PgHostSelector: serverHost,
+			helpers.PgPortSelector: serverPort,
 			helpers.PgDbSelector: serverDatabase,
 		}
 

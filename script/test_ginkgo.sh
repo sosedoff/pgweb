@@ -9,7 +9,7 @@
 
 set -e
 
-export PGWEB_VERSION=0.9.9
+export PGWEB_VERSION=0.9.10
 export PGWEB_PORT=8081
 export PGHOST=${PGHOST:-localhost}
 export PGUSER="postgres"
@@ -33,9 +33,8 @@ do
 
   sleep 5
 
-  docker rm -f pgweb_${PGWEB_VERSION} || true
-  docker build -t pgweb:${PGWEB_VERSION} .
-  docker run --name pgweb_${PGWEB_VERSION} --link=postgres -p ${PGWEB_PORT}:${PGWEB_PORT} -d pgweb:${PGWEB_VERSION}
+  killall pgweb || true
+  ./pgweb -s 2>&1 > /dev/null &
 
   sleep 5
 

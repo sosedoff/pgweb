@@ -13,6 +13,7 @@ const (
 	PgUserSelector = "#pg_user"
 	PgPassSelector = "#pg_password"
 	PgHostSelector = "#pg_host"
+	PgPortSelector = "#pg_port"
 	PgDbSelector   = "#pg_db"
 	PgSslSelector  = "#connection_ssl"
 )
