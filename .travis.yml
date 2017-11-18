@@ -35,6 +35,7 @@ before_script:
 
 before_install:
   - ./script/check_assets.sh
+  - export PATH=$PATH:/usr/lib/chromium-browser
 
 install:
   - make setup
