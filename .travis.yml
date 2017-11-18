@@ -34,9 +34,7 @@ before_script:
 
 before_install:
   - ./script/check_assets.sh
-
-after_install:
-  - sh ls -l $HOME/gopath/src/github.com/sosedoff/pgweb/pkg
+  - ls -l $HOME/gopath/src/github.com/sosedoff/pgweb/pkg
 
 install:
   - make setup
