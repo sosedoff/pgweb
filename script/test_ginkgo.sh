@@ -29,7 +29,9 @@ do
   docker run -p $PGPORT:5432 --name postgres -e POSTGRES_PASSWORD=$PGPASSWORD -d postgres:$PGVERSION
   sleep 5
   docker cp ./data/booktown.sql postgres:/booktown.sql
-  docker exec postgres psql -U postgres -f /booktown.sql
+  echo -n "Importing booktown database..."
+  docker exec postgres psql -U postgres -f /booktown.sql > /deb/null
+  echo " done"
 
   sleep 5
 
