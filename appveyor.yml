@@ -22,6 +22,6 @@ build_script:
   - godep go build
 
 test_script:
-  - godep go test -cover ./...
+  - godep go test -cover ./pkg/...
 
 deploy: off
