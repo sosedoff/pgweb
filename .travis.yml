@@ -1,28 +1,27 @@
 sudo: required
 
-language: go
 
-services:
-  - docker
 
 matrix:
-  include:
-    - os: linux
-      addons:
-        postgresql: "9.6"
-        env:
-          - GO15VENDOREXPERIMENT=1
-          - DISPLAY=':99.0'
-        apt:
-          sources:
-            - google-chrome
-          packages:
-            - google-chrome-stable
+  - os: linux
+    services:
+      - docker
+    language: go
+    go:
+      - 1.7.6
+      - 1.8.3
+      - 1.9
+    addons:
+      postgresql: "9.6"
+      env:
+        - GO15VENDOREXPERIMENT=1
+        - DISPLAY=':99.0'
+      apt:
+        sources:
+          - google-chrome
+        packages:
+          - google-chrome-stable
 
-go:
-  - 1.7.6
-  - 1.8.3
-  - 1.9
 
 
 before_script:
