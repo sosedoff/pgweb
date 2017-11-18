@@ -30,7 +30,7 @@ do
   sleep 5
   docker cp ./data/booktown.sql postgres:/booktown.sql
   echo -n "Importing booktown database..."
-  docker exec postgres psql -U postgres -f /booktown.sql > /deb/null
+  docker exec postgres psql -U postgres -f /booktown.sql > /dev/null
   echo " done"
 
   sleep 5
