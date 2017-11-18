@@ -2,6 +2,7 @@ clone_folder: c:\go\src\github.com\sosedoff\pgweb
 
 environment:
   GOPATH: c:\gopath
+  PGPORT: 5432
 
 services:
   - postgresql
