@@ -31,7 +31,7 @@ build_script:
 
 test_script:
   - godep go test -cover ./pkg/...
-  - ps: Start-Process -NoNewWindow ./pgweb.exe -s
+  - ps: Start-Process ./pgweb.exe -ArgumentList "-s"
   - godep go test -cover ./spec/...
 
 deploy: off
