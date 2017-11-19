@@ -1,55 +1,31 @@
 package spec
 
 import (
-	"os"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/sclevine/agouti"
+	"github.com/sosedoff/pgweb/spec/helpers"
 )
-
-
-var (
-	serverHost     string
-	serverPort     string
-	serverUser     string
-	serverPassword string
-	serverDatabase string
-)
-
-
-func getVar(name, def string) string {
-	val := os.Getenv(name)
-	if val == "" {
-		return def
-	}
-	return val
-}
-
-func initVars() {
-	serverHost = getVar("PGHOST", "localhost")
-	serverPort = getVar("PGPORT", "15432")
-	serverUser = getVar("PGUSER", "postgres")
-	serverPassword = getVar("PGPASSWORD", "postgres")
-	serverDatabase = getVar("PGDATABASE", "booktown")
-}
-
 
 func TestPgweb(t *testing.T) {
 	RegisterFailHandler(Fail)
-	initVars()
 	RunSpecs(t, "Pgweb Suite")
 }
 
 var agoutiDriver *agouti.WebDriver
 
 var _ = BeforeSuite(func() {
+	helpers.CreateBooktownDB()
+
 	agoutiDriver = agouti.ChromeDriver()
 	Expect(agoutiDriver.Start()).To(Succeed())
 })
 
 var _ = AfterSuite(func() {
+	helpers.DropBooktownDb()
+
 	Expect(agoutiDriver.Stop()).To(Succeed())
 })
 
@@ -66,10 +42,8 @@ var _ = BeforeEach(func() {
 		page.ConfirmPopup()
 	}
 
-
 	Expect(err).NotTo(HaveOccurred())
 })
-
 
 var _ = AfterEach(func() {
 	Expect(page.Destroy()).To(Succeed())

@@ -10,21 +10,18 @@ import (
 	"github.com/sosedoff/pgweb/spec/helpers"
 )
 
-
 var _ = Describe("NavigateToApp", func() {
 
-	It("should navigate to pgweb page", func () {
+	It("should navigate to pgweb page", func() {
 		Expect(page).To(HaveTitle("pgweb"))
 		Expect(page.Find(".connection-settings h1")).To(HaveText("pgweb"))
 	})
 })
 
-
-
 var _ = Describe("ConnectionOptions", func() {
 
-	Context("Switching connections options tabs", func () {
-		It("clicks on Standard tab", func () {
+	Context("Switching connections options tabs", func() {
+		It("clicks on Standard tab", func() {
 			Expect(page.Find("#connection_standard").Click()).To(Succeed())
 			Expect(page.Find(helpers.PgUserSelector)).Should(BeVisible())
 			Expect(page.Find(helpers.PgHostSelector)).Should(BeVisible())
@@ -42,8 +39,7 @@ var _ = Describe("ConnectionOptions", func() {
 			Expect(page.Find("#ssh_host")).ShouldNot(BeVisible())
 		})
 
-
-		It("clicks on SSH tab", func () {
+		It("clicks on SSH tab", func() {
 			Expect(page.Find("#connection_ssh").Click()).To(Succeed())
 			Expect(page.Find("#ssh_host")).Should(BeVisible())
 
@@ -52,10 +48,8 @@ var _ = Describe("ConnectionOptions", func() {
 	})
 })
 
-
-
 var _ = Describe("DbConnection", func() {
-	var	txtConnectBtn = "Connect"
+	var txtConnectBtn = "Connect"
 
 	var errorMsg = "pq: password authentication failed for user \"postgres\""
 	var dbName = "booktown"
@@ -63,9 +57,9 @@ var _ = Describe("DbConnection", func() {
 	It("connects to DB by connection string tab", func() {
 		var (
 			correctConnStr = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-				serverUser, serverPassword, serverHost, serverPort, serverDatabase)
+				helpers.ServerUser, helpers.ServerPassword, helpers.ServerHost, helpers.ServerPort, helpers.ServerDatabase)
 			wrongConnStr = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-				serverUser, "wrongpassword", serverHost, serverPort, serverDatabase)
+				helpers.ServerUser, "wrongpassword", helpers.ServerHost, helpers.ServerPort, helpers.ServerDatabase)
 		)
 
 		Expect(page.Find("#connection_scheme").Click()).To(Succeed())
@@ -74,7 +68,6 @@ var _ = Describe("DbConnection", func() {
 			page.Find(helpers.PgConnUrlSelector).Fill(wrongConnStr)
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
 
-
 			// TODO: find out the problem of chaotic test failure
 			//
 			// If I'll remove screenshot statement the spec will fail.
@@ -82,15 +75,15 @@ var _ = Describe("DbConnection", func() {
 			// clicking an element that will trigger AJAX. which take
 			// arbitrary long time (see Codeception waitFor functions)
 			helpers.Screenshot(page, "scheme_wrong_password_after_connect")
-			Eventually(page.Find(helpers.ConnectionErrorSelector),  "15s").Should(BeVisible())
+			Eventually(page.Find(helpers.ConnectionErrorSelector), "15s").Should(BeVisible())
 			helpers.Screenshot(page, "scheme_wrong_password_after_wait")
 			Expect(page.Find(helpers.ConnectionErrorSelector)).To(HaveText(errorMsg))
 		})
 
-
 		Context("using correct password", func() {
 			page.Find("#connection_url").Fill(correctConnStr)
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())
+			helpers.Screenshot(page, "scheme_correct_password_after_connect")
 			Expect(page.Find(helpers.CurrentDbSelector)).To(BeVisible())
 			Expect(page.Find(helpers.CurrentDbSelector)).Should(HaveText(dbName))
 		})
@@ -99,14 +92,13 @@ var _ = Describe("DbConnection", func() {
 
 	It("connects to DB by Standard tab", func() {
 		// Filling the form
-		data := map[string]string {
-			helpers.PgUserSelector: serverUser,
+		data := map[string]string{
+			helpers.PgUserSelector: helpers.ServerUser,
 			helpers.PgPassSelector: "wrongpassword",
-			helpers.PgHostSelector: serverHost,
-			helpers.PgPortSelector: serverPort,
-			helpers.PgDbSelector: serverDatabase,
+			helpers.PgHostSelector: helpers.ServerHost,
+			helpers.PgPortSelector: helpers.ServerPort,
+			helpers.PgDbSelector:   helpers.ServerDatabase,
 		}
-
 
 		Context("using wrong password", func() {
 			helpers.FillConnectionForm(page, data)
@@ -118,10 +110,9 @@ var _ = Describe("DbConnection", func() {
 			Expect(page.Find(helpers.ConnectionErrorSelector)).To(HaveText(errorMsg))
 		})
 
-
 		Context("using correct password", func() {
-			helpers.FillConnectionForm(page, map[string]string {
-				helpers.PgPassSelector: serverPassword,
+			helpers.FillConnectionForm(page, map[string]string{
+				helpers.PgPassSelector: helpers.ServerPassword,
 			})
 
 			Expect(page.FindByButton(txtConnectBtn).Click()).To(Succeed())

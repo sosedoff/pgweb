@@ -518,25 +518,25 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"static/css/app.css": staticCssAppCss,
-	"static/css/bootstrap.css": staticCssBootstrapCss,
-	"static/css/font-awesome.css": staticCssFontAwesomeCss,
-	"static/fonts/FontAwesome.otf": staticFontsFontawesomeOtf,
-	"static/fonts/fontawesome-webfont.eot": staticFontsFontawesomeWebfontEot,
-	"static/fonts/fontawesome-webfont.svg": staticFontsFontawesomeWebfontSvg,
-	"static/fonts/fontawesome-webfont.ttf": staticFontsFontawesomeWebfontTtf,
+	"static/css/app.css":                    staticCssAppCss,
+	"static/css/bootstrap.css":              staticCssBootstrapCss,
+	"static/css/font-awesome.css":           staticCssFontAwesomeCss,
+	"static/fonts/FontAwesome.otf":          staticFontsFontawesomeOtf,
+	"static/fonts/fontawesome-webfont.eot":  staticFontsFontawesomeWebfontEot,
+	"static/fonts/fontawesome-webfont.svg":  staticFontsFontawesomeWebfontSvg,
+	"static/fonts/fontawesome-webfont.ttf":  staticFontsFontawesomeWebfontTtf,
 	"static/fonts/fontawesome-webfont.woff": staticFontsFontawesomeWebfontWoff,
-	"static/img/icon.ico": staticImgIconIco,
-	"static/img/icon.png": staticImgIconPng,
-	"static/index.html": staticIndexHtml,
-	"static/js/ace-pgsql.js": staticJsAcePgsqlJs,
-	"static/js/ace.js": staticJsAceJs,
-	"static/js/app.js": staticJsAppJs,
-	"static/js/bootstrap-contextmenu.js": staticJsBootstrapContextmenuJs,
+	"static/img/icon.ico":                   staticImgIconIco,
+	"static/img/icon.png":                   staticImgIconPng,
+	"static/index.html":                     staticIndexHtml,
+	"static/js/ace-pgsql.js":                staticJsAcePgsqlJs,
+	"static/js/ace.js":                      staticJsAceJs,
+	"static/js/app.js":                      staticJsAppJs,
+	"static/js/bootstrap-contextmenu.js":    staticJsBootstrapContextmenuJs,
 	"static/js/bootstrap3-typeahead.min.js": staticJsBootstrap3TypeaheadMinJs,
-	"static/js/jquery.js": staticJsJqueryJs,
-	"static/js/theme-tomorrow.js": staticJsThemeTomorrowJs,
-	"static/js/utils.js": staticJsUtilsJs,
+	"static/js/jquery.js":                   staticJsJqueryJs,
+	"static/js/theme-tomorrow.js":           staticJsThemeTomorrowJs,
+	"static/js/utils.js":                    staticJsUtilsJs,
 }
 
 // AssetDir returns the file names below a certain
@@ -578,18 +578,19 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
 	"static": &bintree{nil, map[string]*bintree{
 		"css": &bintree{nil, map[string]*bintree{
-			"app.css": &bintree{staticCssAppCss, map[string]*bintree{}},
-			"bootstrap.css": &bintree{staticCssBootstrapCss, map[string]*bintree{}},
+			"app.css":          &bintree{staticCssAppCss, map[string]*bintree{}},
+			"bootstrap.css":    &bintree{staticCssBootstrapCss, map[string]*bintree{}},
 			"font-awesome.css": &bintree{staticCssFontAwesomeCss, map[string]*bintree{}},
 		}},
 		"fonts": &bintree{nil, map[string]*bintree{
-			"FontAwesome.otf": &bintree{staticFontsFontawesomeOtf, map[string]*bintree{}},
-			"fontawesome-webfont.eot": &bintree{staticFontsFontawesomeWebfontEot, map[string]*bintree{}},
-			"fontawesome-webfont.svg": &bintree{staticFontsFontawesomeWebfontSvg, map[string]*bintree{}},
-			"fontawesome-webfont.ttf": &bintree{staticFontsFontawesomeWebfontTtf, map[string]*bintree{}},
+			"FontAwesome.otf":          &bintree{staticFontsFontawesomeOtf, map[string]*bintree{}},
+			"fontawesome-webfont.eot":  &bintree{staticFontsFontawesomeWebfontEot, map[string]*bintree{}},
+			"fontawesome-webfont.svg":  &bintree{staticFontsFontawesomeWebfontSvg, map[string]*bintree{}},
+			"fontawesome-webfont.ttf":  &bintree{staticFontsFontawesomeWebfontTtf, map[string]*bintree{}},
 			"fontawesome-webfont.woff": &bintree{staticFontsFontawesomeWebfontWoff, map[string]*bintree{}},
 		}},
 		"img": &bintree{nil, map[string]*bintree{
@@ -598,14 +599,14 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		}},
 		"index.html": &bintree{staticIndexHtml, map[string]*bintree{}},
 		"js": &bintree{nil, map[string]*bintree{
-			"ace-pgsql.js": &bintree{staticJsAcePgsqlJs, map[string]*bintree{}},
-			"ace.js": &bintree{staticJsAceJs, map[string]*bintree{}},
-			"app.js": &bintree{staticJsAppJs, map[string]*bintree{}},
-			"bootstrap-contextmenu.js": &bintree{staticJsBootstrapContextmenuJs, map[string]*bintree{}},
+			"ace-pgsql.js":                &bintree{staticJsAcePgsqlJs, map[string]*bintree{}},
+			"ace.js":                      &bintree{staticJsAceJs, map[string]*bintree{}},
+			"app.js":                      &bintree{staticJsAppJs, map[string]*bintree{}},
+			"bootstrap-contextmenu.js":    &bintree{staticJsBootstrapContextmenuJs, map[string]*bintree{}},
 			"bootstrap3-typeahead.min.js": &bintree{staticJsBootstrap3TypeaheadMinJs, map[string]*bintree{}},
-			"jquery.js": &bintree{staticJsJqueryJs, map[string]*bintree{}},
-			"theme-tomorrow.js": &bintree{staticJsThemeTomorrowJs, map[string]*bintree{}},
-			"utils.js": &bintree{staticJsUtilsJs, map[string]*bintree{}},
+			"jquery.js":                   &bintree{staticJsJqueryJs, map[string]*bintree{}},
+			"theme-tomorrow.js":           &bintree{staticJsThemeTomorrowJs, map[string]*bintree{}},
+			"utils.js":                    &bintree{staticJsUtilsJs, map[string]*bintree{}},
 		}},
 	}},
 }}
@@ -656,4 +657,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-
