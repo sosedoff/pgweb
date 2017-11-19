@@ -59,9 +59,12 @@ func Test_getAvailablePort(t *testing.T) {
 	go func() {
 		for {
 			conn, err := serv.Accept()
-			if err == nil {
-				conn.Close()
+			if err != nil {
+				fmt.Println(os.Stderr, "Server accept error:", err)
+				serv.Close()
+				return
 			}
+			conn.Close()
 		}
 	}()
 
