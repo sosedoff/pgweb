@@ -57,12 +57,11 @@ func Test_getAvailablePort(t *testing.T) {
 	defer serv.Close()
 
 	go func() {
-		for {
-			conn, err := serv.Accept()
-			if err == nil {
-				conn.Close()
-			}
+		conn, err := serv.Accept()
+		if err == nil {
+			conn.Close()
 		}
+		serv.Close()
 	}()
 
 	port, err = AvailablePort(30000, 0)
