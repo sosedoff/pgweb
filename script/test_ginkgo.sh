@@ -37,6 +37,6 @@ do
 
   sleep 5
 
-  ginkgo -cover ./spec/...
+  ginkgo ./spec/...
   echo "---------------- END TEST ------------------"
 done
