@@ -1,23 +1,41 @@
 sudo: required
 
+
 language: go
-
-services:
-  - docker
-
-addons:
-  postgresql: "9.6"
-
 go:
   - 1.7.6
   - 1.8.3
   - 1.9
 
+go_import_path: github.com/sosedoff/pgweb
+
+
+services:
+  - docker
+
 env:
-  - GO15VENDOREXPERIMENT=1
+  global:
+    - GO15VENDOREXPERIMENT=1
+    - DISPLAY=':99.0'
+
+addons:
+  postgresql: "9.6"
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+      - chromium-chromedriver
+
+before_script:
+  - |
+    if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      sh -e /etc/init.d/xvfb start
+    fi
 
 before_install:
   - ./script/check_assets.sh
+  - export PATH=$PATH:/usr/lib/chromium-browser
 
 install:
   - make setup
@@ -25,5 +43,6 @@ install:
 script:
   - make build
   - make test
+  - make test-acceptance
   - make test-all
   - make docker-release
