@@ -15,7 +15,7 @@ var _ = Describe("Gui", func() {
 		Eventually(page.Find(helpers.CurrentDbSelector), 10).Should(BeVisible())
 	})
 
-	FContext("Tabs", func() {
+	Context("Tabs", func() {
 		BeforeEach(func() {
 			page.Find(helpers.TableBookSelector).Click()
 		})

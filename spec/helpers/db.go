@@ -90,7 +90,28 @@ func setup() {
 	}
 }
 
+func killConnections() {
+
+	killConnectionsCmd := "select pg_terminate_backend(pid) from pg_stat_activity where datname = '%s'"
+
+	_, err := exec.Command(
+		testCommands["psql"],
+		"-U", "postgres",
+		"-h", ServerHost,
+		"-p", ServerPort,
+		"postgres",
+		"-c", fmt.Sprintf(killConnectionsCmd, ServerDatabase),
+	).CombinedOutput()
+
+	if err != nil {
+		fmt.Println("Teardown error:", err)
+	}
+}
+
 func teardown() {
+
+	killConnections()
+
 	_, err := exec.Command(
 		testCommands["dropdb"],
 		"-U", ServerUser,
