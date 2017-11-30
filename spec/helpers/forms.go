@@ -27,14 +27,14 @@ const (
 )
 
 const (
-	TabRowsSelector       = "#table_content"
-	TabStructureSelector  = "#table_stucture"
-	TabIndexesSelector    = "#table_indexes"
-	TabConstaintsSelector = "#table_constraints"
-	TabQuerySelector      = "#table_query"
-	TabHistorySelector    = "#table_history"
-	TabActivitySelector   = "#table_activity"
-	TabConnectionSelector = "#table_connection"
+	TabRowsSelector        = "#table_content"
+	TabStructureSelector   = "#table_structure"
+	TabIndexesSelector     = "#table_indexes"
+	TabConstraintsSelector = "#table_constraints"
+	TabQuerySelector       = "#table_query"
+	TabHistorySelector     = "#table_history"
+	TabActivitySelector    = "#table_activity"
+	TabConnectionSelector  = "#table_connection"
 )
 
 func FillConnectionForm(page *agouti.Page, data map[string]string) {
