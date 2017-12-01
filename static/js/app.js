@@ -213,7 +213,8 @@ function performTableAction(table, action, el) {
       break;
     case "export":
       var format = el.data("format");
-      var filename = table + "." + format;
+      var db = $("#current_database").text();
+      var filename = db + "." + table + "." + format;
       var query = window.encodeURI("SELECT * FROM " + table);
       var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
       var win  = window.open(url, "_blank");
