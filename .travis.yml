@@ -43,6 +43,6 @@ install:
 script:
   - make build
   - make test
-  - make test-acceptance
   - make test-all
+  - make test-acceptance
   - make docker-release

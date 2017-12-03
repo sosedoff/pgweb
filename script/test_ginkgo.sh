@@ -18,25 +18,22 @@ export PGDATABASE="booktown"
 export PGPORT="15432"
 
 
-for i in {1..6}
-do
-  export PGVERSION="9.$i"
+export PGVERSION="9.6"
 
-  echo "---------------- BEGIN TEST ----------------"
-  echo "Running acceptance tests against PostgreSQL v$PGVERSION"
+echo "---------------- BEGIN TEST ----------------"
+echo "Running acceptance tests against PostgreSQL v$PGVERSION"
 
-  docker rm -f postgres || true
-  docker run -p $PGPORT:5432 --name postgres -e POSTGRES_PASSWORD=$PGPASSWORD -d postgres:$PGVERSION
-  echo " done"
+docker rm -f postgres || true
+docker run -p $PGPORT:5432 --name postgres -e POSTGRES_PASSWORD=$PGPASSWORD -d postgres:$PGVERSION
+echo " done"
 
-  sleep 5
+sleep 5
 
 
-  killall pgweb || true
-  ./pgweb -s 2>&1 > /dev/null &
+killall pgweb || true
+./pgweb -s 2>&1 > /dev/null &
 
-  sleep 5
+sleep 5
 
-  ginkgo ./spec/...
-  echo "---------------- END TEST ------------------"
-done
+ginkgo ./spec/...
+echo "---------------- END TEST ------------------"
