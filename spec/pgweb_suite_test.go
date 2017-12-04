@@ -35,6 +35,7 @@ var _ = BeforeEach(func() {
 	var err error
 
 	page, err = agoutiDriver.NewPage()
+	page.Size(1366, 768)
 	Expect(page.Navigate("http://localhost:8081")).To(Succeed())
 
 	if visible, _ := page.Find("#close_connection").Visible(); visible {
