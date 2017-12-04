@@ -63,7 +63,7 @@ var _ = Describe("Gui", func() {
 			Expect(page.All("#results tr td").At(0).Text()).To(Equal("booktown"))
 		})
 
-		FIt("clicks on Connection tab", func() {
+		It("clicks on Connection tab", func() {
 			page.Find(helpers.TabConnectionSelector).Click()
 			Expect(page.Find("#results")).Should(BeVisible())
 			Expect(page.All("#results tr td").At(0).Text()).To(Equal("current_database"))
@@ -73,7 +73,7 @@ var _ = Describe("Gui", func() {
 
 	})
 
-	Context("SQL editor", func() {
-
-	})
+	//Context("SQL editor", func() {
+	//
+	//})
 })
