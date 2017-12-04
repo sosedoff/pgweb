@@ -11,6 +11,7 @@ import (
 var _ = Describe("Gui", func() {
 
 	BeforeEach(func() {
+		page.Size(1366, 768)
 		helpers.ConnectByStandardTab(page)
 		Eventually(page.Find(helpers.CurrentDbSelector), 10).Should(BeVisible())
 	})
