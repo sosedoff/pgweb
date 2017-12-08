@@ -732,11 +732,17 @@ function initEditor() {
     }
 
     writeQueryTimeout = setTimeout(function() {
-      localStorage.setItem("pgweb_query", editor.getValue());
+      var value = editor.getValue();
+      sessionStorage.setItem("pgweb_query", value);
+      localStorage.setItem("pgweb_query", value);
     }, 1000);
   });
 
-  var query = localStorage.getItem("pgweb_query");
+  var query = sessionStorage.getItem("pgweb_query");
+  if (!query) {
+    query = localStorage.getItem("pgweb_query");
+  }
+
   if (query && query.length > 0) {
     editor.setValue(query);
     editor.clearSelection();
