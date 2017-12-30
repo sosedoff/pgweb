@@ -27,7 +27,7 @@ var (
 
 func checkUpdate() {
 
-	if options.CheckUpdate == false {
+	if options.DisableCheckUpdate {
 		return
 	}
 
