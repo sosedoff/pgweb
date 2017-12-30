@@ -57,7 +57,7 @@ func checkUpdate() {
 }
 
 func installUpdate() {
-	var platformDownloadUrl = fmt.Sprintf("https://github.com/sosedoff/pgweb/releases/download/%s/%s",
+	var platformDownloadUrl = fmt.Sprintf("https://github.com/sosedoff/pgweb/releases/download/%s/v%s",
 		latestVersion, zipName)
 	err := downloadFromUrl(platformDownloadUrl)
 	if err != nil {
