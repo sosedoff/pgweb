@@ -101,7 +101,7 @@ func staticCssAppCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/css/app.css", size: 11385, mode: os.FileMode(420), modTime: time.Unix(1509762282, 0)}
+	info := bindataFileInfo{name: "static/css/app.css", size: 11385, mode: os.FileMode(420), modTime: time.Unix(1514626648, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -121,7 +121,7 @@ func staticCssBootstrapCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/css/bootstrap.css", size: 109518, mode: os.FileMode(420), modTime: time.Unix(1467073917, 0)}
+	info := bindataFileInfo{name: "static/css/bootstrap.css", size: 109518, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -141,7 +141,7 @@ func staticCssFontAwesomeCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/css/font-awesome.css", size: 21984, mode: os.FileMode(420), modTime: time.Unix(1502760883, 0)}
+	info := bindataFileInfo{name: "static/css/font-awesome.css", size: 21984, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -161,7 +161,7 @@ func staticFontsFontawesomeOtf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/fonts/FontAwesome.otf", size: 85908, mode: os.FileMode(420), modTime: time.Unix(1502760883, 0)}
+	info := bindataFileInfo{name: "static/fonts/FontAwesome.otf", size: 85908, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -181,7 +181,7 @@ func staticFontsFontawesomeWebfontEot() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/fonts/fontawesome-webfont.eot", size: 56006, mode: os.FileMode(420), modTime: time.Unix(1502760883, 0)}
+	info := bindataFileInfo{name: "static/fonts/fontawesome-webfont.eot", size: 56006, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -201,7 +201,7 @@ func staticFontsFontawesomeWebfontSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/fonts/fontawesome-webfont.svg", size: 287007, mode: os.FileMode(420), modTime: time.Unix(1502760883, 0)}
+	info := bindataFileInfo{name: "static/fonts/fontawesome-webfont.svg", size: 287007, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -221,7 +221,7 @@ func staticFontsFontawesomeWebfontTtf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/fonts/fontawesome-webfont.ttf", size: 112160, mode: os.FileMode(420), modTime: time.Unix(1502760883, 0)}
+	info := bindataFileInfo{name: "static/fonts/fontawesome-webfont.ttf", size: 112160, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -241,7 +241,7 @@ func staticFontsFontawesomeWebfontWoff() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/fonts/fontawesome-webfont.woff", size: 65452, mode: os.FileMode(420), modTime: time.Unix(1502760883, 0)}
+	info := bindataFileInfo{name: "static/fonts/fontawesome-webfont.woff", size: 65452, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -261,7 +261,7 @@ func staticImgIconIco() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/img/icon.ico", size: 104736, mode: os.FileMode(420), modTime: time.Unix(1502760883, 0)}
+	info := bindataFileInfo{name: "static/img/icon.ico", size: 104736, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -281,7 +281,7 @@ func staticImgIconPng() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/img/icon.png", size: 7945, mode: os.FileMode(420), modTime: time.Unix(1502760883, 0)}
+	info := bindataFileInfo{name: "static/img/icon.png", size: 7945, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -301,7 +301,7 @@ func staticIndexHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/index.html", size: 12058, mode: os.FileMode(420), modTime: time.Unix(1513313307, 0)}
+	info := bindataFileInfo{name: "static/index.html", size: 12058, mode: os.FileMode(420), modTime: time.Unix(1514627012, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -321,7 +321,7 @@ func staticJsAcePgsqlJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/ace-pgsql.js", size: 53342, mode: os.FileMode(420), modTime: time.Unix(1512708940, 0)}
+	info := bindataFileInfo{name: "static/js/ace-pgsql.js", size: 53342, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -341,7 +341,7 @@ func staticJsAceJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/ace.js", size: 327872, mode: os.FileMode(420), modTime: time.Unix(1512708940, 0)}
+	info := bindataFileInfo{name: "static/js/ace.js", size: 327872, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -361,7 +361,7 @@ func staticJsAppJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/app.js", size: 34563, mode: os.FileMode(420), modTime: time.Unix(1512708944, 0)}
+	info := bindataFileInfo{name: "static/js/app.js", size: 34563, mode: os.FileMode(420), modTime: time.Unix(1514627012, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -381,7 +381,7 @@ func staticJsBootstrapContextmenuJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/bootstrap-contextmenu.js", size: 5300, mode: os.FileMode(420), modTime: time.Unix(1502760883, 0)}
+	info := bindataFileInfo{name: "static/js/bootstrap-contextmenu.js", size: 5300, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -401,7 +401,7 @@ func staticJsBootstrap3TypeaheadMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/bootstrap3-typeahead.min.js", size: 9335, mode: os.FileMode(420), modTime: time.Unix(1509762282, 0)}
+	info := bindataFileInfo{name: "static/js/bootstrap3-typeahead.min.js", size: 9335, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -421,7 +421,7 @@ func staticJsJqueryJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/jquery.js", size: 84245, mode: os.FileMode(420), modTime: time.Unix(1467073917, 0)}
+	info := bindataFileInfo{name: "static/js/jquery.js", size: 84245, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -441,7 +441,7 @@ func staticJsThemeTomorrowJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/theme-tomorrow.js", size: 2556, mode: os.FileMode(420), modTime: time.Unix(1512708940, 0)}
+	info := bindataFileInfo{name: "static/js/theme-tomorrow.js", size: 2556, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -461,7 +461,7 @@ func staticJsUtilsJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/utils.js", size: 831, mode: os.FileMode(420), modTime: time.Unix(1509582243, 0)}
+	info := bindataFileInfo{name: "static/js/utils.js", size: 831, mode: os.FileMode(420), modTime: time.Unix(1509785146, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -518,25 +518,25 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"static/css/app.css": staticCssAppCss,
-	"static/css/bootstrap.css": staticCssBootstrapCss,
-	"static/css/font-awesome.css": staticCssFontAwesomeCss,
-	"static/fonts/FontAwesome.otf": staticFontsFontawesomeOtf,
-	"static/fonts/fontawesome-webfont.eot": staticFontsFontawesomeWebfontEot,
-	"static/fonts/fontawesome-webfont.svg": staticFontsFontawesomeWebfontSvg,
-	"static/fonts/fontawesome-webfont.ttf": staticFontsFontawesomeWebfontTtf,
+	"static/css/app.css":                    staticCssAppCss,
+	"static/css/bootstrap.css":              staticCssBootstrapCss,
+	"static/css/font-awesome.css":           staticCssFontAwesomeCss,
+	"static/fonts/FontAwesome.otf":          staticFontsFontawesomeOtf,
+	"static/fonts/fontawesome-webfont.eot":  staticFontsFontawesomeWebfontEot,
+	"static/fonts/fontawesome-webfont.svg":  staticFontsFontawesomeWebfontSvg,
+	"static/fonts/fontawesome-webfont.ttf":  staticFontsFontawesomeWebfontTtf,
 	"static/fonts/fontawesome-webfont.woff": staticFontsFontawesomeWebfontWoff,
-	"static/img/icon.ico": staticImgIconIco,
-	"static/img/icon.png": staticImgIconPng,
-	"static/index.html": staticIndexHtml,
-	"static/js/ace-pgsql.js": staticJsAcePgsqlJs,
-	"static/js/ace.js": staticJsAceJs,
-	"static/js/app.js": staticJsAppJs,
-	"static/js/bootstrap-contextmenu.js": staticJsBootstrapContextmenuJs,
+	"static/img/icon.ico":                   staticImgIconIco,
+	"static/img/icon.png":                   staticImgIconPng,
+	"static/index.html":                     staticIndexHtml,
+	"static/js/ace-pgsql.js":                staticJsAcePgsqlJs,
+	"static/js/ace.js":                      staticJsAceJs,
+	"static/js/app.js":                      staticJsAppJs,
+	"static/js/bootstrap-contextmenu.js":    staticJsBootstrapContextmenuJs,
 	"static/js/bootstrap3-typeahead.min.js": staticJsBootstrap3TypeaheadMinJs,
-	"static/js/jquery.js": staticJsJqueryJs,
-	"static/js/theme-tomorrow.js": staticJsThemeTomorrowJs,
-	"static/js/utils.js": staticJsUtilsJs,
+	"static/js/jquery.js":                   staticJsJqueryJs,
+	"static/js/theme-tomorrow.js":           staticJsThemeTomorrowJs,
+	"static/js/utils.js":                    staticJsUtilsJs,
 }
 
 // AssetDir returns the file names below a certain
@@ -578,18 +578,19 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
 	"static": &bintree{nil, map[string]*bintree{
 		"css": &bintree{nil, map[string]*bintree{
-			"app.css": &bintree{staticCssAppCss, map[string]*bintree{}},
-			"bootstrap.css": &bintree{staticCssBootstrapCss, map[string]*bintree{}},
+			"app.css":          &bintree{staticCssAppCss, map[string]*bintree{}},
+			"bootstrap.css":    &bintree{staticCssBootstrapCss, map[string]*bintree{}},
 			"font-awesome.css": &bintree{staticCssFontAwesomeCss, map[string]*bintree{}},
 		}},
 		"fonts": &bintree{nil, map[string]*bintree{
-			"FontAwesome.otf": &bintree{staticFontsFontawesomeOtf, map[string]*bintree{}},
-			"fontawesome-webfont.eot": &bintree{staticFontsFontawesomeWebfontEot, map[string]*bintree{}},
-			"fontawesome-webfont.svg": &bintree{staticFontsFontawesomeWebfontSvg, map[string]*bintree{}},
-			"fontawesome-webfont.ttf": &bintree{staticFontsFontawesomeWebfontTtf, map[string]*bintree{}},
+			"FontAwesome.otf":          &bintree{staticFontsFontawesomeOtf, map[string]*bintree{}},
+			"fontawesome-webfont.eot":  &bintree{staticFontsFontawesomeWebfontEot, map[string]*bintree{}},
+			"fontawesome-webfont.svg":  &bintree{staticFontsFontawesomeWebfontSvg, map[string]*bintree{}},
+			"fontawesome-webfont.ttf":  &bintree{staticFontsFontawesomeWebfontTtf, map[string]*bintree{}},
 			"fontawesome-webfont.woff": &bintree{staticFontsFontawesomeWebfontWoff, map[string]*bintree{}},
 		}},
 		"img": &bintree{nil, map[string]*bintree{
@@ -598,14 +599,14 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		}},
 		"index.html": &bintree{staticIndexHtml, map[string]*bintree{}},
 		"js": &bintree{nil, map[string]*bintree{
-			"ace-pgsql.js": &bintree{staticJsAcePgsqlJs, map[string]*bintree{}},
-			"ace.js": &bintree{staticJsAceJs, map[string]*bintree{}},
-			"app.js": &bintree{staticJsAppJs, map[string]*bintree{}},
-			"bootstrap-contextmenu.js": &bintree{staticJsBootstrapContextmenuJs, map[string]*bintree{}},
+			"ace-pgsql.js":                &bintree{staticJsAcePgsqlJs, map[string]*bintree{}},
+			"ace.js":                      &bintree{staticJsAceJs, map[string]*bintree{}},
+			"app.js":                      &bintree{staticJsAppJs, map[string]*bintree{}},
+			"bootstrap-contextmenu.js":    &bintree{staticJsBootstrapContextmenuJs, map[string]*bintree{}},
 			"bootstrap3-typeahead.min.js": &bintree{staticJsBootstrap3TypeaheadMinJs, map[string]*bintree{}},
-			"jquery.js": &bintree{staticJsJqueryJs, map[string]*bintree{}},
-			"theme-tomorrow.js": &bintree{staticJsThemeTomorrowJs, map[string]*bintree{}},
-			"utils.js": &bintree{staticJsUtilsJs, map[string]*bintree{}},
+			"jquery.js":                   &bintree{staticJsJqueryJs, map[string]*bintree{}},
+			"theme-tomorrow.js":           &bintree{staticJsThemeTomorrowJs, map[string]*bintree{}},
+			"utils.js":                    &bintree{staticJsUtilsJs, map[string]*bintree{}},
 		}},
 	}},
 }}
@@ -656,4 +657,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-

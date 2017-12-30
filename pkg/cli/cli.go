@@ -201,6 +201,7 @@ func Run() {
 		go api.StartSessionCleanup()
 	}
 
+	checkUpdate()
 	startServer()
 	openPage()
 	handleSignals()

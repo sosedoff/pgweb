@@ -38,6 +38,7 @@ type Options struct {
 	ConnectionIdleTimeout        float64 `long:"idle-timeout" description:"Set connection idle timeout in minutes" default:"180"`
 	Cors                         bool    `long:"cors" description:"Enable Cross-Origin Resource Sharing (CORS)" default:"false"`
 	CorsOrigin                   string  `long:"cors-origin" description:"Allowed CORS origins" default:"*"`
+	CheckUpdate                  bool    `short:"U" long:"check-update" description:"Check for new versions on startup" default:"true"`
 }
 
 var Opts Options
