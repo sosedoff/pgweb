@@ -38,7 +38,7 @@ func checkUpdate() {
 		fmt.Errorf("GitHub is unavailable")
 	}
 
-	latestVersion = *latestRelease.TagName
+	latestVersion = *latestRelease.Name
 
 	if latestVersion != command.VERSION {
 		var upgrade string
