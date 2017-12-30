@@ -84,7 +84,7 @@ func installUpdate() {
 		fmt.Errorf("error occured during replacing - %s", err)
 	}
 
-	_, err = syscall.ForkExec(os.Args[0], os.Args, nil)
+	_, _, err = syscall.StartProcess(os.Args[0], os.Args, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
