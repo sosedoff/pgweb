@@ -25,7 +25,7 @@
         <li id="table_structure">Structure</li>
         <li id="table_indexes">Indexes</li>
         <li id="table_constraints">Constraints</li>
-        <li id="table_query" class="selected">SQL Query</li>
+        <li id="table_query" class="selected">Query</li>
         <li id="table_history">History</li>
         <li id="table_activity">Activity</li>
         <li id="table_connection">Connection</li>
@@ -133,8 +133,11 @@
           <div class="form-group">
             <div class="col-sm-12">
               <label>Enter server URL scheme</label>
-              <input type="text" class="form-control" id="connection_url" name="url">
-              <p class="help-block">URL format: postgres://user:password@host:port/db?sslmode=mode</p>
+              <input type="text" class="form-control" id="connection_url" name="url" autocomplete="off">
+              <p class="help-block">
+                URL format: postgres://user:password@host:port/db?sslmode=mode<br/>
+                Read more on PostgreSQL <a href="https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">connection string format</a>.
+              </p>
             </div>
           </div>
         </div>
@@ -247,6 +250,17 @@
       <li class="divider"></li>
       <li><a href="#" data-action="truncate">Truncate Table</a></li>
       <li><a href="#" data-action="delete">Delete Table</a></li>
+    </ul>
+  </div>
+  <div id="view_context_menu">
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="#" data-action="copy">Copy View Name</a></li>
+      <li class="divider"></li>
+      <li><a href="#" data-action="export" data-format="json">Export to JSON</a></li>
+      <li><a href="#" data-action="export" data-format="csv">Export to CSV</a></li>
+      <li><a href="#" data-action="export" data-format="xml">Export to XML</a></li>
+      <li class="divider"></li>
+      <li><a href="#" data-action="delete">Delete View</a></li>
     </ul>
   </div>
   <div id="current_database_context_menu">
