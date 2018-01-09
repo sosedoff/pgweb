@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/sosedoff/pgweb",
-	"GoVersion": "go1.8",
+	"GoVersion": "go1.9",
 	"GodepVersion": "v79",
 	"Packages": [
 		"./..."
@@ -33,14 +33,6 @@
 		{
 			"ImportPath": "github.com/golang/protobuf/proto",
 			"Rev": "8ee79997227bf9b34611aee7946ae64735e6fd93"
-		},
-		{
-			"ImportPath": "github.com/google/go-github/github",
-			"Rev": "fc3c57184028a80ff3979d912cdaf5f08887f98a"
-		},
-		{
-			"ImportPath": "github.com/google/go-querystring/query",
-			"Rev": "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
 		},
 		{
 			"ImportPath": "github.com/jessevdk/go-flags",

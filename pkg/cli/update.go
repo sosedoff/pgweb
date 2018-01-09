@@ -2,7 +2,7 @@ package cli
 
 import (
 	"archive/zip"
-	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -14,7 +14,6 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/google/go-github/github"
 	"github.com/sosedoff/pgweb/pkg/command"
 )
 
@@ -25,30 +24,41 @@ var (
 	zipName       = distName + ".zip"
 )
 
+func printErr(err error) {
+	fmt.Println(err)
+}
+
 func checkUpdate() {
 
 	if options.DisableCheckUpdate {
 		return
 	}
 
-	client := github.NewClient(nil)
+	var latestRelease struct{ Name string }
 
-	latestRelease, _, err := client.Repositories.GetLatestRelease(context.Background(), "sosedoff", "pgweb")
+	response, err := http.Get("https://api.github.com/repos/sosedoff/pgweb/releases/latest")
 	if err != nil {
-		fmt.Errorf("GitHub is unavailable")
+		printErr(fmt.Errorf("somethin goes wrong while getting latest release: %s", err))
+	}
+	defer response.Body.Close()
+
+	err = json.NewDecoder(response.Body).Decode(&latestRelease)
+	if err != nil {
+		printErr(fmt.Errorf("something goes wrong while decoding GitHub response: %s", err))
 	}
 
-	latestVersion = *latestRelease.Name
+	latestVersion = latestRelease.Name
 
 	if latestVersion != command.VERSION {
 		var upgrade string
 
-		fmt.Printf("A new version %s is available. Do you want to upgrade? [y/N]", latestVersion)
+		fmt.Printf("A new version %s is available. Do you want to upgrade? [y/N] ", latestVersion)
 		chars, err := fmt.Scanln(&upgrade)
 		if err != nil || (chars > 0 && upgrade == "y") {
 			fmt.Println("Downloading and installing new version...")
 			installUpdate()
 		} else {
+			printErr(fmt.Errorf("something goes wrong while updating to new version: %s", err))
 			return
 		}
 
@@ -57,16 +67,16 @@ func checkUpdate() {
 }
 
 func installUpdate() {
-	var platformDownloadUrl = fmt.Sprintf("https://github.com/sosedoff/pgweb/releases/download/%s/v%s",
+	var platformDownloadUrl = fmt.Sprintf("https://github.com/sosedoff/pgweb/releases/download/v%s/%s",
 		latestVersion, zipName)
 	err := downloadFromUrl(platformDownloadUrl)
 	if err != nil {
-		fmt.Errorf("error occured during donwload - %s", err)
+		printErr(fmt.Errorf("error occured during donwload - %s", err))
 	}
 
 	err = extractZip()
 	if err != nil {
-		fmt.Errorf("error occured during extracting - %s", err)
+		printErr(fmt.Errorf("error occured during extracting - %s", err))
 	}
 
 	// installing new binary
@@ -77,11 +87,11 @@ func installUpdate() {
 
 	data, err := ioutil.ReadFile(srcPath)
 	if err != nil {
-		fmt.Errorf("error occured during replacing - %s", err)
+		printErr(fmt.Errorf("error occured during replacing - %s", err))
 	}
 	err = ioutil.WriteFile(destPath, data, 0644)
 	if err != nil {
-		fmt.Errorf("error occured during replacing - %s", err)
+		printErr(fmt.Errorf("error occured during replacing - %s", err))
 	}
 
 	_, _, err = syscall.StartProcess(os.Args[0], os.Args, nil)

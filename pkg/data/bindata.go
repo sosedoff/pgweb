@@ -101,7 +101,7 @@ func staticCssAppCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/css/app.css", size: 11385, mode: os.FileMode(420), modTime: time.Unix(1514626648, 0)}
+	info := bindataFileInfo{name: "static/css/app.css", size: 11385, mode: os.FileMode(420), modTime: time.Unix(1515518690, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -301,7 +301,7 @@ func staticIndexHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/index.html", size: 12058, mode: os.FileMode(420), modTime: time.Unix(1514627012, 0)}
+	info := bindataFileInfo{name: "static/index.html", size: 12058, mode: os.FileMode(420), modTime: time.Unix(1514734097, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -361,7 +361,7 @@ func staticJsAppJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/app.js", size: 34563, mode: os.FileMode(420), modTime: time.Unix(1514627012, 0)}
+	info := bindataFileInfo{name: "static/js/app.js", size: 34563, mode: os.FileMode(420), modTime: time.Unix(1514734097, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
