@@ -56,6 +56,8 @@ function getPagesCount(rowsCount) {
 function apiCall(method, path, params, cb) {
   var timeout = 300000; // 5 mins is enough
 
+  if ($("#disable-query-timeout").is(":checked")) timeout = 0;
+
   $.ajax({
     timeout: timeout,
     url: "api" + path,
