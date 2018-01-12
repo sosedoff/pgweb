@@ -32,9 +32,9 @@ build_script:
 
 test_script:
   - godep go test -cover ./pkg/...
-  - ps: $env:Path = $env:Path + ";C:\Program Files\PostgreSQL\9.6\bin"
-  - ps: $env:PGPASSWORD = "Password12!"
-  - ps: Start-Process ./pgweb.exe -ArgumentList "-s"
-  - godep go test ./spec/...
+#  - ps: $env:Path = $env:Path + ";C:\Program Files\PostgreSQL\9.6\bin"
+#  - ps: $env:PGPASSWORD = "Password12!"
+#  - ps: Start-Process ./pgweb.exe -ArgumentList "-s"
+#  - godep go test ./spec/...
 
 deploy: off
