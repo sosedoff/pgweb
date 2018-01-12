@@ -126,7 +126,7 @@ function buildSchemaSection(name, objects) {
 
     section += "<div class='schema-group " + group_klass + "'>";
     section += "<div class='schema-group-title'><i class='fa fa-chevron-right'></i><i class='fa fa-chevron-down'></i> " + titles[group] + " (" + objects[group].length + ")</div>";
-    section += "<ul>"
+    section += "<ul data-group='" + group + "'>";
 
     if (objects[group]) {
       objects[group].forEach(function(item) {
@@ -215,7 +215,8 @@ function performTableAction(table, action, el) {
       break;
     case "export":
       var format = el.data("format");
-      var filename = table + "." + format;
+      var db = $("#current_database").text();
+      var filename = db + "." + table + "." + format;
       var query = window.encodeURI("SELECT * FROM " + table);
       var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
       var win  = window.open(url, "_blank");
@@ -228,6 +229,35 @@ function performTableAction(table, action, el) {
       break;
     case "copy":
       copyToClipboard(table.split('.')[1]);
+      break;
+  }
+}
+
+function performViewAction(view, action, el) {
+  if (action == "delete") {
+    var message = "Are you sure you want to " + action + " view " + view + " ?";
+    if (!confirm(message)) return;
+  }
+
+  switch(action) {
+    case "delete":
+      executeQuery("DROP VIEW " + view, function(data) {
+        if (data.error) alert(data.error);
+        loadSchemas();
+        resetTable();
+      });
+      break;
+    case "export":
+      var format = el.data("format");
+      var db = $("#current_database").text();
+      var filename = db + "." + view + "." + format;
+      var query = window.encodeURI("SELECT * FROM " + view);
+      var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
+      var win  = window.open(url, "_blank");
+      win.focus();
+      break;
+    case "copy":
+      copyToClipboard(view.split('.')[1]);
       break;
   }
 }
@@ -267,6 +297,7 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
   if (results.rows.length == 0) {
     $("<tr><td>No records found</tr></tr>").appendTo("#results");
+    $("#result-rows-count").html("");
     $("#results").addClass("empty");
     return;
   }
@@ -841,16 +872,33 @@ function bindContextMenus() {
   bindCurrentDatabaseMenu();
 
   $(".schema-group ul").each(function(id, el) {
-    $(el).contextmenu({
-      target: "#tables_context_menu",
-      scopes: "li.schema-table",
-      onItem: function(context, e) {
-        var el      = $(e.target);
-        var table   = $(context[0]).data("id");
-        var action  = el.data("action");
-        performTableAction(table, action, el);
-      }
-    });
+    var group = $(el).data("group");
+
+    if (group == "table") {
+      $(el).contextmenu({
+        target: "#tables_context_menu",
+        scopes: "li.schema-table",
+        onItem: function(context, e) {
+          var el      = $(e.target);
+          var table   = $(context[0]).data("id");
+          var action  = el.data("action");
+          performTableAction(table, action, el);
+        }
+      });
+    }
+
+    if (group == "view") {
+      $(el).contextmenu({
+        target: "#view_context_menu",
+        scopes: "li.schema-view",
+        onItem: function(context, e) {
+          var el      = $(e.target);
+          var table   = $(context[0]).data("id");
+          var action  = el.data("action");
+          performViewAction(table, action, el);
+        }
+      });
+    }
   });
 }
 

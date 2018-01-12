@@ -1,3 +1,20 @@
+## 0.9.11 - 2017-12-07
+
+- Fix ssl mode for the connection url in the bookmarks, GH-320
+- Add support for CORS, GH-321
+- Fix custom query results counter for empty queries, GH-322
+- Reorganize the table context menu, GH-323
+- Disable database connection string text field autocomplete, GH-327
+- Add db prefix to the table export files, GH-329
+- Add database view context menu with export actions, GH-330
+
+## 0.9.10 - 2017-11-03
+
+- Make idle connection timeout configurable, [GH-282]
+- Fix panics when sshinfo is not set on bookmarks, [GH-296]
+- Dot now allow using startup bookmark in multi-session mode, [GH-300]
+- Add ability to copy table name from the sidebar, [GH-301]
+
 ## 0.9.9 - 2017-09-28
 
 - Automatically format JSON data exports, GH-255
