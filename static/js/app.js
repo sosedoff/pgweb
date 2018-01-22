@@ -590,7 +590,7 @@ function runQuery() {
   setCurrentTab("table_query");
 
   $("#run, #explain, #csv, #json, #xml").prop("disabled", true);
-  $("#query_progress").show();
+  $("#query_progress").css("display", "inline");
 
   var query = $.trim(editor.getSelectedText() || editor.getValue());
 

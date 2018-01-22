@@ -281,7 +281,7 @@
 }
 
 #input .actions #query_progress {
-  display: inline;
+  display: none;
   line-height: 30px;
   height: 30px;
   color: #aaa;
