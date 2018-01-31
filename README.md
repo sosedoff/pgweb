@@ -139,4 +139,4 @@ Any contribution is much appreciated.
 
 The MIT License (MIT). See [LICENSE](LICENSE) file for more details.
 
-Copyright (c) 2014-2017 Dan Sosedoff, <dan.sosedoff@gmail.com>
+Copyright (c) 2014-2018 Dan Sosedoff, <dan.sosedoff@gmail.com>
