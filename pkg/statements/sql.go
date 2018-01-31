@@ -50,7 +50,8 @@ WHERE
 
 	TableConstraints = `
 SELECT
-  pg_get_constraintdef(c.oid, true) as condef
+  conname as name,
+  pg_get_constraintdef(c.oid, true) as definition
 FROM
   pg_constraint c
 JOIN
