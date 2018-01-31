@@ -266,8 +266,9 @@ func test_TableConstraints(t *testing.T) {
 	res, err := testClient.TableConstraints("editions")
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, 1, len(res.Columns))
-	assert.Equal(t, 2, len(res.Rows))
+	assert.Equal(t, []string{"name", "definition"}, res.Columns)
+	assert.Equal(t, Row{"pkey", "PRIMARY KEY (isbn)"}, res.Rows[0])
+	assert.Equal(t, Row{"integrity", "CHECK (book_id IS NOT NULL AND edition IS NOT NULL)"}, res.Rows[1])
 }
 
 func test_Query(t *testing.T) {
