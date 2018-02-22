@@ -15,9 +15,12 @@ export PGPASSWORD=""
 export PGDATABASE="booktown"
 export PGPORT="15432"
 
-for i in {1..6}
+# List of versions to tests against
+versions="9.1 9.2 9.3 9.4 9.5 9.6 10"
+
+for version in $versions
 do
-  export PGVERSION="9.$i"
+  export PGVERSION="$version"
 
   echo "---------------- BEGIN TEST ----------------"
   echo "Running tests against PostgreSQL v$PGVERSION"
