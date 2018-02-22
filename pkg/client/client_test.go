@@ -2,12 +2,16 @@ package client
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"runtime"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/sosedoff/pgweb/pkg/command"
 )
 
 var (
@@ -43,6 +47,11 @@ func getVar(name, def string) string {
 }
 
 func initVars() {
+	// We need to load default options to make sure all stuff works
+	if err := command.SetDefaultOptions(); err != nil {
+		log.Fatal(err)
+	}
+
 	serverHost = getVar("PGHOST", "localhost")
 	serverPort = getVar("PGPORT", "5432")
 	serverUser = getVar("PGUSER", "postgres")
@@ -146,6 +155,21 @@ func test_NewClientFromUrl2(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, url, client.ConnectionString)
+}
+
+func test_ClientIdleTime(t *testing.T) {
+	examples := map[time.Time]bool{
+		time.Now():                         false, // Current time
+		time.Now().Add(time.Minute * -30):  false, // 30 minutes ago
+		time.Now().Add(time.Minute * -240): true,  // 240 minutes ago
+		time.Now().Add(time.Minute * 30):   false, // 30 minutes in future
+		time.Now().Add(time.Minute * 128):  false, // 128 minutes in future
+	}
+
+	for ts, expected := range examples {
+		testClient.lastQueryTime = ts
+		assert.Equal(t, expected, testClient.IsIdle())
+	}
 }
 
 func test_Test(t *testing.T) {
@@ -367,6 +391,7 @@ func TestAll(t *testing.T) {
 	setupClient()
 
 	test_NewClientFromUrl(t)
+	test_ClientIdleTime(t)
 	test_Test(t)
 	test_Info(t)
 	test_Activity(t)

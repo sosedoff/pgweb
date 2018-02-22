@@ -1,38 +1,50 @@
 package command
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Options(t *testing.T) {
-	err := ParseOptions()
-
+func TestParseOptions(t *testing.T) {
+	// Test default behavior
+	opts, err := ParseOptions([]string{})
 	assert.NoError(t, err)
-	assert.Equal(t, false, Opts.Sessions)
-	assert.Equal(t, "", Opts.Prefix)
-}
+	assert.Equal(t, false, opts.Sessions)
+	assert.Equal(t, "", opts.Prefix)
+	assert.Equal(t, "", opts.ConnectToken)
+	assert.Equal(t, "", opts.ConnectHeaders)
+	assert.Equal(t, false, opts.DisableSSH)
+	assert.Equal(t, false, opts.DisablePrettyJson)
+	assert.Equal(t, false, opts.DisableConnectionIdleTimeout)
+	assert.Equal(t, 180, opts.ConnectionIdleTimeout)
+	assert.Equal(t, false, opts.Cors)
+	assert.Equal(t, "*", opts.CorsOrigin)
 
-func Test_SessionsOption(t *testing.T) {
-	oldargs := os.Args
-	defer func() { os.Args = oldargs }()
+	// Test sessions
+	opts, err = ParseOptions([]string{"--sessions", "1"})
+	assert.NoError(t, err)
+	assert.Equal(t, true, opts.Sessions)
 
-	os.Args = []string{"--sessions", "1"}
-	assert.NoError(t, ParseOptions())
-	assert.Equal(t, true, Opts.Sessions)
-}
+	opts, err = ParseOptions([]string{"--sessions", "1", "--bookmark", "test"})
+	assert.EqualError(t, err, "--bookmark is not allowed in multi-session mode")
 
-func Test_PrefixOption(t *testing.T) {
-	oldargs := os.Args
-	defer func() { os.Args = oldargs }()
+	// Test url prefix
+	opts, err = ParseOptions([]string{"--prefix", "pgweb"})
+	assert.NoError(t, err)
+	assert.Equal(t, "pgweb/", opts.Prefix)
 
-	os.Args = []string{"--prefix", "pgweb"}
-	assert.NoError(t, ParseOptions())
-	assert.Equal(t, "pgweb/", Opts.Prefix)
+	opts, err = ParseOptions([]string{"--prefix", "pgweb/"})
+	assert.NoError(t, err)
+	assert.Equal(t, "pgweb/", opts.Prefix)
 
-	os.Args = []string{"--prefix", "pgweb/"}
-	assert.NoError(t, ParseOptions())
-	assert.Equal(t, "pgweb/", Opts.Prefix)
+	// Test connect backend options
+	opts, err = ParseOptions([]string{"--connect-backend", "test"})
+	assert.EqualError(t, err, "--sessions flag must be set")
+
+	opts, err = ParseOptions([]string{"--connect-backend", "test", "--sessions"})
+	assert.EqualError(t, err, "--connect-token flag must be set")
+
+	opts, err = ParseOptions([]string{"--connect-backend", "test", "--sessions", "--connect-token", "token"})
+	assert.NoError(t, err)
 }

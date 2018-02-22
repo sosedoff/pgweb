@@ -367,7 +367,13 @@ func (client *Client) Close() error {
 }
 
 func (client *Client) IsIdle() bool {
-	return time.Since(client.lastQueryTime).Minutes() > command.Opts.ConnectionIdleTimeout
+	mins := int(time.Since(client.lastQueryTime).Minutes())
+
+	if command.Opts.ConnectionIdleTimeout > 0 {
+		return mins >= command.Opts.ConnectionIdleTimeout
+	}
+
+	return false
 }
 
 // Fetch all rows as strings for a single column
