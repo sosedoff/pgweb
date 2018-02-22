@@ -261,7 +261,6 @@
   box-shadow: none;
   background: transparent;
   border: 1px solid #999;
-  float: left;
   margin-right: 10px;
 }
 
@@ -283,7 +282,6 @@
 
 #input .actions #query_progress {
   display: none;
-  float: left;
   line-height: 30px;
   height: 30px;
   color: #aaa;

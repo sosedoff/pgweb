@@ -56,6 +56,8 @@ function getPagesCount(rowsCount) {
 function apiCall(method, path, params, cb) {
   var timeout = 300000; // 5 mins is enough
 
+  if ($("#disable-query-timeout").is(":checked")) timeout = 0;
+
   $.ajax({
     timeout: timeout,
     url: "api" + path,
@@ -588,7 +590,7 @@ function runQuery() {
   setCurrentTab("table_query");
 
   $("#run, #explain, #csv, #json, #xml").prop("disabled", true);
-  $("#query_progress").show();
+  $("#query_progress").css("display", "inline");
 
   var query = $.trim(editor.getSelectedText() || editor.getValue());
 
@@ -622,7 +624,7 @@ function runExplain() {
   setCurrentTab("table_query");
 
   $("#run, #explain, #csv, #json, #xml").prop("disabled", true);
-  $("#query_progress").show();
+  $("#query_progress").css('display', 'inline');
 
   var query = $.trim(editor.getSelectedText() || editor.getValue());
 
