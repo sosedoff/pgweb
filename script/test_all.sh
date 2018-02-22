@@ -15,7 +15,7 @@ export PGPASSWORD=""
 export PGDATABASE="booktown"
 export PGPORT="15432"
 
-versions="9.1 9.2 9.3 9.4 9.5 9.6 10 10.1 10.2"
+versions="9.1 9.2 9.3 9.4 9.5 9.6 10.0 10.1 10.2"
 
 for i in $versions
 do
