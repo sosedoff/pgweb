@@ -15,7 +15,10 @@ export PGPASSWORD=""
 export PGDATABASE="booktown"
 export PGPORT="15432"
 
-versions="9.1 9.2 9.3 9.4 9.5 9.6 10.0 10.1 10.2"
+# TODO: Enable the 10.x branch when it's supported on Travis.
+# Local 10.x version is required so that pg_dump can properly work with older versions.
+# 10.x branch is normally supported.
+versions="9.1 9.2 9.3 9.4 9.5 9.6"
 
 for i in $versions
 do
