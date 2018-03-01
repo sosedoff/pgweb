@@ -2,7 +2,6 @@
 #
 # Integartion testing with dockerized Postgres servers
 #
-# Boot2Docker is deprecated and no longer supported.
 # Requires Docker for Mac to run on OSX.
 # Install: https://docs.docker.com/engine/installation/mac/
 #
