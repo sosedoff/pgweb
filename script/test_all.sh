@@ -2,7 +2,6 @@
 #
 # Integartion testing with dockerized Postgres servers
 #
-# Boot2Docker is deprecated and no longer supported.
 # Requires Docker for Mac to run on OSX.
 # Install: https://docs.docker.com/engine/installation/mac/
 #
@@ -15,15 +14,20 @@ export PGPASSWORD=""
 export PGDATABASE="booktown"
 export PGPORT="15432"
 
-for i in {1..6}
-do
-  export PGVERSION="9.$i"
+# TODO: Enable the 10.x branch when it's supported on Travis.
+# Local 10.x version is required so that pg_dump can properly work with older versions.
+# 10.x branch is normally supported.
+versions="9.1 9.2 9.3 9.4 9.5 9.6"
 
-  echo "---------------- BEGIN TEST ----------------"
+for i in $versions
+do
+  export PGVERSION="$i"
+
+  echo "------------------------------- BEGIN TEST -------------------------------"
   echo "Running tests against PostgreSQL v$PGVERSION"
   docker rm -f postgres || true
   docker run -p $PGPORT:5432 --name postgres -e POSTGRES_PASSWORD=$PGPASSWORD -d postgres:$PGVERSION
   sleep 5
   make test
-  echo "---------------- END TEST ------------------"
+  echo "-------------------------------- END TEST --------------------------------"
 done
