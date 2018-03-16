@@ -22,7 +22,7 @@ func Test_Invalid_Url(t *testing.T) {
 
 		assert.Equal(t, "", str)
 		assert.Error(t, err)
-		assert.Equal(t, "Invalid URL. Valid format: postgres://user:password@host:port/db?sslmode=mode", err.Error())
+		assert.Equal(t, "Invalid URL. Valid format: (postgres|cockroach)://user:password@host:port/db?sslmode=mode", err.Error())
 	}
 }
 

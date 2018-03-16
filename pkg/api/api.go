@@ -92,9 +92,15 @@ func ConnectWithBackend(c *gin.Context) {
 		return
 	}
 	c.Request.Header.Add("x-session-id", sessionId)
-
+	
+	isCockroachDb := false
+	if strings.Contains( cred.DatabaseUrl, "cockroach" ) {
+		isCockroachDb = true
+		cred.DatabaseUrl = strings.Replace( cred.DatabaseUrl, "cockroach", "postgres",1)
+	}
+	
 	// Connect to the database
-	cl, err := client.NewFromUrl(cred.DatabaseUrl, nil)
+	cl, err := client.NewFromUrl(cred.DatabaseUrl, nil, isCockroachDb)
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
 		return
@@ -111,7 +117,7 @@ func ConnectWithBackend(c *gin.Context) {
 		c.JSON(400, Error{err.Error()})
 		return
 	}
-
+	
 	c.Redirect(301, fmt.Sprintf("/%s?session=%s", command.Opts.Prefix, sessionId))
 }
 
@@ -128,7 +134,13 @@ func Connect(c *gin.Context) {
 		c.JSON(400, Error{"Url parameter is required"})
 		return
 	}
-
+	
+	isCockroachDb := false
+	if strings.Contains(url,"cockroach") {
+		isCockroachDb = true
+		url = strings.Replace(url,"cockroach", "postgres", 1)
+	}
+	
 	opts := command.Options{Url: url}
 	url, err := connection.FormatUrl(opts)
 
@@ -141,12 +153,12 @@ func Connect(c *gin.Context) {
 		sshInfo = parseSshInfo(c)
 	}
 
-	cl, err := client.NewFromUrl(url, sshInfo)
+	cl, err := client.NewFromUrl(url, sshInfo, isCockroachDb)
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
 		return
 	}
-
+	
 	err = cl.Test()
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
@@ -200,8 +212,13 @@ func SwitchDb(c *gin.Context) {
 	}
 
 	currentUrl.Path = name
-
-	cl, err := client.NewFromUrl(currentUrl.String(), nil)
+	isCockroachDb := false
+	if currentUrl.Scheme == "cockroach" {
+		isCockroachDb = true
+		currentUrl.Scheme = "postgres"
+	}
+	
+	cl, err := client.NewFromUrl(currentUrl.String(), nil, isCockroachDb)
 	if err != nil {
 		c.JSON(400, Error{err.Error()})
 		return
@@ -290,8 +307,12 @@ func ExplainQuery(c *gin.Context) {
 		c.JSON(400, NewError(errors.New("Query parameter is missing")))
 		return
 	}
-
-	HandleQuery(fmt.Sprintf("EXPLAIN ANALYZE %s", query), c)
+	
+	if DB(c).Dialect.Provider == "cockroach" {
+		HandleQuery(fmt.Sprintf("EXPLAIN (VERBOSE) %s", query), c)
+	} else {
+		HandleQuery(fmt.Sprintf("EXPLAIN ANALYZE %s", query), c)
+	}
 }
 
 func GetSchemas(c *gin.Context) {
@@ -395,7 +416,7 @@ func GetConnectionInfo(c *gin.Context) {
 
 func GetActivity(c *gin.Context) {
 	res, err := DB(c).Activity()
-	serveResult(res, err, c)
+	serveResult(res, err,c)
 }
 
 func GetTableIndexes(c *gin.Context) {

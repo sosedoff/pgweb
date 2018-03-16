@@ -28,6 +28,16 @@ function getSessionId() {
   return id;
 }
 
+function getDbVendor() {
+    var id = sessionStorage.getItem("dbvendor");
+    if (!id) {
+        var db = "postgres"
+        sessionStorage.setItem("dbvendor", db);
+        return db
+    }
+    return id;
+}
+
 function setRowsLimit(num) {
   localStorage.setItem("rows_limit", num);
 }
@@ -263,7 +273,12 @@ function performViewAction(view, action, el) {
 function performRowAction(action, value) {
   if (action == "stop_query") {
     if (!confirm("Are you sure you want to stop the query?")) return;
-    executeQuery("SELECT pg_cancel_backend(" + value + ");", function(data) {
+    var cancelquery = "SELECT pg_cancel_backend(" + value + ");";
+    if ( getDbVendor() == "cockroach")
+    {
+      cancelquery = "CANCEL QUERY '" + value + "';"
+    }
+    executeQuery(cancelquery, function(data) {
       if (data.error) alert(data.error);
       setTimeout(showActivityPanel, 1000);
     });
@@ -567,11 +582,15 @@ function showConnectionPanel() {
 }
 
 function showActivityPanel() {
+  var pdata = "pid"
+  if ( getDbVendor() == "cockroach" )
+     pdata = "query_id"
+
   var options = {
     action: {
       name: "stop_query",
       title: "stop",
-      data: "pid",
+      data: pdata,
       style: "danger"
     }
   }
@@ -797,12 +816,20 @@ function getConnectionString() {
     var user = $("#pg_user").val();
     var pass = encodeURIComponent($("#pg_password").val());
     var db   = $("#pg_db").val();
+    var mode = $("#connection_mode").val();
 
     if (port.length == 0) {
       port = "5432";
     }
 
-    url = "postgres://" + user + ":" + pass + "@" + host + ":" + port + "/" + db + "?sslmode=" + ssl;
+    // Default database mode Postgres, but support Cockroach via connection strings
+    var dbmode = "postgres";
+    if ( mode == "cockroach" ) {
+        dbmode = "cockroach";
+    }
+
+    sessionStorage.setItem("dbvendor",dbmode)
+    url = dbmode + "://" + user + ":" + pass + "@" + host + ":" + port + "/" + db + "?sslmode=" + ssl;
   }
   else {
     var local = url.indexOf("localhost") != -1 || url.indexOf("127.0.0.1") != -1;

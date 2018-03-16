@@ -48,8 +48,12 @@ func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client,
 	if !bookmark.SSHInfoIsEmpty() {
 		ssh = bookmark.Ssh
 	}
-
-	return client.NewFromUrl(connStr, ssh)
+	isCockroachDb := false
+	if strings.Contains( connStr, "cockroach") {
+		isCockroachDb = true
+		connStr = strings.Replace( connStr, "cockroach", "postgres", 1)
+	}
+	return client.NewFromUrl(connStr, ssh, isCockroachDb)
 }
 
 func initClient() {

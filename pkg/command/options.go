@@ -17,6 +17,7 @@ type Options struct {
 	User                         string `long:"user" description:"Database user"`
 	Pass                         string `long:"pass" description:"Password for user"`
 	DbName                       string `long:"db" description:"Database name"`
+	Mode                         string `long:"mode" description:"Database mode (postgresql, cockroachdb)" default:"postgresql"`
 	Ssl                          string `long:"ssl" description:"SSL option"`
 	HttpHost                     string `long:"bind" description:"HTTP server host" default:"localhost"`
 	HttpPort                     uint   `long:"listen" description:"HTTP server listen port" default:"8081"`

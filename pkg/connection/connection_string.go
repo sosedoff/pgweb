@@ -29,8 +29,10 @@ func FormatUrl(opts command.Options) (string, error) {
 	url := opts.Url
 
 	// Make sure to only accept urls in a standard format
-	if !strings.HasPrefix(url, "postgres://") && !strings.HasPrefix(url, "postgresql://") {
-		return "", errors.New("Invalid URL. Valid format: postgres://user:password@host:port/db?sslmode=mode")
+	validPrefix :=  ( strings.HasPrefix(url, "postgres://") || strings.HasPrefix(url, "cockroach://") )
+	
+	if !validPrefix {
+		return "", errors.New("Invalid URL. Valid format: (postgres|cockroach)://user:password@host:port/db?sslmode=mode")
 	}
 
 	// Special handling for local connections

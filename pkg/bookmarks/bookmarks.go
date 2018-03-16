@@ -20,6 +20,7 @@ type Bookmark struct {
 	User     string          `json:"user"`     // Database user
 	Password string          `json:"password"` // User password
 	Database string          `json:"database"` // Database name
+	Mode     string          `json:"mode"`     // Database mode
 	Ssl      string          `json:"ssl"`      // Connection SSL mode
 	Ssh      *shared.SSHInfo `json:"ssh"`      // SSH tunnel config
 }
@@ -36,6 +37,7 @@ func (b Bookmark) ConvertToOptions() command.Options {
 		User:   b.User,
 		Pass:   b.Password,
 		DbName: b.Database,
+		Mode:   b.Mode,
 		Ssl:    b.Ssl,
 	}
 }
