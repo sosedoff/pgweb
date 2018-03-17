@@ -76,8 +76,8 @@ var (
   			NOT attisdropped`
 	// ---------------------------------------------------------------------------
 	ObjectsCockroach = `
-	    SELECT
-  			n.nspname as "schema",
+		SELECT
+			n.nspname as "schema",
   			c.relname as "name",
   		CASE c.relkind
 		WHEN 'r' THEN 'table'
@@ -94,14 +94,12 @@ var (
   			pg_catalog.pg_class c
 		LEFT JOIN
   			pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-  		left join
-  			information_schema.table_privileges i on i.table_name = c.relname and
-  			i.table_schema = n.nspname and i.grantee = current_user
 		WHERE
-  			c.relkind IN ('r','v','m','S','s','') AND
-  			n.nspname !~ '^pg_toast' AND
-  			n.nspname NOT IN ('information_schema', 'pg_catalog')
-  			and ( current_user() = 'root' or i.privilege_type in ('ALL','SELECT') )
+  			c.relkind IN ('r','v','m','S','s','')
+  			AND (
+  				  ( current_user() = 'root' and n.nspname NOT IN ('system', 'crdb_internal') ) OR
+  				  ( current_user() <> 'root' and n.nspname NOT IN ('information_schema', 'pg_catalog','system', 'crdb_internal') )
+  				)
 		ORDER BY 1, 2`
 		
 	// ---------------------------------------------------------------------------
