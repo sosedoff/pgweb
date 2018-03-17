@@ -62,7 +62,7 @@ pgweb --host localhost --user myuser --db mydb
 Connection URL scheme is also supported:
 
 ```
-pgweb --url postgres://user:password@host:port/database?sslmode=[mode]
+pgweb --url (postgres|cockroach)://user:password@host:port/database?sslmode=[mode]
 ```
 
 ### Multiple database sessions

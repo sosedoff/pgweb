@@ -25,6 +25,8 @@ type Client struct {
 	External         bool
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
+	isCockroachDb    bool
+	Dialect          *statements.DatabaseDialect
 }
 
 // Struct to hold table rows browsing options
@@ -70,7 +72,7 @@ func New() (*Client, error) {
 	return &client, nil
 }
 
-func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
+func NewFromUrl(url string, sshInfo *shared.SSHInfo, cockroachDb bool ) (*Client, error) {
 	var tunnel *Tunnel
 
 	if sshInfo != nil {
@@ -113,12 +115,25 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	dialect, err := statements.FindDialect("postgres")
+	if err != nil {
+		return nil, err
+	}
+	
+	if cockroachDb {
+		dialect, err = statements.FindDialect("cockroach")
+		if err != nil {
+			return nil, err
+		}
+	}
+	
 	client := Client{
 		db:               db,
 		tunnel:           tunnel,
 		ConnectionString: url,
 		History:          history.New(),
+		isCockroachDb:    cockroachDb,
+		Dialect:          dialect,
 	}
 
 	client.setServerVersion()
@@ -140,28 +155,28 @@ func (client *Client) Test() error {
 }
 
 func (client *Client) Info() (*Result, error) {
-	return client.query(statements.Info)
+	return client.query(*client.Dialect.Info)
 }
 
 func (client *Client) Databases() ([]string, error) {
-	return client.fetchRows(statements.Databases)
+	return client.fetchRows(*client.Dialect.Databases)
 }
 
 func (client *Client) Schemas() ([]string, error) {
-	return client.fetchRows(statements.Schemas)
+	return client.fetchRows(*client.Dialect.Schemas)
 }
 
 func (client *Client) Objects() (*Result, error) {
-	return client.query(statements.Objects)
+	return client.query(*client.Dialect.Objects)
 }
 
 func (client *Client) Table(table string) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
-	return client.query(statements.TableSchema, schema, table)
+	return client.query(*client.Dialect.TableSchema, schema, table)
 }
 
 func (client *Client) MaterializedView(name string) (*Result, error) {
-	return client.query(statements.MaterializedView, name)
+	return client.query(*client.Dialect.MaterializedView, name)
 }
 
 func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error) {
@@ -203,13 +218,24 @@ func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, e
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
-	return client.query(statements.TableInfo, table)
+	return client.query(*client.Dialect.TableInfo, table)
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
-	res, err := client.query(statements.TableIndexes, schema, table)
-
+	var (
+		res *Result
+		err error
+	)
+	
+	if client.isCockroachDb {
+		sqlQuery := strings.Replace( *client.Dialect.TableIndexes, "$1", schema, 1 )
+		sqlQuery = strings.Replace( sqlQuery, "$2", table, 1 )
+		res, err = client.query(sqlQuery)
+	} else {
+		res, err = client.query(*client.Dialect.TableIndexes, schema, table)
+	}
+	
 	if err != nil {
 		return nil, err
 	}
@@ -219,7 +245,19 @@ func (client *Client) TableIndexes(table string) (*Result, error) {
 
 func (client *Client) TableConstraints(table string) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
-	res, err := client.query(statements.TableConstraints, schema, table)
+	var (
+		res *Result
+		err error
+	)
+	
+	if client.isCockroachDb {
+		sqlQuery := strings.Replace( *client.Dialect.TableConstraints, "$1", schema, 1 )
+		sqlQuery = strings.Replace( sqlQuery, "$2", table, 1 )
+		res, err = client.query(sqlQuery)
+		
+	} else {
+		res, err = client.query(*client.Dialect.TableConstraints, schema, table)
+	}
 
 	if err != nil {
 		return nil, err
@@ -230,14 +268,20 @@ func (client *Client) TableConstraints(table string) (*Result, error) {
 
 // Returns all active queriers on the server
 func (client *Client) Activity() (*Result, error) {
+	
+	if client.isCockroachDb {
+		query := (*client.Dialect.Activity)["default"]
+		return client.query(query)
+	}
+	
 	chunks := strings.Split(client.serverVersion, ".")
 	version := strings.Join(chunks[0:2], ".")
-
-	query := statements.Activity[version]
+		
+	query := (*client.Dialect.Activity)[version]
 	if query == "" {
-		query = statements.Activity["default"]
+		query = (*client.Dialect.Activity)["default"]
 	}
-
+	
 	return client.query(query)
 }
 

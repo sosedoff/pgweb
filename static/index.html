@@ -135,7 +135,7 @@
               <label>Enter server URL scheme</label>
               <input type="text" class="form-control" id="connection_url" name="url" autocomplete="off">
               <p class="help-block">
-                URL format: postgres://user:password@host:port/db?sslmode=mode<br/>
+                URL format: (postgres|cockroach)://user:password@host:port/db?sslmode=mode<br/>
                 Read more on PostgreSQL <a href="https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">connection string format</a>.
               </p>
             </div>
@@ -182,15 +182,26 @@
           </div>
 
           <div class="form-group">
-            <label class="col-sm-3 control-label">SSL Mode</label>
+            <label class="col-sm-3 control-label">Mode</label>
             <div class="col-sm-9">
-              <select class="form-control" id="connection_ssl">
-                <option value="disable">disable</option>
-                <option value="require" selected="selected">require</option>
-                <option value="verify-full">verify-full</option>
+              <select class="form-control" id="connection_mode">
+                <option value="postgres" selected="selected">PostgreSQL</option>
+                <option value="cockroach">CockroachDB</option>
               </select>
             </div>
           </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">SSL Mode</label>
+                <div class="col-sm-9">
+                    <select class="form-control" id="connection_ssl">
+                        <option value="disable">disable</option>
+                        <option value="require" selected="selected">require</option>
+                        <option value="verify-full">verify-full</option>
+                    </select>
+                </div>
+            </div>
+
         </div>
 
         <div class="connection-ssh-group">
