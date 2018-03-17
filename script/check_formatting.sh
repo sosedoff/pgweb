@@ -1,6 +1,6 @@
 #!/bin/bash
 
-files="$(go fmt ./...)"
+files="$(go fmt ./pkg/...)"
 ignore="pkg/data/bindata.go"
 files=${files[@]/$ignore}
 
