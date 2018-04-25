@@ -1,5 +1,7 @@
 FROM alpine:3.6
-MAINTAINER Dan Sosedoff <dan.sosedoff@gmail.com>
+
+LABEL maintainer="Dan Sosedoff <dan.sosedoff@gmail.com>"
+
 
 ENV PGWEB_VERSION 0.9.12
 
