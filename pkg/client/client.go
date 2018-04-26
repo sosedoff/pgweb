@@ -160,6 +160,10 @@ func (client *Client) Table(table string) (*Result, error) {
 	return client.query(statements.TableSchema, schema, table)
 }
 
+func (client *Client) NewTable(query string) (*Result, error) {
+	return client.query(query)
+}
+
 func (client *Client) MaterializedView(name string) (*Result, error) {
 	return client.query(statements.MaterializedView, name)
 }
@@ -285,7 +289,7 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 	}
 
 	action := strings.ToLower(strings.Split(query, " ")[0])
-	if action == "update" || action == "delete" {
+	if action == "update" || action == "delete" || action == "insert" {
 		res, err := client.db.Exec(query, args...)
 		if err != nil {
 			return nil, err
@@ -405,4 +409,9 @@ func (client *Client) hasHistoryRecord(query string) bool {
 	}
 
 	return result
+}
+
+func (client *Client) BulkInsert(queryStmt string, params []interface{}) (*Result, error) {
+	queryStmt = client.db.Rebind(queryStmt)
+	return client.query(queryStmt, params...)
 }
