@@ -24,8 +24,12 @@ func test_DumpExport(t *testing.T) {
 		os.Remove(savePath)
 	}()
 
-	// Test full db dump
 	dump := Dump{}
+
+	// Test for pg_dump presence
+	assert.True(t, dump.CanExport())
+
+	// Test full db dump
 	err = dump.Export(url, saveFile)
 	assert.NoError(t, err)
 

@@ -472,6 +472,13 @@ func DataExport(c *gin.Context) {
 		Table: strings.TrimSpace(c.Request.FormValue("table")),
 	}
 
+	// If pg_dump is not available the following code will not show an error in browser.
+	// This is due to the headers being written first.
+	if !dump.CanExport() {
+		c.JSON(400, Error{"pg_dump is not found"})
+		return
+	}
+
 	formattedInfo := info.Format()[0]
 	filename := formattedInfo["current_database"].(string)
 	if dump.Table != "" {
