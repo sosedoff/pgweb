@@ -25,7 +25,7 @@ usage:
 	@echo ""
 
 test:
-	go test -cover ./pkg/...
+	go test -race -cover ./pkg/...
 
 test-all:
 	@./script/test_all.sh
