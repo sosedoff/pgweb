@@ -28,6 +28,7 @@ var allowedPaths = map[string]bool{
 	"/api/info":      true,
 	"/api/connect":   true,
 	"/api/bookmarks": true,
+	"/api/instances": true,
 	"/api/history":   true,
 }
 

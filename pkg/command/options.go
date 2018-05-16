@@ -29,6 +29,8 @@ type Options struct {
 	LockSession                  bool   `long:"lock-session" description:"Lock session to a single database connection" default:"false"`
 	Bookmark                     string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
 	BookmarksDir                 string `long:"bookmarks-dir" description:"Overrides default directory for bookmark files to search" default:""`
+	AwsInstanceDiscovery         bool   `long:"aws-instance-discovery" description:"Try to discover RDS instances on AWS" default:"false"`
+	AwsRegion                    string `long:"aws-region" description:"explicitly specify the region, default is to discover it from EC2 metadata"`
 	DisablePrettyJson            bool   `long:"no-pretty-json" description:"Disable JSON formatting feature for result export" default:"false"`
 	DisableSSH                   bool   `long:"no-ssh" description:"Disable database connections via SSH" default:"false"`
 	ConnectBackend               string `long:"connect-backend" description:"Enable database authentication through a third party backend"`
@@ -54,8 +56,16 @@ func ParseOptions(args []string) (Options, error) {
 		opts.Url = os.Getenv("DATABASE_URL")
 	}
 
+	if opts.AwsRegion == "" {
+		opts.AwsRegion = os.Getenv("AWS_REGION")
+	}
+
 	if os.Getenv("SESSIONS") != "" {
 		opts.Sessions = true
+	}
+
+	if os.Getenv("AWS_INSTANCE_DISCOVERY") != "" {
+		opts.AwsInstanceDiscovery = true
 	}
 
 	if os.Getenv("LOCK_SESSION") != "" {

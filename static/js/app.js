@@ -1,6 +1,7 @@
 var editor             = null;
 var connected          = false;
 var bookmarks          = {};
+var instances          = {};
 var default_rows_limit = 100;
 var currentObject      = null;
 
@@ -86,6 +87,7 @@ function getTableIndexes(table, cb)         { apiCall("get", "/tables/" + table 
 function getTableConstraints(table, cb)     { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
 function getHistory(cb)                     { apiCall("get", "/history", {}, cb); }
 function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
+function getInstances(cb)                   { apiCall("get", "/instances", {}, cb); }
 function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
 function explainQuery(query, cb)            { apiCall("post", "/explain", { query: query }, cb); }
 function disconnect(cb)                     { apiCall("post", "/disconnect", {}, cb); }
@@ -783,6 +785,34 @@ function showConnectionSettings() {
     }
   });
 
+  getInstances(function(data) {
+    // Do not add any instances if we've got an error
+    if (data.error) {
+      return;
+    }
+
+    if (Object.keys(data).length > 0) {
+      // Set instances in global var
+      instances = data;
+
+      // Remove all existing instance options
+      $("#connection_instances").html("");
+
+      // Add blank option
+      $("<option value=''></option>").appendTo("#connection_instances");
+
+      // Add all available instances
+      for (key in data) {
+        $("<option value='" + key + "''>" + key + "</option>").appendTo("#connection_instances");
+      }
+
+      $(".instances").show();
+    }
+    else {
+      $(".instances").hide();
+    }
+  });
+
   $("#connection_window").show();
 }
 
@@ -1233,6 +1263,17 @@ $(document).ready(function() {
       $("#ssh_key").val("");
       $(".connection-ssh-group").hide();
     }
+  });
+
+  $("#connection_instances").on("change", function(e) {
+    var name = $.trim($(this).val());
+    if (name == "") return;
+
+    var item = instances[name];
+
+    // Fill in instance information
+    $("#pg_host").val(item.host);
+    $("#pg_port").val(item.port);
   });
 
   $("#connection_form").on("submit", function(e) {

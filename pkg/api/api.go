@@ -15,6 +15,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
+	"github.com/sosedoff/pgweb/pkg/instances"
 	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
@@ -446,6 +447,11 @@ func HandleQuery(query string, c *gin.Context) {
 func GetBookmarks(c *gin.Context) {
 	bookmarks, err := bookmarks.ReadAll(bookmarks.Path(command.Opts.BookmarksDir))
 	serveResult(bookmarks, err, c)
+}
+
+func GetInstances(c *gin.Context) {
+	instances, err := instances.GetAll()
+	serveResult(instances, err, c)
 }
 
 func GetInfo(c *gin.Context) {
