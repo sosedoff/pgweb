@@ -3,7 +3,9 @@
 set -e
 
 function killproc() {
-  lsof -i tcp:8888 | grep pgweb | awk '{print $2}' | uniq | xargs kill
+  if [[ $(lsof -i tcp:8888) ]]; then
+    lsof -i tcp:8888 | grep pgweb | awk '{print $2}' | xargs kill
+  fi
 }
 
 # Nuke the old container if exists.
