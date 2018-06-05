@@ -4,6 +4,7 @@ import (
 	"fmt"
 	neturl "net/url"
 	"reflect"
+	"regexp"
 	"strings"
 	"time"
 
@@ -17,10 +18,19 @@ import (
 	"github.com/sosedoff/pgweb/pkg/statements"
 )
 
+var (
+	postgresSignature = regexp.MustCompile(`(?i)postgresql ([\d\.]+)\s`)
+	postgresType      = "postgres"
+
+	cockroachSignature = regexp.MustCompile(`(?i)cockroachdb ccl v([\d\.]+)\s`)
+	cockroachType      = "cockroach"
+)
+
 type Client struct {
 	db               *sqlx.DB
 	tunnel           *Tunnel
 	serverVersion    string
+	serverType       string
 	lastQueryTime    time.Time
 	External         bool
 	History          []history.Record `json:"history"`
@@ -132,7 +142,22 @@ func (client *Client) setServerVersion() {
 	}
 
 	version := res.Rows[0][0].(string)
-	client.serverVersion = strings.Split(version, " ")[1]
+
+	// Detect postgresql
+	matches := postgresSignature.FindAllStringSubmatch(version, 1)
+	if len(matches) > 0 {
+		client.serverType = postgresType
+		client.serverVersion = matches[0][1]
+		return
+	}
+
+	// Detect cockroachdb
+	matches = cockroachSignature.FindAllStringSubmatch(version, 1)
+	if len(matches) > 0 {
+		client.serverType = postgresType
+		client.serverVersion = matches[0][1]
+		return
+	}
 }
 
 func (client *Client) Test() error {
