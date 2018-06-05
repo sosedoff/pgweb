@@ -228,6 +228,9 @@ func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, e
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
+	if client.serverType == cockroachType {
+		return client.query(statements.TableInfoCockroach)
+	}
 	return client.query(statements.TableInfo, table)
 }
 
