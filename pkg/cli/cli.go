@@ -81,7 +81,7 @@ func initClient() {
 	}
 
 	if !command.Opts.Sessions {
-		fmt.Printf("Server runs PostgreSQL v%s\n", cl.ServerVersion())
+		fmt.Printf("Conneced to %s\n", cl.ServerVersion())
 	}
 
 	fmt.Println("Checking database objects...")

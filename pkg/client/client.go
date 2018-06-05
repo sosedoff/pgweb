@@ -20,10 +20,10 @@ import (
 
 var (
 	postgresSignature = regexp.MustCompile(`(?i)postgresql ([\d\.]+)\s`)
-	postgresType      = "postgres"
+	postgresType      = "PostgreSQL"
 
 	cockroachSignature = regexp.MustCompile(`(?i)cockroachdb ccl v([\d\.]+)\s`)
-	cockroachType      = "cockroach"
+	cockroachType      = "CockroachDB"
 )
 
 type Client struct {
@@ -297,7 +297,7 @@ func (client *Client) SetReadOnlyMode() error {
 }
 
 func (client *Client) ServerVersion() string {
-	return client.serverVersion
+	return fmt.Sprintf("%s %s", client.serverType, client.serverVersion)
 }
 
 func (client *Client) query(query string, args ...interface{}) (*Result, error) {
