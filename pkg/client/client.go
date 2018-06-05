@@ -154,7 +154,7 @@ func (client *Client) setServerVersion() {
 	// Detect cockroachdb
 	matches = cockroachSignature.FindAllStringSubmatch(version, 1)
 	if len(matches) > 0 {
-		client.serverType = postgresType
+		client.serverType = cockroachType
 		client.serverVersion = matches[0][1]
 		return
 	}
@@ -255,9 +255,11 @@ func (client *Client) TableConstraints(table string) (*Result, error) {
 
 // Returns all active queriers on the server
 func (client *Client) Activity() (*Result, error) {
-	chunks := strings.Split(client.serverVersion, ".")
-	version := strings.Join(chunks[0:2], ".")
+	if client.serverType == cockroachType {
+		return client.query("SHOW QUERIES")
+	}
 
+	version := getMajorMinorVersion(client.serverVersion)
 	query := statements.Activity[version]
 	if query == "" {
 		query = statements.Activity["default"]
