@@ -29,6 +29,7 @@ test:
 
 test-all:
 	@./script/test_all.sh
+	@./script/test_cockroach.sh
 
 assets: static/
 	go-bindata -o pkg/data/bindata.go -pkg data $(BINDATA_OPTS) $(BINDATA_IGNORE) -ignore=[.]gitignore -ignore=[.]gitkeep $<...
