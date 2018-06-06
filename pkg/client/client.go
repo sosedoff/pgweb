@@ -119,6 +119,11 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 		fmt.Println("Creating a new client for:", url)
 	}
 
+	uri, err := neturl.Parse(url)
+	if err == nil && uri.Path == "" {
+		return nil, fmt.Errorf("Database name is not provided")
+	}
+
 	db, err := sqlx.Open("postgres", url)
 	if err != nil {
 		return nil, err
