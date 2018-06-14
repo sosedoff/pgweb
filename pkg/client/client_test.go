@@ -278,6 +278,15 @@ func test_TableInfo(t *testing.T) {
 	assert.Equal(t, 1, len(res.Rows))
 }
 
+func test_EstimatedTableRowsCount(t *testing.T) {
+	res, err := testClient.EstimatedTableRowsCount("books", RowsOptions{})
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []string{"reltuples"}, res.Columns)
+	var count int64 = 15
+	assert.Equal(t, []Row{Row{count}}, res.Rows)
+}
+
 func test_TableIndexes(t *testing.T) {
 	res, err := testClient.TableIndexes("books")
 
@@ -400,6 +409,7 @@ func TestAll(t *testing.T) {
 	test_Table(t)
 	test_TableRows(t)
 	test_TableInfo(t)
+	test_EstimatedTableRowsCount(t)
 	test_TableIndexes(t)
 	test_TableConstraints(t)
 	test_Query(t)
