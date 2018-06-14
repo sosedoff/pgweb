@@ -241,7 +241,7 @@ func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, e
 
 	if opts.Where != "" {
 		sql += fmt.Sprintf(" WHERE %s", opts.Where)
-	} else {
+	} else if client.serverType == postgresType {
 		tableInfo, err := client.TableInfo(table)
 		if err != nil {
 			return nil, err
