@@ -221,12 +221,35 @@ func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error)
 	return client.query(sql)
 }
 
+func (client *Client) EstimatedTableRowsCount(table string, opts RowsOptions) (*Result, error) {
+	sql := fmt.Sprintf(`SELECT reltuples FROM pg_class WHERE relname = '%s'`, table)
+
+	result, err := client.query(sql)
+	if err != nil {
+		return nil, err
+	}
+	// float64 to int64 conversion
+	estimatedRowsCount := result.Rows[0][0].(float64)
+	result.Rows[0] = Row{int64(estimatedRowsCount)}
+
+	return result, nil
+}
+
 func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
 	sql := fmt.Sprintf(`SELECT COUNT(1) FROM "%s"."%s"`, schema, table)
 
 	if opts.Where != "" {
 		sql += fmt.Sprintf(" WHERE %s", opts.Where)
+	} else {
+		tableInfo, err := client.TableInfo(table)
+		if err != nil {
+			return nil, err
+		}
+		estimatedRowsCount := tableInfo.Rows[0][3].(float64)
+		if estimatedRowsCount > 100000 {
+			return client.EstimatedTableRowsCount(table, opts)
+		}
 	}
 
 	return client.query(sql)
