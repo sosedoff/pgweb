@@ -279,11 +279,31 @@ func test_TableInfo(t *testing.T) {
 }
 
 func test_EstimatedTableRowsCount(t *testing.T) {
+	var count int64 = 15
 	res, err := testClient.EstimatedTableRowsCount("books", RowsOptions{})
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, []string{"reltuples"}, res.Columns)
+	assert.Equal(t, []Row{Row{count}}, res.Rows)
+}
+
+func test_TableRowsCount(t *testing.T) {
 	var count int64 = 15
+	res, err := testClient.TableRowsCount("books", RowsOptions{})
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []string{"count"}, res.Columns)
+	assert.Equal(t, []Row{Row{count}}, res.Rows)
+}
+
+func test_TableRowsCountWithLargeTable(t *testing.T) {
+	var count int64 = 100010
+	testClient.db.MustExec(`create table large_table as select s from generate_Series(1,100010) s;`)
+	testClient.db.MustExec(`VACUUM large_table;`)
+	res, err := testClient.TableRowsCount("large_table", RowsOptions{})
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []string{"reltuples"}, res.Columns)
 	assert.Equal(t, []Row{Row{count}}, res.Rows)
 }
 
@@ -410,6 +430,8 @@ func TestAll(t *testing.T) {
 	test_TableRows(t)
 	test_TableInfo(t)
 	test_EstimatedTableRowsCount(t)
+	test_TableRowsCount(t)
+	test_TableRowsCountWithLargeTable(t)
 	test_TableIndexes(t)
 	test_TableConstraints(t)
 	test_Query(t)
