@@ -1,3 +1,9 @@
+## 0.9.12 - 2018-04-23
+
+- Add link to view database connection string format on login page
+- Include constraint name under "constraints" tab, GH-343
+- Misc CI and config changes
+
 ## 0.9.11 - 2017-12-07
 
 - Fix ssl mode for the connection url in the bookmarks, GH-320

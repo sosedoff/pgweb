@@ -4,6 +4,7 @@ import (
 	"fmt"
 	neturl "net/url"
 	"reflect"
+	"regexp"
 	"strings"
 	"time"
 
@@ -17,10 +18,19 @@ import (
 	"github.com/sosedoff/pgweb/pkg/statements"
 )
 
+var (
+	postgresSignature = regexp.MustCompile(`(?i)postgresql ([\d\.]+)\s`)
+	postgresType      = "PostgreSQL"
+
+	cockroachSignature = regexp.MustCompile(`(?i)cockroachdb ccl v([\d\.]+)\s`)
+	cockroachType      = "CockroachDB"
+)
+
 type Client struct {
 	db               *sqlx.DB
 	tunnel           *Tunnel
 	serverVersion    string
+	serverType       string
 	lastQueryTime    time.Time
 	External         bool
 	History          []history.Record `json:"history"`
@@ -109,6 +119,11 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 		fmt.Println("Creating a new client for:", url)
 	}
 
+	uri, err := neturl.Parse(url)
+	if err == nil && uri.Path == "" {
+		return nil, fmt.Errorf("Database name is not provided")
+	}
+
 	db, err := sqlx.Open("postgres", url)
 	if err != nil {
 		return nil, err
@@ -132,7 +147,22 @@ func (client *Client) setServerVersion() {
 	}
 
 	version := res.Rows[0][0].(string)
-	client.serverVersion = strings.Split(version, " ")[1]
+
+	// Detect postgresql
+	matches := postgresSignature.FindAllStringSubmatch(version, 1)
+	if len(matches) > 0 {
+		client.serverType = postgresType
+		client.serverVersion = matches[0][1]
+		return
+	}
+
+	// Detect cockroachdb
+	matches = cockroachSignature.FindAllStringSubmatch(version, 1)
+	if len(matches) > 0 {
+		client.serverType = cockroachType
+		client.serverVersion = matches[0][1]
+		return
+	}
 }
 
 func (client *Client) Test() error {
@@ -191,18 +221,45 @@ func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error)
 	return client.query(sql)
 }
 
+func (client *Client) EstimatedTableRowsCount(table string, opts RowsOptions) (*Result, error) {
+	schema, table := getSchemaAndTable(table)
+	sql := fmt.Sprintf(`SELECT reltuples FROM pg_class WHERE oid = '%s.%s'::regclass;`, schema, table)
+
+	result, err := client.query(sql)
+	if err != nil {
+		return nil, err
+	}
+	// float64 to int64 conversion
+	estimatedRowsCount := result.Rows[0][0].(float64)
+	result.Rows[0] = Row{int64(estimatedRowsCount)}
+
+	return result, nil
+}
+
 func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
 	sql := fmt.Sprintf(`SELECT COUNT(1) FROM "%s"."%s"`, schema, table)
 
 	if opts.Where != "" {
 		sql += fmt.Sprintf(" WHERE %s", opts.Where)
+	} else if client.serverType == postgresType {
+		tableInfo, err := client.TableInfo(table)
+		if err != nil {
+			return nil, err
+		}
+		estimatedRowsCount := tableInfo.Rows[0][3].(float64)
+		if estimatedRowsCount > 100000 {
+			return client.EstimatedTableRowsCount(table, opts)
+		}
 	}
 
 	return client.query(sql)
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {
+	if client.serverType == cockroachType {
+		return client.query(statements.TableInfoCockroach)
+	}
 	schema, table := getSchemaAndTable(table)
 	return client.query(statements.TableInfo, fmt.Sprintf(`"%s"."%s"`, schema, table))
 }
@@ -231,9 +288,11 @@ func (client *Client) TableConstraints(table string) (*Result, error) {
 
 // Returns all active queriers on the server
 func (client *Client) Activity() (*Result, error) {
-	chunks := strings.Split(client.serverVersion, ".")
-	version := strings.Join(chunks[0:2], ".")
+	if client.serverType == cockroachType {
+		return client.query("SHOW QUERIES")
+	}
 
+	version := getMajorMinorVersion(client.serverVersion)
 	query := statements.Activity[version]
 	if query == "" {
 		query = statements.Activity["default"]
@@ -268,7 +327,7 @@ func (client *Client) SetReadOnlyMode() error {
 }
 
 func (client *Client) ServerVersion() string {
-	return client.serverVersion
+	return fmt.Sprintf("%s %s", client.serverType, client.serverVersion)
 }
 
 func (client *Client) query(query string, args ...interface{}) (*Result, error) {

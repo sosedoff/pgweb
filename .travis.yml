@@ -14,10 +14,7 @@ go:
   - 1.7.6
   - 1.8.7
   - 1.9.3
-  - 1.10.0
-
-env:
-  - GO15VENDOREXPERIMENT=1
+  - 1.10.1
 
 before_install:
   - ./script/check_formatting.sh
