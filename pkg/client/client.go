@@ -260,7 +260,8 @@ func (client *Client) TableInfo(table string) (*Result, error) {
 	if client.serverType == cockroachType {
 		return client.query(statements.TableInfoCockroach)
 	}
-	return client.query(statements.TableInfo, table)
+	schema, table := getSchemaAndTable(table)
+	return client.query(statements.TableInfo, fmt.Sprintf(`"%s"."%s"`, schema, table))
 }
 
 func (client *Client) TableIndexes(table string) (*Result, error) {
