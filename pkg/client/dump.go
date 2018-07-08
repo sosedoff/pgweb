@@ -11,6 +11,11 @@ type Dump struct {
 	Table string
 }
 
+func (d *Dump) CanExport() bool {
+	err := exec.Command("pg_dump", "--version").Run()
+	return err == nil
+}
+
 func (d *Dump) Export(url string, writer io.Writer) error {
 	errOutput := bytes.NewBuffer(nil)
 

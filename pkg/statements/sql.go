@@ -50,7 +50,8 @@ WHERE
 
 	TableConstraints = `
 SELECT
-  pg_get_constraintdef(c.oid, true) as condef
+  conname as name,
+  pg_get_constraintdef(c.oid, true) as definition
 FROM
   pg_constraint c
 JOIN
@@ -72,6 +73,13 @@ SELECT
   pg_size_pretty(pg_total_relation_size($1)) AS total_size,
   (SELECT reltuples FROM pg_class WHERE oid = $1::regclass) AS rows_count`
 
+	TableInfoCockroach = `
+SELECT
+  'n/a' AS data_size,
+  'n/a' AS index_size,
+  'n/a' AS total_size,
+  'n/a' AS rows_count`
+
 	// ---------------------------------------------------------------------------
 
 	TableSchema = `
@@ -82,7 +90,7 @@ SELECT
   character_maximum_length,
   character_set_catalog,
   column_default,
-  pg_catalog.col_description(($1::text || '.' || $2::text)::regclass::oid, ordinal_position) as comment
+  pg_catalog.col_description(('"' || $1::text || '"."' || $2::text || '"')::regclass::oid, ordinal_position) as comment
 FROM
   information_schema.columns
 WHERE

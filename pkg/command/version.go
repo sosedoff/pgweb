@@ -1,6 +1,6 @@
 package command
 
-const VERSION = "0.9.11"
+const VERSION = "0.9.12"
 
 var (
 	GitCommit string

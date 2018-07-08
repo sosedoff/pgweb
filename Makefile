@@ -25,13 +25,14 @@ usage:
 	@echo ""
 
 test:
-	go test -cover ./pkg/...
+	go test -race -cover ./pkg/...
 
 test-acceptance:
 	@./script/test_ginkgo.sh
 
 test-all:
 	@./script/test_all.sh
+	@./script/test_cockroach.sh
 
 assets: static/
 	go-bindata -o pkg/data/bindata.go -pkg data $(BINDATA_OPTS) $(BINDATA_IGNORE) -ignore=[.]gitignore -ignore=[.]gitkeep $<...
@@ -66,10 +67,10 @@ bootstrap:
 	gox -build-toolchain
 
 setup:
-	go get github.com/tools/godep
-	go get golang.org/x/tools/cmd/cover
-	go get github.com/mitchellh/gox
-	go get github.com/jteeuwen/go-bindata/...
+	go get -u github.com/tools/godep
+	go get -u golang.org/x/tools/cmd/cover
+	go get -u github.com/mitchellh/gox
+	go get -u github.com/jteeuwen/go-bindata/...
 	go get github.com/sclevine/agouti
 	go get github.com/onsi/ginkgo/ginkgo
 	go get github.com/onsi/gomega

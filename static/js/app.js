@@ -865,6 +865,14 @@ function bindCurrentDatabaseMenu() {
   });
 }
 
+function getQuotedSchemaTableName(table) {
+  if (typeof table === "string" && table.indexOf(".") > -1) {
+    var schemaTableComponents = table.split(".");
+    return ['"', schemaTableComponents[0], '"."', schemaTableComponents[1], '"'].join('');
+  }
+  return table;
+}
+
 function bindContextMenus() {
   bindTableHeaderMenu();
   bindCurrentDatabaseMenu();
@@ -878,7 +886,7 @@ function bindContextMenus() {
         scopes: "li.schema-table",
         onItem: function(context, e) {
           var el      = $(e.target);
-          var table   = $(context[0]).data("id");
+          var table   = getQuotedSchemaTableName($(context[0]).data("id"));
           var action  = el.data("action");
           performTableAction(table, action, el);
         }
@@ -891,7 +899,7 @@ function bindContextMenus() {
         scopes: "li.schema-view",
         onItem: function(context, e) {
           var el      = $(e.target);
-          var table   = $(context[0]).data("id");
+          var table   = getQuotedSchemaTableName($(context[0]).data("id"));
           var action  = el.data("action");
           performViewAction(table, action, el);
         }

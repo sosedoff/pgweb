@@ -2,12 +2,16 @@ package client
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"runtime"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/sosedoff/pgweb/pkg/command"
 )
 
 var (
@@ -43,6 +47,11 @@ func getVar(name, def string) string {
 }
 
 func initVars() {
+	// We need to load default options to make sure all stuff works
+	if err := command.SetDefaultOptions(); err != nil {
+		log.Fatal(err)
+	}
+
 	serverHost = getVar("PGHOST", "localhost")
 	serverPort = getVar("PGPORT", "5432")
 	serverUser = getVar("PGUSER", "postgres")
@@ -146,6 +155,21 @@ func test_NewClientFromUrl2(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, url, client.ConnectionString)
+}
+
+func test_ClientIdleTime(t *testing.T) {
+	examples := map[time.Time]bool{
+		time.Now():                         false, // Current time
+		time.Now().Add(time.Minute * -30):  false, // 30 minutes ago
+		time.Now().Add(time.Minute * -240): true,  // 240 minutes ago
+		time.Now().Add(time.Minute * 30):   false, // 30 minutes in future
+		time.Now().Add(time.Minute * 128):  false, // 128 minutes in future
+	}
+
+	for ts, expected := range examples {
+		testClient.lastQueryTime = ts
+		assert.Equal(t, expected, testClient.IsIdle())
+	}
 }
 
 func test_Test(t *testing.T) {
@@ -254,6 +278,35 @@ func test_TableInfo(t *testing.T) {
 	assert.Equal(t, 1, len(res.Rows))
 }
 
+func test_EstimatedTableRowsCount(t *testing.T) {
+	var count int64 = 15
+	res, err := testClient.EstimatedTableRowsCount("books", RowsOptions{})
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []string{"reltuples"}, res.Columns)
+	assert.Equal(t, []Row{Row{count}}, res.Rows)
+}
+
+func test_TableRowsCount(t *testing.T) {
+	var count int64 = 15
+	res, err := testClient.TableRowsCount("books", RowsOptions{})
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []string{"count"}, res.Columns)
+	assert.Equal(t, []Row{Row{count}}, res.Rows)
+}
+
+func test_TableRowsCountWithLargeTable(t *testing.T) {
+	var count int64 = 100010
+	testClient.db.MustExec(`create table large_table as select s from generate_Series(1,100010) s;`)
+	testClient.db.MustExec(`VACUUM large_table;`)
+	res, err := testClient.TableRowsCount("large_table", RowsOptions{})
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []string{"reltuples"}, res.Columns)
+	assert.Equal(t, []Row{Row{count}}, res.Rows)
+}
+
 func test_TableIndexes(t *testing.T) {
 	res, err := testClient.TableIndexes("books")
 
@@ -266,8 +319,9 @@ func test_TableConstraints(t *testing.T) {
 	res, err := testClient.TableConstraints("editions")
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, 1, len(res.Columns))
-	assert.Equal(t, 2, len(res.Rows))
+	assert.Equal(t, []string{"name", "definition"}, res.Columns)
+	assert.Equal(t, Row{"pkey", "PRIMARY KEY (isbn)"}, res.Rows[0])
+	assert.Equal(t, Row{"integrity", "CHECK (book_id IS NOT NULL AND edition IS NOT NULL)"}, res.Rows[1])
 }
 
 func test_Query(t *testing.T) {
@@ -366,6 +420,7 @@ func TestAll(t *testing.T) {
 	setupClient()
 
 	test_NewClientFromUrl(t)
+	test_ClientIdleTime(t)
 	test_Test(t)
 	test_Info(t)
 	test_Activity(t)
@@ -374,6 +429,9 @@ func TestAll(t *testing.T) {
 	test_Table(t)
 	test_TableRows(t)
 	test_TableInfo(t)
+	test_EstimatedTableRowsCount(t)
+	test_TableRowsCount(t)
+	test_TableRowsCountWithLargeTable(t)
 	test_TableIndexes(t)
 	test_TableConstraints(t)
 	test_Query(t)

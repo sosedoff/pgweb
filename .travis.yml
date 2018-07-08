@@ -1,11 +1,19 @@
 sudo: required
+dist: trusty
+group: deprecated-2017Q4
 
 
 language: go
+
+services:
+  - docker
+
 go:
   - 1.7.6
-  - 1.8.3
-  - 1.9
+  - 1.8.7
+  - 1.9.3
+  - 1.10.1
+
 
 go_import_path: github.com/sosedoff/pgweb
 
@@ -15,7 +23,6 @@ services:
 
 env:
   global:
-    - GO15VENDOREXPERIMENT=1
     - DISPLAY=':99.0'
 
 addons:
@@ -33,7 +40,9 @@ before_script:
       sh -e /etc/init.d/xvfb start
     fi
 
+
 before_install:
+  - ./script/check_formatting.sh
   - ./script/check_assets.sh
   - export PATH=$PATH:/usr/lib/chromium-browser
 
