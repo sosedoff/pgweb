@@ -15,7 +15,7 @@ export PGHOST=${PGHOST:-localhost}
 export PGUSER="postgres"
 export PGPASSWORD="postgres"
 export PGDATABASE="booktown"
-export PGPORT="5432"
+export PGPORT="15432"
 
 
 export PGVERSION="9.6"

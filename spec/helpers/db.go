@@ -33,7 +33,7 @@ func getVar(name, def string) string {
 
 func initVars() {
 	ServerHost = getVar("PGHOST", "localhost")
-	ServerPort = getVar("PGPORT", "5432")
+	ServerPort = getVar("PGPORT", "15432")
 	ServerUser = getVar("PGUSER", "postgres")
 	ServerPassword = getVar("PGPASSWORD", "postgres")
 	ServerDatabase = getVar("PGDATABASE", "booktown")
