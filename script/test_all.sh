@@ -12,7 +12,7 @@ export PGHOST=${PGHOST:-localhost}
 export PGUSER="postgres"
 export PGPASSWORD=""
 export PGDATABASE="booktown"
-export PGPORT="15432"
+export PGPORT="5432"
 
 # TODO: Enable the 10.x branch when it's supported on Travis.
 # Local 10.x version is required so that pg_dump can properly work with older versions.

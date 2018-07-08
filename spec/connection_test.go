@@ -98,6 +98,7 @@ var _ = Describe("DbConnection", func() {
 			helpers.PgHostSelector: helpers.ServerHost,
 			helpers.PgPortSelector: helpers.ServerPort,
 			helpers.PgDbSelector:   helpers.ServerDatabase,
+			helpers.PgSslSelector:  "disable",
 		}
 
 		Context("using wrong password", func() {

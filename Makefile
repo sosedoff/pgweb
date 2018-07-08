@@ -71,8 +71,8 @@ setup:
 	go get -u golang.org/x/tools/cmd/cover
 	go get -u github.com/mitchellh/gox
 	go get -u github.com/jteeuwen/go-bindata/...
-	go get github.com/sclevine/agouti
 	go get github.com/onsi/ginkgo/ginkgo
+	go get github.com/sclevine/agouti
 	go get github.com/onsi/gomega
 	godep restore
 

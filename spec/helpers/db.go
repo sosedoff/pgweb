@@ -33,7 +33,7 @@ func getVar(name, def string) string {
 
 func initVars() {
 	ServerHost = getVar("PGHOST", "localhost")
-	ServerPort = getVar("PGPORT", "15432")
+	ServerPort = getVar("PGPORT", "5432")
 	ServerUser = getVar("PGUSER", "postgres")
 	ServerPassword = getVar("PGPASSWORD", "postgres")
 	ServerDatabase = getVar("PGDATABASE", "booktown")
@@ -58,18 +58,29 @@ func onWindows() bool {
 }
 
 func setup() {
-	out, err := exec.Command(
-		testCommands["createdb"],
-		"-U", ServerUser,
-		"-h", ServerHost,
-		"-p", ServerPort,
-		ServerDatabase,
-	).CombinedOutput()
+	out, err := createDb()
 
 	if err != nil {
-		fmt.Println("Database creation failed:", string(out))
-		fmt.Println("Error:", err)
-		os.Exit(1)
+		fmt.Println(fmt.Errorf("database creation failed: %s, err: %e", string(out), err))
+
+		var (
+			o []byte // out
+			e error  // error
+		)
+
+		killConnections()
+
+		o, e = dropDb()
+		if e != nil {
+			fmt.Println(fmt.Errorf("dataase dropping failed: %s, err: %s", string(o), e.Error()))
+			return
+		}
+
+		o, e = createDb()
+		if e != nil {
+			fmt.Println(fmt.Errorf("dataase dropping failed: %s, err: %s", string(o), e.Error()))
+			return
+		}
 	}
 
 	_, filename, _, _ := runtime.Caller(1)
@@ -88,6 +99,16 @@ func setup() {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
+}
+
+func createDb() ([]byte, error) {
+	return exec.Command(
+		testCommands["createdb"],
+		"-U", ServerUser,
+		"-h", ServerHost,
+		"-p", ServerPort,
+		ServerDatabase,
+	).CombinedOutput()
 }
 
 func killConnections() {
@@ -112,17 +133,21 @@ func teardown() {
 
 	killConnections()
 
-	_, err := exec.Command(
+	_, err := dropDb()
+
+	if err != nil {
+		fmt.Println("Teardown error:", err)
+	}
+}
+
+func dropDb() ([]byte, error) {
+	return exec.Command(
 		testCommands["dropdb"],
 		"-U", ServerUser,
 		"-h", ServerHost,
 		"-p", ServerPort,
 		ServerDatabase,
 	).CombinedOutput()
-
-	if err != nil {
-		fmt.Println("Teardown error:", err)
-	}
 }
 
 func CreateBooktownDB() {

@@ -43,7 +43,7 @@ var _ = Describe("Gui", func() {
 		It("clicks on Constraints tab", func() {
 			page.Find(helpers.TabConstraintsSelector).Click()
 			Expect(page.Find("#results")).Should(BeVisible())
-			Expect(page.All("#results tr td").At(0).Text()).To(Equal("PRIMARY KEY (id)"))
+			Expect(page.All("#results tr td").At(0).Text()).To(Equal("books_id_pkey"))
 		})
 
 		It("clicks on SQL query tab", func() {
@@ -73,7 +73,4 @@ var _ = Describe("Gui", func() {
 
 	})
 
-	//Context("SQL editor", func() {
-	//
-	//})
 })

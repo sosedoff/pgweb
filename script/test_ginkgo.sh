@@ -9,13 +9,13 @@
 
 set -e
 
-export PGWEB_VERSION=0.9.10
+export PGWEB_VERSION=0.9.12
 export PGWEB_PORT=8081
 export PGHOST=${PGHOST:-localhost}
 export PGUSER="postgres"
 export PGPASSWORD="postgres"
 export PGDATABASE="booktown"
-export PGPORT="15432"
+export PGPORT="5432"
 
 
 export PGVERSION="9.6"
