@@ -9,8 +9,6 @@
 # http://stackoverflow.com/questions/40262682/how-to-run-selenium-3-x-with-chrome-driver-through-terminal
 # http://askubuntu.com/questions/760085/how-do-you-install-google-chrome-on-ubuntu-16-04
 
-set -e
-
 # Versions
 CHROME_DRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`
 
