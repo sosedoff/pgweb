@@ -2,37 +2,25 @@ sudo: required
 dist: trusty
 group: deprecated-2017Q4
 
-
-language: go
-
 services:
   - docker
 
+addons:
+  postgresql: "9.6"
+
+language: go
 go:
   - 1.7.6
   - 1.8.7
   - 1.9.3
   - 1.10.1
 
-
 go_import_path: github.com/sosedoff/pgweb
-
-
-services:
-  - docker
 
 env:
   global:
     - DISPLAY=':99.0'
 
-addons:
-  postgresql: "9.6"
-  apt:
-    sources:
-      - google-chrome
-    packages:
-      - google-chrome-stable
-      - chromium-chromedriver
 
 before_script:
   - |
@@ -44,10 +32,10 @@ before_script:
 before_install:
   - ./script/check_formatting.sh
   - ./script/check_assets.sh
-  - export PATH=$PATH:/usr/lib/chromium-browser
 
 install:
   - make setup
+  - ./script/install_chromedriver.sh
 
 script:
   - make build
