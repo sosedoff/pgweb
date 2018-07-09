@@ -19,7 +19,7 @@ sudo rm /usr/local/bin/chromedriver
 
 # Install dependencies.
 sudo apt-get update
-sudo apt-get install -y unzip openjdk-8-jre-headless xvfb libxi6 libgconf-2-4
+sudo apt-get install -y unzip openjdk-8-jre-headless xvfb libxi6 libgconf-2-4 ca-certificates
 
 # Install Chrome.
 sudo curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add
