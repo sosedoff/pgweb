@@ -1093,6 +1093,14 @@ $(document).ready(function() {
     showTableContent();
   });
 
+  // Automatically prefill the filter if it's not set yet
+  $("select.column").on("change", function() {
+    if ($("select.filter").val() == "") {
+      $("select.filter").val("equal");
+      $("#table_filter_value").focus();
+    }
+  });
+
   $("#pagination .next-page").on("click", function() {
     var current = $(".current-page").data("page");
     var total   = $(".current-page").data("pages");
