@@ -1,3 +1,8 @@
+## Master
+
+- Automatically set table filter option to 'equals' if its not set, GH-370
+- Dockerfile updates
+
 ## 0.9.12 - 2018-04-23
 
 - Add link to view database connection string format on login page
