@@ -10,7 +10,7 @@ import (
 
 type Options struct {
 	Version                      bool   `short:"v" long:"version" description:"Print version"`
-	Debug                        bool   `short:"d" long:"debug" description:"Enable debugging mode" default:"false"`
+	Debug                        bool   `short:"d" long:"debug" description:"Enable debugging mode"`
 	Url                          string `long:"url" description:"Database connection string"`
 	Host                         string `long:"host" description:"Server hostname or IP"`
 	Port                         int    `long:"port" description:"Server port" default:"5432"`
@@ -23,20 +23,20 @@ type Options struct {
 	AuthUser                     string `long:"auth-user" description:"HTTP basic auth user"`
 	AuthPass                     string `long:"auth-pass" description:"HTTP basic auth password"`
 	SkipOpen                     bool   `short:"s" long:"skip-open" description:"Skip browser open on start"`
-	Sessions                     bool   `long:"sessions" description:"Enable multiple database sessions" default:"false"`
+	Sessions                     bool   `long:"sessions" description:"Enable multiple database sessions"`
 	Prefix                       string `long:"prefix" description:"Add a url prefix"`
 	ReadOnly                     bool   `long:"readonly" description:"Run database connection in readonly mode"`
-	LockSession                  bool   `long:"lock-session" description:"Lock session to a single database connection" default:"false"`
+	LockSession                  bool   `long:"lock-session" description:"Lock session to a single database connection"`
 	Bookmark                     string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
 	BookmarksDir                 string `long:"bookmarks-dir" description:"Overrides default directory for bookmark files to search" default:""`
-	DisablePrettyJson            bool   `long:"no-pretty-json" description:"Disable JSON formatting feature for result export" default:"false"`
-	DisableSSH                   bool   `long:"no-ssh" description:"Disable database connections via SSH" default:"false"`
+	DisablePrettyJson            bool   `long:"no-pretty-json" description:"Disable JSON formatting feature for result export"`
+	DisableSSH                   bool   `long:"no-ssh" description:"Disable database connections via SSH"`
 	ConnectBackend               string `long:"connect-backend" description:"Enable database authentication through a third party backend"`
 	ConnectToken                 string `long:"connect-token" description:"Authentication token for the third-party connect backend"`
 	ConnectHeaders               string `long:"connect-headers" description:"List of headers to pass to the connect backend"`
-	DisableConnectionIdleTimeout bool   `long:"no-idle-timeout" description:"Disable connection idle timeout" default:"false"`
+	DisableConnectionIdleTimeout bool   `long:"no-idle-timeout" description:"Disable connection idle timeout"`
 	ConnectionIdleTimeout        int    `long:"idle-timeout" description:"Set connection idle timeout in minutes" default:"180"`
-	Cors                         bool   `long:"cors" description:"Enable Cross-Origin Resource Sharing (CORS)" default:"false"`
+	Cors                         bool   `long:"cors" description:"Enable Cross-Origin Resource Sharing (CORS)"`
 	CorsOrigin                   string `long:"cors-origin" description:"Allowed CORS origins" default:"*"`
 }
 

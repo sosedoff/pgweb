@@ -154,6 +154,13 @@ func convertToString(val reflect.Value, options multiTag) (string, error) {
 func convertUnmarshal(val string, retval reflect.Value) (bool, error) {
 	if retval.Type().NumMethod() > 0 && retval.CanInterface() {
 		if unmarshaler, ok := retval.Interface().(Unmarshaler); ok {
+			if retval.IsNil() {
+				retval.Set(reflect.New(retval.Type().Elem()))
+
+				// Re-assign from the new value
+				unmarshaler = retval.Interface().(Unmarshaler)
+			}
+
 			return true, unmarshaler.UnmarshalFlag(val)
 		}
 	}
@@ -312,46 +319,30 @@ func quoteIfNeeded(s string) string {
 	return s
 }
 
+func quoteIfNeededV(s []string) []string {
+	ret := make([]string, len(s))
+
+	for i, v := range s {
+		ret[i] = quoteIfNeeded(v)
+	}
+
+	return ret
+}
+
+func quoteV(s []string) []string {
+	ret := make([]string, len(s))
+
+	for i, v := range s {
+		ret[i] = strconv.Quote(v)
+	}
+
+	return ret
+}
+
 func unquoteIfPossible(s string) (string, error) {
 	if len(s) == 0 || s[0] != '"' {
 		return s, nil
 	}
 
 	return strconv.Unquote(s)
-}
-
-func wrapText(s string, l int, prefix string) string {
-	// Basic text wrapping of s at spaces to fit in l
-	var ret string
-
-	s = strings.TrimSpace(s)
-
-	for len(s) > l {
-		// Try to split on space
-		suffix := ""
-
-		pos := strings.LastIndex(s[:l], " ")
-
-		if pos < 0 {
-			pos = l - 1
-			suffix = "-\n"
-		}
-
-		if len(ret) != 0 {
-			ret += "\n" + prefix
-		}
-
-		ret += strings.TrimSpace(s[:pos]) + suffix
-		s = strings.TrimSpace(s[pos:])
-	}
-
-	if len(s) > 0 {
-		if len(ret) != 0 {
-			ret += "\n" + prefix
-		}
-
-		return ret + s
-	}
-
-	return ret
 }
