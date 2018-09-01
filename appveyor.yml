@@ -13,6 +13,7 @@ install:
   - cd %APPVEYOR_BUILD_FOLDER%
   - go env
   - go version
+  - go get github.com/golang/dep/cmd/dep
   - dep ensure
 
 build_script:
