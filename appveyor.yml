@@ -21,6 +21,6 @@ build_script:
   - go build
 
 test_script:
-  - go test -race -cover ./...
+  - go test -cover ./...
 
 deploy: off
