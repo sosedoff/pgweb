@@ -1,4 +1,7 @@
-clone_folder: c:\go\src\github.com\sosedoff\pgweb
+clone_folder: c:\gopath\src\github.com\sosedoff\pgweb
+
+environment:
+  GOPATH: c:\gopath
 
 services:
   - postgresql
