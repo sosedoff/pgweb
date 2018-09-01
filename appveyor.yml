@@ -13,15 +13,12 @@ install:
   - cd %APPVEYOR_BUILD_FOLDER%
   - go env
   - go version
-  - go get github.com/tools/godep
-  - godep get github.com/mitchellh/gox
-  - godep get github.com/jteeuwen/go-bindata/...
-  - godep restore
+  - dep ensure
 
 build_script:
-  - godep go build
+  - go build
 
 test_script:
-  - godep go test -cover ./...
+  - go test -race -cover ./...
 
 deploy: off
