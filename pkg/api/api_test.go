@@ -17,8 +17,6 @@ func Test_assetContentType(t *testing.T) {
 		"foo.gif":  "image/gif",
 		"foo.eot":  "application/vnd.ms-fontobject",
 		"foo.svg":  "image/svg+xml",
-		"foo.ttf":  "font/ttf",
-		"foo.woff": "font/woff",
 		"foo.foo":  "text/plain; charset=utf-8",
 		"foo":      "text/plain; charset=utf-8",
 	}
