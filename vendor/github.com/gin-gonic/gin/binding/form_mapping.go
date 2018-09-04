@@ -8,6 +8,8 @@ import (
 	"errors"
 	"reflect"
 	"strconv"
+	"strings"
+	"time"
 )
 
 func mapForm(ptr interface{}, form map[string][]string) error {
@@ -22,12 +24,28 @@ func mapForm(ptr interface{}, form map[string][]string) error {
 
 		structFieldKind := structField.Kind()
 		inputFieldName := typeField.Tag.Get("form")
+		inputFieldNameList := strings.Split(inputFieldName, ",")
+		inputFieldName = inputFieldNameList[0]
+		var defaultValue string
+		if len(inputFieldNameList) > 1 {
+			defaultList := strings.SplitN(inputFieldNameList[1], "=", 2)
+			if defaultList[0] == "default" {
+				defaultValue = defaultList[1]
+			}
+		}
 		if inputFieldName == "" {
 			inputFieldName = typeField.Name
 
-			// if "form" tag is nil, we inspect if the field is a struct.
+			// if "form" tag is nil, we inspect if the field is a struct or struct pointer.
 			// this would not make sense for JSON parsing but it does for a form
 			// since data is flatten
+			if structFieldKind == reflect.Ptr {
+				if !structField.Elem().IsValid() {
+					structField.Set(reflect.New(structField.Type().Elem()))
+				}
+				structField = structField.Elem()
+				structFieldKind = structField.Kind()
+			}
 			if structFieldKind == reflect.Struct {
 				err := mapForm(structField.Addr().Interface(), form)
 				if err != nil {
@@ -37,8 +55,13 @@ func mapForm(ptr interface{}, form map[string][]string) error {
 			}
 		}
 		inputValue, exists := form[inputFieldName]
+
 		if !exists {
-			continue
+			if defaultValue == "" {
+				continue
+			}
+			inputValue = make([]string, 1)
+			inputValue[0] = defaultValue
 		}
 
 		numElems := len(inputValue)
@@ -52,6 +75,12 @@ func mapForm(ptr interface{}, form map[string][]string) error {
 			}
 			val.Field(i).Set(slice)
 		} else {
+			if _, isTime := structField.Interface().(time.Time); isTime {
+				if err := setTimeField(inputValue[0], typeField, structField); err != nil {
+					return err
+				}
+				continue
+			}
 			if err := setWithProperType(typeField.Type.Kind(), inputValue[0], structField); err != nil {
 				return err
 			}
@@ -90,6 +119,12 @@ func setWithProperType(valueKind reflect.Kind, val string, structField reflect.V
 		return setFloatField(val, 64, structField)
 	case reflect.String:
 		structField.SetString(val)
+	case reflect.Ptr:
+		if !structField.Elem().IsValid() {
+			structField.Set(reflect.New(structField.Type().Elem()))
+		}
+		structFieldElem := structField.Elem()
+		return setWithProperType(structFieldElem.Kind(), val, structFieldElem)
 	default:
 		return errors.New("Unknown type")
 	}
@@ -126,7 +161,7 @@ func setBoolField(val string, field reflect.Value) error {
 	if err == nil {
 		field.SetBool(boolVal)
 	}
-	return nil
+	return err
 }
 
 func setFloatField(val string, bitSize int, field reflect.Value) error {
@@ -140,11 +175,35 @@ func setFloatField(val string, bitSize int, field reflect.Value) error {
 	return err
 }
 
-// Don't pass in pointers to bind to. Can lead to bugs. See:
-// https://github.com/codegangsta/martini-contrib/issues/40
-// https://github.com/codegangsta/martini-contrib/pull/34#issuecomment-29683659
-func ensureNotPointer(obj interface{}) {
-	if reflect.TypeOf(obj).Kind() == reflect.Ptr {
-		panic("Pointers are not accepted as binding models")
+func setTimeField(val string, structField reflect.StructField, value reflect.Value) error {
+	timeFormat := structField.Tag.Get("time_format")
+	if timeFormat == "" {
+		return errors.New("Blank time format")
 	}
+
+	if val == "" {
+		value.Set(reflect.ValueOf(time.Time{}))
+		return nil
+	}
+
+	l := time.Local
+	if isUTC, _ := strconv.ParseBool(structField.Tag.Get("time_utc")); isUTC {
+		l = time.UTC
+	}
+
+	if locTag := structField.Tag.Get("time_location"); locTag != "" {
+		loc, err := time.LoadLocation(locTag)
+		if err != nil {
+			return err
+		}
+		l = loc
+	}
+
+	t, err := time.ParseInLocation(timeFormat, val, l)
+	if err != nil {
+		return err
+	}
+
+	value.Set(reflect.ValueOf(t))
+	return nil
 }

@@ -36,6 +36,7 @@ func (n *NamedStmt) Close() error {
 }
 
 // Exec executes a named statement using the struct passed.
+// Any named placeholder parameters are replaced with fields from arg.
 func (n *NamedStmt) Exec(arg interface{}) (sql.Result, error) {
 	args, err := bindAnyArgs(n.Params, arg, n.Stmt.Mapper)
 	if err != nil {
@@ -45,6 +46,7 @@ func (n *NamedStmt) Exec(arg interface{}) (sql.Result, error) {
 }
 
 // Query executes a named statement using the struct argument, returning rows.
+// Any named placeholder parameters are replaced with fields from arg.
 func (n *NamedStmt) Query(arg interface{}) (*sql.Rows, error) {
 	args, err := bindAnyArgs(n.Params, arg, n.Stmt.Mapper)
 	if err != nil {
@@ -56,6 +58,7 @@ func (n *NamedStmt) Query(arg interface{}) (*sql.Rows, error) {
 // QueryRow executes a named statement against the database.  Because sqlx cannot
 // create a *sql.Row with an error condition pre-set for binding errors, sqlx
 // returns a *sqlx.Row instead.
+// Any named placeholder parameters are replaced with fields from arg.
 func (n *NamedStmt) QueryRow(arg interface{}) *Row {
 	args, err := bindAnyArgs(n.Params, arg, n.Stmt.Mapper)
 	if err != nil {
@@ -65,6 +68,7 @@ func (n *NamedStmt) QueryRow(arg interface{}) *Row {
 }
 
 // MustExec execs a NamedStmt, panicing on error
+// Any named placeholder parameters are replaced with fields from arg.
 func (n *NamedStmt) MustExec(arg interface{}) sql.Result {
 	res, err := n.Exec(arg)
 	if err != nil {
@@ -74,23 +78,26 @@ func (n *NamedStmt) MustExec(arg interface{}) sql.Result {
 }
 
 // Queryx using this NamedStmt
+// Any named placeholder parameters are replaced with fields from arg.
 func (n *NamedStmt) Queryx(arg interface{}) (*Rows, error) {
 	r, err := n.Query(arg)
 	if err != nil {
 		return nil, err
 	}
-	return &Rows{Rows: r, Mapper: n.Stmt.Mapper}, err
+	return &Rows{Rows: r, Mapper: n.Stmt.Mapper, unsafe: isUnsafe(n)}, err
 }
 
 // QueryRowx this NamedStmt.  Because of limitations with QueryRow, this is
 // an alias for QueryRow.
+// Any named placeholder parameters are replaced with fields from arg.
 func (n *NamedStmt) QueryRowx(arg interface{}) *Row {
 	return n.QueryRow(arg)
 }
 
 // Select using this NamedStmt
+// Any named placeholder parameters are replaced with fields from arg.
 func (n *NamedStmt) Select(dest interface{}, arg interface{}) error {
-	rows, err := n.Query(arg)
+	rows, err := n.Queryx(arg)
 	if err != nil {
 		return err
 	}
@@ -100,9 +107,17 @@ func (n *NamedStmt) Select(dest interface{}, arg interface{}) error {
 }
 
 // Get using this NamedStmt
+// Any named placeholder parameters are replaced with fields from arg.
 func (n *NamedStmt) Get(dest interface{}, arg interface{}) error {
 	r := n.QueryRowx(arg)
 	return r.scanAny(dest, false)
+}
+
+// Unsafe creates an unsafe version of the NamedStmt
+func (n *NamedStmt) Unsafe() *NamedStmt {
+	r := &NamedStmt{Params: n.Params, Stmt: n.Stmt, QueryString: n.QueryString}
+	r.Stmt.unsafe = true
+	return r
 }
 
 // A union interface of preparer and binder, required to be able to prepare
@@ -148,16 +163,18 @@ func bindArgs(names []string, arg interface{}, m *reflectx.Mapper) ([]interface{
 		v = v.Elem()
 	}
 
-	fields := m.TraversalsByName(v.Type(), names)
-	for i, t := range fields {
+	err := m.TraversalsByNameFunc(v.Type(), names, func(i int, t []int) error {
 		if len(t) == 0 {
-			return arglist, fmt.Errorf("could not find name %s in %#v", names[i], arg)
+			return fmt.Errorf("could not find name %s in %#v", names[i], arg)
 		}
+
 		val := reflectx.FieldByIndexesReadOnly(v, t)
 		arglist = append(arglist, val.Interface())
-	}
 
-	return arglist, nil
+		return nil
+	})
+
+	return arglist, err
 }
 
 // like bindArgs, but for maps.
@@ -243,7 +260,7 @@ func compileNamedQuery(qs []byte, bindType int) (query string, names []string, e
 			inName = true
 			name = []byte{}
 			// if we're in a name, and this is an allowed character, continue
-		} else if inName && (unicode.IsOneOf(allowedBindRunes, rune(b)) || b == '_') && i != last {
+		} else if inName && (unicode.IsOneOf(allowedBindRunes, rune(b)) || b == '_' || b == '.') && i != last {
 			// append the byte to the name if we are in a name and not on the last byte
 			name = append(name, b)
 			// if we're in a name and it's not an allowed character, the name is done
@@ -286,9 +303,17 @@ func compileNamedQuery(qs []byte, bindType int) (query string, names []string, e
 	return string(rebound), names, err
 }
 
-// Bind binds a struct or a map to a query with named parameters.
+// BindNamed binds a struct or a map to a query with named parameters.
+// DEPRECATED: use sqlx.Named` instead of this, it may be removed in future.
 func BindNamed(bindType int, query string, arg interface{}) (string, []interface{}, error) {
 	return bindNamedMapper(bindType, query, arg, mapper())
+}
+
+// Named takes a query using named parameters and an argument and
+// returns a new query with a list of args that can be executed by
+// a database.  The return value uses the `?` bindvar.
+func Named(query string, arg interface{}) (string, []interface{}, error) {
+	return bindNamedMapper(QUESTION, query, arg, mapper())
 }
 
 func bindNamedMapper(bindType int, query string, arg interface{}, m *reflectx.Mapper) (string, []interface{}, error) {

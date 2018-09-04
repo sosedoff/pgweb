@@ -1,7 +1,8 @@
-clone_folder: c:\go\src\github.com\sosedoff\pgweb
+clone_folder: c:\gopath\src\github.com\sosedoff\pgweb
 
 environment:
   GOPATH: c:\gopath
+  CGO_ENABLED: 0
 
 services:
   - postgresql
@@ -13,15 +14,13 @@ install:
   - cd %APPVEYOR_BUILD_FOLDER%
   - go env
   - go version
-  - go get github.com/tools/godep
-  - godep get github.com/mitchellh/gox
-  - godep get github.com/jteeuwen/go-bindata/...
-  - godep restore
+  - go get github.com/golang/dep/cmd/dep
+  - dep ensure
 
 build_script:
-  - godep go build
+  - go build
 
 test_script:
-  - godep go test -cover ./...
+  - go test -cover ./...
 
 deploy: off
