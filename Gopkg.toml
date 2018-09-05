@@ -24,6 +24,10 @@
 #   go-tests = true
 #   unused-packages = true
 
+[metadata.heroku]
+  root-package = "github.com/heroku/go-getting-started"
+  go-version = "1.11"
+  install = [ "./..." ]
 
 [[constraint]]
   name = "github.com/BurntSushi/toml"
