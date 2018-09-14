@@ -78,7 +78,10 @@
       </div>
       <div id="output">
         <div class="wrapper">
-          <table id="results" class="table"></table>
+          <table id="results" class="table">
+            <thead id="results_header"></thead>
+            <tbody id="results_body"></tbody>
+          </table>
         </div>
       </div>
       <div id="pagination">
@@ -274,6 +277,12 @@
       <li><a href="#" data-action="unique_values" data-counts="true">Unique Values + Counts</a></li>
       <li><a href="#" data-action="num_stats">Numeric stats (min/max/avg)</a></li>
       <li><a href="#" data-action="copy_name">Copy Column Name</a></li>
+    </ul>
+  </div>
+  <div id="results_row_menu">
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="#" data-action="copy_value">Copy Value</a></li>
+      <li><a href="#" data-action="filter_by_value">Filter Rows By Value</a></li>
     </ul>
   </div>
 </body>

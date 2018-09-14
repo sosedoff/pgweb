@@ -186,9 +186,11 @@ function getCurrentObject() {
 function resetTable() {
   $("#results").
     data("mode", "").
-    text("").
     removeClass("empty").
     removeClass("no-crop");
+  
+  $("#results_header").html("");
+  $("#results_body").html("");
 }
 
 function performTableAction(table, action, el) {
@@ -288,13 +290,14 @@ function buildTable(results, sortColumn, sortOrder, options) {
   resetTable();
 
   if (results.error) {
-    $("<tr><td>ERROR: " + results.error + "</tr></tr>").appendTo("#results");
-    $("#results").addClass("empty");
+    $("#results_header").html("");
+    $("#results_body").html("<tr><td>ERROR: " + results.error + "</tr></tr>");
     return;
   }
 
   if (results.rows.length == 0) {
-    $("<tr><td>No records found</tr></tr>").appendTo("#results");
+    $("#results_header").html("");
+    $("#results_body").html("<tr><td>No records found</tr></tr>");
     $("#result-rows-count").html("");
     $("#results").addClass("empty");
     return;
@@ -305,10 +308,10 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
   results.columns.forEach(function(col) {
     if (col === sortColumn) {
-      cols += "<th class='active' data-name='" + col + "'" + "data-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
+      cols += "<th class='table-header-col active' data-name='" + col + "'" + "data-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
     }
     else {
-      cols += "<th data-name='" + col + "'>" + col + "</th>";
+      cols += "<th class='table-header-col' data-name='" + col + "'>" + col + "</th>";
     }
   });
 
@@ -325,7 +328,7 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
     // Add all actual row data here
     for (i in row) {
-      r += "<td><div>" + escapeHtml(row[i]) + "</div></td>";
+      r += "<td data-col='" + i + "'><div>" + escapeHtml(row[i]) + "</div></td>";
     }
 
     // Add row action button
@@ -336,7 +339,8 @@ function buildTable(results, sortColumn, sortOrder, options) {
     rows += "<tr>" + r + "</tr>";
   });
 
-  $("<thead>" + cols + "</thead><tbody>" + rows + "</tobdy>").appendTo("#results");
+  $("#results_header").html(cols);
+  $("#results_body").html(rows);
 
   // Show number of rows rendered on the page
   $("#result-rows-count").html(results.rows.length + " rows");
@@ -829,7 +833,7 @@ function getConnectionString() {
 
 // Add a context menu to the results table header columns
 function bindTableHeaderMenu() {
-  $("#results").contextmenu({
+  $("#results_header").contextmenu({
     scopes: "th",
     target: "#results_header_menu",
     before: function(e, element, target) {
@@ -862,6 +866,37 @@ function bindTableHeaderMenu() {
             $(context).data("name")      // column name
           );
           break;
+      }
+    }
+  });
+
+  $("#results_body").contextmenu({
+    scopes: "td",
+    target: "#results_row_menu",
+    before: function(e, element, target) {
+      // Enable menu for browsing table rows view only.
+      if ($("#results").data("mode") != "browse") {
+        e.preventDefault();
+        this.closemenu();
+        return false;
+      }
+    },
+    onItem: function(context, e) {
+      var menuItem = $(e.target);
+
+      switch(menuItem.data("action")) {
+        case "copy_value":
+          copyToClipboard($(context).text());
+          break;
+        case "filter_by_value":
+          var colIdx   = $(context).data("col");
+          var colValue = $(context).text();
+          var colName  = $("#results_header th").eq(colIdx).data("name");
+
+          $("select.column").val(colName);
+          $("select.filter").val("equal");
+          $("#table_filter_value").val(colValue);
+          $("#rows_filter").submit();
       }
     }
   });
