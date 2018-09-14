@@ -86,7 +86,9 @@ func IsBlank(opts command.Options) bool {
 	return opts.Host == "" && opts.User == "" && opts.DbName == "" && opts.Url == ""
 }
 
-func BuildString(opts command.Options) (string, error) {
+// Build a new database connection string for the CLI options
+func BuildStringFromOptions(opts command.Options) (string, error) {
+	// If connection string is provided we just use that
 	if opts.Url != "" {
 		return FormatUrl(opts)
 	}
@@ -100,31 +102,22 @@ func BuildString(opts command.Options) (string, error) {
 	}
 
 	// Disable ssl for localhost connections, most users have it disabled
-	if opts.Host == "localhost" || opts.Host == "127.0.0.1" {
-		if opts.Ssl == "" {
-			opts.Ssl = "disable"
-		}
+	if opts.Ssl == "" && (opts.Host == "localhost" || opts.Host == "127.0.0.1") {
+		opts.Ssl = "disable"
 	}
 
-	url := "postgres://"
-
-	if opts.User != "" {
-		url += opts.User
-	}
-
-	if opts.Pass != "" {
-		url += fmt.Sprintf(":%s", neturl.QueryEscape(opts.Pass))
-	}
-
-	url += fmt.Sprintf("@%s:%d", opts.Host, opts.Port)
-
-	if opts.DbName != "" {
-		url += fmt.Sprintf("/%s", opts.DbName)
-	}
-
+	query := neturl.Values{}
 	if opts.Ssl != "" {
-		url += fmt.Sprintf("?sslmode=%s", opts.Ssl)
+		query.Add("sslmode", opts.Ssl)
 	}
 
-	return url, nil
+	url := neturl.URL{
+		Scheme:   "postgres",
+		Host:     fmt.Sprintf("%v:%v", opts.Host, opts.Port),
+		User:     neturl.UserPassword(opts.User, opts.Pass),
+		Path:     fmt.Sprintf("/%s", opts.DbName),
+		RawQuery: query.Encode(),
+	}
+
+	return url.String(), nil
 }
