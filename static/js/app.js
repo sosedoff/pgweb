@@ -675,6 +675,18 @@ function showUniqueColumnsValues(table, column, showCounts) {
   });
 }
 
+// Show numeric stats on the field
+function showFieldNumStats(table, column) {
+  var query = 'SELECT min(' + column + '), max(' + column + '), avg(' + column + ') FROM ' + table;
+  
+  executeQuery(query, function(data) {
+    $("#input").hide();
+    $("#body").prop("class", "full");
+    $("#results").data("mode", "query");
+    buildTable(data);
+  });
+}
+
 function buildTableFilters(name, type) {
   getTableStructure(name, { type: type }, function(data) {
     if (data.rows.length == 0) {
@@ -841,6 +853,13 @@ function bindTableHeaderMenu() {
             $("#results").data("table"), // table name
             $(context).data("name"),     // column name
             menuItem.data("counts")      // display counts
+          );
+          break;
+
+        case "num_stats":
+          showFieldNumStats(
+            $("#results").data("table"), // table name
+            $(context).data("name")      // column name
           );
           break;
       }
