@@ -64,6 +64,7 @@ func ParseOptions(args []string) (Options, error) {
 	}
 
 	if opts.Sessions || opts.ConnectBackend != "" {
+		opts.Bookmark = ""
 		opts.Url = ""
 		opts.Host = ""
 		opts.User = ""
