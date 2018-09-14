@@ -874,8 +874,10 @@ function bindTableHeaderMenu() {
     scopes: "td",
     target: "#results_row_menu",
     before: function(e, element, target) {
-      // Enable menu for browsing table rows view only.
-      if ($("#results").data("mode") != "browse") {
+      var isEmpty = $("#results").hasClass("empty");
+      var isBrowsing = $("#results").data("mode") == "browse";
+
+      if (isEmpty || !isBrowsing) {
         e.preventDefault();
         this.closemenu();
         return false;
