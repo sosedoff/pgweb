@@ -2,6 +2,7 @@ package connection
 
 import (
 	"fmt"
+	"net/url"
 	"os/user"
 	"testing"
 
@@ -140,9 +141,10 @@ func Test_No_User(t *testing.T) {
 	opts := command.Options{Host: "host", Port: 5432, DbName: "db"}
 	u, _ := user.Current()
 	str, err := BuildStringFromOptions(opts)
+	userAndPass := url.UserPassword(u.Username, "").String()
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, fmt.Sprintf("postgres://%s:@host:5432/db", u.Username), str)
+	assert.Equal(t, fmt.Sprintf("postgres://%s@host:5432/db", userAndPass), str)
 }
 
 func Test_Port(t *testing.T) {
