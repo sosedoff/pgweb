@@ -26,9 +26,6 @@ func TestParseOptions(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, true, opts.Sessions)
 
-	opts, err = ParseOptions([]string{"--sessions", "1", "--bookmark", "test"})
-	assert.EqualError(t, err, "--bookmark is not allowed in multi-session mode")
-
 	// Test url prefix
 	opts, err = ParseOptions([]string{"--prefix", "pgweb"})
 	assert.NoError(t, err)
