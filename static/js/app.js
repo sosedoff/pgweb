@@ -677,7 +677,7 @@ function showUniqueColumnsValues(table, column, showCounts) {
 
 // Show numeric stats on the field
 function showFieldNumStats(table, column) {
-  var query = 'SELECT min(' + column + '), max(' + column + '), avg(' + column + ') FROM ' + table;
+  var query = 'SELECT count(1), min(' + column + '), max(' + column + '), avg(' + column + ') FROM ' + table;
   
   executeQuery(query, function(data) {
     $("#input").hide();
