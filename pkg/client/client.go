@@ -55,7 +55,7 @@ func getSchemaAndTable(str string) (string, string) {
 }
 
 func New() (*Client, error) {
-	str, err := connection.BuildString(command.Opts)
+	str, err := connection.BuildStringFromOptions(command.Opts)
 
 	if command.Opts.Debug && str != "" {
 		fmt.Println("Creating a new client for:", str)

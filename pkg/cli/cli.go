@@ -38,7 +38,7 @@ func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client,
 	if opt.Url != "" { // if the bookmark has url set, use it
 		connStr = opt.Url
 	} else {
-		connStr, err = connection.BuildString(opt)
+		connStr, err = connection.BuildStringFromOptions(opt)
 		if err != nil {
 			return nil, fmt.Errorf("error building connection string: %v", err)
 		}
