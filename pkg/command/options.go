@@ -63,6 +63,15 @@ func ParseOptions(args []string) (Options, error) {
 		opts.Sessions = false
 	}
 
+	if opts.Sessions || opts.ConnectBackend != "" {
+		opts.Url = ""
+		opts.Host = ""
+		opts.User = ""
+		opts.Pass = ""
+		opts.DbName = ""
+		opts.Ssl = ""
+	}
+
 	if opts.Prefix != "" && !strings.Contains(opts.Prefix, "/") {
 		opts.Prefix = opts.Prefix + "/"
 	}
@@ -73,10 +82,6 @@ func ParseOptions(args []string) (Options, error) {
 
 	if opts.AuthPass == "" && os.Getenv("AUTH_PASS") != "" {
 		opts.AuthPass = os.Getenv("AUTH_PASS")
-	}
-
-	if opts.Bookmark != "" && opts.Sessions {
-		return opts, errors.New("--bookmark is not allowed in multi-session mode")
 	}
 
 	if opts.ConnectBackend != "" {
