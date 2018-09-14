@@ -13,6 +13,7 @@ func Test_Invalid_Url(t *testing.T) {
 	opts := command.Options{}
 	examples := []string{
 		"postgre://foobar",
+		"tcp://blah",
 		"foobar",
 	}
 
@@ -48,14 +49,12 @@ func Test_Localhost_Url_And_No_Ssl_Flag(t *testing.T) {
 	str, err := BuildString(command.Options{
 		Url: "postgres://localhost/database",
 	})
-
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://localhost/database?sslmode=disable", str)
 
 	str, err = BuildString(command.Options{
 		Url: "postgres://127.0.0.1/database",
 	})
-
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://127.0.0.1/database?sslmode=disable", str)
 }
@@ -65,7 +64,6 @@ func Test_Localhost_Url_And_Ssl_Flag(t *testing.T) {
 		Url: "postgres://localhost/database",
 		Ssl: "require",
 	})
-
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://localhost/database?sslmode=require", str)
 
@@ -73,7 +71,6 @@ func Test_Localhost_Url_And_Ssl_Flag(t *testing.T) {
 		Url: "postgres://127.0.0.1/database",
 		Ssl: "require",
 	})
-
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://127.0.0.1/database?sslmode=require", str)
 }
@@ -82,14 +79,12 @@ func Test_Localhost_Url_And_Ssl_Arg(t *testing.T) {
 	str, err := BuildString(command.Options{
 		Url: "postgres://localhost/database?sslmode=require",
 	})
-
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://localhost/database?sslmode=require", str)
 
 	str, err = BuildString(command.Options{
 		Url: "postgres://127.0.0.1/database?sslmode=require",
 	})
-
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://127.0.0.1/database?sslmode=require", str)
 }
