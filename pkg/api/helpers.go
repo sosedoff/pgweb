@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/sosedoff/pgweb/pkg/data"
 	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
@@ -138,4 +139,23 @@ func assetContentType(name string) string {
 	}
 
 	return result
+}
+
+func serveStaticAsset(path string, c *gin.Context) {
+	data, err := data.Asset("static" + path)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+
+	c.Data(200, assetContentType(path), data)
+}
+
+func serveResult(result interface{}, err error, c *gin.Context) {
+	if err != nil {
+		c.JSON(400, NewError(err))
+		return
+	}
+
+	c.JSON(200, result)
 }

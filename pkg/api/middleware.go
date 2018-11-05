@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/sosedoff/pgweb/pkg/command"
-	"github.com/sosedoff/pgweb/pkg/data"
 )
 
 // Middleware function to check database connection status before running queries
@@ -56,25 +55,6 @@ func requestInspectMiddleware() gin.HandlerFunc {
 		err := c.Request.ParseForm()
 		log.Println("Request params:", err, c.Request.Form)
 	}
-}
-
-func serveStaticAsset(path string, c *gin.Context) {
-	data, err := data.Asset("static" + path)
-	if err != nil {
-		c.String(400, err.Error())
-		return
-	}
-
-	c.Data(200, assetContentType(path), data)
-}
-
-func serveResult(result interface{}, err error, c *gin.Context) {
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
-	}
-
-	c.JSON(200, result)
 }
 
 func corsMiddleware() gin.HandlerFunc {
