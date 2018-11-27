@@ -77,7 +77,18 @@ func initClient() {
 	fmt.Println("Connecting to server...")
 	err = cl.Test()
 	if err != nil {
-		exitWithMessage(err.Error())
+		msg := err.Error()
+
+		// Check if we're trying to connect to the default database.
+		// If database does not exist, allow user to connect from the UI.
+		if command.Opts.DbName == "" {
+			if strings.Contains(msg, "database") && strings.Contains(msg, "does not exist") {
+				fmt.Println("Error:", msg)
+				return
+			}
+		}
+
+		exitWithMessage(msg)
 	}
 
 	if !command.Opts.Sessions {
