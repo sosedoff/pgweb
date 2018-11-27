@@ -1,7 +1,21 @@
 ## Master
 
+- Fixes relation not found errors when dealing with table names that have uppercase characters, GH-356
+- Dockerfile updates, GH-357
+- Check if pg_dump is available before running database export, GH-358
+- Improvements to CockroachDB integration, GH-365
+- Add EstimatedTableRowsCount to avoid count in large tables, GH-366
 - Automatically set table filter option to 'equals' if its not set, GH-370
-- Dockerfile updates
+- Dependencies update and switch to dep, GH-375
+- Add column context menu item to get numeric stats, GH-377
+- Fix issues with connection string builder, GH-378
+- Include rows count to numeric stats view on table column, GH-379
+- Make localhost to be a default db host, GH-380
+- Clear out connection settings/bookmark on login screen when running in session/connect mode
+- Add table row context menu with actions, GH-381
+- Allow settings url prefix with URL_PREFIX env var, GH-387
+- Fix JSON marshal panic when dealing with NaN values, GH-388
+- Fix startup behavior when user did not provide a database name, GH-389
 
 ## 0.9.12 - 2018-04-23
 
