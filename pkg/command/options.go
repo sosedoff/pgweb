@@ -54,6 +54,10 @@ func ParseOptions(args []string) (Options, error) {
 		opts.Url = os.Getenv("DATABASE_URL")
 	}
 
+	if opts.Prefix == "" {
+		opts.Prefix = os.Getenv("URL_PREFIX")
+	}
+
 	if os.Getenv("SESSIONS") != "" {
 		opts.Sessions = true
 	}
