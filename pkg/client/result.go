@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 	"time"
@@ -51,6 +52,14 @@ func (res *Result) PrepareBigints() {
 				}
 			case reflect.Float64:
 				val := col.(float64)
+
+				// json.Marshal panics when dealing with NaN/Inf values
+				// issue: https://github.com/golang/go/issues/25721
+				if math.IsNaN(val) {
+					res.Rows[i][j] = nil
+					break
+				}
+
 				if val < -999999999999999 || val > 999999999999999 {
 					res.Rows[i][j] = strconv.FormatFloat(val, 'e', -1, 64)
 				}
