@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func test_DumpExport(t *testing.T) {
+func testDumpExport(t *testing.T) {
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 
 	savePath := "/tmp/dump.sql.gz"
