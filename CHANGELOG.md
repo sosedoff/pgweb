@@ -1,4 +1,4 @@
-## Master
+## 0.10.0 - 2018-11-28
 
 - Fixes relation not found errors when dealing with table names that have uppercase characters, GH-356
 - Dockerfile updates, GH-357
