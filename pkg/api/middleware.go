@@ -9,21 +9,21 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 )
 
-// Middleware function to check database connection status before running queries
+// Middleware to check database connection status before running queries
 func dbCheckMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		path := strings.Replace(c.Request.URL.Path, command.Opts.Prefix, "", -1)
 
-		if allowedPaths[path] == true {
+		// Allow whitelisted paths
+		if allowedPaths[path] {
 			c.Next()
 			return
 		}
 
-		// We dont care about sessions unless they're enabled
+		// Check if session exists in single-session mode
 		if !command.Opts.Sessions {
 			if DbClient == nil {
-				c.JSON(400, Error{"Not connected"})
-				c.Abort()
+				badRequest(c, "Not connected")
 				return
 			}
 
@@ -31,17 +31,17 @@ func dbCheckMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		// Determine session ID from the client request
 		sessionId := getSessionId(c.Request)
 		if sessionId == "" {
-			c.JSON(400, Error{"Session ID is required"})
-			c.Abort()
+			badRequest(c, "Session ID is required")
 			return
 		}
 
+		// Determine the database connection handle for the session
 		conn := DbSessions[sessionId]
 		if conn == nil {
-			c.JSON(400, Error{"Not connected"})
-			c.Abort()
+			badRequest(c, "Not connected")
 			return
 		}
 
@@ -49,7 +49,7 @@ func dbCheckMiddleware() gin.HandlerFunc {
 	}
 }
 
-// Middleware function to print out request parameters and body for debugging
+// Middleware to print out request parameters and body for debugging
 func requestInspectMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		err := c.Request.ParseForm()
@@ -57,6 +57,7 @@ func requestInspectMiddleware() gin.HandlerFunc {
 	}
 }
 
+// Middleware to inject CORS headers
 func corsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")

@@ -14,30 +14,33 @@ import (
 	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
-var extraMimeTypes = map[string]string{
-	".icon": "image-x-icon",
-	".ttf":  "application/x-font-ttf",
-	".woff": "application/x-font-woff",
-	".eot":  "application/vnd.ms-fontobject",
-	".svg":  "image/svg+xml",
-	".html": "text/html; charset-utf-8",
-}
+var (
+	// Mime types definitions
+	extraMimeTypes = map[string]string{
+		".icon": "image-x-icon",
+		".ttf":  "application/x-font-ttf",
+		".woff": "application/x-font-woff",
+		".eot":  "application/vnd.ms-fontobject",
+		".svg":  "image/svg+xml",
+		".html": "text/html; charset-utf-8",
+	}
 
-// Paths that dont require database connection
-var allowedPaths = map[string]bool{
-	"/api/sessions":  true,
-	"/api/info":      true,
-	"/api/connect":   true,
-	"/api/bookmarks": true,
-	"/api/history":   true,
-}
+	// Paths that dont require database connection
+	allowedPaths = map[string]bool{
+		"/api/sessions":  true,
+		"/api/info":      true,
+		"/api/connect":   true,
+		"/api/bookmarks": true,
+		"/api/history":   true,
+	}
 
-// List of characters replaced by javascript code to make queries url-safe.
-var base64subs = map[string]string{
-	"-": "+",
-	"_": "/",
-	".": "=",
-}
+	// List of characters replaced by javascript code to make queries url-safe.
+	base64subs = map[string]string{
+		"-": "+",
+		"_": "/",
+		".": "=",
+	}
+)
 
 type Error struct {
 	Message string `json:"error"`
@@ -151,11 +154,37 @@ func serveStaticAsset(path string, c *gin.Context) {
 	c.Data(200, assetContentType(path), data)
 }
 
-func serveResult(result interface{}, err error, c *gin.Context) {
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
+// Send a query result to client
+func serveResult(c *gin.Context, result interface{}, err interface{}) {
+	if err == nil {
+		successResponse(c, result)
+	} else {
+		badRequest(c, err)
+	}
+}
+
+// Send successful response back to client
+func successResponse(c *gin.Context, data interface{}) {
+	c.JSON(200, data)
+}
+
+// Send an error response back to client
+func errorResponse(c *gin.Context, status int, err interface{}) {
+	var message interface{}
+
+	switch v := err.(type) {
+	case error:
+		message = v.Error()
+	case string:
+		message = v
+	default:
+		message = v
 	}
 
-	c.JSON(200, result)
+	c.AbortWithStatusJSON(status, gin.H{"status": status, "error": message})
+}
+
+// Send a bad request (http 400) back to client
+func badRequest(c *gin.Context, err interface{}) {
+	errorResponse(c, 400, err)
 }
