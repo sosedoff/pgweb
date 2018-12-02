@@ -97,7 +97,7 @@ func ConnectWithBackend(c *gin.Context) {
 	c.Request.Header.Add("x-session-id", sessionId)
 
 	// Connect to the database
-	cl, err := client.NewFromUrl(cred.DatabaseUrl, nil)
+	cl, err := client.NewFromUrl(cred.DatabaseURL, nil)
 	if err != nil {
 		badRequest(c, err)
 		return
