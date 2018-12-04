@@ -10,12 +10,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_portAvailable(t *testing.T) {
+func TestIsPortAvailable(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("FIXME")
 	}
 
-	assert.Equal(t, true, portAvailable(30000))
+	assert.Equal(t, true, IsPortAvailable(30000))
 
 	serv, err := net.Listen("tcp", "127.0.0.1:30000")
 	if err != nil {
@@ -35,16 +35,16 @@ func Test_portAvailable(t *testing.T) {
 		}
 	}()
 
-	assert.Equal(t, false, portAvailable(30000))
-	assert.Equal(t, true, portAvailable(30001))
+	assert.Equal(t, false, IsPortAvailable(30000))
+	assert.Equal(t, true, IsPortAvailable(30001))
 }
 
-func Test_getAvailablePort(t *testing.T) {
+func TestFindAvailablePort(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("FIXME")
 	}
 
-	port, err := AvailablePort(30000, 1)
+	port, err := FindAvailablePort(30000, 1)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 30000, port)
 
@@ -65,11 +65,11 @@ func Test_getAvailablePort(t *testing.T) {
 		}
 	}()
 
-	port, err = AvailablePort(30000, 0)
+	port, err = FindAvailablePort(30000, 0)
 	assert.EqualError(t, err, "No available port")
 	assert.Equal(t, -1, port)
 
-	port, err = AvailablePort(30000, 1)
+	port, err = FindAvailablePort(30000, 1)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 30001, port)
 }

@@ -19,10 +19,14 @@ import (
 )
 
 var (
-	DbClient   *client.Client
+	// DbClient represents the active database connection in a single-session mode
+	DbClient *client.Client
+
+	// DbSessions represents the mapping for client connections
 	DbSessions = map[string]*client.Client{}
 )
 
+// DB returns a database connection from the client context
 func DB(c *gin.Context) *client.Client {
 	if command.Opts.Sessions {
 		return DbSessions[getSessionId(c.Request)]
@@ -63,11 +67,10 @@ func GetSessions(c *gin.Context) {
 	// In debug mode endpoint will return a lot of sensitive information
 	// like full database connection string and all query history.
 	if command.Opts.Debug {
-		c.JSON(200, DbSessions)
+		successResponse(c, DbSessions)
 		return
 	}
-
-	c.JSON(200, map[string]int{"sessions": len(DbSessions)})
+	successResponse(c, gin.H{"sessions": len(DbSessions)})
 }
 
 func ConnectWithBackend(c *gin.Context) {
@@ -81,22 +84,22 @@ func ConnectWithBackend(c *gin.Context) {
 	// Fetch connection credentials
 	cred, err := backend.FetchCredential(c.Param("resource"), c)
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
 	// Make the new session
 	sessionId, err := securerandom.Uuid()
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 	c.Request.Header.Add("x-session-id", sessionId)
 
 	// Connect to the database
-	cl, err := client.NewFromUrl(cred.DatabaseUrl, nil)
+	cl, err := client.NewFromUrl(cred.DatabaseURL, nil)
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 	cl.External = true
@@ -108,7 +111,7 @@ func ConnectWithBackend(c *gin.Context) {
 	}
 	if err != nil {
 		cl.Close()
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
@@ -117,7 +120,7 @@ func ConnectWithBackend(c *gin.Context) {
 
 func Connect(c *gin.Context) {
 	if command.Opts.LockSession {
-		c.JSON(400, Error{"Session is locked"})
+		badRequest(c, "Session is locked")
 		return
 	}
 
@@ -125,7 +128,7 @@ func Connect(c *gin.Context) {
 	url := c.Request.FormValue("url")
 
 	if url == "" {
-		c.JSON(400, Error{"Url parameter is required"})
+		badRequest(c, "Url parameter is required")
 		return
 	}
 
@@ -133,7 +136,7 @@ func Connect(c *gin.Context) {
 	url, err := connection.FormatUrl(opts)
 
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
@@ -143,13 +146,13 @@ func Connect(c *gin.Context) {
 
 	cl, err := client.NewFromUrl(url, sshInfo)
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
 	err = cl.Test()
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
@@ -159,16 +162,16 @@ func Connect(c *gin.Context) {
 	}
 	if err != nil {
 		cl.Close()
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
-	c.JSON(200, info.Format()[0])
+	successResponse(c, info.Format()[0])
 }
 
 func SwitchDb(c *gin.Context) {
 	if command.Opts.LockSession {
-		c.JSON(400, Error{"Session is locked"})
+		badRequest(c, "Session is locked")
 		return
 	}
 
@@ -177,25 +180,25 @@ func SwitchDb(c *gin.Context) {
 		name = c.Request.FormValue("db")
 	}
 	if name == "" {
-		c.JSON(400, Error{"Database name is not provided"})
+		badRequest(c, "Database name is not provided")
 		return
 	}
 
 	conn := DB(c)
 	if conn == nil {
-		c.JSON(400, Error{"Not connected"})
+		badRequest(c, "Not connected")
 		return
 	}
 
 	// Do not allow switching databases for connections from third-party backends
 	if conn.External {
-		c.JSON(400, Error{"Session is locked"})
+		badRequest(c, "Session is locked")
 		return
 	}
 
 	currentUrl, err := neturl.Parse(conn.ConnectionString)
 	if err != nil {
-		c.JSON(400, Error{"Unable to parse current connection string"})
+		badRequest(c, "Unable to parse current connection string")
 		return
 	}
 
@@ -203,13 +206,13 @@ func SwitchDb(c *gin.Context) {
 
 	cl, err := client.NewFromUrl(currentUrl.String(), nil)
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
 	err = cl.Test()
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
@@ -219,64 +222,62 @@ func SwitchDb(c *gin.Context) {
 	}
 	if err != nil {
 		cl.Close()
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
 	conn.Close()
 
-	c.JSON(200, info.Format()[0])
+	successResponse(c, info.Format()[0])
 }
 
 func Disconnect(c *gin.Context) {
 	if command.Opts.LockSession {
-		c.JSON(400, Error{"Session is locked"})
+		badRequest(c, "Session is locked")
 		return
 	}
 
 	conn := DB(c)
 
 	if conn == nil {
-		c.JSON(400, Error{"Not connected"})
+		badRequest(c, "Not connected")
 		return
 	}
 
 	err := conn.Close()
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
-	c.JSON(200, map[string]bool{"success": true})
+	successResponse(c, gin.H{"success": true})
 }
 
 func GetDatabases(c *gin.Context) {
 	conn := DB(c)
 	if conn.External {
-		c.JSON(403, Error{"Not permitted"})
+		errorResponse(c, 403, "Not permitted")
 		return
 	}
 
 	names, err := DB(c).Databases()
-	serveResult(names, err, c)
+	serveResult(c, names, err)
 }
 
 func GetObjects(c *gin.Context) {
 	result, err := DB(c).Objects()
 	if err != nil {
-		c.JSON(400, NewError(err))
+		badRequest(c, err)
 		return
 	}
-
-	objects := client.ObjectsFromResult(result)
-	c.JSON(200, objects)
+	successResponse(c, client.ObjectsFromResult(result))
 }
 
 func RunQuery(c *gin.Context) {
 	query := cleanQuery(c.Request.FormValue("query"))
 
 	if query == "" {
-		c.JSON(400, NewError(errors.New("Query parameter is missing")))
+		badRequest(c, "Query parameter is missing")
 		return
 	}
 
@@ -287,7 +288,7 @@ func ExplainQuery(c *gin.Context) {
 	query := cleanQuery(c.Request.FormValue("query"))
 
 	if query == "" {
-		c.JSON(400, NewError(errors.New("Query parameter is missing")))
+		badRequest(c, "Query parameter is missing")
 		return
 	}
 
@@ -296,7 +297,7 @@ func ExplainQuery(c *gin.Context) {
 
 func GetSchemas(c *gin.Context) {
 	res, err := DB(c).Schemas()
-	serveResult(res, err, c)
+	serveResult(c, res, err)
 }
 
 func GetTable(c *gin.Context) {
@@ -309,19 +310,19 @@ func GetTable(c *gin.Context) {
 		res, err = DB(c).Table(c.Params.ByName("table"))
 	}
 
-	serveResult(res, err, c)
+	serveResult(c, res, err)
 }
 
 func GetTableRows(c *gin.Context) {
 	offset, err := parseIntFormValue(c, "offset", 0)
 	if err != nil {
-		c.JSON(400, NewError(err))
+		badRequest(c, err)
 		return
 	}
 
 	limit, err := parseIntFormValue(c, "limit", 100)
 	if err != nil {
-		c.JSON(400, NewError(err))
+		badRequest(c, err)
 		return
 	}
 
@@ -335,13 +336,13 @@ func GetTableRows(c *gin.Context) {
 
 	res, err := DB(c).TableRows(c.Params.ByName("table"), opts)
 	if err != nil {
-		c.JSON(400, NewError(err))
+		badRequest(c, err)
 		return
 	}
 
 	countRes, err := DB(c).TableRowsCount(c.Params.ByName("table"), opts)
 	if err != nil {
-		c.JSON(400, NewError(err))
+		badRequest(c, err)
 		return
 	}
 
@@ -361,51 +362,49 @@ func GetTableRows(c *gin.Context) {
 		PerPage: numFetch,
 	}
 
-	serveResult(res, err, c)
+	serveResult(c, res, err)
 }
 
 func GetTableInfo(c *gin.Context) {
 	res, err := DB(c).TableInfo(c.Params.ByName("table"))
-
-	if err != nil {
-		c.JSON(400, NewError(err))
-		return
+	if err == nil {
+		successResponse(c, res.Format()[0])
+	} else {
+		badRequest(c, err)
 	}
-
-	c.JSON(200, res.Format()[0])
 }
 
 func GetHistory(c *gin.Context) {
-	c.JSON(200, DB(c).History)
+	successResponse(c, DB(c).History)
 }
 
 func GetConnectionInfo(c *gin.Context) {
 	res, err := DB(c).Info()
 
 	if err != nil {
-		c.JSON(400, NewError(err))
+		badRequest(c, err)
 		return
 	}
 
 	info := res.Format()[0]
 	info["session_lock"] = command.Opts.LockSession
 
-	c.JSON(200, info)
+	successResponse(c, info)
 }
 
 func GetActivity(c *gin.Context) {
 	res, err := DB(c).Activity()
-	serveResult(res, err, c)
+	serveResult(c, res, err)
 }
 
 func GetTableIndexes(c *gin.Context) {
 	res, err := DB(c).TableIndexes(c.Params.ByName("table"))
-	serveResult(res, err, c)
+	serveResult(c, res, err)
 }
 
 func GetTableConstraints(c *gin.Context) {
 	res, err := DB(c).TableConstraints(c.Params.ByName("table"))
-	serveResult(res, err, c)
+	serveResult(c, res, err)
 }
 
 func HandleQuery(query string, c *gin.Context) {
@@ -416,7 +415,7 @@ func HandleQuery(query string, c *gin.Context) {
 
 	result, err := DB(c).Query(query)
 	if err != nil {
-		c.JSON(400, NewError(err))
+		badRequest(c, err)
 		return
 	}
 
@@ -445,17 +444,15 @@ func HandleQuery(query string, c *gin.Context) {
 
 func GetBookmarks(c *gin.Context) {
 	bookmarks, err := bookmarks.ReadAll(bookmarks.Path(command.Opts.BookmarksDir))
-	serveResult(bookmarks, err, c)
+	serveResult(c, bookmarks, err)
 }
 
 func GetInfo(c *gin.Context) {
-	info := map[string]string{
+	successResponse(c, gin.H{
 		"version":    command.VERSION,
 		"git_sha":    command.GitCommit,
 		"build_time": command.BuildTime,
-	}
-
-	c.JSON(200, info)
+	})
 }
 
 // Export database or table data
@@ -464,7 +461,7 @@ func DataExport(c *gin.Context) {
 
 	info, err := db.Info()
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
@@ -475,7 +472,7 @@ func DataExport(c *gin.Context) {
 	// If pg_dump is not available the following code will not show an error in browser.
 	// This is due to the headers being written first.
 	if !dump.CanExport() {
-		c.JSON(400, Error{"pg_dump is not found"})
+		badRequest(c, "pg_dump is not found")
 		return
 	}
 
@@ -485,11 +482,13 @@ func DataExport(c *gin.Context) {
 		filename = filename + "_" + dump.Table
 	}
 
-	attachment := fmt.Sprintf(`attachment; filename="%s.sql.gz"`, filename)
-	c.Header("Content-Disposition", attachment)
+	c.Header(
+		"Content-Disposition",
+		fmt.Sprintf(`attachment; filename="%s.sql.gz"`, filename),
+	)
 
 	err = dump.Export(db.ConnectionString, c.Writer)
 	if err != nil {
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 	}
 }

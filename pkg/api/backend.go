@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -12,22 +11,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Backend represents a third party configuration source
 type Backend struct {
 	Endpoint    string
 	Token       string
 	PassHeaders string
 }
 
+// BackendRequest represents a payload sent to the third-party source
 type BackendRequest struct {
 	Resource string            `json:"resource"`
 	Token    string            `json:"token"`
 	Headers  map[string]string `json:"headers"`
 }
 
+// BackendCredential represents the third-party response
 type BackendCredential struct {
-	DatabaseUrl string `json:"database_url"`
+	DatabaseURL string `json:"database_url"`
 }
 
+// FetchCredential sends an authentication request to a third-party service
 func (be Backend) FetchCredential(resource string, c *gin.Context) (*BackendCredential, error) {
 	request := BackendRequest{
 		Resource: resource,
@@ -35,6 +38,7 @@ func (be Backend) FetchCredential(resource string, c *gin.Context) (*BackendCred
 		Headers:  map[string]string{},
 	}
 
+	// Pass white-listed client headers to the backend request
 	for _, name := range strings.Split(be.PassHeaders, ",") {
 		request.Headers[strings.ToLower(name)] = c.Request.Header.Get(name)
 	}
@@ -58,17 +62,12 @@ func (be Backend) FetchCredential(resource string, c *gin.Context) (*BackendCred
 		return nil, fmt.Errorf("Got HTTP error %v from backend", resp.StatusCode)
 	}
 
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
 	cred := &BackendCredential{}
-	if err := json.Unmarshal(respBody, cred); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(cred); err != nil {
 		return nil, err
 	}
-	if cred.DatabaseUrl == "" {
-		return nil, fmt.Errorf("Database url was not provided")
+	if cred.DatabaseURL == "" {
+		return nil, fmt.Errorf("Database URL was not provided")
 	}
 
 	return cred, nil

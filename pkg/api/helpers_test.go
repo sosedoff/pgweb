@@ -43,13 +43,13 @@ func Test_getSessionId(t *testing.T) {
 func Test_serveResult(t *testing.T) {
 	server := gin.Default()
 	server.GET("/good", func(c *gin.Context) {
-		serveResult(gin.H{"foo": "bar"}, nil, c)
+		serveResult(c, gin.H{"foo": "bar"}, nil)
 	})
 	server.GET("/bad", func(c *gin.Context) {
-		serveResult(nil, errors.New("message"), c)
+		serveResult(c, nil, errors.New("message"))
 	})
 	server.GET("/nodata", func(c *gin.Context) {
-		serveResult(nil, nil, c)
+		serveResult(c, nil, nil)
 	})
 
 	w := httptest.NewRecorder()
@@ -62,7 +62,7 @@ func Test_serveResult(t *testing.T) {
 	req, _ = http.NewRequest("GET", "/bad", nil)
 	server.ServeHTTP(w, req)
 	assert.Equal(t, 400, w.Code)
-	assert.Equal(t, `{"error":"message"}`, w.Body.String())
+	assert.Equal(t, `{"error":"message","status":400}`, w.Body.String())
 
 	w = httptest.NewRecorder()
 	req, _ = http.NewRequest("GET", "/nodata", nil)
