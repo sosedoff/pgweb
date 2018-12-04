@@ -19,10 +19,11 @@ import (
 )
 
 const (
-	PORT_START = 29168
-	PORT_LIMIT = 500
+	portStart = 29168
+	portLimit = 500
 )
 
+// Tunnel represents the connection between local and remote server
 type Tunnel struct {
 	TargetHost string
 	TargetPort string
@@ -121,6 +122,7 @@ func (tunnel *Tunnel) handleConnection(local net.Conn) {
 	local.Close()
 }
 
+// Close closes the tunnel connection
 func (tunnel *Tunnel) Close() {
 	if tunnel.Client != nil {
 		tunnel.Client.Close()
@@ -131,6 +133,7 @@ func (tunnel *Tunnel) Close() {
 	}
 }
 
+// Configure establishes the tunnel between localhost and remote machine
 func (tunnel *Tunnel) Configure() error {
 	config, err := makeConfig(tunnel.SSHInfo)
 	if err != nil {
@@ -153,6 +156,7 @@ func (tunnel *Tunnel) Configure() error {
 	return nil
 }
 
+// Start starts the connection handler loop
 func (tunnel *Tunnel) Start() {
 	defer tunnel.Close()
 
@@ -166,13 +170,14 @@ func (tunnel *Tunnel) Start() {
 	}
 }
 
+// NewTunnel instantiates a new tunnel struct from given ssh info
 func NewTunnel(sshInfo *shared.SSHInfo, dbUrl string) (*Tunnel, error) {
 	uri, err := url.Parse(dbUrl)
 	if err != nil {
 		return nil, err
 	}
 
-	listenPort, err := connection.AvailablePort(PORT_START, PORT_LIMIT)
+	listenPort, err := connection.FindAvailablePort(portStart, portLimit)
 	if err != nil {
 		return nil, err
 	}

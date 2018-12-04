@@ -7,10 +7,9 @@ import (
 	"strings"
 )
 
-// Check if the TCP port available on localhost
-func portAvailable(port int) bool {
+// IsPortAvailable returns true if there's no listeners on a given port
+func IsPortAvailable(port int) bool {
 	conn, err := net.Dial("tcp", fmt.Sprintf("127.0.0.1:%v", port))
-
 	if err != nil {
 		if strings.Index(err.Error(), "connection refused") > 0 {
 			return true
@@ -22,10 +21,10 @@ func portAvailable(port int) bool {
 	return false
 }
 
-// Get available TCP port on localhost by trying available ports in a range
-func AvailablePort(start int, limit int) (int, error) {
+// FindAvailablePort returns the first available TCP port in the range
+func FindAvailablePort(start int, limit int) (int, error) {
 	for i := start; i <= (start + limit); i++ {
-		if portAvailable(i) {
+		if IsPortAvailable(i) {
 			return i, nil
 		}
 	}
