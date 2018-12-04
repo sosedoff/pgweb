@@ -52,4 +52,9 @@ func SetupRoutes(router *gin.Engine) {
 	api.GET("/history", GetHistory)
 	api.GET("/bookmarks", GetBookmarks)
 	api.GET("/export", DataExport)
+
+	// Discovery routes
+	api.GET("/discovery", DiscoveryIndex)
+	api.GET("/discovery/:provider", DiscoveryList)
+	api.GET("/discovery/:provider/:id", DiscoveryConnect)
 }

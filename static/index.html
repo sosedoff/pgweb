@@ -131,10 +131,26 @@
             <button type="button" data="scheme" class="btn btn-default" id="connection_scheme">Scheme</button>
             <button type="button" data="standard" class="btn btn-default active" id="connection_standard">Standard</button>
             <button type="button" data="ssh" class="btn btn-default" id="connection_ssh">SSH</button>
+            <button type="button" data="discovery" class="btn btn-default" id="connection_discovery">Discovery</button>
           </div>
         </div>
 
         <hr/>
+
+        <div class="connection-discovery-group">
+          <div class="form-group providers">
+            <label class="col-sm-3 control-label">Provider</label>
+            <div class="col-sm-9">
+              <select class="form-control" id="connection_providers"></select>
+            </div>
+          </div>
+          <div class="form-group provider-resources">
+            <label class="col-sm-3 control-label">Resource</label>
+            <div class="col-sm-9">
+              <select class="form-control" id="connection_provider_resources"></select>
+            </div>
+          </div>
+        </div>
 
         <div class="connection-scheme-group">
           <div class="form-group">

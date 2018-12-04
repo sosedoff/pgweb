@@ -14,6 +14,12 @@ func dbCheckMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		path := strings.Replace(c.Request.URL.Path, command.Opts.Prefix, "", -1)
 
+		// White-list provider paths
+		if strings.HasPrefix(path, "/api/discovery") {
+			c.Next()
+			return
+		}
+
 		// Allow whitelisted paths
 		if allowedPaths[path] {
 			c.Next()

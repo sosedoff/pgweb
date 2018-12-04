@@ -15,6 +15,8 @@ import (
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
+	"github.com/sosedoff/pgweb/pkg/discovery/aws"
+	"github.com/sosedoff/pgweb/pkg/discovery/heroku"
 	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/pkg/util"
 )
@@ -193,8 +195,33 @@ func openPage() {
 	exec.Command("open", url).Output()
 }
 
+func initProviders() {
+	if !command.Opts.Discovery {
+		return
+	}
+
+	if command.Opts.Heroku {
+		provider, err := heroku.New(command.Opts)
+		if err != nil {
+			exitWithMessage(err.Error())
+			return
+		}
+		api.RegisterProvider(provider)
+	}
+
+	if command.Opts.AWS {
+		provider, err := aws.New(command.Opts)
+		if err != nil {
+			exitWithMessage(err.Error())
+			return
+		}
+		api.RegisterProvider(provider)
+	}
+}
+
 func Run() {
 	initOptions()
+	initProviders()
 	initClient()
 
 	if api.DbClient != nil {

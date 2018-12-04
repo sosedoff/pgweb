@@ -15,6 +15,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
+	"github.com/sosedoff/pgweb/pkg/discovery"
 	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
@@ -24,6 +25,9 @@ var (
 
 	// DbSessions represents the mapping for client connections
 	DbSessions = map[string]*client.Client{}
+
+	// Providers represents a list of all enabled providers
+	Providers = map[string]discovery.Provider{}
 )
 
 // DB returns a database connection from the client context
@@ -491,4 +495,76 @@ func DataExport(c *gin.Context) {
 	if err != nil {
 		badRequest(c, err)
 	}
+}
+
+// DiscoveryIndex returns a list of all configured providers
+func DiscoveryIndex(c *gin.Context) {
+	if !command.Opts.Discovery {
+		badRequest(c, "Discovery is not enabled")
+		return
+	}
+
+	result := []map[string]string{}
+
+	for _, provider := range Providers {
+		result = append(result, map[string]string{
+			"id":   provider.ID(),
+			"name": provider.Name(),
+		})
+	}
+	successResponse(c, result)
+}
+
+// DiscoveryList returns a list of all provider resources
+func DiscoveryList(c *gin.Context) {
+	if !command.Opts.Discovery {
+		badRequest(c, "Discovery is not enabled")
+		return
+	}
+
+	provider, ok := Providers[c.Param("provider")]
+	if !ok {
+		badRequest(c, "Invalid provider")
+		return
+	}
+
+	resources, err := provider.List()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	successResponse(c, resources)
+}
+
+// DiscoveryConnect performs a provider resource lookup and connects to the database
+// if the resource was found.
+func DiscoveryConnect(c *gin.Context) {
+	if !command.Opts.Discovery {
+		badRequest(c, "Discovery is not enabled")
+		return
+	}
+
+	provider, ok := Providers[c.Param("provider")]
+	if !ok {
+		badRequest(c, "Invalid provider")
+		return
+	}
+
+	credential, err := provider.Get(c.Param("id"))
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	successResponse(c, credential)
+}
+
+func RegisterProvider(p discovery.Provider) error {
+	id := p.ID()
+	if _, ok := Providers[id]; ok {
+		return fmt.Errorf("Provider %s already registered", id)
+	}
+	Providers[id] = p
+	return nil
 }

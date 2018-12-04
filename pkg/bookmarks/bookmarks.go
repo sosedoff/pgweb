@@ -14,14 +14,14 @@ import (
 )
 
 type Bookmark struct {
-	Url      string          `json:"url"`      // Postgres connection URL
-	Host     string          `json:"host"`     // Server hostname
-	Port     int             `json:"port"`     // Server port
-	User     string          `json:"user"`     // Database user
-	Password string          `json:"password"` // User password
-	Database string          `json:"database"` // Database name
-	Ssl      string          `json:"ssl"`      // Connection SSL mode
-	Ssh      *shared.SSHInfo `json:"ssh"`      // SSH tunnel config
+	Url      string          `json:"url,omitempty"`      // Postgres connection URL
+	Host     string          `json:"host,omitempty"`     // Server hostname
+	Port     int             `json:"port,omitempty"`     // Server port
+	User     string          `json:"user,omitempty"`     // Database user
+	Password string          `json:"password,omitempty"` // User password
+	Database string          `json:"database,omitempty"` // Database name
+	Ssl      string          `json:"ssl,omitempty"`      // Connection SSL mode
+	Ssh      *shared.SSHInfo `json:"ssh,omitempty"`      // SSH tunnel config
 }
 
 func (b Bookmark) SSHInfoIsEmpty() bool {

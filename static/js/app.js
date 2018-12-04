@@ -90,6 +90,9 @@ function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, c
 function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
 function explainQuery(query, cb)            { apiCall("post", "/explain", { query: query }, cb); }
 function disconnect(cb)                     { apiCall("post", "/disconnect", {}, cb); }
+function getProviders(cb)                   { apiCall("get", "/discovery", {}, cb); }
+function getProviderResources(provider, cb) { apiCall("get", "/discovery/" + provider, {}, cb); }
+function getResource(provider, id, cb)      { apiCall("get", "/discovery/" + provider + "/" + id, {}, cb); }
 
 function encodeQuery(query) {
   return window.btoa(query).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, ".");
@@ -829,6 +832,21 @@ function showConnectionSettings() {
     }
   });
 
+  getProviders(function(data) {
+    if (data.error) {
+      $(".connection-discovery-group").html("<div class='alert alert-danger'>" + data.error + "</div>");
+      return;
+    }
+
+    $("#connection_providers").html("");
+    $("<option value=''>Select Provider</option>").appendTo("#connection_providers");
+
+    for (var i = 0; i < data.length; i++) {
+      var provider = data[i];
+      $("<option value='" + provider.id + "'>" + provider.name + "</option>").appendTo("#connection_providers");
+    }
+  });
+
   $("#connection_window").show();
 }
 
@@ -1284,26 +1302,52 @@ $(document).ready(function() {
         $(".connection-scheme-group").show();
         $(".connection-standard-group").hide();
         $(".connection-ssh-group").hide();
+        $(".connection-discovery-group").hide();
         return;
       case "standard":
         $(".connection-scheme-group").hide();
         $(".connection-standard-group").show();
         $(".connection-ssh-group").hide();
+        $(".connection-discovery-group").hide();
         return;
       case "ssh":
         $(".connection-scheme-group").hide();
         $(".connection-standard-group").show();
         $(".connection-ssh-group").show();
+        $(".connection-discovery-group").hide();
         return;
+      case "discovery":
+        $(".connection-scheme-group").hide();
+        $(".connection-standard-group").hide();
+        $(".connection-ssh-group").hide();
+        $(".connection-discovery-group").show();
     }
   });
 
-  $("#connection_bookmarks").on("change", function(e) {
-    var name = $.trim($(this).val());
+  $("#connection_providers").on("change", function(e) {
+    var name = $(this).val();
     if (name == "") return;
 
-    var item = bookmarks[name];
+    $(".provider-resources").show();
+    $("#connection_provider_resources").html("").prop("disabled", "disabled");
+    $("<option value=''>Please wait, loading...</option>").appendTo("#connection_provider_resources");
 
+    getProviderResources(name, function(data) {
+      if (data.error) {
+        alert("ERROR: " + data.error);
+        return;
+      }
+
+      $("#connection_provider_resources").html("").prop("disabled", "");
+      $("<option value=''>Select resource</option>").appendTo("#connection_provider_resources");
+
+      for (var i = 0 ; i < data.length; i++) {
+        $("<option value='" + data[i].id + "'>" + data[i].name + "</option>").appendTo("#connection_provider_resources");
+      }
+    });
+  });
+
+  function fillFromBookmark(item) {
     // Check if bookmark only has url set
     if (item.url && item.url != "") {
       $("#connection_url").val(item.url);
@@ -1336,6 +1380,33 @@ $(document).ready(function() {
       $(".connection-ssh-group").hide();
       $("#connection_standard").click();
     }
+  }
+
+  $("#connection_provider_resources").on("change", function(e) {
+    var provider = $("#connection_providers").val();
+    var resourceId = $(this).val();
+
+    if (resourceId == "" || provider == "") return;
+
+    getResource(provider, resourceId, function(data) {
+      if (data.error) {
+        alert("ERROR:" + data.error);
+        return;
+      }
+
+      fillFromBookmark(data);
+
+      // Show the default connection block
+      if (!data.url) {
+        $("#connection_standard").click();
+      }
+    });
+  });
+
+  $("#connection_bookmarks").on("change", function(e) {
+    var name = $.trim($(this).val());
+    if (name == "") return;
+    fillFromBookmark(bookmarks[name]);
   });
 
   $("#connection_form").on("submit", function(e) {

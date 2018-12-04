@@ -622,6 +622,14 @@
   z-index: 1000;
 }
 
+.connection-discovery-group {
+  display: none;
+}
+
+.connection-discovery-group .provider-resources {
+  display: none;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Sidebar Schema Objects */
 /* -------------------------------------------------------------------------- */

@@ -38,6 +38,19 @@ type Options struct {
 	ConnectionIdleTimeout        int    `long:"idle-timeout" description:"Set connection idle timeout in minutes" default:"180"`
 	Cors                         bool   `long:"cors" description:"Enable Cross-Origin Resource Sharing (CORS)"`
 	CorsOrigin                   string `long:"cors-origin" description:"Allowed CORS origins" default:"*"`
+
+	// Global flat to enable discovery feature
+	Discovery bool `long:"discovery"`
+
+	// Heroku Provider
+	Heroku      bool   `long:"heroku"`
+	HerokuToken string `long:"heroku-token"`
+
+	// Amazon Web Services Provider
+	AWS          bool   `long:"aws"`
+	AWSAccessKey string `long:"aws-access-key"`
+	AWSSecretKey string `long:"aws-secret-key"`
+	AWSRegion    string `long:"aws-region"`
 }
 
 var Opts Options
