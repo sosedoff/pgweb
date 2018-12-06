@@ -8,11 +8,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/sosedoff/pgweb/pkg/bookmarks"
-
 	"github.com/bgentry/go-netrc/netrc"
 	"github.com/heroku/heroku-go/v3"
 
+	"github.com/sosedoff/pgweb/pkg/bookmarks"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/discovery"
 )
