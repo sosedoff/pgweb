@@ -537,8 +537,7 @@ func DiscoveryList(c *gin.Context) {
 	successResponse(c, resources)
 }
 
-// DiscoveryConnect performs a provider resource lookup and connects to the database
-// if the resource was found.
+// DiscoveryConnect performs a provider resource lookup and returns connection info
 func DiscoveryConnect(c *gin.Context) {
 	if !command.Opts.Discovery {
 		badRequest(c, "Discovery is not enabled")
@@ -551,7 +550,8 @@ func DiscoveryConnect(c *gin.Context) {
 		return
 	}
 
-	credential, err := provider.Get(c.Param("id"))
+	id := strings.TrimPrefix(c.Param("id"), "/")
+	credential, err := provider.Get(id)
 	if err != nil {
 		badRequest(c, err)
 		return

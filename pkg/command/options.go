@@ -47,10 +47,11 @@ type Options struct {
 	HerokuToken string `long:"heroku-token"`
 
 	// Amazon Web Services Provider
-	AWS          bool   `long:"aws"`
-	AWSAccessKey string `long:"aws-access-key"`
-	AWSSecretKey string `long:"aws-secret-key"`
-	AWSRegion    string `long:"aws-region"`
+	AWS          bool   `long:"aws" description:"Enable AWS instance discovery"`
+	AWSAccessKey string `long:"aws-access-key" description:"AWS access key"`
+	AWSSecretKey string `long:"aws-secret-key" description:"AWS secret key"`
+	AWSRegion    string `long:"aws-region" description:"AWS region name"`
+	AWSProfile   string `long:"aws-profile" description:"AWS profile name for ~/.aws/credentials" default:"default"`
 }
 
 var Opts Options

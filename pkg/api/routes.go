@@ -56,5 +56,5 @@ func SetupRoutes(router *gin.Engine) {
 	// Discovery routes
 	api.GET("/discovery", DiscoveryIndex)
 	api.GET("/discovery/:provider", DiscoveryList)
-	api.GET("/discovery/:provider/:id", DiscoveryConnect)
+	api.GET("/discovery/:provider/*id", DiscoveryConnect)
 }
