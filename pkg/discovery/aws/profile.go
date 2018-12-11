@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/sosedoff/pgweb/pkg/command"
-
 	"github.com/go-ini/ini"
+
+	"github.com/sosedoff/pgweb/pkg/command"
 )
 
 func awsConfigPath() string {

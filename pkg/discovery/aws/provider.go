@@ -157,13 +157,6 @@ func (p Provider) List() ([]discovery.Resource, error) {
 				continue
 			}
 
-			// var host string
-			// if command.Opts.ReadOnly {
-			// 	host = aws.StringValue(cluster.ReaderEndpoint)
-			// } else {
-			// 	host = aws.StringValue(cluster.Endpoint)
-			// }
-
 			resources = append(resources, discovery.Resource{
 				ID:   fmt.Sprintf("cluster/%s", *cluster.DBClusterIdentifier),
 				Name: fmt.Sprintf("[cluster] %s", *cluster.DBClusterIdentifier),
