@@ -237,8 +237,8 @@ func (client *Client) EstimatedTableRowsCount(table string, opts RowsOptions) (*
 }
 
 func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, error) {
-	schema, table := getSchemaAndTable(table)
-	sql := fmt.Sprintf(`SELECT COUNT(1) FROM "%s"."%s"`, schema, table)
+	schema, tableName := getSchemaAndTable(table)
+	sql := fmt.Sprintf(`SELECT COUNT(1) FROM "%s"."%s"`, schema, tableName)
 
 	if opts.Where != "" {
 		sql += fmt.Sprintf(" WHERE %s", opts.Where)
