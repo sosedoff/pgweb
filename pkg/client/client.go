@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 	neturl "net/url"
 	"reflect"
 	"regexp"
@@ -368,9 +369,11 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 
 	rows, err := client.db.Queryx(query, args...)
 	if err != nil {
+		if command.Opts.Debug {
+			log.Println("Failed query:", query, "\nArgs:", args)
+		}
 		return nil, err
 	}
-
 	defer rows.Close()
 
 	cols, err := rows.Columns()
