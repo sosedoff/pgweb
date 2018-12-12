@@ -301,7 +301,7 @@ func testTableRowsCount(t *testing.T) {
 
 func testTableRowsCountWithLargeTable(t *testing.T) {
 	var count int64 = 100010
-	testClient.db.MustExec(`create table large_table as select s from generate_Series(1,100010) s;`)
+	testClient.db.MustExec(`CREATE TABLE large_table AS SELECT s FROM generate_Series(1,100010) s;`)
 	testClient.db.MustExec(`VACUUM large_table;`)
 	res, err := testClient.TableRowsCount("large_table", RowsOptions{})
 
