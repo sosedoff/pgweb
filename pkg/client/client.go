@@ -237,20 +237,23 @@ func (client *Client) EstimatedTableRowsCount(table string, opts RowsOptions) (*
 }
 
 func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, error) {
+	// Return postgres estimated rows count on empty filter
+	if opts.Where == "" && client.serverType == postgresType {
+		res, err := client.EstimatedTableRowsCount(table, opts)
+		if err != nil {
+			return nil, err
+		}
+		n := res.Rows[0][0].(int64)
+		if n >= 100000 {
+			return res, nil
+		}
+	}
+
 	schema, tableName := getSchemaAndTable(table)
 	sql := fmt.Sprintf(`SELECT COUNT(1) FROM "%s"."%s"`, schema, tableName)
 
 	if opts.Where != "" {
 		sql += fmt.Sprintf(" WHERE %s", opts.Where)
-	} else if client.serverType == postgresType {
-		tableInfo, err := client.TableInfo(table)
-		if err != nil {
-			return nil, err
-		}
-		estimatedRowsCount := tableInfo.Rows[0][3].(float64)
-		if estimatedRowsCount > 100000 {
-			return client.EstimatedTableRowsCount(table, opts)
-		}
 	}
 
 	return client.query(sql)
