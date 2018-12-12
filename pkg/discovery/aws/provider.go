@@ -19,9 +19,9 @@ import (
 )
 
 var (
-	errAccessKeyMissing  = errors.New("AWS access key is missing")
-	errSecretKeyMissing  = errors.New("AWS secret key is missing")
-	errRegionMissing     = errors.New("AWS region is missing")
+	errAccessKeyMissing  = errors.New("AWS access key is not set")
+	errSecretKeyMissing  = errors.New("AWS secret key is not set")
+	errRegionMissing     = errors.New("AWS region is not set")
 	errInstanceNotFound  = errors.New("Database instance not found")
 	errInvalidResourceID = errors.New("Invalid resource ID")
 )

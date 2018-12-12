@@ -5,10 +5,8 @@ import (
 	"errors"
 	"net/http"
 	"os"
-	"path/filepath"
 	"time"
 
-	"github.com/bgentry/go-netrc/netrc"
 	"github.com/heroku/heroku-go/v3"
 
 	"github.com/sosedoff/pgweb/pkg/bookmarks"
@@ -17,7 +15,8 @@ import (
 )
 
 var (
-	errTokenMissing = errors.New("Heroku API token is missing")
+	errTokenMissing      = errors.New("Heroku API token is not set")
+	errInvalidResourceID = errors.New("Invalid resource ID")
 )
 
 // Provider represents Heroku discovery provider
@@ -27,19 +26,12 @@ type Provider struct {
 
 // New returns a new Heroku provider instance
 func New(opts command.Options) (*Provider, error) {
-	// Try to locate Heroku API token using environment
 	if opts.HerokuToken == "" {
 		opts.HerokuToken = os.Getenv("HEROKU_TOKEN")
 	}
-	// Try to read token from local .netrc file
 	if opts.HerokuToken == "" {
-		netrcPath := filepath.Join(os.Getenv("HOME"), ".netrc")
-		machine, err := netrc.FindMachine(netrcPath, "api.heroku.com")
-		if machine != nil && err == nil {
-			opts.HerokuToken = machine.Password
-		}
+		readConfig(&opts)
 	}
-	// Final validation
 	if opts.HerokuToken == "" {
 		return nil, errTokenMissing
 	}
@@ -108,5 +100,5 @@ func (p Provider) Get(id string) (*bookmarks.Bookmark, error) {
 		}
 	}
 
-	return nil, errors.New("cant find config")
+	return nil, errInvalidResourceID
 }
