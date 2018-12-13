@@ -1304,6 +1304,7 @@ $(document).ready(function() {
       $("#ssh_password").val("");
       $("#ssh_key").val("");
       $(".connection-ssh-group").hide();
+      $("#connection_standard").click();
     }
   });
 
