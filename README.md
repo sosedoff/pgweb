@@ -35,6 +35,18 @@ application to work with local or remote PostgreSQL databases.
 
 Visit [WIKI](https://github.com/sosedoff/pgweb/wiki) for more details
 
+## Pgweb Pro
+
+Pgweb Pro is the next major version of Pgweb and includes features like:
+
+- Table structure editing
+- Data editing (update row content)
+- Charting
+- History persistence
+- Multiple tabs
+
+Please get in touch via: https://goo.gl/forms/euQOGWg5uPdPH70b2
+
 ## Demo
 
 Visit https://pgweb-demo.herokuapp.com to see pgweb in action.
