@@ -571,12 +571,30 @@
   margin-top: 50px;
 }
 
-.connection-settings h1 {
+.connection-settings .header {
+  margin-bottom: 25px;
+}
+
+.connection-settings .header h1 {
   text-align: center;
   text-shadow: 0px 1px 0px #fff;
-  margin-bottom: 25px;
   color: #999;
   font-weight: normal;
+}
+
+.connection-settings .header .version {
+  font-size: 12px;
+  color: #aaa;
+  text-align: center;
+  display: block;
+}
+
+.connection-settings .header .update {
+  font-size: 12px;
+  text-align: center;
+  padding: 4px;
+  margin: 12px 0px;
+  display: none;
 }
 
 .connection-settings form {
