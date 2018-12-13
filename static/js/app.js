@@ -78,6 +78,7 @@ function apiCall(method, path, params, cb) {
   });
 }
 
+function getInfo(cb)                        { apiCall("get", "/info", {}, cb); }
 function getObjects(cb)                     { apiCall("get", "/objects", {}, cb); }
 function getTables(cb)                      { apiCall("get", "/tables", {}, cb); }
 function getTableRows(table, opts, cb)      { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
@@ -770,7 +771,36 @@ function addShortcutTooltips() {
   }
 }
 
+// Get the latest release from Github API
+function getLatestReleaseInfo(current) {
+  try {
+    $.get("https://api.github.com/repos/sosedoff/pgweb/releases/latest", function(release) {
+      if (release.name != current.version) {
+        var message = "Update available. Check out " + release.tag_name + " on <a target='_blank' href='" + release.html_url + "'>Github</a>";
+        $(".connection-settings .update").html(message).fadeIn();
+      }
+    });
+  }
+  catch(error) {
+    console.log("Cant get last release from github:", error);
+  }
+}
+
 function showConnectionSettings() {
+  // Fetch server info
+  getInfo(function(data) {
+    if (data.error) return;
+    if (!data.version) return;
+
+    // Show the current postgres version
+    $(".connection-settings .version").text("v" + data.version).show();
+
+    // Check for updates if running the actual release from Github
+    if (data.git_sha == "") {
+      getLatestReleaseInfo(data);
+    }
+  });
+
   getBookmarks(function(data) {
     // Do not add any bookmarks if we've got an error
     if (data.error) {
