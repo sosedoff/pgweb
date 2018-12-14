@@ -101,7 +101,7 @@ func staticCssAppCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/css/app.css", size: 11680, mode: os.FileMode(420), modTime: time.Unix(1544744863, 0)}
+	info := bindataFileInfo{name: "static/css/app.css", size: 11680, mode: os.FileMode(420), modTime: time.Unix(1544761954, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -301,7 +301,7 @@ func staticIndexHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/index.html", size: 12644, mode: os.FileMode(420), modTime: time.Unix(1544744863, 0)}
+	info := bindataFileInfo{name: "static/index.html", size: 12644, mode: os.FileMode(420), modTime: time.Unix(1544761954, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -321,7 +321,7 @@ func staticJsAcePgsqlJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/ace-pgsql.js", size: 53342, mode: os.FileMode(420), modTime: time.Unix(1512708940, 0)}
+	info := bindataFileInfo{name: "static/js/ace-pgsql.js", size: 53342, mode: os.FileMode(420), modTime: time.Unix(1544759791, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -341,7 +341,7 @@ func staticJsAceJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/ace.js", size: 327872, mode: os.FileMode(420), modTime: time.Unix(1512708940, 0)}
+	info := bindataFileInfo{name: "static/js/ace.js", size: 327872, mode: os.FileMode(420), modTime: time.Unix(1544759791, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -361,7 +361,7 @@ func staticJsAppJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/js/app.js", size: 37829, mode: os.FileMode(420), modTime: time.Unix(1544745183, 0)}
+	info := bindataFileInfo{name: "static/js/app.js", size: 37829, mode: os.FileMode(420), modTime: time.Unix(1544761954, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
