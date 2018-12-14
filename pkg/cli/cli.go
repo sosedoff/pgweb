@@ -136,7 +136,7 @@ For proper read-only access please follow postgresql role management documentati
 }
 
 func printVersion() {
-	str := fmt.Sprintf("Pgweb v%s", command.VERSION)
+	str := fmt.Sprintf("Pgweb v%s", command.Version)
 	if command.GitCommit != "" {
 		str += fmt.Sprintf(" (git: %s)", command.GitCommit)
 	}

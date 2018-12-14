@@ -449,7 +449,7 @@ func GetBookmarks(c *gin.Context) {
 
 func GetInfo(c *gin.Context) {
 	successResponse(c, gin.H{
-		"version":    command.VERSION,
+		"version":    command.Version,
 		"git_sha":    command.GitCommit,
 		"build_time": command.BuildTime,
 	})
