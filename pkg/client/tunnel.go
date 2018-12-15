@@ -86,6 +86,9 @@ func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
 		User:    info.User,
 		Auth:    methods,
 		Timeout: time.Second * 10,
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
+		},
 	}
 
 	return cfg, nil

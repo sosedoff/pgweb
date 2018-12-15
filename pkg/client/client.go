@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/history"
