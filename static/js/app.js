@@ -124,7 +124,7 @@ function buildSchemaSection(name, objects) {
     if (name == "public" && group == "table") group_klass = "expanded";
 
     section += "<div class='schema-group " + group_klass + "'>";
-    section += "<div class='schema-group-title'><i class='fa fa-chevron-right'></i><i class='fa fa-chevron-down'></i> " + titles[group] + " (" + objects[group].length + ")</div>";
+    section += "<div class='schema-group-title'><i class='fa fa-chevron-right'></i><i class='fa fa-chevron-down'></i> " + titles[group] + " <span class='schema-group-count'>" + objects[group].length + "</span></div>";
     section += "<ul data-group='" + group + "'>";
 
     if (objects[group]) {

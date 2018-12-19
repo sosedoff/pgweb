@@ -661,6 +661,14 @@
   line-height: 30px;
   height: 30px;
   padding: 0px 8px;
+  overflow: hidden;
+}
+
+.schema .schema-container .schema-group .schema-group-count {
+  color: #999;
+  display: inline-block;
+  float: right;
+  margin-right: 8px;
 }
 
 .schema .schema-container .schema-group ul {
