@@ -1,0 +1,24 @@
+name: pgweb
+version: '1.0'
+summary: Cross-platform client for PostgreSQL databases  
+description: |
+  Cross-platform client for PostgreSQL databases. 
+grade: stable
+confinement: strict
+base: core18
+parts:
+  pgweb:
+    plugin: go
+    source: https://github.com/sosedoff/pgweb.git
+    go-importpath: github.com/sosedoff/pgweb
+    build-packages:
+      - build-essential
+apps:
+  pgweb:
+    command: bin/pgweb
+    daemon: simple
+    restart-condition: on-abnormal
+    plugs:
+      - home
+      - network
+      - network-bind
