@@ -45,17 +45,19 @@ func New(opts command.Options) (*Provider, error) {
 	}
 
 	// Load configuration options from the AWS CLI profile
-	readProfile(&opts)
+	if opts.AWSAccessKey == "" && opts.AWSSecretKey == "" {
+		readProfile(&opts)
+	}
 
 	// Validate options
+	if opts.AWSRegion == "" {
+		opts.AWSRegion = "us-east-1"
+	}
 	if opts.AWSAccessKey == "" {
 		return nil, errAccessKeyMissing
 	}
 	if opts.AWSSecretKey == "" {
 		return nil, errSecretKeyMissing
-	}
-	if opts.AWSRegion == "" {
-		return nil, errRegionMissing
 	}
 
 	sess, err := session.NewSession(&aws.Config{
