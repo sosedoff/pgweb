@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tuvistavie/securerandom"
 
-	"github.com/sosedoff/pgweb/pkg/bookmarks"
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
@@ -446,11 +445,6 @@ func HandleQuery(query string, c *gin.Context) {
 	}
 }
 
-func GetBookmarks(c *gin.Context) {
-	bookmarks, err := bookmarks.ReadAll(bookmarks.Path(command.Opts.BookmarksDir))
-	serveResult(c, bookmarks, err)
-}
-
 func GetInfo(c *gin.Context) {
 	successResponse(c, gin.H{
 		"version":    command.Version,
@@ -499,13 +493,7 @@ func DataExport(c *gin.Context) {
 
 // DiscoveryIndex returns a list of all configured providers
 func DiscoveryIndex(c *gin.Context) {
-	if !command.Opts.Discovery {
-		badRequest(c, "Discovery is not enabled")
-		return
-	}
-
 	result := []map[string]string{}
-
 	for _, provider := range Providers {
 		result = append(result, map[string]string{
 			"id":   provider.ID(),
@@ -517,11 +505,6 @@ func DiscoveryIndex(c *gin.Context) {
 
 // DiscoveryList returns a list of all provider resources
 func DiscoveryList(c *gin.Context) {
-	if !command.Opts.Discovery {
-		badRequest(c, "Discovery is not enabled")
-		return
-	}
-
 	provider, ok := Providers[c.Param("provider")]
 	if !ok {
 		badRequest(c, "Invalid provider")
@@ -539,11 +522,6 @@ func DiscoveryList(c *gin.Context) {
 
 // DiscoveryConnect performs a provider resource lookup and returns connection info
 func DiscoveryConnect(c *gin.Context) {
-	if !command.Opts.Discovery {
-		badRequest(c, "Discovery is not enabled")
-		return
-	}
-
 	provider, ok := Providers[c.Param("provider")]
 	if !ok {
 		badRequest(c, "Invalid provider")

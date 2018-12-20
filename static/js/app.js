@@ -1370,16 +1370,16 @@ $(document).ready(function() {
       $("#ssh_password").val(item.ssh.password);
       $("#ssh_key").val(item.ssh.key);
       $("#connection_ssh").click();
+      return;
     }
-    else {
-      $("#ssh_host").val("");
-      $("#ssh_port").val("");
-      $("#ssh_user").val("");
-      $("#ssh_password").val("");
-      $("#ssh_key").val("");
-      $(".connection-ssh-group").hide();
-      $("#connection_standard").click();
-    }
+
+    $("#ssh_host").val("");
+    $("#ssh_port").val("");
+    $("#ssh_user").val("");
+    $("#ssh_password").val("");
+    $("#ssh_key").val("");
+    $(".connection-ssh-group").hide();
+    $("#connection_standard").click();
   }
 
   $("#connection_provider_resources").on("change", function(e) {
@@ -1396,17 +1396,10 @@ $(document).ready(function() {
 
       fillFromBookmark(data);
 
-      // Show the default connection block
-      if (!data.url) {
-        $("#connection_standard").click();
-      }
+      // Reset the selection after resource has been chosen
+      $("#connection_providers").val("");
+      $(".provider-resources").hide();
     });
-  });
-
-  $("#connection_bookmarks").on("change", function(e) {
-    var name = $.trim($(this).val());
-    if (name == "") return;
-    fillFromBookmark(bookmarks[name]);
   });
 
   $("#connection_form").on("submit", function(e) {

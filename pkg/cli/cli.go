@@ -8,16 +8,14 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jessevdk/go-flags"
 
 	"github.com/sosedoff/pgweb/pkg/api"
-	"github.com/sosedoff/pgweb/pkg/bookmarks"
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/discovery/aws"
+	"github.com/sosedoff/pgweb/pkg/discovery/bookmark"
 	"github.com/sosedoff/pgweb/pkg/discovery/heroku"
-	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/pkg/util"
 )
 
@@ -28,45 +26,23 @@ func exitWithMessage(message string) {
 	os.Exit(1)
 }
 
-func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client, error) {
-	bookmark, err := bookmarks.GetBookmark(bookmarkPath, bookmarkName)
-	if err != nil {
-		return nil, err
-	}
-
-	opt := bookmark.ConvertToOptions()
-	var connStr string
-
-	if opt.Url != "" { // if the bookmark has url set, use it
-		connStr = opt.Url
-	} else {
-		connStr, err = connection.BuildStringFromOptions(opt)
-		if err != nil {
-			return nil, fmt.Errorf("error building connection string: %v", err)
-		}
-	}
-
-	var ssh *shared.SSHInfo
-	if !bookmark.SSHInfoIsEmpty() {
-		ssh = bookmark.Ssh
-	}
-
-	return client.NewFromUrl(connStr, ssh)
-}
-
 func initClient() {
-	if connection.IsBlank(command.Opts) && options.Bookmark == "" {
+	if connection.IsBlank(command.Opts) {
 		return
 	}
 
 	var cl *client.Client
 	var err error
 
+<<<<<<< HEAD
 	if options.Bookmark != "" {
 		cl, err = initClientUsingBookmark(bookmarks.Path(options.BookmarksDir), options.Bookmark)
 	} else {
 		cl, err = client.New()
 	}
+=======
+	cl, err = client.New()
+>>>>>>> Bookmarks is now a discovery provider
 	if err != nil {
 		exitWithMessage(err.Error())
 	}
@@ -112,12 +88,7 @@ func initClient() {
 func initOptions() {
 	opts, err := command.ParseOptions(os.Args)
 	if err != nil {
-		switch err.(type) {
-		case *flags.Error:
-			// no need to print error, flags package already does that
-		default:
-			fmt.Println(err.Error())
-		}
+		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 	command.Opts = opts
@@ -196,9 +167,16 @@ func openPage() {
 }
 
 func initProviders() {
-	if !command.Opts.Discovery {
+	if command.Opts.DisableDiscovery {
 		return
 	}
+
+	provider, err := bookmark.New(command.Opts)
+	if err != nil {
+		exitWithMessage(err.Error())
+		return
+	}
+	api.RegisterProvider(provider)
 
 	if command.Opts.Heroku {
 		provider, err := heroku.New(command.Opts)

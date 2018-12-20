@@ -27,8 +27,6 @@ type Options struct {
 	Prefix                       string `long:"prefix" description:"Add a url prefix"`
 	ReadOnly                     bool   `long:"readonly" description:"Run database connection in readonly mode"`
 	LockSession                  bool   `long:"lock-session" description:"Lock session to a single database connection"`
-	Bookmark                     string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
-	BookmarksDir                 string `long:"bookmarks-dir" description:"Overrides default directory for bookmark files to search" default:""`
 	DisablePrettyJson            bool   `long:"no-pretty-json" description:"Disable JSON formatting feature for result export"`
 	DisableSSH                   bool   `long:"no-ssh" description:"Disable database connections via SSH"`
 	ConnectBackend               string `long:"connect-backend" description:"Enable database authentication through a third party backend"`
@@ -38,13 +36,11 @@ type Options struct {
 	ConnectionIdleTimeout        int    `long:"idle-timeout" description:"Set connection idle timeout in minutes" default:"180"`
 	Cors                         bool   `long:"cors" description:"Enable Cross-Origin Resource Sharing (CORS)"`
 	CorsOrigin                   string `long:"cors-origin" description:"Allowed CORS origins" default:"*"`
-
-	// Global flat to enable discovery feature
-	Discovery bool `long:"discovery"`
+	DisableDiscovery             bool   `long:"no-discovery" description:"Disable discovery feature"`
 
 	// Heroku Provider
-	Heroku      bool   `long:"heroku"`
-	HerokuToken string `long:"heroku-token"`
+	Heroku      bool   `long:"heroku" description:"Enable Heroku discovery"`
+	HerokuToken string `long:"heroku-token" description:"Heroku API token"`
 
 	// Amazon Web Services Provider
 	AWS          bool   `long:"aws" description:"Enable AWS instance discovery"`
@@ -82,7 +78,6 @@ func ParseOptions(args []string) (Options, error) {
 	}
 
 	if opts.Sessions || opts.ConnectBackend != "" {
-		opts.Bookmark = ""
 		opts.Url = ""
 		opts.Host = ""
 		opts.User = ""
