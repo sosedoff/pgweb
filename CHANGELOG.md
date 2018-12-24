@@ -1,3 +1,14 @@
+## 0.11.0 - 2018-12-24
+
+- Tweak sidebar database object counters styles, GH-400
+- Do not exit with error if local server is not running, GH-399
+- Fix SSH host verification check, GH-398
+- Scope activity list to current database only, GH-397
+- Show current release version and check for updates, GH-396
+- Force switch back to default connection settings view, GH-395
+- Fix row count estimation bug, GH-394
+- Print out failed query SQL and args with --debug flag, GH-393
+
 ## 0.10.0 - 2018-11-28
 
 - Fixes relation not found errors when dealing with table names that have uppercase characters, GH-356
