@@ -15,6 +15,7 @@ go:
   - 1.11.x
 
 before_install:
+  - ./script/check_merge_markers.sh
   - ./script/check_formatting.sh
   - ./script/check_assets.sh
 
