@@ -1,6 +1,5 @@
 var editor             = null;
 var connected          = false;
-var bookmarks          = {};
 var default_rows_limit = 100;
 var currentObject      = null;
 
@@ -86,7 +85,6 @@ function getTableStructure(table, opts, cb) { apiCall("get", "/tables/" + table,
 function getTableIndexes(table, cb)         { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
 function getTableConstraints(table, cb)     { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
 function getHistory(cb)                     { apiCall("get", "/history", {}, cb); }
-function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
 function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
 function explainQuery(query, cb)            { apiCall("post", "/explain", { query: query }, cb); }
 function disconnect(cb)                     { apiCall("post", "/disconnect", {}, cb); }
@@ -801,34 +799,6 @@ function showConnectionSettings() {
     // Check for updates if running the actual release from Github
     if (data.git_sha == "") {
       getLatestReleaseInfo(data);
-    }
-  });
-
-  getBookmarks(function(data) {
-    // Do not add any bookmarks if we've got an error
-    if (data.error) {
-      return;
-    }
-
-    if (Object.keys(data).length > 0) {
-      // Set bookmarks in global var
-      bookmarks = data;
-
-      // Remove all existing bookmark options
-      $("#connection_bookmarks").html("");
-
-      // Add blank option
-      $("<option value=''></option>").appendTo("#connection_bookmarks");
-
-      // Add all available bookmarks
-      for (key in data) {
-        $("<option value='" + key + "''>" + key + "</option>").appendTo("#connection_bookmarks");
-      }
-
-      $(".bookmarks").show();
-    }
-    else {
-      $(".bookmarks").hide();
     }
   });
 
