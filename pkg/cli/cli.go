@@ -97,7 +97,7 @@ func initClient() {
 	}
 
 	if !command.Opts.Sessions {
-		fmt.Printf("Conneced to %s\n", cl.ServerVersion())
+		fmt.Printf("Connected to %s\n", cl.ServerVersion())
 	}
 
 	fmt.Println("Checking database objects...")
