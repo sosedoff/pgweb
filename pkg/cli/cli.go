@@ -34,15 +34,7 @@ func initClient() {
 	var cl *client.Client
 	var err error
 
-<<<<<<< HEAD
-	if options.Bookmark != "" {
-		cl, err = initClientUsingBookmark(bookmarks.Path(options.BookmarksDir), options.Bookmark)
-	} else {
-		cl, err = client.New()
-	}
-=======
 	cl, err = client.New()
->>>>>>> Bookmarks is now a discovery provider
 	if err != nil {
 		exitWithMessage(err.Error())
 	}
