@@ -11,10 +11,13 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 )
 
+// Common errors
 var (
-	formatError = errors.New("Invalid URL. Valid format: postgres://user:password@host:port/db?sslmode=mode")
+	errCantDetectUser   = errors.New("Could not detect default username")
+	errInvalidURLFormat = errors.New("Invalid URL. Valid format: postgres://user:password@host:port/db?sslmode=mode")
 )
 
+// currentUser returns a current user name
 func currentUser() (string, error) {
 	u, err := user.Current()
 	if err == nil {
@@ -26,7 +29,7 @@ func currentUser() (string, error) {
 		return name, nil
 	}
 
-	return "", errors.New("Unable to detect OS user")
+	return "", errCantDetectUser
 }
 
 // Check if connection url has a correct postgres prefix
@@ -43,18 +46,19 @@ func valsFromQuery(vals neturl.Values) map[string]string {
 	return result
 }
 
-func FormatUrl(opts command.Options) (string, error) {
+// FormatURL reformats the existing connection string
+func FormatURL(opts command.Options) (string, error) {
 	url := opts.Url
 
 	// Validate connection string prefix
 	if !hasValidPrefix(url) {
-		return "", formatError
+		return "", errInvalidURLFormat
 	}
 
 	// Validate the URL
 	uri, err := neturl.Parse(url)
 	if err != nil {
-		return "", formatError
+		return "", errInvalidURLFormat
 	}
 
 	// Get query params
@@ -82,15 +86,16 @@ func FormatUrl(opts command.Options) (string, error) {
 	return uri.String(), nil
 }
 
+// IsBlank returns true if command options do not contain connection details
 func IsBlank(opts command.Options) bool {
 	return opts.Host == "" && opts.User == "" && opts.DbName == "" && opts.Url == ""
 }
 
-// Build a new database connection string for the CLI options
+// BuildStringFromOptions returns a new connection string built from options
 func BuildStringFromOptions(opts command.Options) (string, error) {
 	// If connection string is provided we just use that
 	if opts.Url != "" {
-		return FormatUrl(opts)
+		return FormatURL(opts)
 	}
 
 	// Try to detect user from current OS user
