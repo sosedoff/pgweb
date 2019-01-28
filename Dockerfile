@@ -5,7 +5,8 @@ ENV PGWEB_VERSION 0.11.0
 RUN \
   apk update && \
   apk add --no-cache ca-certificates openssl postgresql wget && \
-  update-ca-certificates \
+  update-ca-certificates && \
+  rm -rf /var/cache/apk/* && \
   cd /tmp && \
   wget -q https://github.com/sosedoff/pgweb/releases/download/v$PGWEB_VERSION/pgweb_linux_amd64.zip && \
   unzip pgweb_linux_amd64.zip -d /usr/bin && \
