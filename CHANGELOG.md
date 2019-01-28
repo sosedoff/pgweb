@@ -1,3 +1,11 @@
+## 0.11.1 - 2019-01-28
+
+- Typo fixes
+- Add Base64 javascript encoder/decoder to replace deprecated window.atob call, GH-405
+- Fix startup error when DATABASE_URL is set, GH-406
+- Fix user auto detection when USER env var is not set, GH-408
+- Switch bindata dependency to use maintained fork: github.com/go-bindata/go-bindata, GH-409
+
 ## 0.11.0 - 2018-12-24
 
 - Tweak sidebar database object counters styles, GH-400
