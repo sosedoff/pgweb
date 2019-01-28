@@ -59,6 +59,8 @@ func ParseOptions(args []string) (Options, error) {
 		opts.Prefix = os.Getenv("URL_PREFIX")
 	}
 
+	// Handle edge case where pgweb is started with a default host `localhost` and no user.
+	// When user is not set the `lib/pq` connection will fail and cause pgweb's termination.
 	if (opts.Host == "localhost" || opts.Host == "127.0.0.1") && opts.User == "" {
 		if username := GetCurrentUser(); username != "" {
 			opts.User = username
