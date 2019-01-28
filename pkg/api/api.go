@@ -133,7 +133,7 @@ func Connect(c *gin.Context) {
 	}
 
 	opts := command.Options{Url: url}
-	url, err := connection.FormatUrl(opts)
+	url, err := connection.FormatURL(opts)
 
 	if err != nil {
 		badRequest(c, err)

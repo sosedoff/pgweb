@@ -3,6 +3,7 @@ package command
 import (
 	"errors"
 	"os"
+	"os/user"
 	"strings"
 
 	"github.com/jessevdk/go-flags"
@@ -58,6 +59,16 @@ func ParseOptions(args []string) (Options, error) {
 		opts.Prefix = os.Getenv("URL_PREFIX")
 	}
 
+	// Handle edge case where pgweb is started with a default host `localhost` and no user.
+	// When user is not set the `lib/pq` connection will fail and cause pgweb's termination.
+	if (opts.Host == "localhost" || opts.Host == "127.0.0.1") && opts.User == "" {
+		if username := GetCurrentUser(); username != "" {
+			opts.User = username
+		} else {
+			opts.Host = ""
+		}
+	}
+
 	if os.Getenv("SESSIONS") != "" {
 		opts.Sessions = true
 	}
@@ -105,6 +116,7 @@ func ParseOptions(args []string) (Options, error) {
 	return opts, nil
 }
 
+// SetDefaultOptions parses and assigns the options
 func SetDefaultOptions() error {
 	opts, err := ParseOptions([]string{})
 	if err != nil {
@@ -112,4 +124,13 @@ func SetDefaultOptions() error {
 	}
 	Opts = opts
 	return nil
+}
+
+// GetCurrentUser returns a current user name
+func GetCurrentUser() string {
+	u, _ := user.Current()
+	if u != nil {
+		return u.Username
+	}
+	return os.Getenv("USER")
 }
