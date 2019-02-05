@@ -122,7 +122,7 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 
 	uri, err := neturl.Parse(url)
 	if err == nil && uri.Path == "" {
-		return nil, fmt.Errorf("Database name is not provided")
+		return nil, fmt.Errorf("database name is not provided")
 	}
 
 	db, err := sqlx.Open("postgres", url)
