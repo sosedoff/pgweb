@@ -33,7 +33,18 @@ SELECT
   inet_client_port(),
   inet_server_addr(),
   inet_server_port(),
-  version()`
+	version()`
+
+	// ---------------------------------------------------------------------------
+
+	EstimatedTableRowCount = `
+SELECT
+	reltuples
+FROM
+	pg_class
+WHERE
+	oid = ('"' || $1::text || '"."' || $2::text || '"')::regclass
+`
 
 	// ---------------------------------------------------------------------------
 
