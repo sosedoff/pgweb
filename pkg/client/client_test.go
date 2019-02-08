@@ -327,6 +327,29 @@ func testTableConstraints(t *testing.T) {
 	assert.Equal(t, Row{"integrity", "CHECK (book_id IS NOT NULL AND edition IS NOT NULL)"}, res.Rows[1])
 }
 
+func testTableNameWithCamelCase(t *testing.T) {
+	testClient.db.MustExec(`CREATE TABLE "exampleTable" (id int, name varchar);`)
+	testClient.db.MustExec(`INSERT INTO "exampleTable" (id, name) VALUES (1, 'foo'), (2, 'bar');`)
+
+	_, err := testClient.Table("exampleTable")
+	assert.NoError(t, err)
+
+	_, err = testClient.TableInfo("exampleTable")
+	assert.NoError(t, err)
+
+	_, err = testClient.TableConstraints("exampleTable")
+	assert.NoError(t, err)
+
+	_, err = testClient.TableIndexes("exampleTable")
+	assert.NoError(t, err)
+
+	_, err = testClient.TableRowsCount("exampleTable", RowsOptions{})
+	assert.NoError(t, err)
+
+	_, err = testClient.EstimatedTableRowsCount("exampleTable", RowsOptions{})
+	assert.NoError(t, err)
+}
+
 func testQuery(t *testing.T) {
 	res, err := testClient.Query("SELECT * FROM books")
 
@@ -444,6 +467,7 @@ func TestAll(t *testing.T) {
 	testTableRowsCountWithLargeTable(t)
 	testTableIndexes(t)
 	testTableConstraints(t)
+	testTableNameWithCamelCase(t)
 	testQuery(t)
 	testQueryError(t)
 	testQueryInvalidTable(t)
