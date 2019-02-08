@@ -224,9 +224,7 @@ func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error)
 
 func (client *Client) EstimatedTableRowsCount(table string, opts RowsOptions) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
-	sql := fmt.Sprintf(`SELECT reltuples FROM pg_class WHERE oid = '%s.%s'::regclass;`, schema, table)
-
-	result, err := client.query(sql)
+	result, err := client.query(statements.EstimatedTableRowCount, schema, table)
 	if err != nil {
 		return nil, err
 	}
