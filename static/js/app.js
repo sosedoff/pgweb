@@ -633,6 +633,7 @@ function runQuery() {
     $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
     $("#query_progress").hide();
     $("#input").show();
+    $("#import").hide();
     $("#body").removeClass("full");
     $("#results").data("mode", "query");
 
@@ -681,6 +682,7 @@ function runExplain() {
     $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
     $("#query_progress").hide();
     $("#input").show();
+    $("#import").hide();
     $("#body").removeClass("full");
     $("#results").addClass("no-crop");
   });
@@ -1449,6 +1451,7 @@ $(document).ready(function() {
       loadSchemas();
 
       $("#current_database").text(resp.current_database);
+      $("#import").hide();
       $("#main").show();
 
       if (!resp.session_lock) {
