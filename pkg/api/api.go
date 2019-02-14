@@ -503,7 +503,8 @@ func DataImport(c *gin.Context) {
 	file, _, err := c.Request.FormFile("file")
 	if err != nil {
 		log.Print(err)
-		c.JSON(400, err.Error())
+		c.JSON(400, Error{err.Error()})
+		return
 	}
 
 	defer file.Close()
@@ -512,13 +513,15 @@ func DataImport(c *gin.Context) {
 	header, err := reader.Read()
 	if err != nil {
 		log.Print(err)
-		c.JSON(400, err.Error())
+		c.JSON(400, Error{err.Error()})
+		return
 	}
 
 	data, err := reader.ReadAll()
 	if err != nil {
 		log.Print(err)
-		c.JSON(400, err.Error())
+		c.JSON(400, Error{err.Error()})
+		return
 	}
 
 	db := DB(c)
@@ -528,14 +531,16 @@ func DataImport(c *gin.Context) {
 	_, err = db.NewTable(createQuery)
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, err.Error())
+		c.JSON(500, Error{err.Error()})
+		return
 	}
 
 	result, err := db.BulkInsert(insertQuery, statements.Flatten(data))
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, err.Error())
-	}
+		c.JSON(500, Error{err.Error()})
+		return
+	} 
 
 	c.JSON(200, result)
 }

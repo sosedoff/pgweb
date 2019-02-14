@@ -654,7 +654,11 @@ function importFile() {
   form.append("table", $("#table_name")[0].value)
   form.append("file", $("#table_file")[0].files[0])
   
-  apiCall("post", "/import", form, function() {}, true);
+  apiCall("post", "/import", form, function(data) {
+      $("#results").data("mode", "query");
+      buildTable(data);
+    }, true
+  );
 }
 
 function runExplain() {
