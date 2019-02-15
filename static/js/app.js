@@ -652,8 +652,9 @@ function importFile() {
   setCurrentTab("table_import");
   var form = new FormData();
 
-  form.append("table", $("#table_name")[0].value)
-  form.append("file", $("#table_file")[0].files[0])
+  form.append("table", $("#import_csv_table_name")[0].value);
+  form.append("file", $("#import_csv_table_file")[0].files[0]);
+  form.append("field_delimiter", $("#import_csv_field_delimiter")[0].value);
   
   apiCall("post", "/import", form, function(data) {
       $("#results").data("mode", "query");
@@ -1145,7 +1146,7 @@ $(document).ready(function() {
     performRowAction(action, value);
   })
 
-  $("#upload").on("click", function(e) {
+  $("#import_csv_upload").on("click", function(e) {
     e.preventDefault();
 
     importFile();

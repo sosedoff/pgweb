@@ -6,9 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"mime/multipart"
 	neturl "net/url"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tuvistavie/securerandom"
@@ -497,10 +499,19 @@ func DataExport(c *gin.Context) {
 }
 
 func DataImport(c *gin.Context) {
-	c.Request.ParseMultipartForm(0)
-	table := c.Request.FormValue("table")
+	req := c.Request
+	req.ParseMultipartForm(0)
+	table := req.FormValue("table")
 
-	file, _, err := c.Request.FormFile("file")
+	field_delimiter, err := ParseFieldDelimiter(req.FormValue("field_delimiter"))
+	if err != nil {
+		log.Print(err)
+		c.JSON(400, Error{err.Error()})
+		return
+	}
+
+	var file multipart.File
+	file, _, err = req.FormFile("file")
 	if err != nil {
 		log.Print(err)
 		c.JSON(400, Error{err.Error()})
@@ -509,6 +520,7 @@ func DataImport(c *gin.Context) {
 
 	defer file.Close()
 	reader := csv.NewReader(file)
+	reader.Comma = field_delimiter
 
 	header, err := reader.Read()
 	if err != nil {
@@ -540,7 +552,22 @@ func DataImport(c *gin.Context) {
 		log.Print(err)
 		c.JSON(500, Error{err.Error()})
 		return
-	} 
+	}
 
 	c.JSON(200, result)
+}
+
+func ParseFieldDelimiter(formValue string) (rune, error) {
+	if formValue == " " {
+		return ' ', nil
+	}
+	field_delimiter := strings.TrimSpace(formValue)
+	if utf8.RuneCountInString(field_delimiter) != 1 {
+		return '?', errors.New("field delimiter must be a single character (comma is a standard one, CR and LF and 0xFFFD are not allowed)")
+	}
+	delimiter_char, delimiter_char_size := utf8.DecodeRuneInString(field_delimiter)
+	if delimiter_char_size == 0 {
+		return '?', errors.New("invalid UTF-8 data in field delimiter")
+	}
+	return delimiter_char, nil
 }
