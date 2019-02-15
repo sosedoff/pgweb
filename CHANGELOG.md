@@ -1,3 +1,7 @@
+## 0.11.2 - 2019-02-15
+
+- Fix table row estimation query for camelcase schemas, GH-414
+
 ## 0.11.1 - 2019-01-28
 
 - Typo fixes
