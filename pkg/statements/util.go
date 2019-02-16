@@ -34,10 +34,9 @@ func Flatten(records [][]string) []interface{} {
 }
 
 func CreateNewTableQuery(table string, header []string) string {
-	newHeader := make([]string, len(header)+1)
+	newHeader := make([]string, len(header))
 	for i, field := range header {
 		newHeader[i] = fmt.Sprintf(`%s TEXT`, field)
 	}
-	newHeader[len(header)] = `id SERIAL PRIMARY KEY`
 	return fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s %s;`, table, JoinRecord(newHeader))
 }
