@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"log"
 	"mime/multipart"
 	neturl "net/url"
 	"strings"
@@ -505,16 +504,14 @@ func DataImportCSV(c *gin.Context) {
 
 	fieldDelimiter, err := ParseFieldDelimiter(req.FormValue("importCSVFieldDelimiter"))
 	if err != nil {
-		log.Print(err)
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
 	var file multipart.File
 	file, _, err = req.FormFile("importCSVFile")
 	if err != nil {
-		log.Print(err)
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
@@ -524,15 +521,13 @@ func DataImportCSV(c *gin.Context) {
 
 	header, err := reader.Read()
 	if err != nil {
-		log.Print(err)
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
 	data, err := reader.ReadAll()
 	if err != nil {
-		log.Print(err)
-		c.JSON(400, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
@@ -542,15 +537,13 @@ func DataImportCSV(c *gin.Context) {
 
 	_, err = db.NewTable(createQuery)
 	if err != nil {
-		log.Print(err)
-		c.JSON(500, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
 	result, err := db.BulkInsert(insertQuery, statements.Flatten(data))
 	if err != nil {
-		log.Print(err)
-		c.JSON(500, Error{err.Error()})
+		badRequest(c, err)
 		return
 	}
 
