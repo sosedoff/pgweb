@@ -648,15 +648,15 @@ function runQuery() {
   });
 }
 
-function importFile() {
+function importCSVStart() {
   setCurrentTab("table_import");
   var form = new FormData();
 
-  form.append("table", $("#import_csv_table_name")[0].value);
-  form.append("file", $("#import_csv_table_file")[0].files[0]);
-  form.append("field_delimiter", $("#import_csv_field_delimiter")[0].value);
+  form.append("importCSVTableName", $("#importCSVTableName")[0].value);
+  form.append("importCSVFile", $("#importCSVFile")[0].files[0]);
+  form.append("importCSVFieldDelimiter", $("#importCSVFieldDelimiter")[0].value);
   
-  apiCall("post", "/import", form, function(data) {
+  apiCall("post", "/importCSV", form, function(data) {
       $("#results").data("mode", "query");
       buildTable(data);
     }, true
@@ -1146,10 +1146,10 @@ $(document).ready(function() {
     performRowAction(action, value);
   })
 
-  $("#import_csv_upload").on("click", function(e) {
+  $("#importCSVStart").on("click", function(e) {
     e.preventDefault();
 
-    importFile();
+    importCSVStart();
   })
 
   $("#results").on("click", "th", function(e) {

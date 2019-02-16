@@ -498,12 +498,12 @@ func DataExport(c *gin.Context) {
 	}
 }
 
-func DataImport(c *gin.Context) {
+func DataImportCSV(c *gin.Context) {
 	req := c.Request
 	req.ParseMultipartForm(0)
-	table := req.FormValue("table")
+	table := req.FormValue("importCSVTableName")
 
-	field_delimiter, err := ParseFieldDelimiter(req.FormValue("field_delimiter"))
+	fieldDelimiter, err := ParseFieldDelimiter(req.FormValue("importCSVFieldDelimiter"))
 	if err != nil {
 		log.Print(err)
 		c.JSON(400, Error{err.Error()})
@@ -511,7 +511,7 @@ func DataImport(c *gin.Context) {
 	}
 
 	var file multipart.File
-	file, _, err = req.FormFile("file")
+	file, _, err = req.FormFile("importCSVFile")
 	if err != nil {
 		log.Print(err)
 		c.JSON(400, Error{err.Error()})
@@ -520,7 +520,7 @@ func DataImport(c *gin.Context) {
 
 	defer file.Close()
 	reader := csv.NewReader(file)
-	reader.Comma = field_delimiter
+	reader.Comma = fieldDelimiter
 
 	header, err := reader.Read()
 	if err != nil {
@@ -561,11 +561,11 @@ func ParseFieldDelimiter(formValue string) (rune, error) {
 	if formValue == " " {
 		return ' ', nil
 	}
-	field_delimiter := strings.TrimSpace(formValue)
-	if utf8.RuneCountInString(field_delimiter) != 1 {
+	fieldDelimiter := strings.TrimSpace(formValue)
+	if utf8.RuneCountInString(fieldDelimiter) != 1 {
 		return '?', errors.New("field delimiter must be a single character (comma is a standard one, CR and LF and 0xFFFD are not allowed)")
 	}
-	delimiter_char, delimiter_char_size := utf8.DecodeRuneInString(field_delimiter)
+	delimiter_char, delimiter_char_size := utf8.DecodeRuneInString(fieldDelimiter)
 	if delimiter_char_size == 0 {
 		return '?', errors.New("invalid UTF-8 data in field delimiter")
 	}
