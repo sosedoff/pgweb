@@ -52,5 +52,5 @@ func SetupRoutes(router *gin.Engine) {
 	api.GET("/history", GetHistory)
 	api.GET("/bookmarks", GetBookmarks)
 	api.GET("/export", DataExport)
-	api.POST("/importCSV", DataImportCSV)
+	api.POST("/import/csv", DataImportCSV)
 }
