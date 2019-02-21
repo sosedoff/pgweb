@@ -657,6 +657,7 @@ function importCSVStart() {
   form.append("importCSVFieldDelimiter", $("#importCSVFieldDelimiter")[0].value);
   
   apiCall("post", "/import/csv", form, function(data) {
+      loadSchemas();
       $("#results").data("mode", "query");
       buildTable(data);
     }, true
