@@ -430,6 +430,9 @@ func testHistoryUniqueness(t *testing.T) {
 
 func testReadOnlyMode(t *testing.T) {
 	command.Opts.ReadOnly = true
+	defer func() {
+		command.Opts.ReadOnly = false
+	}()
 
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 	client, _ := NewFromUrl(url, nil)
