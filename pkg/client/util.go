@@ -6,7 +6,7 @@ import (
 )
 
 // List of keywords that are not allowed in read-only mode
-var restrictedKeywords = regexp.MustCompile(`(?mi)\s?(CREATE|INSERT|DROP|DELETE|TRUNCATE|GRANT|OPEN|IMPORT|COPY|LOCK|SET)\s`)
+var restrictedKeywords = regexp.MustCompile(`(?mi)\s?(CREATE|INSERT|DROP|DELETE|TRUNCATE|GRANT|OPEN|IMPORT|COPY)\s`)
 
 // Get short version from the string
 // Example: 10.2.3.1 -> 10.2
