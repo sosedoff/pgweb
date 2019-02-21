@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	neturl "net/url"
@@ -343,6 +344,9 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 	if command.Opts.ReadOnly {
 		if err := client.SetReadOnlyMode(); err != nil {
 			return nil, err
+		}
+		if containsRestrictedKeywords(query) {
+			return nil, errors.New("query contains keywords not allowed in read-only mode")
 		}
 	}
 
