@@ -501,6 +501,10 @@ func DataImportCSV(c *gin.Context) {
 	req := c.Request
 	req.ParseMultipartForm(0)
 	table := req.FormValue("importCSVTableName")
+	if !isPostgresqlIdentifierRequiringNoQuoting(table) {
+		badRequest(c, "Only ASCII-based table names which require no quoting are supported in the import")
+		return
+	}
 
 	fieldDelimiter, err := ParseFieldDelimiter(req.FormValue("importCSVFieldDelimiter"))
 	if err != nil {
@@ -532,6 +536,15 @@ func DataImportCSV(c *gin.Context) {
 	}
 
 	db := DB(c)
+
+	for _, columnName := range header {
+  if !isPostgresqlIdentifierRequiringNoQuoting(columnName) {
+			msg := fmt.Sprintf("Column name «%s» requires quoting - can not import",columnName)
+			badRequest(c, msg)
+			return
+		}
+	}
+
 	createQuery := statements.CreateNewTableQuery(table, header)
 	insertQuery := statements.GenerateBulkInsertQuery(table, header, len(data))
 
