@@ -651,9 +651,22 @@ function runQuery() {
 function importCSVStart() {
   setCurrentTab("table_import");
   var form = new FormData();
+  // some base error checking (more is done on the server side)
+  const tableName = $("#importCSVTableName")[0].value.trim();
+  const files = $("#importCSVFile")[0].files;
+  if (tableName == "") {
+    showImportCSVValidationError("Table Name is empty");
+    focusById("#importCSVTableName")
+    return
+  }
+  if (files.length === 0) {
+    showImportCSVValidationError("No file chosen");
+    focusById("#importCSVFile")
+    return
+  }
 
-  form.append("importCSVTableName", $("#importCSVTableName")[0].value);
-  form.append("importCSVFile", $("#importCSVFile")[0].files[0]);
+  form.append("importCSVTableName", tableName);
+  form.append("importCSVFile", files[0]);
   form.append("importCSVFieldDelimiter", $("#importCSVFieldDelimiter")[0].value);
   
   apiCall("post", "/import/csv", form, function(data) {
@@ -662,6 +675,19 @@ function importCSVStart() {
       buildTable(data);
     }, true
   );
+}
+
+function focusById(id) {
+  setTimeout(function focusByIdInnerFn() {
+    $(id).focus() },
+  0)
+}
+
+function showImportCSVValidationError(string) {
+  buildTable({
+    columns: ["error"],
+    rows: [ [ string ] ] 
+  });
 }
 
 function runExplain() {
