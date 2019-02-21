@@ -77,4 +77,5 @@ func Test_isPostgresqlIdentifierRequiringNoQuoting(t *testing.T) {
 	assert.False(t,isPostgresqlIdentifierRequiringNoQuoting(""))
  assert.False(t,isPostgresqlIdentifierRequiringNoQuoting("ц"))
  assert.True(t,isPostgresqlIdentifierRequiringNoQuoting("D"))
+ assert.False(t,isPostgresqlIdentifierRequiringNoQuoting("\"D"))
 }
