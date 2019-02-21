@@ -321,11 +321,6 @@
 }
 
 #output {
-  position: absolute;
-  left: 0px;
-  top: 256px;
-  bottom: 0px;
-  right: 0px;
   margin: 0px;
   padding: 0px;
   overflow: auto;
