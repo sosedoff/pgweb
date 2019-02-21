@@ -535,7 +535,7 @@ func DataImportCSV(c *gin.Context) {
 	createQuery := statements.CreateNewTableQuery(table, header)
 	insertQuery := statements.GenerateBulkInsertQuery(table, header, len(data))
 
-	_, err = db.NewTable(createQuery)
+	_, err = db.QueryInternal(createQuery)
 	if err != nil {
 		badRequest(c, err)
 		return
@@ -558,9 +558,9 @@ func ParseFieldDelimiter(formValue string) (rune, error) {
 	if utf8.RuneCountInString(fieldDelimiter) != 1 {
 		return '?', errors.New("field delimiter must be a single character (comma is a standard one, CR and LF and 0xFFFD are not allowed)")
 	}
-	delimiter_char, delimiter_char_size := utf8.DecodeRuneInString(fieldDelimiter)
-	if delimiter_char_size == 0 {
+	delimiterChar, delimiterCharSize := utf8.DecodeRuneInString(fieldDelimiter)
+	if delimiterCharSize == 0 {
 		return '?', errors.New("invalid UTF-8 data in field delimiter")
 	}
-	return delimiter_char, nil
+	return delimiterChar, nil
 }

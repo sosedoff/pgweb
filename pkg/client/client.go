@@ -191,7 +191,8 @@ func (client *Client) Table(table string) (*Result, error) {
 	return client.query(statements.TableSchema, schema, table)
 }
 
-func (client *Client) NewTable(query string) (*Result, error) {
+// Run the query and don't record it into the history
+func (client *Client) QueryInternal(query string) (*Result, error) {
 	return client.query(query)
 }
 
