@@ -14,9 +14,6 @@ import (
 	"testing"
 	"time"
 
-	//"net/http/httptest"
-	//"net/http/httputil"
-
 	"github.com/sosedoff/pgweb/pkg/api"
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
@@ -25,7 +22,6 @@ import (
 )
 
 var (
-	testClient     *client.Client
 	testCommands   map[string]string
 	serverHost     string
 	serverPort     string
@@ -90,8 +86,8 @@ func onWindows() bool {
 
 func setup() {
 	// No pretty JSON for testsm
-	opts := &command.Opts
-	opts.DisablePrettyJson = true
+	options = command.Opts 
+	options.DisablePrettyJson = true
 
 	out, err := exec.Command(
 		testCommands["createdb"],
@@ -125,13 +121,12 @@ func setup() {
 
 func setupClient() {
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	testClient, _ = client.NewFromUrl(url, nil)
-	api.DbClient = testClient
+	api.DbClient, _ = client.NewFromUrl(url, nil)
 }
 
 func teardownClient() {
-	if testClient != nil {
-		testClient.Close()
+	if api.DbClient != nil {
+		api.DbClient.Close()
 	}
 }
 
@@ -147,64 +142,6 @@ func teardown() {
 	if err != nil {
 		fmt.Println("Teardown error:", err)
 	}
-}
-
-func testNewClientFromUrl(t *testing.T) {
-	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	client, err := client.NewFromUrl(url, nil)
-
-	if err != nil {
-		defer client.Close()
-	}
-
-	assert.Equal(t, nil, err)
-	assert.Equal(t, url, client.ConnectionString)
-}
-
-func testTest(t *testing.T) {
-	assert.Equal(t, nil, testClient.Test())
-}
-
-func testQuery(t *testing.T) {
-	res, err := testClient.Query("SELECT * FROM books")
-
-	assert.Equal(t, nil, err)
-	assert.Equal(t, 4, len(res.Columns))
-	assert.Equal(t, 15, len(res.Rows))
-}
-
-func testResultCsv(t *testing.T) {
-	res, _ := testClient.Query("SELECT * FROM books ORDER BY id ASC LIMIT 1")
-	csv := res.CSV()
-
-	expected := "id,title,author_id,subject_id\n156,The Tell-Tale Heart,115,9\n"
-
-	assert.Equal(t, expected, string(csv))
-}
-
-func TestAll(t *testing.T) {
-	if onWindows() {
-		t.Log("Unit testing on Windows platform is not supported.")
-		return
-	}
-
-	initVars()
-	setupCommands()
-	teardown()
-	setup()
-	setupClient()
-	options = command.Opts 
-	StartServer()
-
-	testNewClientFromUrl(t)
-	testTest(t)
-	testQuery(t)
-	testResultCsv(t)
-
-	testDataImportCsv(t)
-
-	teardownClient()
-	teardown()
 }
 
 func testDataImportCsv(t *testing.T) {
@@ -282,3 +219,35 @@ func mustOpen(f string) *os.File {
 	}
 	return r
 }
+
+// this test is coordinated with test.csv
+func testResultCsv(t *testing.T) {
+	res, _ := api.DbClient.Query("SELECT * FROM from_csv ORDER BY id")
+	csv := res.CSV()
+
+	expected := "id,line\n1,line 1\n1,line 1\n2,line-2\n2,line-2\n"
+
+	assert.Equal(t, expected, string(csv))
+}
+
+func TestAll(t *testing.T) {
+	if onWindows() {
+		t.Log("Unit testing on Windows platform is not supported.")
+		return
+	}
+
+	initVars()
+	setupCommands()
+	teardown()
+	setup()
+	setupClient()
+	StartServer()
+
+	testDataImportCsv(t)
+	testDataImportCsv(t)
+	testResultCsv(t)
+
+	teardownClient()
+	teardown()
+}
+
