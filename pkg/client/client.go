@@ -32,7 +32,7 @@ type Client struct {
 	tunnel           *Tunnel
 	serverVersion    string
 	serverType       string
-	lastQueryTime    time.Time
+	LastQueryTime    time.Time
 	External         bool
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
@@ -340,7 +340,7 @@ func (client *Client) ServerVersion() string {
 func (client *Client) query(query string, args ...interface{}) (*Result, error) {
 	// Update the last usage time
 	defer func() {
-		client.lastQueryTime = time.Now().UTC()
+		client.LastQueryTime = time.Now().UTC()
 	}()
 
 	// We're going to force-set transaction mode on every query.
@@ -436,7 +436,7 @@ func (client *Client) Close() error {
 }
 
 func (client *Client) IsIdle() bool {
-	mins := int(time.Since(client.lastQueryTime).Minutes())
+	mins := int(time.Since(client.LastQueryTime).Minutes())
 
 	if command.Opts.ConnectionIdleTimeout > 0 {
 		return mins >= command.Opts.ConnectionIdleTimeout

@@ -170,7 +170,7 @@ func testClientIdleTime(t *testing.T) {
 	}
 
 	for ts, expected := range examples {
-		testClient.lastQueryTime = ts
+		testClient.LastQueryTime = ts
 		assert.Equal(t, expected, testClient.IsIdle())
 	}
 }

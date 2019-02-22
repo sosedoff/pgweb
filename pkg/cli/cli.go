@@ -147,7 +147,7 @@ func printVersion() {
 	fmt.Println(str)
 }
 
-func startServer() {
+func StartServer() {
 	router := gin.Default()
 
 	// Enable HTTP basic authentication only if both user and password are set
@@ -215,7 +215,7 @@ func Run() {
 		go api.StartSessionCleanup()
 	}
 
-	startServer()
+	StartServer()
 	openPage()
 	handleSignals()
 }
