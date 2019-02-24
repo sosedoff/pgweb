@@ -244,12 +244,13 @@ func TestAll(t *testing.T) {
 	setup()
 	setupClient()
 	StartServer()
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	testDataImportCsv(t)
 	testDataImportCsv(t)
 	testResultCsv(t)
 
 	teardownClient()
+	time.Sleep(5 * time.Second)
 	teardown()
 }
