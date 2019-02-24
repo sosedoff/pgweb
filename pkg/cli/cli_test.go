@@ -141,6 +141,8 @@ func teardown() {
 
 	if err != nil {
 		fmt.Println("Teardown error:", err)
+		fmt.Println("Error:", err)
+		// do not exit
 	}
 }
 
