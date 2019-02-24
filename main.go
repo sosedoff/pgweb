@@ -7,6 +7,5 @@ import (
 
 func main() {
 	cli.InitOptions(os.Args)
-	dummyAuxCloser := make(chan int);
-	cli.Run(dummyAuxCloser)
+	cli.Run()
 }

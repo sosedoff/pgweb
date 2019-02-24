@@ -107,16 +107,12 @@ func setupDatabase() error {
 }
 
 func setupServer() {
-	auxCloser = make(chan int)
 	InitOptions([]string{})
-	go Run(auxCloser)
+	go Run()
 }
 
 func teardownServer() {
-	closer := func() {
-		auxCloser <- 1
-	}
-	go closer()
+	// do nothing
 }
 
 func setupClient() (err error) {
@@ -345,8 +341,8 @@ func TestAll(t *testing.T) {
 	setupServer()
 	defer teardownServer()
 
-	// FIXME there must be a better way to wait for server to start, e.g.
-	time.Sleep(5 * time.Second)
+	// FIXME there must be a better way to wait for server to start
+	time.Sleep(3 * time.Second)
 	if reportIfErr("setupClient", setupClient()) {
 		return
 	}
