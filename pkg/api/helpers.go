@@ -5,9 +5,9 @@ import (
 	"mime"
 	"net/http"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
-	"regexp"
 
 	"github.com/gin-gonic/gin"
 
@@ -190,11 +190,13 @@ func badRequest(c *gin.Context, err interface{}) {
 	errorResponse(c, 400, err)
 }
 
-// Is it a postgresql identifier requiring no quoting? 
+// Is it a postgresql identifier requiring no quoting?
 // False result may be incorrect, because unicode letters
-// require no quoting and this function does not detect that. 
+// require no quoting and this function does not detect that.
 func isPostgresqlIdentifierRequiringNoQuoting(s string) bool {
-	result,err := regexp.Match("^[a-zA-Z_][a-zA-Z_$0-9]*$",[]byte(s))
-	if err != nil { panic(err) }
+	result, err := regexp.Match("^[a-zA-Z_][a-zA-Z_$0-9]*$", []byte(s))
+	if err != nil {
+		panic(err)
+	}
 	return result
 }

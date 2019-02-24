@@ -538,8 +538,8 @@ func DataImportCSV(c *gin.Context) {
 	db := DB(c)
 
 	for _, columnName := range header {
-  if !isPostgresqlIdentifierRequiringNoQuoting(columnName) {
-			msg := fmt.Sprintf("Column name «%s» requires quoting - can not import",columnName)
+		if !isPostgresqlIdentifierRequiringNoQuoting(columnName) {
+			msg := fmt.Sprintf("Column name «%s» requires quoting - can not import", columnName)
 			badRequest(c, msg)
 			return
 		}

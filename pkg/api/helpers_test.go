@@ -72,10 +72,10 @@ func Test_serveResult(t *testing.T) {
 }
 
 func Test_isPostgresqlIdentifierRequiringNoQuoting(t *testing.T) {
-	assert.True(t,isPostgresqlIdentifierRequiringNoQuoting("_u0$"))
-	assert.False(t,isPostgresqlIdentifierRequiringNoQuoting("$"))
-	assert.False(t,isPostgresqlIdentifierRequiringNoQuoting(""))
- assert.False(t,isPostgresqlIdentifierRequiringNoQuoting("ц"))
- assert.True(t,isPostgresqlIdentifierRequiringNoQuoting("D"))
- assert.False(t,isPostgresqlIdentifierRequiringNoQuoting("\"D"))
+	assert.True(t, isPostgresqlIdentifierRequiringNoQuoting("_u0$"))
+	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting("$"))
+	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting(""))
+	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting("ц"))
+	assert.True(t, isPostgresqlIdentifierRequiringNoQuoting("D"))
+	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting("\"D"))
 }

@@ -86,7 +86,7 @@ func onWindows() bool {
 
 func setup() {
 	// No pretty JSON for testsm
-	options = command.Opts 
+	options = command.Opts
 	options.DisablePrettyJson = true
 
 	out, err := exec.Command(
@@ -250,4 +250,3 @@ func TestAll(t *testing.T) {
 	teardownClient()
 	teardown()
 }
-
