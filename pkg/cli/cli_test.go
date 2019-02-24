@@ -131,7 +131,7 @@ func teardownClient() {
 }
 
 func teardown() {
-	_, err := exec.Command(
+	out, err := exec.Command(
 		testCommands["dropdb"],
 		"-U", serverUser,
 		"-h", serverHost,
@@ -140,8 +140,8 @@ func teardown() {
 	).CombinedOutput()
 
 	if err != nil {
+		fmt.Println("Dropdb failed:", string(out))
 		fmt.Println("Teardown error:", err)
-		fmt.Println("Error:", err)
 		// do not exit
 	}
 }
