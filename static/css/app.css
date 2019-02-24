@@ -328,7 +328,6 @@
 
 #pagination {
   display: none;
-  position: absolute;
   width: 100%;
   height: 50px;
   padding: 10px;
