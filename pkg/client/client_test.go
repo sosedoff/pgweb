@@ -132,7 +132,7 @@ func teardown() {
 	).CombinedOutput()
 
 	if err != nil {
-		fmt.Println("Error when dropping the db:",string(out))
+		fmt.Println("Error when dropping the db:", string(out))
 		fmt.Println("Teardown error:", err)
 	}
 }
