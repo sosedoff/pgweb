@@ -107,8 +107,8 @@ func initClient() {
 	api.DbClient = cl
 }
 
-func initOptions() {
-	opts, err := command.ParseOptions(os.Args)
+func InitOptions(commandLineArgs []string) {
+	opts, err := command.ParseOptions(commandLineArgs)
 	if err != nil {
 		switch err.(type) {
 		case *flags.Error:
@@ -199,7 +199,6 @@ func openPage() {
 }
 
 func Run(auxCloser chan int) {
-	initOptions()
 	initClient()
 
 	if api.DbClient != nil {

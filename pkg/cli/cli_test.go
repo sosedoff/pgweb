@@ -16,10 +16,7 @@ import (
 	"testing"
 	"time"
 
-	//"github.com/sosedoff/pgweb/pkg/api"
-	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -35,20 +32,6 @@ var (
 	auxCloser      chan int
 	serviceUrl     string
 )
-
-func mapKeys(data map[string]*client.Objects) []string {
-	result := []string{}
-	for k, _ := range data {
-		result = append(result, k)
-	}
-	return result
-}
-
-func pgVersion() (int, int) {
-	var major, minor int
-	fmt.Sscanf(os.Getenv("PGVERSION"), "%d.%d", &major, &minor)
-	return major, minor
-}
 
 func getVar(name, def string) string {
 	val := os.Getenv(name)
@@ -125,6 +108,7 @@ func setupDatabase() error {
 
 func setupServer() {
 	auxCloser = make(chan int)
+	InitOptions([]string{})
 	go Run(auxCloser)
 }
 
@@ -212,7 +196,7 @@ func testDataImportCSV(t *testing.T) (err error) {
 	apiUrl := "http://localhost:8081/api/import/csv"
 
 	fd := formDataType{
-		"importCSVFile":           mustOpen("../../data/test.csv"), 
+		"importCSVFile":           mustOpen("../../data/test.csv"),
 		"importCSVFieldDelimiter": strings.NewReader(","),
 		"importCSVTableName":      strings.NewReader("from_csv")}
 
