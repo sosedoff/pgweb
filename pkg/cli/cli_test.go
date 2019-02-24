@@ -2,8 +2,10 @@ package cli
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -13,14 +15,15 @@ import (
 	"strings"
 	"testing"
 	"time"
-	"errors"
 
-	"github.com/sosedoff/pgweb/pkg/api"
+	//"github.com/sosedoff/pgweb/pkg/api"
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 
 	"github.com/stretchr/testify/assert"
 )
+
+type formDataType map[string]io.Reader
 
 var (
 	testCommands   map[string]string
@@ -126,13 +129,11 @@ func setupServer() {
 }
 
 func teardownServer() {
-	closer := func() { 
+	closer := func() {
 		auxCloser <- 1
 	}
 	go closer()
 }
-
-type formDataType map[string]io.Reader
 
 func setupClient() (err error) {
 	// url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
@@ -145,21 +146,21 @@ func setupClient() (err error) {
 	postgresUrlString := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 
 	formData := formDataType{
-		"url":           strings.NewReader(postgresUrlString), // lets assume its this file
+		"url": strings.NewReader(postgresUrlString), // lets assume its this file
 	}
- var req *http.Request
+	var req *http.Request
 	req, err = preparePostRequest(apiUrl, formData)
 	if err != nil {
 		return
 	}
-	
+
 	// Submit the request
 	var res *http.Response
 	res, err = client.Do(req)
 	if err != nil {
 		return
 	}
-	
+
 	// Check the response
 	if res.StatusCode != http.StatusOK {
 		err = fmt.Errorf("bad status: %s", res.Status)
@@ -170,28 +171,25 @@ func setupClient() (err error) {
 func teardownClient() (err error) {
 	// disconnect here
 	var client *http.Client = &http.Client{Timeout: time.Second * 1000}
- var req *http.Request
-	req, err = preparePostRequest(serviceUrl + "/api/disconnect", formDataType{})
+	var req *http.Request
+	req, err = preparePostRequest(serviceUrl+"/api/disconnect", formDataType{})
 	if err != nil {
 		return
 	}
-	
+
 	// Submit the request
 	var res *http.Response
 	res, err = client.Do(req)
 	if err != nil {
 		return
 	}
-	
+
 	// Check the response
 	if res.StatusCode != http.StatusOK {
 		err = fmt.Errorf("bad status: %s", res.Status)
 	}
 	return
 }
-
-
-
 
 func teardownDatabase() error {
 	out, err := exec.Command(
@@ -208,45 +206,87 @@ func teardownDatabase() error {
 	return nil
 }
 
-func testDataImportCsv(t *testing.T) {
+func testDataImportCSV(t *testing.T) (err error) {
 	var client *http.Client
-	var remoteURL string
 	client = &http.Client{Timeout: time.Second * 10}
-	remoteURL = "http://localhost:8081/api/import/csv"
+	apiUrl := "http://localhost:8081/api/import/csv"
 
-	err := Upload(client, remoteURL)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func Upload(client *http.Client, url string) (err error) {
-	// Prepare a form that you will submit to that URL.
-	//prepare the reader instances to encode
-	values := formDataType{
-		"importCSVFile":           mustOpen("test.csv"), // lets assume its this file
+	fd := formDataType{
+		"importCSVFile":           mustOpen("../../data/test.csv"), 
 		"importCSVFieldDelimiter": strings.NewReader(","),
 		"importCSVTableName":      strings.NewReader("from_csv")}
 
- req, err := preparePostRequest("POST", values)
+	var req *http.Request
+	req, err = preparePostRequest(apiUrl, fd)
 	// Now that you have a form, you can submit it to your handler.
 	if err != nil {
+		t.Fail()
 		return
 	}
 
 	// Submit the request
-	res, err := client.Do(req)
+	var res *http.Response
+	res, err = client.Do(req)
 	if err != nil {
+		t.Fail()
 		return
 	}
 
 	// Check the response
 	if res.StatusCode != http.StatusOK {
+		t.Fail()
 		err = fmt.Errorf("bad status: %s", res.Status)
 	}
 	return
 }
 
+func testDataImportCSVResult(t *testing.T) (err error) {
+	var client *http.Client
+	client = &http.Client{Timeout: time.Second * 10}
+	apiUrl := "http://localhost:8081/api/query"
+
+	fd := formDataType{
+		"query": strings.NewReader("select id, line from from_csv order by id"),
+	}
+
+	var req *http.Request
+	req, err = preparePostRequest(apiUrl, fd)
+	// Now that you have a form, you can submit it to your handler.
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	// Submit the request
+	var res *http.Response
+	res, err = client.Do(req)
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	// Check the response
+	if res.StatusCode != http.StatusOK {
+		t.Fail()
+		err = fmt.Errorf("api call to %s returns bad status: %s", apiUrl, res.Status)
+		return
+	}
+
+	defer res.Body.Close()
+	var htmlData []byte
+	htmlData, err = ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	expected :=
+		`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`
+	actual := string(htmlData)
+	assert.Equal(t, expected, actual)
+
+	return
+}
 
 func preparePostRequest(apiUrl string, formData map[string]io.Reader) (req *http.Request, err error) {
 	req = nil
@@ -268,7 +308,7 @@ func preparePostRequest(apiUrl string, formData map[string]io.Reader) (req *http
 			}
 		}
 		if _, err = io.Copy(fw, r); err != nil {
-			return 
+			return
 		}
 
 	}
@@ -293,20 +333,10 @@ func mustOpen(f string) *os.File {
 	return r
 }
 
-// this test is coordinated with test.csv
-func testResultCsv(t *testing.T) {
-	res, _ := api.DbClient.Query("SELECT * FROM from_csv ORDER BY id")
-	csv := res.CSV()
-
-	expected := "id,line\n1,line 1\n1,line 1\n2,line-2\n2,line-2\n"
-
-	assert.Equal(t, expected, string(csv))
-}
-
 // returns true if there is an error
-func reportIfErr(stepName string,err error) bool {
+func reportIfErr(stepName string, err error) bool {
 	if err != nil {
-		fmt.Println("Step ",stepName," error: "+err.Error())
+		fmt.Println("Step ", stepName, " error: "+err.Error())
 		return true
 	}
 	return false
@@ -321,29 +351,27 @@ func TestAll(t *testing.T) {
 	setupCommands()
 	// We expect that database does not exist, so we ignore errors here
 	teardownDatabase()
-	if reportIfErr("setupDatabase",setupDatabase()) {
+	if reportIfErr("setupDatabase", setupDatabase()) {
 		return
 	}
-	defer func(){
-		reportIfErr("teardownDatabase",teardownDatabase())
+	defer func() {
+		reportIfErr("teardownDatabase", teardownDatabase())
 	}()
-	
-	
+
 	setupServer()
 	defer teardownServer()
 
-
-	// FIXME there must be a better way to wait for server to start, e.g. 
+	// FIXME there must be a better way to wait for server to start, e.g.
 	time.Sleep(5 * time.Second)
-	if reportIfErr("setupClient",setupClient()) {
+	if reportIfErr("setupClient", setupClient()) {
 		return
 	}
-	defer func(){
-		reportIfErr("teardownClient",teardownClient())
+	defer func() {
+		reportIfErr("teardownClient", teardownClient())
 	}()
 
-	//testDataImportCsv(t)
-	//testDataImportCsv(t)
-	//testResultCsv(t)
+	testDataImportCSV(t)
+	testDataImportCSV(t)
+	testDataImportCSVResult(t)
 
 }
