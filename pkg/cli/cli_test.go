@@ -28,6 +28,7 @@ var (
 	serverUser     string
 	serverPassword string
 	serverDatabase string
+	auxCloser chan int
 )
 
 func mapKeys(data map[string]*client.Objects) []string {
@@ -84,7 +85,7 @@ func onWindows() bool {
 	return runtime.GOOS == "windows"
 }
 
-func setup() {
+func setupDatabase() {
 	// No pretty JSON for testsm
 	options = command.Opts
 	options.DisablePrettyJson = true
@@ -119,18 +120,63 @@ func setup() {
 	}
 }
 
-func setupClient() {
-	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	api.DbClient, _ = client.NewFromUrl(url, nil)
+func setupServer() {
+	auxCloser = make(chan int)
+	go Run(auxCloser)
+}
+
+func teardownServer() {
+	closer := func() { 
+		auxCloser <- 1
+	}
+	go closer()
+}
+
+func setupClient() (err error) {
+	// url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
+	// Generate session id
+	// Login with this url
+	// Assert success
+
+	var client *http.Client = &http.Client{Timeout: time.Second * 1000}
+	apiUrl := "http://localhost:8081/api/connect"
+	postgresUrlString := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
+	sessionId := "test-sess-ion-id"
+
+	formData := map[string]io.Reader{
+		"url":           strings.NewReader(postgresUrlString), // lets assume its this file
+	}
+
+	req, err = preparePostRequest(apiUrl, formData)
+	if err != nil {
+		return
+	}
+	req.Header.Add("x-session-id", sessionId)
+	// Don't forget to set the content type, this will contain the boundary.
+	req.Header.Set("Content-Type", w.FormDataContentType())
+	
+	// Submit the request
+	var res *http.Response
+	res, err = client.Do(req)
+	if err != nil {
+		return
+	}
+	
+	// Check the response
+	if res.StatusCode != http.StatusOK {
+		err = fmt.Errorf("bad status: %s", res.Status)
+	}
+	return
 }
 
 func teardownClient() {
-	if api.DbClient != nil {
-		api.DbClient.Close()
-	}
+	// nothing to do
 }
 
-func teardown() {
+
+
+
+func teardownDatabase() {
 	out, err := exec.Command(
 		testCommands["dropdb"],
 		"-U", serverUser,
@@ -166,6 +212,30 @@ func Upload(client *http.Client, url string) (err error) {
 		"importCSVFieldDelimiter": strings.NewReader(","),
 		"importCSVTableName":      strings.NewReader("from_csv")}
 
+ req, err := preparePostRequest("POST", values)
+	// Now that you have a form, you can submit it to your handler.
+	if err != nil {
+		return
+	}
+	// Don't forget to set the content type, this will contain the boundary.
+	req.Header.Set("Content-Type", w.FormDataContentType())
+
+	// Submit the request
+	res, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	// Check the response
+	if res.StatusCode != http.StatusOK {
+		err = fmt.Errorf("bad status: %s", res.Status)
+	}
+	return
+}
+
+
+func preparePostRequest(apiUrl string, formData *map[string]io.Reader) (req *http.Request, err error) {
+	req = nil
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
 	for key, r := range values {
@@ -173,7 +243,6 @@ func Upload(client *http.Client, url string) (err error) {
 		if x, ok := r.(io.Closer); ok {
 			defer x.Close()
 		}
-		// Add an image file
 		if x, ok := r.(*os.File); ok {
 			if fw, err = w.CreateFormFile(key, x.Name()); err != nil {
 				return
@@ -192,25 +261,7 @@ func Upload(client *http.Client, url string) (err error) {
 	// Don't forget to close the multipart writer.
 	// If you don't close it, your request will be missing the terminating boundary.
 	w.Close()
-
-	// Now that you have a form, you can submit it to your handler.
-	req, err := http.NewRequest("POST", url, &b)
-	if err != nil {
-		return
-	}
-	// Don't forget to set the content type, this will contain the boundary.
-	req.Header.Set("Content-Type", w.FormDataContentType())
-
-	// Submit the request
-	res, err := client.Do(req)
-	if err != nil {
-		return
-	}
-
-	// Check the response
-	if res.StatusCode != http.StatusOK {
-		err = fmt.Errorf("bad status: %s", res.Status)
-	}
+	req, err = http.NewRequest("POST", url, &b)
 	return
 }
 
@@ -240,17 +291,20 @@ func TestAll(t *testing.T) {
 
 	initVars()
 	setupCommands()
-	teardown()
-	setup()
-	setupClient()
-	StartServer()
+	teardownDatabase()
+	setupDatabase()
+	setupServer()
+	// FIXME there must be a better way to wait for server to start, e.g. 
 	time.Sleep(5 * time.Second)
+	setupClient()
 
-	testDataImportCsv(t)
-	testDataImportCsv(t)
-	testResultCsv(t)
+	//testDataImportCsv(t)
+	//testDataImportCsv(t)
+	//testResultCsv(t)
 
 	teardownClient()
+	teardownServer()
 	time.Sleep(5 * time.Second)
-	teardown()
+	teardownDatabase()
+
 }

@@ -171,10 +171,15 @@ func StartServer() {
 	}()
 }
 
-func handleSignals() {
+func handleSignals(auxCloser chan int) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill)
-	<-c
+	select {
+	case <- c:
+		return
+	case <- auxCloser:
+		return
+	}
 }
 
 func openPage() {
@@ -193,7 +198,7 @@ func openPage() {
 	exec.Command("open", url).Output()
 }
 
-func Run() {
+func Run(auxCloser chan int) {
 	initOptions()
 	initClient()
 
@@ -217,5 +222,5 @@ func Run() {
 
 	StartServer()
 	openPage()
-	handleSignals()
+	handleSignals(auxCloser)
 }

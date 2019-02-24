@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
-	cli.Run()
+	dummyAuxCloser := make(chan int);
+	cli.Run(dummyAuxCloser)
 }
