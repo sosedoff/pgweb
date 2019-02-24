@@ -13,6 +13,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"errors"
 
 	"github.com/sosedoff/pgweb/pkg/api"
 	"github.com/sosedoff/pgweb/pkg/client"
@@ -28,7 +29,8 @@ var (
 	serverUser     string
 	serverPassword string
 	serverDatabase string
-	auxCloser chan int
+	auxCloser      chan int
+	serviceUrl     string
 )
 
 func mapKeys(data map[string]*client.Objects) []string {
@@ -65,6 +67,7 @@ func initVars() {
 	serverUser = getVar("PGUSER", "postgres")
 	serverPassword = getVar("PGPASSWORD", "postgres")
 	serverDatabase = getVar("PGDATABASE", "booktown")
+	serviceUrl = "http://localhost:8081"
 }
 
 func setupCommands() {
@@ -85,7 +88,7 @@ func onWindows() bool {
 	return runtime.GOOS == "windows"
 }
 
-func setupDatabase() {
+func setupDatabase() error {
 	// No pretty JSON for testsm
 	options = command.Opts
 	options.DisablePrettyJson = true
@@ -99,9 +102,7 @@ func setupDatabase() {
 	).CombinedOutput()
 
 	if err != nil {
-		fmt.Println("Database creation failed:", string(out))
-		fmt.Println("Error:", err)
-		os.Exit(1)
+		return errors.New(fmt.Sprintf("Create db failed. Error message: «%s», OS command output: «%s»", err.Error(), string(out)))
 	}
 
 	out, err = exec.Command(
@@ -114,10 +115,9 @@ func setupDatabase() {
 	).CombinedOutput()
 
 	if err != nil {
-		fmt.Println("Database import failed:", string(out))
-		fmt.Println("Error:", err)
-		os.Exit(1)
+		return errors.New(fmt.Sprintf("Db import failed. Error message: «%s», OS command output: «%s»", err.Error(), string(out)))
 	}
+	return nil
 }
 
 func setupServer() {
@@ -132,28 +132,26 @@ func teardownServer() {
 	go closer()
 }
 
+type formDataType map[string]io.Reader
+
 func setupClient() (err error) {
 	// url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 	// Generate session id
 	// Login with this url
 	// Assert success
 
-	var client *http.Client = &http.Client{Timeout: time.Second * 1000}
-	apiUrl := "http://localhost:8081/api/connect"
+	var client *http.Client = &http.Client{Timeout: time.Second * 10}
+	apiUrl := serviceUrl + "/api/connect"
 	postgresUrlString := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	sessionId := "test-sess-ion-id"
 
-	formData := map[string]io.Reader{
+	formData := formDataType{
 		"url":           strings.NewReader(postgresUrlString), // lets assume its this file
 	}
-
+ var req *http.Request
 	req, err = preparePostRequest(apiUrl, formData)
 	if err != nil {
 		return
 	}
-	req.Header.Add("x-session-id", sessionId)
-	// Don't forget to set the content type, this will contain the boundary.
-	req.Header.Set("Content-Type", w.FormDataContentType())
 	
 	// Submit the request
 	var res *http.Response
@@ -169,14 +167,33 @@ func setupClient() (err error) {
 	return
 }
 
-func teardownClient() {
-	// nothing to do
+func teardownClient() (err error) {
+	// disconnect here
+	var client *http.Client = &http.Client{Timeout: time.Second * 1000}
+ var req *http.Request
+	req, err = preparePostRequest(serviceUrl + "/api/disconnect", formDataType{})
+	if err != nil {
+		return
+	}
+	
+	// Submit the request
+	var res *http.Response
+	res, err = client.Do(req)
+	if err != nil {
+		return
+	}
+	
+	// Check the response
+	if res.StatusCode != http.StatusOK {
+		err = fmt.Errorf("bad status: %s", res.Status)
+	}
+	return
 }
 
 
 
 
-func teardownDatabase() {
+func teardownDatabase() error {
 	out, err := exec.Command(
 		testCommands["dropdb"],
 		"-U", serverUser,
@@ -186,10 +203,9 @@ func teardownDatabase() {
 	).CombinedOutput()
 
 	if err != nil {
-		fmt.Println("Dropdb failed:", string(out))
-		fmt.Println("Teardown error:", err)
-		// do not exit
+		return errors.New(fmt.Sprintf("Dropdb failed. Error message: «%s», drop db command output: «%s»", err.Error(), string(out)))
 	}
+	return nil
 }
 
 func testDataImportCsv(t *testing.T) {
@@ -207,7 +223,7 @@ func testDataImportCsv(t *testing.T) {
 func Upload(client *http.Client, url string) (err error) {
 	// Prepare a form that you will submit to that URL.
 	//prepare the reader instances to encode
-	values := map[string]io.Reader{
+	values := formDataType{
 		"importCSVFile":           mustOpen("test.csv"), // lets assume its this file
 		"importCSVFieldDelimiter": strings.NewReader(","),
 		"importCSVTableName":      strings.NewReader("from_csv")}
@@ -217,8 +233,6 @@ func Upload(client *http.Client, url string) (err error) {
 	if err != nil {
 		return
 	}
-	// Don't forget to set the content type, this will contain the boundary.
-	req.Header.Set("Content-Type", w.FormDataContentType())
 
 	// Submit the request
 	res, err := client.Do(req)
@@ -234,11 +248,11 @@ func Upload(client *http.Client, url string) (err error) {
 }
 
 
-func preparePostRequest(apiUrl string, formData *map[string]io.Reader) (req *http.Request, err error) {
+func preparePostRequest(apiUrl string, formData map[string]io.Reader) (req *http.Request, err error) {
 	req = nil
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
-	for key, r := range values {
+	for key, r := range formData {
 		var fw io.Writer
 		if x, ok := r.(io.Closer); ok {
 			defer x.Close()
@@ -254,14 +268,20 @@ func preparePostRequest(apiUrl string, formData *map[string]io.Reader) (req *htt
 			}
 		}
 		if _, err = io.Copy(fw, r); err != nil {
-			return err
+			return 
 		}
 
 	}
 	// Don't forget to close the multipart writer.
 	// If you don't close it, your request will be missing the terminating boundary.
 	w.Close()
-	req, err = http.NewRequest("POST", url, &b)
+	req, err = http.NewRequest("POST", apiUrl, &b)
+
+	// Don't forget to set the content type, this will contain the boundary.
+	req.Header.Set("Content-Type", w.FormDataContentType())
+	sessionId := "test-sess-ion-id"
+	req.Header.Add("x-session-id", sessionId)
+
 	return
 }
 
@@ -283,28 +303,47 @@ func testResultCsv(t *testing.T) {
 	assert.Equal(t, expected, string(csv))
 }
 
+// returns true if there is an error
+func reportIfErr(stepName string,err error) bool {
+	if err != nil {
+		fmt.Println("Step ",stepName," error: "+err.Error())
+		return true
+	}
+	return false
+}
+
 func TestAll(t *testing.T) {
 	if onWindows() {
 		t.Log("Unit testing on Windows platform is not supported.")
 		return
 	}
-
 	initVars()
 	setupCommands()
+	// We expect that database does not exist, so we ignore errors here
 	teardownDatabase()
-	setupDatabase()
+	if reportIfErr("setupDatabase",setupDatabase()) {
+		return
+	}
+	defer func(){
+		reportIfErr("teardownDatabase",teardownDatabase())
+	}()
+	
+	
 	setupServer()
+	defer teardownServer()
+
+
 	// FIXME there must be a better way to wait for server to start, e.g. 
 	time.Sleep(5 * time.Second)
-	setupClient()
+	if reportIfErr("setupClient",setupClient()) {
+		return
+	}
+	defer func(){
+		reportIfErr("teardownClient",teardownClient())
+	}()
 
 	//testDataImportCsv(t)
 	//testDataImportCsv(t)
 	//testResultCsv(t)
-
-	teardownClient()
-	teardownServer()
-	time.Sleep(5 * time.Second)
-	teardownDatabase()
 
 }
