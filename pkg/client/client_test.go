@@ -56,7 +56,8 @@ func initVars() {
 	serverPort = getVar("PGPORT", "5432")
 	serverUser = getVar("PGUSER", "postgres")
 	serverPassword = getVar("PGPASSWORD", "postgres")
-	serverDatabase = getVar("PGDATABASE", "booktown")
+
+	serverDatabase = "booktown"
 }
 
 func setupCommands() {

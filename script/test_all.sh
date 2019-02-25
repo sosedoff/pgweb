@@ -11,7 +11,6 @@ set -e
 export PGHOST=${PGHOST:-localhost}
 export PGUSER="postgres"
 export PGPASSWORD=""
-export PGDATABASE="booktown"
 export PGPORT="15432"
 
 # TODO: Enable the 10.x branch when it's supported on Travis.

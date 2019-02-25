@@ -52,7 +52,8 @@ func initVars() {
 	serverPort = getVar("PGPORT", "5432")
 	serverUser = getVar("PGUSER", "postgres")
 	serverPassword = getVar("PGPASSWORD", "postgres")
-	serverDatabase = getVar("PGDATABASE", "appserver_test")
+
+	serverDatabase = "appserver_test"
 	serviceUrl = "http://localhost:8081"
 }
 
