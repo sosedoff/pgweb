@@ -6,6 +6,5 @@ import (
 )
 
 func main() {
-	cli.InitOptions(os.Args)
-	cli.Run()
+	cli.Run(os.Args)
 }
