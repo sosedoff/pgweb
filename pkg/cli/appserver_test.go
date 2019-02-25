@@ -409,4 +409,3 @@ func TestAll(t *testing.T) {
 	t.Run("testDataImportCSVIncorrectData", testDataImportCSVIncorrectData)
 	t.Run("testDataImportCSVAlternativeDelimiter", testDataImportCSVAlternativeDelimiter)
 }
-
