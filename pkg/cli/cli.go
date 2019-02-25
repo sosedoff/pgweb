@@ -107,7 +107,7 @@ func initClient() {
 	api.DbClient = cl
 }
 
-func InitOptions(commandLineArgs []string) {
+func initOptions(commandLineArgs []string) {
 	opts, err := command.ParseOptions(commandLineArgs)
 	if err != nil {
 		switch err.(type) {
@@ -193,7 +193,8 @@ func openPage() {
 	exec.Command("open", url).Output()
 }
 
-func Run() {
+func Run(commandLineArgs []string) {
+	initOptions(commandLineArgs)
 	initClient()
 
 	if api.DbClient != nil {

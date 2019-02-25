@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -16,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sosedoff/pgweb/pkg/command"
+	// "github.com/sosedoff/pgweb/pkg/cli"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,10 +42,10 @@ func getVar(name, def string) string {
 
 func initVars() {
 	// We need to load default options to make sure all stuff works
-	if err := command.SetDefaultOptions(); err != nil {
-		log.Fatal(err)
-	}
-	command.Opts.HttpPort = 8081
+	//if err := command.SetDefaultOptions(); err != nil {
+	//	log.Fatal(err)
+	//}
+	//command.Opts.HttpPort = 8081
 
 	serverHost = getVar("PGHOST", "localhost")
 	serverPort = getVar("PGPORT", "5432")
@@ -76,8 +75,8 @@ func onWindows() bool {
 
 func setupDatabase() error {
 	// No pretty JSON for testsm
-	options = command.Opts
-	options.DisablePrettyJson = true
+	//options = command.Opts
+	//options.DisablePrettyJson = true
 
 	out, err := exec.Command(
 		testCommands["createdb"],
@@ -107,8 +106,7 @@ func setupDatabase() error {
 }
 
 func setupServer() {
-	InitOptions([]string{})
-	go Run()
+	go Run([]string{})
 }
 
 func teardownServer() {
