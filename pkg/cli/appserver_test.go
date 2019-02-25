@@ -52,7 +52,7 @@ func initVars() {
 	serverPort = getVar("PGPORT", "5432")
 	serverUser = getVar("PGUSER", "postgres")
 	serverPassword = getVar("PGPASSWORD", "postgres")
-	serverDatabase = getVar("PGDATABASE", "booktown")
+	serverDatabase = getVar("PGDATABASE", "appserver_test")
 	serviceUrl = "http://localhost:8081"
 }
 
@@ -91,18 +91,6 @@ func setupDatabase() error {
 		return errors.New(fmt.Sprintf("Create db failed. Error message: «%s», OS command output: «%s»", err.Error(), string(out)))
 	}
 
-	out, err = exec.Command(
-		testCommands["psql"],
-		"-U", serverUser,
-		"-h", serverHost,
-		"-p", serverPort,
-		"-f", "../../data/booktown.sql",
-		serverDatabase,
-	).CombinedOutput()
-
-	if err != nil {
-		return errors.New(fmt.Sprintf("Db import failed. Error message: «%s», OS command output: «%s»", err.Error(), string(out)))
-	}
 	return nil
 }
 
