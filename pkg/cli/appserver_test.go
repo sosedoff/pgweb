@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -321,9 +321,9 @@ func mustOpen(f string) *os.File {
 func reportIfErr(err error) bool {
 	if err != nil {
 		fmt.Println(err)
-		return true
+		return false
 	}
-	return false
+	return true
 }
 
 func TestAll(t *testing.T) {
@@ -335,14 +335,15 @@ func TestAll(t *testing.T) {
 	setupCommands()
 	// We expect that database does not exist, so we ignore errors here
 	teardownDatabase()
-	if reportIfErr(setupDatabase()) {
-		assert.Fail(t,"setupDatabase failed")
+	if !assert.Truef(t,
+		reportIfErr(setupDatabase()),
+		"setupDatabase failed") {
 		return
 	}
 	defer func() {
-		if reportIfErr(teardownDatabase()) {
-		 assert.Fail(t,"teardownDatabase failed")
-		}
+		assert.Truef(t,
+			reportIfErr(teardownDatabase()),
+			"teardownDatabase failed")
 	}()
 
 	setupServer()
@@ -350,43 +351,43 @@ func TestAll(t *testing.T) {
 
 	// FIXME there must be a better way to wait for server to start
 	time.Sleep(3 * time.Second)
-	if reportIfErr(setupClient()) {
-		assert.Fail(t,"setupClient failed")
+	if !assert.Truef(t,
+		reportIfErr(setupClient()),
+		"setupClient failed") {
 		return
 	}
-	defer func() {
-		if reportIfErr(teardownClient()) {
-			assert.Fail(t,"teardownClient failed")
-		}
 
+	defer func() {
+		assert.Truef(t,
+			reportIfErr(teardownClient()),
+			"teardownClient failed")
 	}()
 
-	t.Run("testDataImportCSVSimple",testDataImportCSVSimple)
-	t.Run("testDataImportCSVIncorrectData",testDataImportCSVIncorrectData)
-	t.Run("testDataImportCSVAlternativeDelimiter",testDataImportCSVAlternativeDelimiter)
+	t.Run("testDataImportCSVSimple", testDataImportCSVSimple)
+	t.Run("testDataImportCSVIncorrectData", testDataImportCSVIncorrectData)
+	t.Run("testDataImportCSVAlternativeDelimiter", testDataImportCSVAlternativeDelimiter)
 }
 
 func testDataImportCSVSimple(t *testing.T) {
 	// we import the same file twice to check that
 	// existing records are not deleted prior to import
 	for i := 0; i < 2; i++ {
-		if reportIfErr(dataImportCSV("from_csv", ",", "../../data/import_csv/test.csv")) {
-			assert.Fail(t,"")  
+		if !assert.True(t, reportIfErr(dataImportCSV("from_csv", ",", "../../data/import_csv/test.csv"))) {
 			return
-			}
+		}
 	}
-	if reportIfErr(
-					errIfQueryResultMismatch(t,
-						"select id, line from from_csv order by id",
-						`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`)) {
-		assert.Fail(t,"")
+	if !assert.True(t,
+		reportIfErr(
+			errIfQueryResultMismatch(t,
+				"select id, line from from_csv order by id",
+				`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`))) {
 		return
 	}
 }
 
 func testDataImportCSVIncorrectData(t *testing.T) {
 	err := dataImportCSV("from_csv_bad_data", ",", "../../data/import_csv/incorrect-data.csv")
-	assert.True(t, err != nil, "Error expected in testDataImportCSVIncorrectData")
+	assert.NotNilf(t, err, "testDataImportCSVIncorrectData must have returned error")
 	if err != nil {
 		msg := err.Error()
 		assert.Contains(t, msg, "record on line 2: wrong number of fields")
@@ -394,14 +395,17 @@ func testDataImportCSVIncorrectData(t *testing.T) {
 }
 
 func testDataImportCSVAlternativeDelimiter(t *testing.T) {
-	if reportIfErr(dataImportCSV("from_csv_alternative_delimiter", ";", "../../data/import_csv/alternative-delimiter.csv")) {
-		assert.Fail(t,"")
+	if !assert.True(t,
+		reportIfErr(dataImportCSV("from_csv_alternative_delimiter",
+			";",
+			"../../data/import_csv/alternative-delimiter.csv"))) {
 		return
 	}
-	if reportIfErr(errIfQueryResultMismatch(t,
-			"select id, line from from_csv_alternative_delimiter order by id",
-			`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`)) {
-		assert.Fail(t,"")
+	if !assert.True(t,
+		reportIfErr(
+			errIfQueryResultMismatch(t,
+				"select id, line from from_csv_alternative_delimiter order by id",
+				`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`))) {
 		return
 	}
-} 
+}
