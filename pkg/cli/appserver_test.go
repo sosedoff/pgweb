@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"bytes"
 	"errors"
 	"fmt"
@@ -141,7 +142,16 @@ func setupClient() (err error) {
 
 	// Check the response
 	if res.StatusCode != http.StatusOK {
-		err = fmt.Errorf("bad status: %s", res.Status)
+		err = decodeErrorFromHTTPResponsesBody(res)
+	}
+	return
+}
+
+func decodeErrorFromHTTPResponsesBody(res *http.Response) (err error) {
+	var body map[string]interface{}
+	err = json.NewDecoder(res.Body).Decode(&body)
+	if err == nil {
+		err = errors.New(fmt.Sprintf("Http response status %v, response body is %#v", res.StatusCode, body))
 	}
 	return
 }
@@ -164,7 +174,7 @@ func teardownClient() (err error) {
 
 	// Check the response
 	if res.StatusCode != http.StatusOK {
-		err = fmt.Errorf("bad status: %s", res.Status)
+		err = decodeErrorFromHTTPResponsesBody(res)
 	}
 	return
 }
@@ -184,21 +194,21 @@ func teardownDatabase() error {
 	return nil
 }
 
-func testDataImportCSV(t *testing.T) (err error) {
+func dataImportCSV(tableName, fieldDelimiter, fileName string) (err error) {
 	var client *http.Client
 	client = &http.Client{Timeout: time.Second * 10}
 	apiUrl := "http://localhost:8081/api/import/csv"
 
 	fd := formDataType{
-		"importCSVFile":           mustOpen("../../data/test.csv"),
-		"importCSVFieldDelimiter": strings.NewReader(","),
-		"importCSVTableName":      strings.NewReader("from_csv")}
+		"importCSVTableName":      strings.NewReader(tableName),
+		"importCSVFieldDelimiter": strings.NewReader(fieldDelimiter),
+		"importCSVFile":           mustOpen(fileName),
+	}
 
 	var req *http.Request
 	req, err = preparePostRequest(apiUrl, fd)
 	// Now that you have a form, you can submit it to your handler.
 	if err != nil {
-		t.Fail()
 		return
 	}
 
@@ -206,32 +216,30 @@ func testDataImportCSV(t *testing.T) (err error) {
 	var res *http.Response
 	res, err = client.Do(req)
 	if err != nil {
-		t.Fail()
 		return
 	}
 
 	// Check the response
 	if res.StatusCode != http.StatusOK {
-		t.Fail()
-		err = fmt.Errorf("bad status: %s", res.Status)
+		err = decodeErrorFromHTTPResponsesBody(res)
 	}
 	return
 }
 
-func testDataImportCSVResult(t *testing.T) (err error) {
+// Produces error if the query fails or result does not match the expectation
+func errIfQueryResultMismatch(t *testing.T, query, expectedResult string) (err error) {
 	var client *http.Client
 	client = &http.Client{Timeout: time.Second * 10}
 	apiUrl := "http://localhost:8081/api/query"
 
 	fd := formDataType{
-		"query": strings.NewReader("select id, line from from_csv order by id"),
+		"query": strings.NewReader(query),
 	}
 
 	var req *http.Request
 	req, err = preparePostRequest(apiUrl, fd)
 	// Now that you have a form, you can submit it to your handler.
 	if err != nil {
-		t.Fail()
 		return
 	}
 
@@ -239,14 +247,12 @@ func testDataImportCSVResult(t *testing.T) (err error) {
 	var res *http.Response
 	res, err = client.Do(req)
 	if err != nil {
-		t.Fail()
 		return
 	}
 
 	// Check the response
 	if res.StatusCode != http.StatusOK {
-		t.Fail()
-		err = fmt.Errorf("api call to %s returns bad status: %s", apiUrl, res.Status)
+		err = decodeErrorFromHTTPResponsesBody(res)
 		return
 	}
 
@@ -254,14 +260,14 @@ func testDataImportCSVResult(t *testing.T) (err error) {
 	var htmlData []byte
 	htmlData, err = ioutil.ReadAll(res.Body)
 	if err != nil {
-		t.Fail()
 		return
 	}
 
-	expected :=
-		`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`
-	actual := string(htmlData)
-	assert.Equal(t, expected, actual)
+	actualResult := string(htmlData)
+	if expectedResult != actualResult {
+		err = errors.New(fmt.Sprintf("Query «%s», expected «%s», actual «%s»", query, expectedResult, actualResult))
+		return
+	}
 
 	return
 }
@@ -312,9 +318,9 @@ func mustOpen(f string) *os.File {
 }
 
 // returns true if there is an error
-func reportIfErr(stepName string, err error) bool {
+func reportIfErr(err error) bool {
 	if err != nil {
-		fmt.Println("Step ", stepName, " error: "+err.Error())
+		fmt.Println(err)
 		return true
 	}
 	return false
@@ -329,11 +335,14 @@ func TestAll(t *testing.T) {
 	setupCommands()
 	// We expect that database does not exist, so we ignore errors here
 	teardownDatabase()
-	if reportIfErr("setupDatabase", setupDatabase()) {
+	if reportIfErr(setupDatabase()) {
+		assert.Fail(t,"setupDatabase failed")
 		return
 	}
 	defer func() {
-		reportIfErr("teardownDatabase", teardownDatabase())
+		if reportIfErr(teardownDatabase()) {
+		 assert.Fail(t,"teardownDatabase failed")
+		}
 	}()
 
 	setupServer()
@@ -341,15 +350,58 @@ func TestAll(t *testing.T) {
 
 	// FIXME there must be a better way to wait for server to start
 	time.Sleep(3 * time.Second)
-	if reportIfErr("setupClient", setupClient()) {
+	if reportIfErr(setupClient()) {
+		assert.Fail(t,"setupClient failed")
 		return
 	}
 	defer func() {
-		reportIfErr("teardownClient", teardownClient())
+		if reportIfErr(teardownClient()) {
+			assert.Fail(t,"teardownClient failed")
+		}
+
 	}()
 
-	testDataImportCSV(t)
-	testDataImportCSV(t)
-	testDataImportCSVResult(t)
-
+	t.Run("testDataImportCSVSimple",testDataImportCSVSimple)
+	t.Run("testDataImportCSVIncorrectData",testDataImportCSVIncorrectData)
+	t.Run("testDataImportCSVAlternativeDelimiter",testDataImportCSVAlternativeDelimiter)
 }
+
+func testDataImportCSVSimple(t *testing.T) {
+	// we import the same file twice to check that
+	// existing records are not deleted prior to import
+	for i := 0; i < 2; i++ {
+		if reportIfErr(dataImportCSV("from_csv", ",", "../../data/import_csv/test.csv")) {
+			assert.Fail(t,"")  
+			return
+			}
+	}
+	if reportIfErr(
+					errIfQueryResultMismatch(t,
+						"select id, line from from_csv order by id",
+						`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`)) {
+		assert.Fail(t,"")
+		return
+	}
+}
+
+func testDataImportCSVIncorrectData(t *testing.T) {
+	err := dataImportCSV("from_csv_bad_data", ",", "../../data/import_csv/incorrect-data.csv")
+	assert.True(t, err != nil, "Error expected in testDataImportCSVIncorrectData")
+	if err != nil {
+		msg := err.Error()
+		assert.Contains(t, msg, "record on line 2: wrong number of fields")
+	}
+}
+
+func testDataImportCSVAlternativeDelimiter(t *testing.T) {
+	if reportIfErr(dataImportCSV("from_csv_alternative_delimiter", ";", "../../data/import_csv/alternative-delimiter.csv")) {
+		assert.Fail(t,"")
+		return
+	}
+	if reportIfErr(errIfQueryResultMismatch(t,
+			"select id, line from from_csv_alternative_delimiter order by id",
+			`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`)) {
+		assert.Fail(t,"")
+		return
+	}
+} 
