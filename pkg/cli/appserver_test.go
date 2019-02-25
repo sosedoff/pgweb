@@ -326,6 +326,48 @@ func reportIfErr(err error) bool {
 	return true
 }
 
+func testDataImportCSVSimple(t *testing.T) {
+	// we import the same file twice to check that
+	// existing records are not deleted prior to import
+	for i := 0; i < 2; i++ {
+		if !assert.True(t, reportIfErr(dataImportCSV("from_csv", ",", "../../data/import_csv/test.csv"))) {
+			return
+		}
+	}
+	if !assert.True(t,
+		reportIfErr(
+			errIfQueryResultMismatch(t,
+				"select id, line from from_csv order by id",
+				`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`))) {
+		return
+	}
+}
+
+func testDataImportCSVIncorrectData(t *testing.T) {
+	err := dataImportCSV("from_csv_bad_data", ",", "../../data/import_csv/incorrect-data.csv")
+	assert.NotNilf(t, err, "testDataImportCSVIncorrectData must have returned error")
+	if err != nil {
+		msg := err.Error()
+		assert.Contains(t, msg, "record on line 2: wrong number of fields")
+	}
+}
+
+func testDataImportCSVAlternativeDelimiter(t *testing.T) {
+	if !assert.True(t,
+		reportIfErr(dataImportCSV("from_csv_alternative_delimiter",
+			";",
+			"../../data/import_csv/alternative-delimiter.csv"))) {
+		return
+	}
+	if !assert.True(t,
+		reportIfErr(
+			errIfQueryResultMismatch(t,
+				"select id, line from from_csv_alternative_delimiter order by id",
+				`{"columns":["id","line"],"rows":[["1","line"]]}`))) {
+		return
+	}
+}
+
 func TestAll(t *testing.T) {
 	if onWindows() {
 		t.Log("Unit testing on Windows platform is not supported.")
@@ -368,44 +410,3 @@ func TestAll(t *testing.T) {
 	t.Run("testDataImportCSVAlternativeDelimiter", testDataImportCSVAlternativeDelimiter)
 }
 
-func testDataImportCSVSimple(t *testing.T) {
-	// we import the same file twice to check that
-	// existing records are not deleted prior to import
-	for i := 0; i < 2; i++ {
-		if !assert.True(t, reportIfErr(dataImportCSV("from_csv", ",", "../../data/import_csv/test.csv"))) {
-			return
-		}
-	}
-	if !assert.True(t,
-		reportIfErr(
-			errIfQueryResultMismatch(t,
-				"select id, line from from_csv order by id",
-				`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`))) {
-		return
-	}
-}
-
-func testDataImportCSVIncorrectData(t *testing.T) {
-	err := dataImportCSV("from_csv_bad_data", ",", "../../data/import_csv/incorrect-data.csv")
-	assert.NotNilf(t, err, "testDataImportCSVIncorrectData must have returned error")
-	if err != nil {
-		msg := err.Error()
-		assert.Contains(t, msg, "record on line 2: wrong number of fields")
-	}
-}
-
-func testDataImportCSVAlternativeDelimiter(t *testing.T) {
-	if !assert.True(t,
-		reportIfErr(dataImportCSV("from_csv_alternative_delimiter",
-			";",
-			"../../data/import_csv/alternative-delimiter.csv"))) {
-		return
-	}
-	if !assert.True(t,
-		reportIfErr(
-			errIfQueryResultMismatch(t,
-				"select id, line from from_csv_alternative_delimiter order by id",
-				`{"columns":["id","line"],"rows":[["1","line 1"],["1","line 1"],["2","line-2"],["2","line-2"]]}`))) {
-		return
-	}
-}
