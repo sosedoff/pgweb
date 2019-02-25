@@ -182,6 +182,7 @@ func teardownClient() (err error) {
 func teardownDatabase() error {
 	out, err := exec.Command(
 		testCommands["dropdb"],
+		"--if-exists",
 		"-U", serverUser,
 		"-h", serverHost,
 		"-p", serverPort,
@@ -375,24 +376,30 @@ func TestAll(t *testing.T) {
 	}
 	initVars()
 	setupCommands()
-	// We expect that database does not exist, so we ignore errors here
-	teardownDatabase()
+	if !assert.Truef(t,
+		reportIfErr(teardownDatabase()),
+		"first teardownDatabase failed") {
+		return
+	}
+	time.Sleep(1 * time.Second)
 	if !assert.Truef(t,
 		reportIfErr(setupDatabase()),
 		"setupDatabase failed") {
 		return
 	}
 	defer func() {
+		time.Sleep(1 * time.Second)
 		assert.Truef(t,
 			reportIfErr(teardownDatabase()),
-			"teardownDatabase failed")
+			"second teardownDatabase failed")
 	}()
 
+	time.Sleep(1 * time.Second)
 	setupServer()
 	defer teardownServer()
 
 	// FIXME there must be a better way to wait for server to start
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 	if !assert.Truef(t,
 		reportIfErr(setupClient()),
 		"setupClient failed") {
@@ -400,6 +407,7 @@ func TestAll(t *testing.T) {
 	}
 
 	defer func() {
+		time.Sleep(1 * time.Second)
 		assert.Truef(t,
 			reportIfErr(teardownClient()),
 			"teardownClient failed")
