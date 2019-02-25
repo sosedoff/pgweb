@@ -70,3 +70,12 @@ func Test_serveResult(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, `null`, w.Body.String())
 }
+
+func Test_isPostgresqlIdentifierRequiringNoQuoting(t *testing.T) {
+	assert.True(t, isPostgresqlIdentifierRequiringNoQuoting("_u0$"))
+	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting("$"))
+	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting(""))
+	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting("ц"))
+	assert.True(t, isPostgresqlIdentifierRequiringNoQuoting("D"))
+	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting("\"D"))
+}

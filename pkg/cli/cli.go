@@ -107,8 +107,8 @@ func initClient() {
 	api.DbClient = cl
 }
 
-func initOptions() {
-	opts, err := command.ParseOptions(os.Args)
+func initOptions(commandLineArgs []string) {
+	opts, err := command.ParseOptions(commandLineArgs)
 	if err != nil {
 		switch err.(type) {
 		case *flags.Error:
@@ -147,7 +147,7 @@ func printVersion() {
 	fmt.Println(str)
 }
 
-func startServer() {
+func StartServer() {
 	router := gin.Default()
 
 	// Enable HTTP basic authentication only if both user and password are set
@@ -193,8 +193,8 @@ func openPage() {
 	exec.Command("open", url).Output()
 }
 
-func Run() {
-	initOptions()
+func Run(commandLineArgs []string) {
+	initOptions(commandLineArgs)
 	initClient()
 
 	if api.DbClient != nil {
@@ -215,7 +215,7 @@ func Run() {
 		go api.StartSessionCleanup()
 	}
 
-	startServer()
+	StartServer()
 	openPage()
 	handleSignals()
 }

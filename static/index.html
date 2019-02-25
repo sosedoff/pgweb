@@ -30,6 +30,7 @@
         <li id="table_history">History</li>
         <li id="table_activity">Activity</li>
         <li id="table_connection">Connection</li>
+        <li id="table_import">Import</li>
       </ul>
 
       <div class="connection-actions">
@@ -61,6 +62,27 @@
       </div>
     </div>
     <div id="body">
+      <div id="import">
+        <div class="wrapper"><p>Import adds data to an old table or creates a new one. 
+          Csv file must contain header with the field names. Old data in the pre-existing table is preserved.
+        Table and field names must not require identifier quoting.</p></div>
+        <div class="wrapper">
+          <div class="form-group">
+            <label for="importCSVTableName">Table name</label>
+            <input type="text" class="form-control" id="importCSVTableName" placeholder="Enter table name" style="width:30%">
+          </div>
+          <div class="form-group">
+            <label for="importCSVFieldDelimiter">Field delimiter</label>
+            <input type="text" class="form-control" id="importCSVFieldDelimiter" value="," style="width:10%">
+          </div>
+          <div class="form-group">
+            <input type="file" id="importCSVFile">
+          </div>
+          <div class="actions">
+            <input type="button" id="importCSVStart" value="Import" class="btn btn-sm btn-primary" />
+          </div>
+        </div>
+      </div>
       <div id="input">
         <div class="wrapper">
           <div id="custom_query"></div>
@@ -75,14 +97,6 @@
               <input type="button" id="xml" value="XML" class="btn btn-sm btn-default" />
             </div>
           </div>
-        </div>
-      </div>
-      <div id="output">
-        <div class="wrapper">
-          <table id="results" class="table">
-            <thead id="results_header"></thead>
-            <tbody id="results_body"></tbody>
-          </table>
         </div>
       </div>
       <div id="pagination">
@@ -113,6 +127,14 @@
         </div>
         <div class="current-page" data-page="1" data-pages="1">
           <span id="total_records"></span> rows
+        </div>
+      </div>
+      <div id="output">
+        <div class="wrapper">
+          <table id="results" class="table">
+            <thead id="results_header"></thead>
+            <tbody id="results_body"></tbody>
+          </table>
         </div>
       </div>
     </div>

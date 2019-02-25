@@ -53,10 +53,10 @@ function getPagesCount(rowsCount) {
   return num;
 }
 
-function apiCall(method, path, params, cb) {
+function apiCall(method, path, params, cb, multipart) {
   var timeout = 300000; // 5 mins is enough
 
-  $.ajax({
+  var config = {
     timeout: timeout,
     url: "api" + path,
     method: method,
@@ -75,7 +75,13 @@ function apiCall(method, path, params, cb) {
 
       cb(jQuery.parseJSON(xhr.responseText));
     }
-  });
+  };
+  if (multipart) {
+    config.contentType = false;
+    config.processData = false;
+  }
+
+  $.ajax(config);
 }
 
 function getInfo(cb)                        { apiCall("get", "/info", {}, cb); }
@@ -372,6 +378,7 @@ function showQueryHistory() {
 
     setCurrentTab("table_history");
     $("#input").hide();
+    $("#import").hide();
     $("#body").prop("class", "full");
     $("#results").addClass("no-crop");
   });
@@ -390,6 +397,7 @@ function showTableIndexes() {
     buildTable(data);
 
     $("#input").hide();
+    $("#import").hide();
     $("#body").prop("class", "full");
     $("#results").addClass("no-crop");
   });
@@ -408,6 +416,7 @@ function showTableConstraints() {
     buildTable(data);
 
     $("#input").hide();
+    $("#import").hide();
     $("#body").prop("class", "full");
     $("#results").addClass("no-crop");
   });
@@ -497,6 +506,7 @@ function showTableContent(sortColumn, sortOrder) {
 
   getTableRows(name, opts, function(data) {
     $("#input").hide();
+    $("#import").hide();
     $("#body").prop("class", "with-pagination");
 
     buildTable(data, sortColumn, sortOrder);
@@ -531,6 +541,7 @@ function showTableStructure() {
   setCurrentTab("table_structure");
 
   $("#input").hide();
+  $("#import").hide();
   $("#body").prop("class", "full");
 
   getTableStructure(name, { type: getCurrentObject().type }, function(data) {
@@ -548,6 +559,7 @@ function showQueryPanel() {
   editor.focus();
 
   $("#input").show();
+  $("#import").hide();
   $("#body").prop("class", "")
 }
 
@@ -567,8 +579,19 @@ function showConnectionPanel() {
     });
 
     $("#input").hide();
+    $("#import").hide();
     $("#body").addClass("full");
   });
+}
+
+function showImportPanel() {
+  setCurrentTab("table_import");
+  resetTable();
+  editor.focus();
+
+  $("#input").hide();
+  $("#import").show();
+  $("#body").prop("class", "")
 }
 
 function showActivityPanel() {
@@ -585,6 +608,7 @@ function showActivityPanel() {
   apiCall("get", "/activity", {}, function(data) {
     buildTable(data, null, null, options);
     $("#input").hide();
+    $("#import").hide();
     $("#body").addClass("full");
   });
 }
@@ -609,6 +633,7 @@ function runQuery() {
     $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
     $("#query_progress").hide();
     $("#input").show();
+    $("#import").hide();
     $("#body").removeClass("full");
     $("#results").data("mode", "query");
 
@@ -620,6 +645,48 @@ function runQuery() {
     if (query.match(/(create|drop)\s/i)) {
       loadSchemas();
     }
+  });
+}
+
+function importCSVStart() {
+  setCurrentTab("table_import");
+  var form = new FormData();
+  // some base error checking (more is done on the server side)
+  const tableName = $("#importCSVTableName")[0].value.trim();
+  const files = $("#importCSVFile")[0].files;
+  if (tableName == "") {
+    showImportCSVValidationError("Table Name is empty");
+    focusById("#importCSVTableName")
+    return
+  }
+  if (files.length === 0) {
+    showImportCSVValidationError("No file chosen");
+    focusById("#importCSVFile")
+    return
+  }
+
+  form.append("importCSVTableName", tableName);
+  form.append("importCSVFile", files[0]);
+  form.append("importCSVFieldDelimiter", $("#importCSVFieldDelimiter")[0].value);
+  
+  apiCall("post", "/import/csv", form, function(data) {
+      loadSchemas();
+      $("#results").data("mode", "query");
+      buildTable(data);
+    }, true
+  );
+}
+
+function focusById(id) {
+  setTimeout(function focusByIdInnerFn() {
+    $(id).focus() },
+  0)
+}
+
+function showImportCSVValidationError(string) {
+  buildTable({
+    columns: ["error"],
+    rows: [ [ string ] ] 
   });
 }
 
@@ -643,6 +710,7 @@ function runExplain() {
     $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
     $("#query_progress").hide();
     $("#input").show();
+    $("#import").hide();
     $("#body").removeClass("full");
     $("#results").addClass("no-crop");
   });
@@ -674,6 +742,7 @@ function showUniqueColumnsValues(table, column, showCounts) {
 
   executeQuery(query, function(data) {
     $("#input").hide();
+    $("#import").hide();
     $("#body").prop("class", "full");
     $("#results").data("mode", "query");
     buildTable(data);
@@ -1029,6 +1098,7 @@ $(document).ready(function() {
   $("#table_query").on("click",       function() { showQueryPanel();       });
   $("#table_connection").on("click",  function() { showConnectionPanel();  });
   $("#table_activity").on("click",    function() { showActivityPanel();    });
+  $("#table_import").on("click",      function() { showImportPanel();      });
 
   $("#run").on("click", function() {
     runQuery();
@@ -1101,6 +1171,12 @@ $(document).ready(function() {
     var value  = $(this).data("value");
 
     performRowAction(action, value);
+  })
+
+  $("#importCSVStart").on("click", function(e) {
+    e.preventDefault();
+
+    importCSVStart();
   })
 
   $("#results").on("click", "th", function(e) {
@@ -1403,6 +1479,7 @@ $(document).ready(function() {
       loadSchemas();
 
       $("#current_database").text(resp.current_database);
+      $("#import").hide();
       $("#main").show();
 
       if (!resp.session_lock) {

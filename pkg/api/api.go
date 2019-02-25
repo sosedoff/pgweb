@@ -2,11 +2,14 @@ package api
 
 import (
 	"encoding/base64"
+	"encoding/csv"
 	"errors"
 	"fmt"
+	"mime/multipart"
 	neturl "net/url"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tuvistavie/securerandom"
@@ -16,6 +19,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/shared"
+	"github.com/sosedoff/pgweb/pkg/statements"
 )
 
 var (
@@ -491,4 +495,85 @@ func DataExport(c *gin.Context) {
 	if err != nil {
 		badRequest(c, err)
 	}
+}
+
+func DataImportCSV(c *gin.Context) {
+	req := c.Request
+	req.ParseMultipartForm(0)
+	table := req.FormValue("importCSVTableName")
+	if !isPostgresqlIdentifierRequiringNoQuoting(table) {
+		badRequest(c, "Only ASCII-based table names which require no quoting are supported in the import")
+		return
+	}
+
+	fieldDelimiter, err := ParseFieldDelimiter(req.FormValue("importCSVFieldDelimiter"))
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	var file multipart.File
+	file, _, err = req.FormFile("importCSVFile")
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	defer file.Close()
+	reader := csv.NewReader(file)
+	reader.Comma = fieldDelimiter
+
+	header, err := reader.Read()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	data, err := reader.ReadAll()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	db := DB(c)
+
+	for _, columnName := range header {
+		if !isPostgresqlIdentifierRequiringNoQuoting(columnName) {
+			msg := fmt.Sprintf("Column name «%s» requires quoting - can not import", columnName)
+			badRequest(c, msg)
+			return
+		}
+	}
+
+	createQuery := statements.CreateNewTableQuery(table, header)
+	insertQuery := statements.GenerateBulkInsertQuery(table, header, len(data))
+
+	_, err = db.QueryInternal(createQuery)
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	result, err := db.BulkInsert(insertQuery, statements.Flatten(data))
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	c.JSON(200, result)
+}
+
+func ParseFieldDelimiter(formValue string) (rune, error) {
+	if formValue == " " {
+		return ' ', nil
+	}
+	fieldDelimiter := strings.TrimSpace(formValue)
+	if utf8.RuneCountInString(fieldDelimiter) != 1 {
+		return '?', errors.New("field delimiter must be a single character (comma is a standard one, CR and LF and 0xFFFD are not allowed)")
+	}
+	delimiterChar, delimiterCharSize := utf8.DecodeRuneInString(fieldDelimiter)
+	if delimiterCharSize == 0 {
+		return '?', errors.New("invalid UTF-8 data in field delimiter")
+	}
+	return delimiterChar, nil
 }

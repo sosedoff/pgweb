@@ -123,7 +123,7 @@ func teardownClient() {
 }
 
 func teardown() {
-	_, err := exec.Command(
+	out, err := exec.Command(
 		testCommands["dropdb"],
 		"-U", serverUser,
 		"-h", serverHost,
@@ -132,6 +132,7 @@ func teardown() {
 	).CombinedOutput()
 
 	if err != nil {
+		fmt.Println("Error when dropping the db:", string(out))
 		fmt.Println("Teardown error:", err)
 	}
 }
@@ -170,7 +171,7 @@ func testClientIdleTime(t *testing.T) {
 	}
 
 	for ts, expected := range examples {
-		testClient.lastQueryTime = ts
+		testClient.LastQueryTime = ts
 		assert.Equal(t, expected, testClient.IsIdle())
 	}
 }
