@@ -5,8 +5,14 @@ import (
 	"strings"
 )
 
-// List of keywords that are not allowed in read-only mode
-var restrictedKeywords = regexp.MustCompile(`(?mi)\s?(CREATE|INSERT|DROP|DELETE|TRUNCATE|GRANT|OPEN|IMPORT|COPY)\s`)
+var (
+	// List of keywords that are not allowed in read-only mode
+	reRestrictedKeywords = regexp.MustCompile(`(?mi)\s?(CREATE|INSERT|DROP|DELETE|TRUNCATE|GRANT|OPEN|IMPORT|COPY)\s`)
+
+	// Comment regular expressions
+	reSlashComment = regexp.MustCompile(`(?m)/\*.+\*/`)
+	reDashComment  = regexp.MustCompile(`(?m)--.+`)
+)
 
 // Get short version from the string
 // Example: 10.2.3.1 -> 10.2
@@ -20,5 +26,8 @@ func getMajorMinorVersion(str string) string {
 
 // containsRestrictedKeywords returns true if given keyword is not allowed in read-only mode
 func containsRestrictedKeywords(str string) bool {
-	return restrictedKeywords.MatchString(str)
+	str = reSlashComment.ReplaceAllString(str, "")
+	str = reDashComment.ReplaceAllString(str, "")
+
+	return reRestrictedKeywords.MatchString(str)
 }
