@@ -9,7 +9,6 @@ import (
 	neturl "net/url"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tuvistavie/securerandom"
@@ -501,12 +500,17 @@ func DataImportCSV(c *gin.Context) {
 	req := c.Request
 	req.ParseMultipartForm(0)
 	table := req.FormValue("importCSVTableName")
-	if !isPostgresqlIdentifierRequiringNoQuoting(table) {
+	requireNoQuoting, err := isPostgresqlIdentifierRequiringNoQuoting(table)
+	if !requireNoQuoting {
 		badRequest(c, "Only ASCII-based table names which require no quoting are supported in the import")
+		return
+	} else if err != nil {
+		badRequest(c, fmt.Sprintf("Error in regexp matching trying to check if table name requires quoting: «%s»", err.Error()))
 		return
 	}
 
-	fieldDelimiter, err := ParseFieldDelimiter(req.FormValue("importCSVFieldDelimiter"))
+	var fieldDelimiter rune
+	fieldDelimiter, err = ParseFieldDelimiter(req.FormValue("importCSVFieldDelimiter"))
 	if err != nil {
 		badRequest(c, err)
 		return
@@ -538,8 +542,13 @@ func DataImportCSV(c *gin.Context) {
 	db := DB(c)
 
 	for _, columnName := range header {
-		if !isPostgresqlIdentifierRequiringNoQuoting(columnName) {
+		requireNoQuoting, err := isPostgresqlIdentifierRequiringNoQuoting(columnName)
+		if !requireNoQuoting {
 			msg := fmt.Sprintf("Column name «%s» requires quoting - can not import", columnName)
+			badRequest(c, msg)
+			return
+		} else if err != nil {
+			msg := fmt.Sprintf("Error in regexp matching trying to check if table name requires quoting: «%s»", err.Error())
 			badRequest(c, msg)
 			return
 		}
@@ -561,19 +570,4 @@ func DataImportCSV(c *gin.Context) {
 	}
 
 	c.JSON(200, result)
-}
-
-func ParseFieldDelimiter(formValue string) (rune, error) {
-	if formValue == " " {
-		return ' ', nil
-	}
-	fieldDelimiter := strings.TrimSpace(formValue)
-	if utf8.RuneCountInString(fieldDelimiter) != 1 {
-		return '?', errors.New("field delimiter must be a single character (comma is a standard one, CR and LF and 0xFFFD are not allowed)")
-	}
-	delimiterChar, delimiterCharSize := utf8.DecodeRuneInString(fieldDelimiter)
-	if delimiterCharSize == 0 {
-		return '?', errors.New("invalid UTF-8 data in field delimiter")
-	}
-	return delimiterChar, nil
 }

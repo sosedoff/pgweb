@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	"mime"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 
@@ -193,10 +195,25 @@ func badRequest(c *gin.Context, err interface{}) {
 // Is it a postgresql identifier requiring no quoting?
 // False result may be incorrect, because unicode letters
 // require no quoting and this function does not detect that.
-func isPostgresqlIdentifierRequiringNoQuoting(s string) bool {
-	result, err := regexp.Match("^[a-zA-Z_][a-zA-Z_$0-9]*$", []byte(s))
+func isPostgresqlIdentifierRequiringNoQuoting(s string) (result bool, err error) {
+	result, err = regexp.Match(`^[a-zA-Z_][\w$]*$`, []byte(s))
 	if err != nil {
-		panic(err)
+		result = false
 	}
-	return result
+	return
+}
+
+func ParseFieldDelimiter(formValue string) (rune, error) {
+	if formValue == " " {
+		return ' ', nil
+	}
+	fieldDelimiter := strings.TrimSpace(formValue)
+	if utf8.RuneCountInString(fieldDelimiter) != 1 {
+		return '?', errors.New("field delimiter must be a single character (comma is a standard one, CR and LF and 0xFFFD are not allowed)")
+	}
+	delimiterChar, delimiterCharSize := utf8.DecodeRuneInString(fieldDelimiter)
+	if delimiterCharSize == 0 {
+		return '?', errors.New("invalid UTF-8 data in field delimiter")
+	}
+	return delimiterChar, nil
 }

@@ -71,11 +71,31 @@ func Test_serveResult(t *testing.T) {
 	assert.Equal(t, `null`, w.Body.String())
 }
 
-func Test_isPostgresqlIdentifierRequiringNoQuoting(t *testing.T) {
-	assert.True(t, isPostgresqlIdentifierRequiringNoQuoting("_u0$"))
-	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting("$"))
-	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting(""))
-	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting("ц"))
-	assert.True(t, isPostgresqlIdentifierRequiringNoQuoting("D"))
-	assert.False(t, isPostgresqlIdentifierRequiringNoQuoting("\"D"))
+// idea from http://zacg.github.io/blog/2014/10/05/go-asserts-and-multiple-return-values/
+func valuesToArray(args ...interface{}) []interface{} {
+	return append([]interface{}{}, args...)
 }
+
+func Test_isPostgresqlIdentifierRequiringNoQuoting(t *testing.T) {
+	assert.Equal(t,
+		valuesToArray(true, nil),
+		valuesToArray(isPostgresqlIdentifierRequiringNoQuoting("_u0$")))
+	assert.Equal(t,
+		valuesToArray(false, nil),
+		valuesToArray(isPostgresqlIdentifierRequiringNoQuoting("$")))
+	assert.Equal(t,
+		valuesToArray(false, nil),
+		valuesToArray(isPostgresqlIdentifierRequiringNoQuoting("")))
+	assert.Equal(t,
+		valuesToArray(false, nil),
+		valuesToArray(isPostgresqlIdentifierRequiringNoQuoting("ц")))
+	assert.Equal(t,
+		valuesToArray(true, nil),
+		valuesToArray(isPostgresqlIdentifierRequiringNoQuoting("D")))
+	assert.Equal(t,
+		valuesToArray(false, nil),
+		valuesToArray(isPostgresqlIdentifierRequiringNoQuoting(`"D`)))
+	assert.Equal(t,
+		valuesToArray(false, nil),
+		valuesToArray(isPostgresqlIdentifierRequiringNoQuoting("12")))
+	}
