@@ -429,15 +429,33 @@ func testHistoryUniqueness(t *testing.T) {
 }
 
 func testReadOnlyMode(t *testing.T) {
+	command.Opts.ReadOnly = true
+	defer func() {
+		command.Opts.ReadOnly = false
+	}()
+
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 	client, _ := NewFromUrl(url, nil)
 
 	err := client.SetReadOnlyMode()
-	assert.Equal(t, nil, err)
+	assert.NoError(t, err)
 
-	_, err = client.Query("CREATE TABLE foobar(id integer);")
+	_, err = client.Query("\nCREATE TABLE foobar(id integer);\n")
 	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "in a read-only transaction")
+	assert.Error(t, err, "query contains keywords not allowed in read-only mode")
+
+	// Turn off guard
+	client.db.Exec("SET default_transaction_read_only=off;")
+
+	_, err = client.Query("\nCREATE TABLE foobar(id integer);\n")
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "query contains keywords not allowed in read-only mode")
+
+	_, err = client.Query("-- CREATE TABLE foobar(id integer);\nSELECT 'foo';")
+	assert.NoError(t, err)
+
+	_, err = client.Query("/* CREATE TABLE foobar(id integer); */ SELECT 'foo';")
+	assert.NoError(t, err)
 }
 
 func TestAll(t *testing.T) {
