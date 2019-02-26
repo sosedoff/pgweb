@@ -98,4 +98,4 @@ func Test_isPostgresqlIdentifierRequiringNoQuoting(t *testing.T) {
 	assert.Equal(t,
 		valuesToArray(false, nil),
 		valuesToArray(isPostgresqlIdentifierRequiringNoQuoting("12")))
-	}
+}
