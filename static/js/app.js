@@ -130,7 +130,7 @@ function buildSchemaSection(name, objects) {
     if (objects[group]) {
       objects[group].forEach(function(item) {
         var id = name + "." + item;
-        section += "<li class='schema-" + group + "' data-type='" + group + "' data-id='" + id + "'>" + icons[group] + "&nbsp;" + item + "</li>";
+        section += "<li class='schema-item schema-" + group + "' data-type='" + group + "' data-id='" + id + "' data-name='" + item + "'>" + icons[group] + "&nbsp;" + item + "</li>";
       });
       section += "</ul></div>";
     }
@@ -422,7 +422,7 @@ function showTableInfo() {
   }
 
   apiCall("get", "/tables/" + name + "/info", {}, function(data) {
-    $(".table-information ul").show();
+    $(".table-information .lines").show();
     $("#table_total_size").text(data.total_size);
     $("#table_data_size").text(data.data_size);
     $("#table_index_size").text(data.index_size);
@@ -951,6 +951,52 @@ function bindCurrentDatabaseMenu() {
   });
 }
 
+function bindDatabaseObjectsFilter() {
+  var filterTimeout = null;
+
+  $("#filter_database_objects").on("keyup", function (e) {
+    clearTimeout(filterTimeout);
+
+    var val = $(this).val().trim();
+
+    // Reset search on ESC
+    if (e.keyCode == 27 || val == "") {
+      resetObjectsFilter();
+      return;
+    }
+
+    $(".clear-objects-filter").show();
+    $(".schema-group").addClass("expanded");
+
+    filterTimeout = setTimeout(function () {
+      filterObjectsByName(val)
+    }, 200);
+  });
+
+  $(".clear-objects-filter").on("click", function(e) {
+    resetObjectsFilter();
+  });
+}
+
+function resetObjectsFilter() {
+  $("#filter_database_objects").val("");
+  $("#objects li.schema-item").show();
+  $(".clear-objects-filter").hide();
+}
+
+function filterObjectsByName(query) {
+  $("#objects li.schema-item").each(function (idx, el) {
+    var item = $(el);
+    var name = $(el).data("name");
+
+    if (name.indexOf(query) < 0) {
+      item.hide();
+    } else {
+      item.show();
+    }
+  });
+}
+
 function getQuotedSchemaTableName(table) {
   if (typeof table === "string" && table.indexOf(".") > -1) {
     var schemaTableComponents = table.split(".");
@@ -1410,4 +1456,6 @@ $(document).ready(function() {
       }
     }
   });
+
+  bindDatabaseObjectsFilter();
 });
