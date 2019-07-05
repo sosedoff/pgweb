@@ -422,7 +422,7 @@ function showTableInfo() {
   }
 
   apiCall("get", "/tables/" + name + "/info", {}, function(data) {
-    $(".table-information ul").show();
+    $(".table-information .lines").show();
     $("#table_total_size").text(data.total_size);
     $("#table_data_size").text(data.data_size);
     $("#table_index_size").text(data.index_size);
