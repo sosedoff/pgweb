@@ -476,11 +476,12 @@
 
 #results tr:nth-child(even) > td {
   border: none;
+  background: #ffffff;
 }
 
 #results tr:nth-child(odd) > td {
   border: none;
-  background: #fff;
+  background: #f9f9f9;
 }
 
 #results th {
