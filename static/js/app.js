@@ -966,6 +966,7 @@ function bindDatabaseObjectsFilter() {
     }
 
     $(".clear-objects-filter").show();
+    $(".schema-group").addClass("expanded");
 
     filterTimeout = setTimeout(function () {
       filterObjectsByName(val)
