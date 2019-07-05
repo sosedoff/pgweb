@@ -90,6 +90,7 @@
 
 #sidebar .current-database .wrap {
   position: relative;
+  height: 50px;
 }
 
 #sidebar .current-database span.current-database-name {
@@ -160,10 +161,61 @@
   padding: 3px 10px;
 }
 
+#sidebar .objects-search {
+  position: fixed;
+  top: 50px;
+  left: 0px;
+  width: 250px;
+  height: 30px;
+  overflow: hidden;
+}
+
+#sidebar .objects-search .wrap {
+  position: relative;
+  background: transparent;
+  height: 30px;
+  padding: 4px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #eee;
+}
+
+#sidebar .objects-search i.fa-search {
+  position: absolute;
+  left: 8px;
+  top: 7px;
+  color: #a1a1a1;
+}
+
+#sidebar .objects-search i.fa-times-circle {
+  position: absolute;
+  right: 8px;
+  top: 7px;
+  color: #a1a1a1;
+  display: none;
+  cursor: pointer;
+}
+
+#sidebar .objects-search i.fa-times-circle:hover {
+  color: #888;
+}
+
+#sidebar .objects-search input[type="text"] {
+  background: transparent;
+  border: 0px none;
+  font-size: 12px;
+  color: #000;
+  height: 22px;
+  line-height: 22px;
+  padding: 0px;
+  margin-left: 25px;
+  width: 200px;
+  outline: none;
+}
+
 #sidebar div.tables-list {
   position: fixed;
   width: 250px;
-  top: 50px;
+  top: 80px;
   left: 0px;
   bottom: 130px;
   overflow: auto;
