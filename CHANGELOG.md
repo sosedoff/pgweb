@@ -1,3 +1,8 @@
+## Unreleased
+
+- Added database objects filter to sidebar, GH-434
+- Various sidebar style tweaks, GH-434
+
 ## 0.11.2 - 2019-02-15
 
 - Fix table row estimation query for camelcase schemas, GH-414
