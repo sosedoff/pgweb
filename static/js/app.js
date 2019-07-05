@@ -329,6 +329,17 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
     // Add all actual row data here
     for (i in row) {
+      if (typeof(row[i]) === "string") {
+        var len = row[i].length;
+
+        if (len >= 1024) {
+          if (len < 4096) {
+            row[i] = row[i].slice(0, 1024) + " (truncated)";
+          } else {
+            row[i] = "DATA[" + len + "]";
+          }
+        }
+      }
       r += "<td data-col='" + i + "'><div>" + escapeHtml(row[i]) + "</div></td>";
     }
 
