@@ -1,7 +1,9 @@
-## Unreleased
+## 0.11.3 - 2019-07-24
 
-- Added database objects filter to sidebar, GH-434
-- Various sidebar style tweaks, GH-434
+- Misc: add script to update homebrew formula version, GH-423
+- Destructive keyword restriction in read-only mode, GH-421
+- Make database object searchable in sidebar, GH-434
+- Update lib/pg to 1.1.1, GH-435
 
 ## 0.11.2 - 2019-02-15
 
