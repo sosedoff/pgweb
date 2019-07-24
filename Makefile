@@ -79,8 +79,8 @@ docker:
 	docker build -t pgweb .
 
 docker-release:
-	docker build -t $(DOCKER_RELEASE_TAG) .
-	docker build -t $(DOCKER_LATEST_TAG) .
+	docker build --no-cache -t $(DOCKER_RELEASE_TAG) .
+	docker tag $(DOCKER_RELEASE_TAG) $(DOCKER_LATEST_TAG)
 
 docker-push:
 	docker push $(DOCKER_RELEASE_TAG)
