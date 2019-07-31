@@ -81,6 +81,7 @@ docker:
 docker-release:
 	docker build --no-cache -t $(DOCKER_RELEASE_TAG) .
 	docker tag $(DOCKER_RELEASE_TAG) $(DOCKER_LATEST_TAG)
+	docker images $(DOCKER_RELEASE_TAG)
 
 docker-push:
 	docker push $(DOCKER_RELEASE_TAG)
