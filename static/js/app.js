@@ -1354,6 +1354,12 @@ $(document).ready(function() {
         return;
       }
 
+      data = data.sort(function(a, b) {
+        if (a.name > b.name) return 1;
+        if (a.name < b.name) return -1;
+        return 0;
+      });
+
       $("#connection_provider_resources").html("").prop("disabled", "");
       $("<option value=''>Select resource</option>").appendTo("#connection_provider_resources");
 
