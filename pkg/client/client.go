@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	neturl "net/url"
@@ -224,9 +225,7 @@ func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error)
 
 func (client *Client) EstimatedTableRowsCount(table string, opts RowsOptions) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
-	sql := fmt.Sprintf(`SELECT reltuples FROM pg_class WHERE oid = '%s.%s'::regclass;`, schema, table)
-
-	result, err := client.query(sql)
+	result, err := client.query(statements.EstimatedTableRowCount, schema, table)
 	if err != nil {
 		return nil, err
 	}
@@ -345,6 +344,9 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 	if command.Opts.ReadOnly {
 		if err := client.SetReadOnlyMode(); err != nil {
 			return nil, err
+		}
+		if containsRestrictedKeywords(query) {
+			return nil, errors.New("query contains keywords not allowed in read-only mode")
 		}
 	}
 

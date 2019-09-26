@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	neturl "net/url"
+	"regexp"
 	"strings"
 	"time"
 
@@ -136,7 +137,7 @@ func Connect(c *gin.Context) {
 	}
 
 	opts := command.Options{Url: url}
-	url, err := connection.FormatUrl(opts)
+	url, err := connection.FormatURL(opts)
 
 	if err != nil {
 		badRequest(c, err)
@@ -479,10 +480,12 @@ func DataExport(c *gin.Context) {
 	if dump.Table != "" {
 		filename = filename + "_" + dump.Table
 	}
+	reg := regexp.MustCompile("[^._\\w]+")
+	cleanFilename := reg.ReplaceAllString(filename, "")
 
 	c.Header(
 		"Content-Disposition",
-		fmt.Sprintf(`attachment; filename="%s.sql.gz"`, filename),
+		fmt.Sprintf(`attachment; filename="%s.sql.gz"`, cleanFilename),
 	)
 
 	err = dump.Export(db.ConnectionString, c.Writer)

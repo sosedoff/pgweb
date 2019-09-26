@@ -1,3 +1,22 @@
+## 0.11.3 - 2019-07-24
+
+- Misc: add script to update homebrew formula version, GH-423
+- Destructive keyword restriction in read-only mode, GH-421
+- Make database object searchable in sidebar, GH-434
+- Update lib/pg to 1.1.1, GH-435
+
+## 0.11.2 - 2019-02-15
+
+- Fix table row estimation query for camelcase schemas, GH-414
+
+## 0.11.1 - 2019-01-28
+
+- Typo fixes
+- Add Base64 javascript encoder/decoder to replace deprecated window.atob call, GH-405
+- Fix startup error when DATABASE_URL is set, GH-406
+- Fix user auto detection when USER env var is not set, GH-408
+- Switch bindata dependency to use maintained fork: github.com/go-bindata/go-bindata, GH-409
+
 ## 0.11.0 - 2018-12-24
 
 - Tweak sidebar database object counters styles, GH-400

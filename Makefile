@@ -67,7 +67,7 @@ setup:
 	go get -u github.com/golang/dep/cmd/dep
 	go get -u golang.org/x/tools/cmd/cover
 	go get -u github.com/mitchellh/gox
-	go get -u github.com/jteeuwen/go-bindata/...
+	go get -u github.com/go-bindata/go-bindata/...
 	dep ensure
 
 clean:
@@ -79,8 +79,9 @@ docker:
 	docker build -t pgweb .
 
 docker-release:
-	docker build -t $(DOCKER_RELEASE_TAG) .
-	docker build -t $(DOCKER_LATEST_TAG) .
+	docker build --no-cache -t $(DOCKER_RELEASE_TAG) .
+	docker tag $(DOCKER_RELEASE_TAG) $(DOCKER_LATEST_TAG)
+	docker images $(DOCKER_RELEASE_TAG)
 
 docker-push:
 	docker push $(DOCKER_RELEASE_TAG)

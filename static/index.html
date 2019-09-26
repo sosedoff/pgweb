@@ -16,6 +16,7 @@
   <script type="text/javascript" src="static/js/utils.js"></script>
   <script type="text/javascript" src="static/js/bootstrap3-typeahead.min.js"></script>
   <script type="text/javascript" src="static/js/app.js"></script> 
+  <script type="text/javascript" src="static/js/base64.js"></script>
 </head>
 <body>
   <div id="main">
@@ -37,25 +38,34 @@
       </div>
     </div>
     <div id="sidebar">
+      <div class="current-database">
+        <div class="wrap">
+          <i class="fa fa-database"></i> <span class="current-database-name" id="current_database"></span>
+          <input class="typeahead" id="database_search" type="text" placeholder="Search database" />
+          <span class="refresh" id="refresh_tables" title="Refresh tables list"><i class="fa fa-refresh"></i></span>
+        </div>
+      </div>
+      <div class="objects-search">
+        <div class="wrap">
+          <i class="fa fa-search"></i>
+          <i class="fa fa-times-circle clear-objects-filter"></i>
+          <input type="text" placeholder="Filter database objects" id="filter_database_objects" />
+        </div>
+      </div>
       <div class="tables-list">
         <div class="wrap">
-          <div class="title main"> 
-            <i class="fa fa-database"></i> <span class="current-database" id="current_database"></span>
-            <input class="typeahead current_database" id="database_search" type="text" placeholder="Search database">
-            <span class="refresh" id="refresh_tables" title="Refresh tables list"><i class="fa fa-refresh"></i></span>
-          </div>
           <div id="objects"></div>
         </div>
       </div>
       <div class="table-information">
         <div class="wrap">
           <div class="title">Table Information</div>
-          <ul>
-            <li>Size: <span id="table_total_size"></span></li>
-            <li>Data size: <span id="table_data_size"></span></li>
-            <li>Index size: <span id="table_index_size"></span></li>
-            <li>Estimated rows: <span id="table_rows_count"></span></li>
-          </ul>
+          <div class="lines">
+            <div class="line">Size: <span id="table_total_size"></span></div>
+            <div class="line">Data size: <span id="table_data_size"></span></div>
+            <div class="line">Index size: <span id="table_index_size"></span></div>
+            <div class="line">Estimated rows: <span id="table_rows_count"></span></div>
+          </div>
         </div>
       </div>
     </div>

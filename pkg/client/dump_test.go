@@ -34,8 +34,8 @@ func testDumpExport(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Test nonexistent database
-	invalidUrl := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, "foobar")
-	err = dump.Export(invalidUrl, saveFile)
+	invalidURL := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, "foobar")
+	err = dump.Export(invalidURL, saveFile)
 	assert.Contains(t, err.Error(), `database "foobar" does not exist`)
 
 	// Test dump of non existent db
@@ -43,4 +43,10 @@ func testDumpExport(t *testing.T) {
 	err = dump.Export(url, saveFile)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "pg_dump: no matching tables were found")
+
+	// Should drop "search_path" param from URI
+	dump = Dump{}
+	searchPathURL := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable&search_path=private", serverUser, serverHost, serverPort, serverDatabase)
+	err = dump.Export(searchPathURL, saveFile)
+	assert.NoError(t, err)
 }

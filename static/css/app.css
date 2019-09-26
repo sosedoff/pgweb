@@ -74,35 +74,43 @@
   background: #f9f9f9;
 }
 
-#sidebar .title {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  line-height: 33px;
-  height: 33px;
-  padding: 0px 8px;
-  color: #555;
-  font-weight: bold;
-  font-size: 13px;
-}
-
-#sidebar .title.main {
+#sidebar .current-database {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 250px;
   height: 50px;
   line-height: 50px;
+  font-weight: bold;
   font-size: 14px;
-  background: #79589f;
   color: #fff;
-  padding: 0px;
+  background: #79589f;
+  z-index: 900;
 }
 
-#sidebar .title.main i.fa-database {
+#sidebar .current-database .wrap {
+  position: relative;
+  height: 50px;
+}
+
+#sidebar .current-database span.current-database-name {
+  margin-left: 30px;
+  display: inline-block;
+  width: 200px;
+  height: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+#sidebar .current-database i.fa-database {
   position: absolute;
   left: 8px;
   top: 18px;
 }
 
-#sidebar span.current-database,
-#sidebar input.typeahead {
+#sidebar .current-database input.typeahead {
   margin-left: 30px;
   display: inline-block;
   width: 200px;
@@ -112,7 +120,7 @@
   text-overflow: ellipsis;
 }
 
-#sidebar input.typeahead {
+#sidebar .current-database input.typeahead {
   display: none;
   background: #79589f;
   width: 200px;
@@ -123,11 +131,25 @@
   border: 0px none;
 }
 
-#sidebar input.typeahead::-webkit-input-placeholder {
-  color: #d6cce2;
+#sidebar .current-database span.refresh {
+  position: absolute;
+  top: 0px;
+  right: 6px;
+  cursor: pointer;
+  color: #fff;
+  display: none;
+}
+
+#sidebar .current-database:hover span.refresh {
+  display: inline-block;
+}
+
+#sidebar .current-database input.typeahead::-webkit-input-placeholder {
+  color: #fff;
 }
 
 #sidebar ul.typeahead {
+  position: absolute;
   margin-left: 30px;
   overflow-y: auto;
   max-height: 300px;
@@ -139,12 +161,63 @@
   padding: 3px 10px;
 }
 
-#sidebar div.tables-list {
-  position: absolute;
-  right: 0;
-  top: 0px;
+#sidebar .objects-search {
+  position: fixed;
+  top: 50px;
   left: 0px;
-  bottom: 145px;
+  width: 250px;
+  height: 30px;
+  overflow: hidden;
+}
+
+#sidebar .objects-search .wrap {
+  position: relative;
+  background: transparent;
+  height: 30px;
+  padding: 4px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #eee;
+}
+
+#sidebar .objects-search i.fa-search {
+  position: absolute;
+  left: 8px;
+  top: 7px;
+  color: #a1a1a1;
+}
+
+#sidebar .objects-search i.fa-times-circle {
+  position: absolute;
+  right: 8px;
+  top: 7px;
+  color: #a1a1a1;
+  display: none;
+  cursor: pointer;
+}
+
+#sidebar .objects-search i.fa-times-circle:hover {
+  color: #888;
+}
+
+#sidebar .objects-search input[type="text"] {
+  background: transparent;
+  border: 0px none;
+  font-size: 12px;
+  color: #000;
+  height: 22px;
+  line-height: 22px;
+  padding: 0px;
+  margin-left: 25px;
+  width: 200px;
+  outline: none;
+}
+
+#sidebar div.tables-list {
+  position: fixed;
+  width: 250px;
+  top: 80px;
+  left: 0px;
+  bottom: 130px;
   overflow: auto;
 }
 
@@ -153,25 +226,8 @@
   overflow: auto;
 }
 
-#sidebar div.tables-list .title span.current-database {
-  cursor: pointer;
-}
-
-#sidebar div.tables-list .title:hover span.refresh {
-  display: inline-block;
-}
-
-#sidebar div.tables-list .title span.refresh {
-  position: absolute;
-  top: 0px;
-  right: 6px;
-  cursor: pointer;
-  color: #fff;
-  display: none;
-}
 
 #sidebar div.tables-list #tables, #sequences, #objects {
-  padding: 50px 0 0;
   font-size: 12px;
 }
 
@@ -179,11 +235,10 @@
   position: fixed;
   width: 250px;
   left: 0px;
-  height: 145px;
+  height: 130px;
   bottom: 0px;
-  /*border-top: 1px solid #d4d4d4;*/
-  /*border-right: 1px solid #d4d4d4;*/
   box-sizing: border-box;
+  cursor: default;
 }
 
 #sidebar div.table-information .wrap {
@@ -192,24 +247,27 @@
 }
 
 #sidebar div.table-information .title {
-  /*background: #f6f6f6;*/
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #aaa;
+  line-height: 30px;
+  padding: 0px 8px;
+  border-top: 1px solid #eee;
 }
 
-#sidebar div.table-information ul {
-  padding: 33px 0 0;
-  font-size: 12px;
+#sidebar div.table-information .lines {
   display: none;
 }
 
-#sidebar div.table-information ul li {
+#sidebar div.table-information .lines .line {
   line-height: 24px;
   height: 24px;
-  padding: 0 8px 0 12px;
-  cursor: default;
+  padding: 0 8px 0 8px;
+  font-size: 12px;
   color: #7F7E7F !important;
 }
 
-#sidebar div.table-information ul li span {
+#sidebar div.table-information .lines .line span {
   color: #4F4F4F;
   min-width: 0;
   padding-left: 0px;
@@ -418,11 +476,12 @@
 
 #results tr:nth-child(even) > td {
   border: none;
+  background: #ffffff;
 }
 
 #results tr:nth-child(odd) > td {
   border: none;
-  background: #fff;
+  background: #f9f9f9;
 }
 
 #results th {
@@ -731,10 +790,7 @@
 .ace_gutter, .ace_gutter-cell {
   background: #fff !important;
   color: #bbb;
-}
-
-.ace_active-line {
-  background: #f9f9f9 !important;
+  font-size: 12px;
 }
 
 .ace_active-line {
