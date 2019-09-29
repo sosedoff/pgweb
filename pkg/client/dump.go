@@ -22,8 +22,7 @@ type Dump struct {
 
 // CanExport returns true if database dump tool could be used without an error
 func (d *Dump) CanExport() bool {
-	err := exec.Command("pg_dump", "--version").Run()
-	return err == nil
+	return exec.Command("pg_dump", "--version").Run() == nil
 }
 
 // Export streams the database dump to the specified writer

@@ -54,7 +54,7 @@ func (be Backend) FetchCredential(resource string, c *gin.Context) (*BackendCred
 		log.Println("Unable to fetch backend credential:", err)
 
 		// We dont want to expose the url of the backend here, so reply with generic error
-		return nil, fmt.Errorf("Unable to connect to the auth backend")
+		return nil, errBackendConnectError
 	}
 	defer resp.Body.Close()
 
@@ -67,7 +67,7 @@ func (be Backend) FetchCredential(resource string, c *gin.Context) (*BackendCred
 		return nil, err
 	}
 	if cred.DatabaseURL == "" {
-		return nil, fmt.Errorf("Database URL was not provided")
+		return nil, errConnStringRequired
 	}
 
 	return cred, nil
