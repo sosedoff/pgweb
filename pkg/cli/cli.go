@@ -19,7 +19,16 @@ import (
 	"github.com/sosedoff/pgweb/pkg/util"
 )
 
-var options command.Options
+var (
+	options command.Options
+
+	readonlyWarning = `
+------------------------------------------------------
+SECURITY WARNING: You are running pgweb in read-only mode.
+This mode is designed for environments where users could potentially delete / change data.
+For proper read-only access please follow postgresql role management documentation.
+------------------------------------------------------`
+)
 
 func exitWithMessage(message string) {
 	fmt.Println("Error:", message)
@@ -127,12 +136,7 @@ func initOptions() {
 	}
 
 	if options.ReadOnly {
-		msg := `------------------------------------------------------
-SECURITY WARNING: You are running pgweb in read-only mode.
-This mode is designed for environments where users could potentially delete / change data.
-For proper read-only access please follow postgresql role management documentation.
-------------------------------------------------------`
-		fmt.Println(msg)
+		fmt.Println(readonlyWarning)
 	}
 
 	printVersion()
