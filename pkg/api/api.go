@@ -29,6 +29,7 @@ var (
 	// Various errros
 	errNotConnected         = errors.New("Not connected")
 	errNotPermitted         = errors.New("Not permitted")
+	errConnStringRequired   = errors.New("Connection string is required")
 	errInvalidConnString    = errors.New("Invalid connection string")
 	errSessionRequired      = errors.New("Session ID is required")
 	errSessionLocked        = errors.New("Session is locked")
@@ -36,6 +37,7 @@ var (
 	errQueryRequired        = errors.New("Query parameter is required")
 	errDatabaseNameRequired = errors.New("Database name is required")
 	errPgDumpNotFound       = errors.New("pg_dump utility is not found")
+	errBackendConnectError  = errors.New("Unable to connect to the auth backend")
 )
 
 // DB returns a database connection from the client context

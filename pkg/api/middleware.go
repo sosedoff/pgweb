@@ -23,7 +23,7 @@ func dbCheckMiddleware() gin.HandlerFunc {
 		// Check if session exists in single-session mode
 		if !command.Opts.Sessions {
 			if DbClient == nil {
-				badRequest(c, "Not connected")
+				badRequest(c, errNotConnected)
 				return
 			}
 
@@ -32,16 +32,16 @@ func dbCheckMiddleware() gin.HandlerFunc {
 		}
 
 		// Determine session ID from the client request
-		sessionId := getSessionId(c.Request)
-		if sessionId == "" {
-			badRequest(c, "Session ID is required")
+		sid := getSessionId(c.Request)
+		if sid == "" {
+			badRequest(c, errSessionRequired)
 			return
 		}
 
 		// Determine the database connection handle for the session
-		conn := DbSessions[sessionId]
+		conn := DbSessions[sid]
 		if conn == nil {
-			badRequest(c, "Not connected")
+			badRequest(c, errNotConnected)
 			return
 		}
 
