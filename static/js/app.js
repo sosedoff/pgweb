@@ -715,6 +715,10 @@ function buildTableFilters(name, type) {
 function initEditor() {
   var writeQueryTimeout = null;
   editor = ace.edit("custom_query");
+  editor.setOptions({
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true,
+  });
 
   editor.setFontSize(13);
   editor.setTheme("ace/theme/tomorrow");
