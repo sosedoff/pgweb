@@ -1,3 +1,10 @@
+## 0.11.4 - 2019-10-05
+
+- Fix SQL export filename, GH-438
+- Update Docker image to alpine:3.10, GH-439
+- Drop unsupported pg_dump options from connection string, GH-441
+- Misc code cleanup and formatting, GH-442
+
 ## 0.11.3 - 2019-07-24
 
 - Misc: add script to update homebrew formula version, GH-423
