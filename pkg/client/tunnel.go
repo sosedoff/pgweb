@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -71,16 +72,21 @@ func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
 		keyPath = expandKeyPath(keyPath)
 	}
 
-	if fileExists(keyPath) {
-		key, err := parsePrivateKey(keyPath)
-		if err != nil {
-			return nil, err
-		}
-
-		methods = append(methods, ssh.PublicKeys(key))
+	if !fileExists(keyPath) {
+		return nil, errors.New("ssh public key not found at " + keyPath)
 	}
 
-	methods = append(methods, ssh.Password(info.Password))
+	// Appen public key authentication method
+	key, err := parsePrivateKey(keyPath)
+	if err != nil {
+		return nil, err
+	}
+	methods = append(methods, ssh.PublicKeys(key))
+
+	// Append password authentication method
+	if info.Password != "" {
+		methods = append(methods, ssh.Password(info.Password))
+	}
 
 	cfg := &ssh.ClientConfig{
 		User:    info.User,

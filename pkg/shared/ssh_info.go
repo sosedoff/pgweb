@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// SSHInfo contains ssh server configuration
 type SSHInfo struct {
 	Host     string `json:"host,omitempty"`
 	Port     string `json:"port,omitempty"`
