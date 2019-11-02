@@ -1,0 +1,21 @@
+Go implementation of bcrypt_pbkdf(3) from OpenBSD
+(a variant of PBKDF2 with bcrypt-based PRF).
+
+
+USAGE
+
+  func Key(password, salt []byte, rounds, keyLen int) ([]byte, error)
+
+  
+  Key derives a key from the password, salt and rounds count, returning a
+  []byte of length keyLen that can be used as cryptographic key.
+  
+  Remember to get a good random salt of at least 16 bytes.  Using a higher
+  rounds count will increase the cost of an exhaustive search but will also
+  make derivation proportionally slower.
+
+
+REFERENCES
+
+* http://www.tedunangst.com/flak/post/bcrypt-pbkdf
+* http://cvsweb.openbsd.org/cgi-bin/cvsweb/src/lib/libutil/bcrypt_pbkdf.c

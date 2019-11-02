@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -12,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ScaleFT/sshkeys"
 	"golang.org/x/crypto/ssh"
 
 	"github.com/sosedoff/pgweb/pkg/connection"
@@ -51,13 +53,22 @@ func fileExists(path string) bool {
 	return err == nil
 }
 
-func parsePrivateKey(keyPath string) (ssh.Signer, error) {
+func parsePrivateKey(keyPath string, keyPass string) (ssh.Signer, error) {
 	buff, err := ioutil.ReadFile(keyPath)
 	if err != nil {
 		return nil, err
 	}
 
-	return ssh.ParsePrivateKey(buff)
+	signer, err := ssh.ParsePrivateKey(buff)
+	if err != nil {
+		if strings.Contains(err.Error(), "cannot decode encrypted private keys") {
+			if keyPass == "" {
+				return nil, errors.New("SSH key password is not provided")
+			}
+			return sshkeys.ParseEncryptedPrivateKey(buff, []byte(keyPass))
+		}
+	}
+	return signer, err
 }
 
 func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
@@ -71,16 +82,21 @@ func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
 		keyPath = expandKeyPath(keyPath)
 	}
 
-	if fileExists(keyPath) {
-		key, err := parsePrivateKey(keyPath)
-		if err != nil {
-			return nil, err
-		}
-
-		methods = append(methods, ssh.PublicKeys(key))
+	if !fileExists(keyPath) {
+		return nil, errors.New("ssh public key not found at " + keyPath)
 	}
 
-	methods = append(methods, ssh.Password(info.Password))
+	// Appen public key authentication method
+	key, err := parsePrivateKey(keyPath, info.KeyPassword)
+	if err != nil {
+		return nil, err
+	}
+	methods = append(methods, ssh.PublicKeys(key))
+
+	// Append password authentication method
+	if info.Password != "" {
+		methods = append(methods, ssh.Password(info.Password))
+	}
 
 	cfg := &ssh.ClientConfig{
 		User:    info.User,

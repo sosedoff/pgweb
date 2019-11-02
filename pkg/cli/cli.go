@@ -44,8 +44,8 @@ func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client,
 	opt := bookmark.ConvertToOptions()
 	var connStr string
 
-	if opt.Url != "" { // if the bookmark has url set, use it
-		connStr = opt.Url
+	if opt.URL != "" { // if the bookmark has url set, use it
+		connStr = opt.URL
 	} else {
 		connStr, err = connection.BuildStringFromOptions(opt)
 		if err != nil {
@@ -55,7 +55,7 @@ func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client,
 
 	var ssh *shared.SSHInfo
 	if !bookmark.SSHInfoIsEmpty() {
-		ssh = bookmark.Ssh
+		ssh = bookmark.SSH
 	}
 
 	return client.NewFromUrl(connStr, ssh)
@@ -87,7 +87,7 @@ func initClient() {
 		msg := err.Error()
 
 		// Check if we're trying to connect to the default database.
-		if command.Opts.DbName == "" && command.Opts.Url == "" {
+		if command.Opts.DbName == "" && command.Opts.URL == "" {
 			// If database does not exist, allow user to connect from the UI.
 			if strings.Contains(msg, "database") && strings.Contains(msg, "does not exist") {
 				fmt.Println("Error:", msg)
@@ -164,7 +164,7 @@ func startServer() {
 
 	fmt.Println("Starting server...")
 	go func() {
-		err := router.Run(fmt.Sprintf("%v:%v", options.HttpHost, options.HttpPort))
+		err := router.Run(fmt.Sprintf("%v:%v", options.HTTPHost, options.HTTPPort))
 		if err != nil {
 			fmt.Println("Cant start server:", err)
 			if strings.Contains(err.Error(), "address already in use") {
@@ -182,7 +182,7 @@ func handleSignals() {
 }
 
 func openPage() {
-	url := fmt.Sprintf("http://%v:%v/%s", options.HttpHost, options.HttpPort, options.Prefix)
+	url := fmt.Sprintf("http://%v:%v/%s", options.HTTPHost, options.HTTPPort, options.Prefix)
 	fmt.Println("To view database open", url, "in browser")
 
 	if options.SkipOpen {

@@ -2,12 +2,20 @@
 
 
 [[projects]]
-  digest = "1:b16fbfbcc20645cb419f78325bb2e85ec729b338e996a228124d68931a6f2a37"
+  digest = "1:9f3b30d9f8e0d7040f729b82dcbc8f0dead820a133b3147ce355fc451f32d761"
   name = "github.com/BurntSushi/toml"
   packages = ["."]
   pruneopts = "UT"
-  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
-  version = "v0.3.0"
+  revision = "3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005"
+  version = "v0.3.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:038001d3925d508051d48a4e5e3e097015fa627ec9e7fc0c57e6f6ca7dc33c5e"
+  name = "github.com/ScaleFT/sshkeys"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "82451a80368171b074c7129d43b47fc2773f6e9f"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -16,6 +24,14 @@
   pruneopts = "UT"
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
   version = "v1.1.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:75a25fddc76a45f923f04b28f07827f49aaf6d51db4a56ec89a7cfb53e1601ab"
+  name = "github.com/dchest/bcrypt_pbkdf"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "83f37f9c154a678179d11e218bff73ebe5717f99"
 
 [[projects]]
   branch = "master"
@@ -132,9 +148,10 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:dec72d8441e4e88bbf27cc98e28e962e065ebd11bcd42063f0444020b7249618"
+  digest = "1:2c0831757b96a0e62b2b0b851f139f50190c1e3efa6c6a7eac6f48e1a3d8f576"
   name = "golang.org/x/crypto"
   packages = [
+    "blowfish",
     "curve25519",
     "ed25519",
     "ed25519/internal/edwards25519",
@@ -144,13 +161,16 @@
     "ssh",
   ]
   pruneopts = "UT"
-  revision = "182538f80094b6a8efaade63a8fd8e0d9d5843dd"
+  revision = "8986dd9e96cf0a6f74da406c005ba3df38527c04"
 
 [[projects]]
   branch = "master"
-  digest = "1:4b487c782bc804d994e91adbd3d2a8a77a482671efd87b2fde0805adb01a39c0"
+  digest = "1:0cd3b4a6aec2641ff2bf7e35d93427787c60e5d94998460aab8f54921a1bc2db"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = [
+    "cpu",
+    "unix",
+  ]
   pruneopts = "UT"
   revision = "fa5fdf94c78965f1aa8423f0cc50b8b8d728b05a"
 
@@ -174,6 +194,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/BurntSushi/toml",
+    "github.com/ScaleFT/sshkeys",
     "github.com/gin-gonic/gin",
     "github.com/jessevdk/go-flags",
     "github.com/jmoiron/sqlx",

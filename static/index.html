@@ -213,8 +213,10 @@
         <div class="connection-ssh-group">
           <hr/>
 
+          <h3 class="text-center">SSH Connection</h3>
+
           <div class="form-group">
-            <label class="col-sm-3 control-label">SSH Host</label>
+            <label class="col-sm-3 control-label">Host</label>
             <div class="col-sm-7">
               <input type="text" id="ssh_host" class="form-control" />
             </div>
@@ -224,25 +226,26 @@
           </div>
 
           <div class="form-group">
-            <label class="col-sm-3 control-label">SSH User</label>
-            <div class="col-sm-9">
-              <input type="text" id="ssh_user" class="form-control" />
+            <label class="col-sm-3 control-label">Credentials</label>
+            <div class="col-sm-5">
+              <input type="text" id="ssh_user" class="form-control" placeholder="Username" />
+            </div>
+            <div class="col-sm-4 no-left-padding">
+              <input type="password" id="ssh_password" class="form-control" placeholder="Password" />
             </div>
           </div>
 
           <div class="form-group">
-            <label class="col-sm-3 control-label">SSH Password</label>
-            <div class="col-sm-9">
-              <input type="password" id="ssh_password" class="form-control" placeholder="optional" />
+            <label class="col-sm-3 control-label">Auth Key</label>
+            <div class="col-sm-5">
+              <input type="text" id="ssh_key" class="form-control" placeholder="Key path" />
+            </div>
+            <div class="col-sm-4 no-left-padding">
+              <input type="password" id="ssh_key_password" class="form-control" placeholder="Key password" />
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">SSH Key</label>
-            <div class="col-sm-9">
-              <input type="text" id="ssh_key" class="form-control" placeholder="optional" />
-            </div>
-          </div>
+          <hr/>
         </div>
 
         <div id="connection_error" class="alert alert-danger"></div>

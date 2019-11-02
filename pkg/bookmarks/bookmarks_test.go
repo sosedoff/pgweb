@@ -26,7 +26,7 @@ func Test_Bookmark(t *testing.T) {
 	assert.Equal(t, "mydatabase", bookmark.Database)
 	assert.Equal(t, "disable", bookmark.Ssl)
 	assert.Equal(t, "", bookmark.Password)
-	assert.Equal(t, "", bookmark.Url)
+	assert.Equal(t, "", bookmark.URL)
 
 	bookmark, err = readServerConfig("../../data/bookmark_invalid_ssl.toml")
 	assert.Equal(t, nil, err)
@@ -37,7 +37,7 @@ func Test_Bookmark_URL(t *testing.T) {
 	bookmark, err := readServerConfig("../../data/bookmark_url.toml")
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "postgres://username:password@host:port/database?sslmode=disable", bookmark.Url)
+	assert.Equal(t, "postgres://username:password@host:port/database?sslmode=disable", bookmark.URL)
 	assert.Equal(t, "", bookmark.Host)
 	assert.Equal(t, 5432, bookmark.Port)
 	assert.Equal(t, "", bookmark.User)
@@ -106,19 +106,19 @@ func Test_Bookmark_SSHInfoIsEmpty(t *testing.T) {
 		User: "postgres",
 	}
 
-	b := Bookmark{Ssh: nil}
+	b := Bookmark{SSH: nil}
 	assert.True(t, b.SSHInfoIsEmpty())
 
-	b = Bookmark{Ssh: emptySSH}
+	b = Bookmark{SSH: emptySSH}
 	assert.True(t, b.SSHInfoIsEmpty())
 
-	b.Ssh = populatedSSH
+	b.SSH = populatedSSH
 	assert.False(t, b.SSHInfoIsEmpty())
 }
 
 func Test_ConvertToOptions(t *testing.T) {
 	b := Bookmark{
-		Url:      "postgres://username:password@host:port/database?sslmode=disable",
+		URL:      "postgres://username:password@host:port/database?sslmode=disable",
 		Host:     "localhost",
 		Port:     5432,
 		User:     "postgres",
@@ -128,7 +128,7 @@ func Test_ConvertToOptions(t *testing.T) {
 	}
 
 	expOpt := command.Options{
-		Url:    "postgres://username:password@host:port/database?sslmode=disable",
+		URL:    "postgres://username:password@host:port/database?sslmode=disable",
 		Host:   "localhost",
 		Port:   5432,
 		User:   "postgres",
