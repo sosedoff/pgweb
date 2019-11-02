@@ -78,8 +78,8 @@ func onWindows() bool {
 }
 
 func setup() {
-	// No pretty JSON for testsm
-	command.Opts.DisablePrettyJson = true
+	// No pretty JSON for tests
+	command.Opts.DisablePrettyJSON = true
 
 	out, err := exec.Command(
 		testCommands["createdb"],

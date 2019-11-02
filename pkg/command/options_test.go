@@ -15,7 +15,7 @@ func TestParseOptions(t *testing.T) {
 	assert.Equal(t, "", opts.ConnectToken)
 	assert.Equal(t, "", opts.ConnectHeaders)
 	assert.Equal(t, false, opts.DisableSSH)
-	assert.Equal(t, false, opts.DisablePrettyJson)
+	assert.Equal(t, false, opts.DisablePrettyJSON)
 	assert.Equal(t, false, opts.DisableConnectionIdleTimeout)
 	assert.Equal(t, 180, opts.ConnectionIdleTimeout)
 	assert.Equal(t, false, opts.Cors)

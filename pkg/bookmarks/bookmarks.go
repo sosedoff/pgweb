@@ -13,24 +13,27 @@ import (
 	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
+// Bookmark contains information about bookmarked database connection
 type Bookmark struct {
-	Url      string          `json:"url"`      // Postgres connection URL
+	URL      string          `json:"url"`      // Postgres connection URL
 	Host     string          `json:"host"`     // Server hostname
 	Port     int             `json:"port"`     // Server port
 	User     string          `json:"user"`     // Database user
 	Password string          `json:"password"` // User password
 	Database string          `json:"database"` // Database name
 	Ssl      string          `json:"ssl"`      // Connection SSL mode
-	Ssh      *shared.SSHInfo `json:"ssh"`      // SSH tunnel config
+	SSH      *shared.SSHInfo `json:"ssh"`      // SSH tunnel config
 }
 
+// SSHInfoIsEmpty returns true if ssh configration is not provided
 func (b Bookmark) SSHInfoIsEmpty() bool {
-	return b.Ssh == nil || b.Ssh.User == "" && b.Ssh.Host == "" && b.Ssh.Port == ""
+	return b.SSH == nil || b.SSH.User == "" && b.SSH.Host == "" && b.SSH.Port == ""
 }
 
+// ConvertToOptions returns an options struct from connection details
 func (b Bookmark) ConvertToOptions() command.Options {
 	return command.Options{
-		Url:    b.Url,
+		URL:    b.URL,
 		Host:   b.Host,
 		Port:   b.Port,
 		User:   b.User,
@@ -72,8 +75,8 @@ func readServerConfig(path string) (Bookmark, error) {
 	}
 
 	// Set default SSH port if it's not provided by user
-	if bookmark.Ssh != nil && bookmark.Ssh.Port == "" {
-		bookmark.Ssh.Port = "22"
+	if bookmark.SSH != nil && bookmark.SSH.Port == "" {
+		bookmark.SSH.Port = "22"
 	}
 
 	return bookmark, err
@@ -84,15 +87,16 @@ func fileBasename(path string) string {
 	return strings.Replace(filename, filepath.Ext(path), "", 1)
 }
 
+// Path returns bookmarks storage path
 func Path(overrideDir string) string {
 	if overrideDir == "" {
 		path, _ := homedir.Dir()
 		return fmt.Sprintf("%s/.pgweb/bookmarks", path)
 	}
-
 	return overrideDir
 }
 
+// ReadAll returns all available bookmarks
 func ReadAll(path string) (map[string]Bookmark, error) {
 	results := map[string]Bookmark{}
 
@@ -106,7 +110,7 @@ func ReadAll(path string) (map[string]Bookmark, error) {
 			continue
 		}
 
-		fullPath := path + "/" + file.Name()
+		fullPath := filepath.Join(path, file.Name())
 		key := fileBasename(file.Name())
 		config, err := readServerConfig(fullPath)
 
@@ -121,6 +125,7 @@ func ReadAll(path string) (map[string]Bookmark, error) {
 	return results, nil
 }
 
+// GetBookmark reads an existing bookmark
 func GetBookmark(bookmarkPath string, bookmarkName string) (Bookmark, error) {
 	bookmarks, err := ReadAll(bookmarkPath)
 	if err != nil {

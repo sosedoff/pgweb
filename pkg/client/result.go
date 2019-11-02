@@ -121,7 +121,7 @@ func (res *Result) CSV() []byte {
 func (res *Result) JSON() []byte {
 	var data []byte
 
-	if command.Opts.DisablePrettyJson {
+	if command.Opts.DisablePrettyJSON {
 		data, _ = json.Marshal(res.Format())
 	} else {
 		data, _ = json.MarshalIndent(res.Format(), "", " ")

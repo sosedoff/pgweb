@@ -48,7 +48,7 @@ func valsFromQuery(vals neturl.Values) map[string]string {
 
 // FormatURL reformats the existing connection string
 func FormatURL(opts command.Options) (string, error) {
-	url := opts.Url
+	url := opts.URL
 
 	// Validate connection string prefix
 	if !hasValidPrefix(url) {
@@ -88,13 +88,13 @@ func FormatURL(opts command.Options) (string, error) {
 
 // IsBlank returns true if command options do not contain connection details
 func IsBlank(opts command.Options) bool {
-	return opts.Host == "" && opts.User == "" && opts.DbName == "" && opts.Url == ""
+	return opts.Host == "" && opts.User == "" && opts.DbName == "" && opts.URL == ""
 }
 
 // BuildStringFromOptions returns a new connection string built from options
 func BuildStringFromOptions(opts command.Options) (string, error) {
 	// If connection string is provided we just use that
-	if opts.Url != "" {
+	if opts.URL != "" {
 		return FormatURL(opts)
 	}
 

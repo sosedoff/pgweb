@@ -138,7 +138,7 @@ func Connect(c *gin.Context) {
 		return
 	}
 
-	opts := command.Options{Url: url}
+	opts := command.Options{URL: url}
 	url, err := connection.FormatURL(opts)
 
 	if err != nil {
