@@ -792,6 +792,10 @@
   font-size: 12px;
 }
 
-.ace_active-line {
+.ace_content .ace_active-line {
   background: none !important;
+}
+
+.ace_autocomplete .ace_active-line {
+  background: #eee !important;
 }
