@@ -26,7 +26,7 @@
 
 [metadata.heroku]
   root-package = "github.com/sosedoff/pgweb"
-  go-version = "1.11"
+  go-version = "1.13"
   install = [ "./..." ]
 
 [[constraint]]
