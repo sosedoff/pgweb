@@ -593,6 +593,7 @@
   bottom: 0px;
   right: 0px;
   display: none;
+  overflow-y: auto;
 }
 
 .connection-actions {
@@ -679,6 +680,12 @@
 .connection-ssh-group {
   display: none;
   z-index: 1000;
+}
+
+.connection-ssh-group h3 {
+  font-size: 18px;
+  margin: 0px 0px 20px 0px;
+  color: #aaa;
 }
 
 /* -------------------------------------------------------------------------- */

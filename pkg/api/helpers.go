@@ -115,11 +115,12 @@ func parseIntFormValue(c *gin.Context, name string, defValue int) (int, error) {
 
 func parseSshInfo(c *gin.Context) *shared.SSHInfo {
 	info := shared.SSHInfo{
-		Host:     c.Request.FormValue("ssh_host"),
-		Port:     c.Request.FormValue("ssh_port"),
-		User:     c.Request.FormValue("ssh_user"),
-		Password: c.Request.FormValue("ssh_password"),
-		Key:      c.Request.FormValue("ssh_key"),
+		Host:        c.Request.FormValue("ssh_host"),
+		Port:        c.Request.FormValue("ssh_port"),
+		User:        c.Request.FormValue("ssh_user"),
+		Password:    c.Request.FormValue("ssh_password"),
+		Key:         c.Request.FormValue("ssh_key"),
+		KeyPassword: c.Request.FormValue("ssh_key_password"),
 	}
 
 	if info.Port == "" {

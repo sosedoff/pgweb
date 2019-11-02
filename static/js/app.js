@@ -1371,6 +1371,7 @@ $(document).ready(function() {
       $("#ssh_user").val(item.ssh.user);
       $("#ssh_password").val(item.ssh.password);
       $("#ssh_key").val(item.ssh.key);
+      $("#ssh_key_password").val(item.ssh.keypassword);
       $("#connection_ssh").click();
     }
     else {
@@ -1379,6 +1380,7 @@ $(document).ready(function() {
       $("#ssh_user").val("");
       $("#ssh_password").val("");
       $("#ssh_key").val("");
+      $("#ssh_key_password").val("");
       $(".connection-ssh-group").hide();
       $("#connection_standard").click();
     }
@@ -1397,12 +1399,13 @@ $(document).ready(function() {
     }
 
     if ($(".connection-group-switch button.active").attr("data") == "ssh") {
-      params["ssh"]          = 1
-      params["ssh_host"]     = $("#ssh_host").val();
-      params["ssh_port"]     = $("#ssh_port").val();
-      params["ssh_user"]     = $("#ssh_user").val();
-      params["ssh_password"] = $("#ssh_password").val();
-      params["ssh_key"]      = $("#ssh_key").val();
+      params["ssh"]              = 1
+      params["ssh_host"]         = $("#ssh_host").val();
+      params["ssh_port"]         = $("#ssh_port").val();
+      params["ssh_user"]         = $("#ssh_user").val();
+      params["ssh_password"]     = $("#ssh_password").val();
+      params["ssh_key"]          = $("#ssh_key").val();
+      params["ssh_key_password"] = $("#ssh_key_password").val()
     }
 
     $("#connection_error").hide();

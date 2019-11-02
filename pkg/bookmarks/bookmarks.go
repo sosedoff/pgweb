@@ -71,6 +71,7 @@ func readServerConfig(path string) (Bookmark, error) {
 		bookmark.Ssl = "disable"
 	}
 
+	// Set default SSH port if it's not provided by user
 	if bookmark.Ssh != nil && bookmark.Ssh.Port == "" {
 		bookmark.Ssh.Port = "22"
 	}

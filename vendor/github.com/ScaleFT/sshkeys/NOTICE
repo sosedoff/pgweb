@@ -1,0 +1,10 @@
+sshkeys
+Copyright 2017 ScaleFT, Inc
+
+This product includes software developed at ScaleFT, Inc.
+(https://www.scaleft.com/).
+
+Portions of this software are derived from
+https://github.com/golang/crypto/blob/master/ssh/keys.go
+
+Copyright (c) 2009 The Go Authors. All rights reserved.
