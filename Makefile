@@ -1,9 +1,10 @@
 TARGETS = darwin/amd64 darwin/386 linux/amd64 linux/386 windows/amd64 windows/386
 GIT_COMMIT = $(shell git rev-parse HEAD)
 BUILD_TIME = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ" | tr -d '\n')
+GO_VERSION = $(shell go version | awk {'print $$3'})
+BINDATA_IGNORE = $(shell git ls-files -io --exclude-standard $< | sed 's/^/-ignore=/;s/[.]/[.]/g')
 DOCKER_RELEASE_TAG = "sosedoff/pgweb:$(shell git describe --abbrev=0 --tags | sed 's/v//')"
 DOCKER_LATEST_TAG = "sosedoff/pgweb:latest"
-BINDATA_IGNORE = $(shell git ls-files -io --exclude-standard $< | sed 's/^/-ignore=/;s/[.]/[.]/g')
 
 usage:
 	@echo ""
@@ -49,12 +50,12 @@ release: clean assets
 	@echo "Building binaries..."
 	@gox \
 		-osarch "$(TARGETS)" \
-		-ldflags "-X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME)" \
+		-ldflags "-X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME) -X github.com/sosedoff/pgweb/pkg/command.GoVersion=$(GO_VERSION)" \
 		-output "./bin/pgweb_{{.OS}}_{{.Arch}}"
 
 	@echo "Building ARM binaries..."
 	GOOS=linux GOARCH=arm GOARM=5 go build \
-	  -ldflags "-X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME)" \
+	  -ldflags "-X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME) -X github.com/sosedoff/pgweb/pkg/command.GoVersion=$(GO_VERSION)" \
 		-o "./bin/pgweb_linux_arm_v5"
 
 	@echo "\nPackaging binaries...\n"
