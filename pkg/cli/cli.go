@@ -143,12 +143,14 @@ func initOptions() {
 }
 
 func printVersion() {
-	str := fmt.Sprintf("Pgweb v%s", command.Version)
+	chunks := []string{fmt.Sprintf("Pgweb v%s", command.Version)}
 	if command.GitCommit != "" {
-		str += fmt.Sprintf(" (git: %s)", command.GitCommit)
+		chunks = append(chunks, fmt.Sprintf("(git: %s)", command.GitCommit))
 	}
-
-	fmt.Println(str)
+	if command.GoVersion != "" {
+		chunks = append(chunks, fmt.Sprintf("(go: %s)", command.GoVersion))
+	}
+	fmt.Println(strings.Join(chunks, " "))
 }
 
 func startServer() {
