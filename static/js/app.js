@@ -1,8 +1,9 @@
-var editor             = null;
-var connected          = false;
-var bookmarks          = {};
-var default_rows_limit = 100;
-var currentObject      = null;
+var editor              = null;
+var connected           = false;
+var bookmarks           = {};
+var default_rows_limit  = 100;
+var currentObject       = null;
+var autocompleteObjects = [];
 
 var filterOptions = {
   "equal":      "= 'DATA'",
@@ -160,6 +161,23 @@ function loadSchemas() {
 
     if (Object.keys(data).length == 1) {
       $(".schema").addClass("expanded");
+    }
+
+    // Clear out all autocomplete objects
+    autocompleteObjects = [];
+    for (schema in data) {
+      for (kind in data[schema]) {
+        if (!(kind == "table" || kind == "view" || kind == "materialized_view")) {
+          continue
+        }
+        for (item in data[schema][kind]) {
+          autocompleteObjects.push({
+            caption: data[schema][kind][item],
+            value: data[schema][kind][item],
+            meta: kind
+          });
+        }
+      }
     }
 
     bindContextMenus();
@@ -712,13 +730,21 @@ function buildTableFilters(name, type) {
   });
 }
 
+var objectAutocompleter = {
+  getCompletions: function (editor, session, pos, prefix, callback) {
+    callback(null, autocompleteObjects);
+  }
+}
+
 function initEditor() {
   var writeQueryTimeout = null;
+
   editor = ace.edit("custom_query");
   editor.setOptions({
     enableBasicAutocompletion: true,
     enableLiveAutocompletion: true,
   });
+  editor.completers.push(objectAutocompleter);
 
   editor.setFontSize(13);
   editor.setTheme("ace/theme/tomorrow");
