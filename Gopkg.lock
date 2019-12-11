@@ -71,14 +71,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7654989089e5bd5b6734ec3be8b695e87d3f1f8d95620b343fd7d3995a5b60d7"
+  digest = "1:063c986e316ad72ad0cd78e5b10d88ccef48b6b5bf13e65cd76b05254bc57abd"
   name = "github.com/jmoiron/sqlx"
   packages = [
     ".",
     "reflectx",
   ]
   pruneopts = "UT"
-  revision = "0dae4fefe7c0e190f7b5a78dac28a1c82cc8d849"
+  revision = "2ba0fc60eb4a54030f3a6d73ff0a047349c7eeca"
 
 [[projects]]
   digest = "1:be97e109f627d3ba8edfef50c9c74f0d0c17cbe3a2e924a8985e4804a894f282"

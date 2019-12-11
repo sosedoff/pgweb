@@ -149,15 +149,15 @@ func isUnsafe(i interface{}) bool {
 }
 
 func mapperFor(i interface{}) *reflectx.Mapper {
-	switch i.(type) {
+	switch i := i.(type) {
 	case DB:
-		return i.(DB).Mapper
+		return i.Mapper
 	case *DB:
-		return i.(*DB).Mapper
+		return i.Mapper
 	case Tx:
-		return i.(Tx).Mapper
+		return i.Mapper
 	case *Tx:
-		return i.(*Tx).Mapper
+		return i.Mapper
 	default:
 		return mapper()
 	}
@@ -471,8 +471,6 @@ func (tx *Tx) Stmtx(stmt interface{}) *Stmt {
 		s = v.Stmt
 	case *Stmt:
 		s = v.Stmt
-	case sql.Stmt:
-		s = &v
 	case *sql.Stmt:
 		s = v
 	default:
