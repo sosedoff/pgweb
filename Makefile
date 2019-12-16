@@ -77,7 +77,7 @@ clean:
 	@rm -f bindata.go
 
 docker:
-	docker build -t pgweb .
+	docker build --no-cache -t pgweb .
 
 docker-release:
 	docker build --no-cache -t $(DOCKER_RELEASE_TAG) .
