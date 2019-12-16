@@ -1,3 +1,12 @@
+## 0.11.5 - 2019-12-16
+
+- Add basic SQL keyword autocompletion, GH-443
+- SSH Private Key handling update (encrypted keys are supported now), GH-445
+- Include Go version into `pgweb --version` output, GH-447
+- Fix long table name bug in the sidebar, GH-448
+- Add SQL objects (table,views,etc) autocompletion, GH-449
+- Include Go version into info API endpoint, GH-450
+
 ## 0.11.4 - 2019-10-05
 
 - Fix SQL export filename, GH-438
