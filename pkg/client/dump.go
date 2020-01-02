@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"net/url"
 	"os/exec"
 	"strings"
@@ -52,6 +53,7 @@ func (d *Dump) Export(connstr string, writer io.Writer) error {
 	cmd.Stderr = errOutput
 
 	if err := cmd.Run(); err != nil {
+		log.Println("Dump export error:", errOutput.String())
 		return fmt.Errorf("error: %s. output: %s", err.Error(), errOutput.Bytes())
 	}
 	return nil
