@@ -115,6 +115,12 @@ func BuildStringFromOptions(opts command.Options) (string, error) {
 			query.Add("sslmode", "disable")
 		}
 	}
+	if opts.SslCert != "" {
+		query.Add("sslcert", opts.SslCert)
+	}
+	if opts.SslKey != "" {
+		query.Add("sslkey", opts.SslKey)
+	}
 	if opts.SslRootCert != "" {
 		query.Add("sslrootcert", opts.SslRootCert)
 	}
