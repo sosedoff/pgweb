@@ -28,3 +28,4 @@ script:
   - make test-all
   - make release
   - make docker-release
+  - ./script/upload_to_s3.sh
