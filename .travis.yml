@@ -26,4 +26,5 @@ script:
   - make build
   - make test
   - make test-all
+  - make release
   - make docker-release
