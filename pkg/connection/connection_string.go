@@ -93,6 +93,8 @@ func IsBlank(opts command.Options) bool {
 
 // BuildStringFromOptions returns a new connection string built from options
 func BuildStringFromOptions(opts command.Options) (string, error) {
+	query := neturl.Values{}
+
 	// If connection string is provided we just use that
 	if opts.URL != "" {
 		return FormatURL(opts)
@@ -106,14 +108,21 @@ func BuildStringFromOptions(opts command.Options) (string, error) {
 		}
 	}
 
-	// Disable ssl for localhost connections, most users have it disabled
-	if opts.Ssl == "" && (opts.Host == "localhost" || opts.Host == "127.0.0.1") {
-		opts.Ssl = "disable"
-	}
-
-	query := neturl.Values{}
 	if opts.Ssl != "" {
 		query.Add("sslmode", opts.Ssl)
+	} else {
+		if opts.Host == "localhost" || opts.Host == "127.0.0.1" {
+			query.Add("sslmode", "disable")
+		}
+	}
+	if opts.SslCert != "" {
+		query.Add("sslcert", opts.SslCert)
+	}
+	if opts.SslKey != "" {
+		query.Add("sslkey", opts.SslKey)
+	}
+	if opts.SslRootCert != "" {
+		query.Add("sslrootcert", opts.SslRootCert)
 	}
 
 	url := neturl.URL{

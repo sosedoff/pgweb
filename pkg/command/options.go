@@ -18,7 +18,10 @@ type Options struct {
 	User                         string `long:"user" description:"Database user"`
 	Pass                         string `long:"pass" description:"Password for user"`
 	DbName                       string `long:"db" description:"Database name"`
-	Ssl                          string `long:"ssl" description:"SSL option"`
+	Ssl                          string `long:"ssl" description:"SSL mode"`
+	SslRootCert                  string `long:"ssl-rootcert" description:"SSL certificate authority file"`
+	SslCert                      string `long:"ssl-cert" description:"SSL client certificate file"`
+	SslKey                       string `long:"ssl-key" description:"SSL client certificate key file"`
 	HTTPHost                     string `long:"bind" description:"HTTP server host" default:"localhost"`
 	HTTPPort                     uint   `long:"listen" description:"HTTP server listen port" default:"8081"`
 	AuthUser                     string `long:"auth-user" description:"HTTP basic auth user"`
@@ -43,6 +46,7 @@ type Options struct {
 
 var Opts Options
 
+// ParseOptions returns a new options struct from the input arguments
 func ParseOptions(args []string) (Options, error) {
 	var opts = Options{}
 
