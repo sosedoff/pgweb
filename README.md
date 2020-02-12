@@ -125,12 +125,6 @@ make test-all
 - Use [issues](https://github.com/sosedoff/pgweb/issues) for any questions
 - Check [wiki](https://github.com/sosedoff/pgweb/wiki) for extra documentation
 
-## Contact
-
-- Dan Sosedoff
-- [dan.sosedoff@gmail.com](mailto:dan.sosedoff@gmail.com)
-- [http://twitter.com/sosedoff](http://twitter.com/sosedoff)
-
 ## License
 
 The MIT License (MIT). See [LICENSE](LICENSE) file for more details.
