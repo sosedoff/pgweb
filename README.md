@@ -134,5 +134,3 @@ make test-all
 ## License
 
 The MIT License (MIT). See [LICENSE](LICENSE) file for more details.
-
-Copyright (c) 2014-2019 Dan Sosedoff, <dan.sosedoff@gmail.com>
