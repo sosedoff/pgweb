@@ -1,4 +1,4 @@
-name: Build artifacts
+name: Upload binaries to S3
 
 on:
   push:
