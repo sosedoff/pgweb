@@ -538,12 +538,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: pre;
-
-  /*
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  */
 }
 
 #results td div span.null {

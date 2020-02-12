@@ -1189,26 +1189,6 @@ $(document).ready(function() {
     showTableContent(sortColumn, sortOrder);
   });
 
-  $("#results").on("dblclick", "td > div", function() {
-    if ($(this).has("textarea").length > 0) {
-      return;
-    }
-
-    var value = unescapeHtml($(this).html());
-    if (!value) { return; }
-
-    var textarea = $("<textarea />").
-      text(value).
-      addClass("form-control").
-      css("width", $(this).css("width"));
-
-    if (value.split("\n").length >= 3) {
-      textarea.css("height", "200px");
-    }
-
-    $(this).html(textarea).css("max-height", "200px");
-  });
-
   $("#refresh_tables").on("click", function() {
     loadSchemas();
   });
