@@ -15,4 +15,4 @@ jobs:
           args: linux/amd64 darwin/amd64
 
       - name: Upload to Amazon S3
-        uses: actions/aws/cli@master
+        uses: ItsKarma/aws-cli@v1.70.0
