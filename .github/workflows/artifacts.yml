@@ -1,0 +1,18 @@
+name: Build artifacts
+
+on: pull_request
+
+jobs:
+  run-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Make binaries
+        uses: sosedoff/actions/golang-build@master
+        with:
+          args: linux/amd64 darwin/amd64
+
+      - name: Upload to Amazon S3
+        uses: actions/aws/cli@master
