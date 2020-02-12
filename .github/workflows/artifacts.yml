@@ -17,7 +17,7 @@ jobs:
       - name: Upload to Amazon S3
         uses: ItsKarma/aws-cli@v1.70.0
         with:
-          args: s3 cp --acl public-read /github/workspace/.release/*.zip s3://pgweb-github-builds/$GITHUB_REF/
+          args: s3 cp --acl public-read /github/workspace/.release/pgweb_darwin_amd64.zip s3://pgweb-github-builds/$GITHUB_REF/
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
