@@ -1,3 +1,8 @@
+## 0.11.6 - 2020-02-19
+
+- Add CLI options for SSL key, cert and root certs, GH-452
+- Remove double click action on cell, GH-455
+
 ## 0.11.5 - 2019-12-16
 
 - Add basic SQL keyword autocompletion, GH-443
