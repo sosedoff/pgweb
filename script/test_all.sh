@@ -10,7 +10,7 @@ set -e
 
 export PGHOST=${PGHOST:-localhost}
 export PGUSER="postgres"
-export PGPASSWORD=""
+export PGPASSWORD="ci"
 export PGDATABASE="booktown"
 export PGPORT="15432"
 
