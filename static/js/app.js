@@ -934,10 +934,11 @@ function bindTableHeaderMenu() {
     scopes: "td",
     target: "#results_row_menu",
     before: function(e, element, target) {
-      var isEmpty = $("#results").hasClass("empty");
-      var isBrowsing = $("#results").data("mode") == "browse";
+      var browseMode = $("#results").data("mode");
+      var isEmpty    = $("#results").hasClass("empty");
+      var isAllowed  = browseMode == "browse" || browseMode == "query";
 
-      if (isEmpty || !isBrowsing) {
+      if (isEmpty || !isAllowed) {
         e.preventDefault();
         this.closemenu();
         return false;
@@ -949,6 +950,7 @@ function bindTableHeaderMenu() {
       switch(menuItem.data("action")) {
         case "copy_value":
           copyToClipboard($(context).text());
+          alert("Requested cell value has been copied to the clipboard!");
           break;
         case "filter_by_value":
           var colIdx   = $(context).data("col");
