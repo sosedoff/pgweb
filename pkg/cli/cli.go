@@ -93,8 +93,15 @@ func initClient() {
 				fmt.Println("Error:", msg)
 				return
 			}
+
 			// Do not bail if local server is not running.
 			if strings.Contains(msg, "connection refused") || strings.Contains(msg, "actively refused") {
+				fmt.Println("Error:", msg)
+				return
+			}
+
+			// Do not bail if local auth is invalid
+			if strings.Contains(msg, "authentication failed") {
 				fmt.Println("Error:", msg)
 				return
 			}
