@@ -76,6 +76,7 @@ Connection URL scheme is also supported:
 
 ```
 pgweb --url postgres://user:password@host:port/database?sslmode=[mode]
+pgweb --url "postgres:///database?host=/absolute/path/to/unix/socket/dir"
 ```
 
 ### Multiple database sessions
