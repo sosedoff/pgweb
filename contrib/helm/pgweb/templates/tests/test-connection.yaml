@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "pgweb.fullname" . }}-test-connection"
+  labels:
+    {{- include "pgweb.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "pgweb.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

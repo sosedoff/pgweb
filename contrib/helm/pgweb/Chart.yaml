@@ -1,0 +1,9 @@
+apiVersion: v2
+name: pgweb
+description: Web-based PostgreSQL database browser written in Go.
+type: application
+home: https://sosedoff.github.io/pgweb/
+sources:
+  - https://github.com/sosedoff/pgweb
+version: 0.1.0
+appVersion: 0.11.6
