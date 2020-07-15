@@ -285,6 +285,10 @@ func ExplainQuery(c *gin.Context) {
 
 // GetDatabases renders a list of all databases on the server
 func GetDatabases(c *gin.Context) {
+	if command.Opts.LockSession {
+		serveResult(c, []string{}, nil)
+		return
+	}
 	conn := DB(c)
 	if conn.External {
 		errorResponse(c, 403, errNotPermitted)
