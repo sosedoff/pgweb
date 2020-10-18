@@ -53,10 +53,9 @@ Visit https://pgweb-demo.herokuapp.com to see pgweb in action.
 
 ## Installation
 
-[Precompiled binaries](https://github.com/sosedoff/pgweb/releases) for supported 
+- [Precompiled binaries](https://github.com/sosedoff/pgweb/releases) for supported 
 operating systems are available.
-
-[More installation options](https://github.com/sosedoff/pgweb/wiki/Installation)
+- [More installation options](https://github.com/sosedoff/pgweb/wiki/Installation)
 
 ## Usage
 
