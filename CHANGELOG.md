@@ -1,3 +1,13 @@
+## 0.11.7 - 2020-10-18
+
+- Releases are built with Go 1.15
+- Show results row context menu on custom query results, GH-457
+- Do not terminate if local authentication failed on start, GH-463
+- Do not show other databases if session is locked, GH-470
+- Strip debug information from binary to reduce size, GH-489
+- Disable autocomplete on database search field, GH-492
+- Improve windows connection error matching during start, GH-493
+
 ## 0.11.6 - 2020-02-19
 
 - Add CLI options for SSL key, cert and root certs, GH-452
