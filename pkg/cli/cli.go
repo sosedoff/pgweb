@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,9 @@ SECURITY WARNING: You are running pgweb in read-only mode.
 This mode is designed for environments where users could potentially delete / change data.
 For proper read-only access please follow postgresql role management documentation.
 ------------------------------------------------------`
+
+	regexErrConnectionRefused = regexp.MustCompile(`(connection|actively) refused`)
+	regexErrAuthFailed        = regexp.MustCompile(`authentication failed`)
 )
 
 func exitWithMessage(message string) {
@@ -95,13 +99,13 @@ func initClient() {
 			}
 
 			// Do not bail if local server is not running.
-			if strings.Contains(msg, "connection refused") {
+			if regexErrConnectionRefused.MatchString(msg) {
 				fmt.Println("Error:", msg)
 				return
 			}
 
 			// Do not bail if local auth is invalid
-			if strings.Contains(msg, "authentication failed") {
+			if regexErrAuthFailed.MatchString(msg) {
 				fmt.Println("Error:", msg)
 				return
 			}
