@@ -42,7 +42,7 @@ func testDumpExport(t *testing.T) {
 	dump = Dump{Table: "foobar"}
 	err = dump.Export(url, saveFile)
 	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "pg_dump: no matching tables were found")
+	assert.Contains(t, err.Error(), "no matching tables were found")
 
 	// Should drop "search_path" param from URI
 	dump = Dump{}
