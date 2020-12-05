@@ -58,6 +58,11 @@ release: clean assets
 	  -ldflags "-s -w -X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME) -X github.com/sosedoff/pgweb/pkg/command.GoVersion=$(GO_VERSION)" \
 		-o "./bin/pgweb_linux_arm_v5"
 
+	@echo "Building ARM64 binaries..."
+	GOOS=linux GOARCH=arm64 GOARM=7 go build \
+	  -ldflags "-s -w -X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME) -X github.com/sosedoff/pgweb/pkg/command.GoVersion=$(GO_VERSION)" \
+		-o "./bin/pgweb_linux_arm64_v7"
+
 	@echo "\nPackaging binaries...\n"
 	@./script/package.sh
 
