@@ -1,0 +1,40 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  main:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+
+      - name: Check
+        run:
+          - ./script/check_formatting.sh
+          - ./script/check_assets.sh
+
+      - name: Setup
+        run: make setup
+
+      - name: Build
+        run: make build
+
+      - name: Test
+        run: make test
+
+      - name: Test All
+        run: make test-all
+
+      - name: Docker Release
+        run: make docker-release
