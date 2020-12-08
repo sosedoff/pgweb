@@ -9,9 +9,11 @@ require (
 	github.com/dchest/bcrypt_pbkdf v0.0.0-20150205184540-83f37f9c154a // indirect
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v1.3.0
+	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/golang/protobuf v0.0.0-20170601230230-5a0f697c9ed9 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
+	github.com/hashicorp/go-version v1.2.1 // indirect
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jmoiron/sqlx v0.0.0-20180614180643-0dae4fefe7c0
 	github.com/json-iterator/go v0.0.0-20170829155851-36b14963da70 // indirect
@@ -19,6 +21,7 @@ require (
 	github.com/mattn/go-isatty v0.0.2-0.20170307163044-57fdcb988a5c // indirect
 	github.com/mattn/go-sqlite3 v1.14.5 // indirect
 	github.com/mitchellh/go-homedir v1.0.0
+	github.com/mitchellh/gox v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.2.2
 	github.com/tuvistavie/securerandom v0.0.0-20140719024926-15512123a948
