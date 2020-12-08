@@ -4,3 +4,4 @@ pgweb
 bin
 tmp/
 cover.out
+vendor
