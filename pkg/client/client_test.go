@@ -24,14 +24,6 @@ var (
 	serverDatabase string
 )
 
-func mapKeys(data map[string]*Objects) []string {
-	result := []string{}
-	for k, _ := range data {
-		result = append(result, k)
-	}
-	return result
-}
-
 func pgVersion() (int, int) {
 	var major, minor int
 	fmt.Sscanf(os.Getenv("PGVERSION"), "%d.%d", &major, &minor)
@@ -234,7 +226,10 @@ func testObjects(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, []string{"schema", "name", "type", "owner", "comment"}, res.Columns)
-	assert.Equal(t, []string{"public"}, mapKeys(objects))
+	_, ok := objects["public"]
+	if !ok {
+		t.Fail()
+	}
 	assert.Equal(t, tables, objects["public"].Tables)
 	assert.Equal(t, []string{"recent_shipments", "stock_view"}, objects["public"].Views)
 	assert.Equal(t, []string{"author_ids", "book_ids", "shipments_ship_id_seq", "subject_ids"}, objects["public"].Sequences)
