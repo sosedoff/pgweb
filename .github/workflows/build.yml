@@ -27,6 +27,9 @@ jobs:
         with:
           go-version: 1.15
 
+      - name: Show env
+        run: env | sort
+
       - name: Check Formatting
         run: ./script/check_formatting.sh
 
