@@ -2,7 +2,6 @@ TARGETS = darwin/amd64 linux/amd64 linux/386 windows/amd64 windows/386
 GIT_COMMIT = $(shell git rev-parse HEAD)
 BUILD_TIME = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ" | tr -d '\n')
 GO_VERSION = $(shell go version | awk {'print $$3'})
-BINDATA_IGNORE = $(shell git ls-files -io --exclude-standard $< | sed 's/^/-ignore=/;s/[.]/[.]/g')
 DOCKER_RELEASE_TAG = "sosedoff/pgweb:$(shell git describe --abbrev=0 --tags | sed 's/v//')"
 DOCKER_LATEST_TAG = "sosedoff/pgweb:latest"
 
@@ -18,8 +17,6 @@ usage:
 	@echo "make test            : Execute test suite"
 	@echo "make test-all        : Execute test suite on multiple PG versions"
 	@echo "make clean           : Remove all build files and reset assets"
-	@echo "make assets          : Generate production assets file"
-	@echo "make dev-assets      : Generate development assets file"
 	@echo "make docker          : Build docker image"
 	@echo "make docker-release  : Build and tag docker image"
 	@echo "make docker-push     : Push docker images to registry"
@@ -32,21 +29,17 @@ test-all:
 	@./script/test_all.sh
 	@./script/test_cockroach.sh
 
-assets: static/
-	go-bindata -o pkg/data/bindata.go -pkg data $(BINDATA_OPTS) $(BINDATA_IGNORE) -ignore=[.]gitignore -ignore=[.]gitkeep $<...
 
-dev-assets:
-	@$(MAKE) --no-print-directory assets BINDATA_OPTS="-debug"
 
-dev: dev-assets
+dev:
 	go build
 	@echo "You can now execute ./pgweb"
 
-build: assets
+build:
 	go build
 	@echo "You can now execute ./pgweb"
 
-release: clean assets
+release:
 	@echo "Building binaries..."
 	@gox \
 		-osarch "$(TARGETS)" \
@@ -70,16 +63,11 @@ bootstrap:
 	gox -build-toolchain
 
 setup:
-	go get -u github.com/golang/dep/cmd/dep
-	go get -u golang.org/x/tools/cmd/cover
-	go get -u github.com/mitchellh/gox
-	go get -u github.com/go-bindata/go-bindata/...
-	dep ensure
+	go install github.com/mitchellh/gox@v1.0.1
 
 clean:
 	@rm -f ./pgweb
 	@rm -rf ./bin/*
-	@rm -f bindata.go
 
 docker:
 	docker build --no-cache -t pgweb .

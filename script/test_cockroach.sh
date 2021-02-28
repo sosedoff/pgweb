@@ -17,8 +17,8 @@ docker run \
   -d \
   -t \
   -p 26258:26257 \
-  cockroachdb/cockroach \
-  start --insecure
+  cockroachdb/cockroach:v20.2.5 \
+  start-single-node --insecure
 
 sleep 3
 

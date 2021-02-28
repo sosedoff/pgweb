@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/sosedoff/pgweb/static"
+	"net/http"
 	neturl "net/url"
 	"regexp"
 	"strings"
@@ -56,13 +58,12 @@ func setClient(c *gin.Context, newClient *client.Client) error {
 }
 
 // GetHome renderes the home page
-func GetHome(c *gin.Context) {
-	serveStaticAsset("/index.html", c)
+func GetHome() http.Handler {
+	return http.FileServer(http.FS(static.Static))
 }
 
-// GetAsset renders the requested static asset
-func GetAsset(c *gin.Context) {
-	serveStaticAsset(c.Params.ByName("path"), c)
+func GetAssets() http.Handler {
+	return http.StripPrefix("/static/", http.FileServer(http.FS(static.Static)))
 }
 
 // GetSessions renders the number of active sessions

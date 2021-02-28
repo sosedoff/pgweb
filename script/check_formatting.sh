@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Run the fmt on bindata so it does not trigger failure
-go fmt ./pkg/data/bindata.go > /dev/null
-
 # Get list of offending files
 files="$(go fmt ./pkg/...)"
 
