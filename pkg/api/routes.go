@@ -20,8 +20,8 @@ func SetupMiddlewares(group *gin.RouterGroup) {
 func SetupRoutes(router *gin.Engine) {
 	root := router.Group(command.Opts.Prefix)
 
-	root.GET("/", GetHome)
-	root.GET("/static/*path", GetAsset)
+	root.GET("/", gin.WrapH(GetHome()))
+	root.GET("/static/*path", gin.WrapH(GetAssets()))
 	root.GET("/connect/:resource", ConnectWithBackend)
 
 	api := root.Group("/api")
