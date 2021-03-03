@@ -70,11 +70,8 @@ bootstrap:
 	gox -build-toolchain
 
 setup:
-	go get -u github.com/golang/dep/cmd/dep
-	go get -u golang.org/x/tools/cmd/cover
 	go get -u github.com/mitchellh/gox
 	go get -u github.com/go-bindata/go-bindata/...
-	dep ensure
 
 clean:
 	@rm -f ./pgweb
