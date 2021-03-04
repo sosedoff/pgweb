@@ -26,7 +26,7 @@ usage:
 	@echo ""
 
 test:
-	go test -race -cover ./pkg/...
+	GO111MODULE=on go test -race -cover ./pkg/...
 
 test-all:
 	@./script/test_all.sh
@@ -39,11 +39,11 @@ dev-assets:
 	@$(MAKE) --no-print-directory assets BINDATA_OPTS="-debug"
 
 dev: dev-assets
-	go build
+	GO111MODULE=on go build
 	@echo "You can now execute ./pgweb"
 
 build: assets
-	go build
+	GO111MODULE=on go build
 	@echo "You can now execute ./pgweb"
 
 release: clean assets
@@ -54,12 +54,12 @@ release: clean assets
 		-output "./bin/pgweb_{{.OS}}_{{.Arch}}"
 
 	@echo "Building ARM binaries..."
-	GOOS=linux GOARCH=arm GOARM=5 go build \
+	GO111MODULE=on GOOS=linux GOARCH=arm GOARM=5 go build \
 	  -ldflags "-s -w -X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME) -X github.com/sosedoff/pgweb/pkg/command.GoVersion=$(GO_VERSION)" \
 		-o "./bin/pgweb_linux_arm_v5"
 
 	@echo "Building ARM64 binaries..."
-	GOOS=linux GOARCH=arm64 GOARM=7 go build \
+	GO111MODULE=on GOOS=linux GOARCH=arm64 GOARM=7 go build \
 	  -ldflags "-s -w -X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME) -X github.com/sosedoff/pgweb/pkg/command.GoVersion=$(GO_VERSION)" \
 		-o "./bin/pgweb_linux_arm64_v7"
 
@@ -70,11 +70,8 @@ bootstrap:
 	gox -build-toolchain
 
 setup:
-	go get -u github.com/golang/dep/cmd/dep
-	go get -u golang.org/x/tools/cmd/cover
 	go get -u github.com/mitchellh/gox
 	go get -u github.com/go-bindata/go-bindata/...
-	dep ensure
 
 clean:
 	@rm -f ./pgweb
