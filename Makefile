@@ -29,8 +29,6 @@ test-all:
 	@./script/test_all.sh
 	@./script/test_cockroach.sh
 
-
-
 dev:
 	go build
 	@echo "You can now execute ./pgweb"
