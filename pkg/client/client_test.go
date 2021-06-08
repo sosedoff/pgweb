@@ -80,7 +80,6 @@ func setup() {
 		"-p", serverPort,
 		serverDatabase,
 	).CombinedOutput()
-
 	if err != nil {
 		fmt.Println("Database creation failed:", string(out))
 		fmt.Println("Error:", err)
@@ -122,7 +121,6 @@ func teardown() {
 		"-p", serverPort,
 		serverDatabase,
 	).CombinedOutput()
-
 	if err != nil {
 		fmt.Println("Teardown error:", err)
 	}
@@ -131,7 +129,6 @@ func teardown() {
 func testNewClientFromUrl(t *testing.T) {
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 	client, err := NewFromUrl(url, nil)
-
 	if err != nil {
 		defer client.Close()
 	}
@@ -143,7 +140,6 @@ func testNewClientFromUrl(t *testing.T) {
 func testNewClientFromUrl2(t *testing.T) {
 	url := fmt.Sprintf("postgresql://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 	client, err := NewFromUrl(url, nil)
-
 	if err != nil {
 		defer client.Close()
 	}
@@ -226,10 +222,7 @@ func testObjects(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, []string{"schema", "name", "type", "owner", "comment"}, res.Columns)
-	_, ok := objects["public"]
-	if !ok {
-		t.Fail()
-	}
+	assert.Contains(t, objects, "public")
 	assert.Equal(t, tables, objects["public"].Tables)
 	assert.Equal(t, []string{"recent_shipments", "stock_view"}, objects["public"].Views)
 	assert.Equal(t, []string{"author_ids", "book_ids", "shipments_ship_id_seq", "subject_ids"}, objects["public"].Sequences)
