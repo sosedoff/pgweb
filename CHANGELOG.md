@@ -1,3 +1,11 @@
+## 0.11.8 - 2021-07-07
+
+- Releases are built with Go 1.16
+- Add ARM64 v7 build target, GH-497
+- Switch to Go modules for dependency management, GH-509
+- Switch to Go embed for static assets management, GH-510
+- Add Darwin/ARM64 build target (Apple Silicon), GH-513
+
 ## 0.11.7 - 2020-10-18
 
 - Releases are built with Go 1.15
