@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# $FreeBSD: $
+#
+# PROVIDE: pgweb
+# REQUIRE: NETWORKING
+# KEYWORD:
+#
+# Add the following lines to /etc/rc.conf to enable pgweb:
+# pgweb_enable="YES"
+#
+# pgweb_enable (bool):              Set to YES to enable pgweb
+#                                       Default: NO
+# pgweb_bind (str):               HTTP server host
+#                                       Default: localhost
+# pgweb_listen (str):   HTTP server listen port
+#                                       Default: 8081
+# pgweb_user (str):         pgweb daemon user
+#                                       Default: www
+# pgweb_group (str):                pgweb daemon group
+#                                       Default: www
+
+. /etc/rc.subr
+
+name="pgweb"
+rcvar="pgweb_enable"
+load_rc_config $name
+
+: ${pgweb_user:="www"}
+: ${pgweb_group:="www"}
+: ${pgweb_enable:="NO"}
+: ${pgweb_bind:="localhost"}
+: ${pgweb_flags=""}
+: ${pgweb_facility:="daemon"}
+: ${pgweb_priority:="debug"}
+: ${pgweb_listen:="8081"}
+
+procname="/usr/local/bin/${name}"
+pidfile="/var/run/${name}.pid"
+start_precmd="${name}_precmd"
+command=/usr/sbin/daemon
+command_args="-S -l ${pgweb_facility} -s ${pgweb_priority} -T ${name} -t ${name} -p ${pidfile} \
+        ${procname} --bind=${pgweb_bind} --listen=${pgweb_listen} ${pgweb_flags}"
+
+pgweb_precmd()
+{
+        install -o ${pgweb_user} /dev/null ${pidfile}
+}
+
+run_rc_command "$1"
