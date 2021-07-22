@@ -12,6 +12,6 @@ var (
 	// BuildTime contains the binary build time
 	BuildTime string
 
-	// GoVersion contains the Go runtime version
+	// GoVersion contains the build time Go version
 	GoVersion string
 )
