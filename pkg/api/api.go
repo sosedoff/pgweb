@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/sosedoff/pgweb/static"
 	"net/http"
 	neturl "net/url"
 	"regexp"
@@ -18,6 +17,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/shared"
+	"github.com/sosedoff/pgweb/static"
 )
 
 var (
@@ -58,12 +58,20 @@ func setClient(c *gin.Context, newClient *client.Client) error {
 }
 
 // GetHome renderes the home page
-func GetHome() http.Handler {
-	return http.FileServer(http.FS(static.Static))
+func GetHome(prefix string) http.Handler {
+	if prefix != "" {
+		prefix = "/" + prefix
+	}
+	return http.StripPrefix(prefix, http.FileServer(http.FS(static.Static)))
 }
 
-func GetAssets() http.Handler {
-	return http.StripPrefix("/static/", http.FileServer(http.FS(static.Static)))
+func GetAssets(prefix string) http.Handler {
+	if prefix != "" {
+		prefix = "/" + prefix + "static/"
+	} else {
+		prefix = "/static/"
+	}
+	return http.StripPrefix(prefix, http.FileServer(http.FS(static.Static)))
 }
 
 // GetSessions renders the number of active sessions
