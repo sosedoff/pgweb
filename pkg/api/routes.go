@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"github.com/sosedoff/pgweb/pkg/command"
 )
 
@@ -20,8 +21,8 @@ func SetupMiddlewares(group *gin.RouterGroup) {
 func SetupRoutes(router *gin.Engine) {
 	root := router.Group(command.Opts.Prefix)
 
-	root.GET("/", gin.WrapH(GetHome()))
-	root.GET("/static/*path", gin.WrapH(GetAssets()))
+	root.GET("/", gin.WrapH(GetHome(command.Opts.Prefix)))
+	root.GET("/static/*path", gin.WrapH(GetAssets(command.Opts.Prefix)))
 	root.GET("/connect/:resource", ConnectWithBackend)
 
 	api := root.Group("/api")
