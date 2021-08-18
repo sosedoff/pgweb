@@ -1,4 +1,4 @@
-FROM alpine:3.10
+FROM alpine:3.14
 LABEL maintainer="Dan Sosedoff <dan.sosedoff@gmail.com>"
 ENV PGWEB_VERSION 0.11.8
 
