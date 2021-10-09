@@ -1,6 +1,6 @@
 FROM alpine:3.14
 LABEL maintainer="Dan Sosedoff <dan.sosedoff@gmail.com>"
-ENV PGWEB_VERSION 0.11.8
+ENV PGWEB_VERSION 0.11.9
 
 RUN \
   apk update && \
