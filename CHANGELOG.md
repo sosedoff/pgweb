@@ -1,3 +1,12 @@
+## 0.11.9 - 2021-11-08
+
+- Releases are built on Go 1.17
+- Build time correction, GH-521
+- Fix broken assets URL path prefix, GH-525
+- Update docker build image to alpine:3.14, GH-522
+- Upgrade gin dependency to v1.7.4, GH-527
+- Add FreeBSD startup script, GH-520
+
 ## 0.11.8 - 2021-07-07
 
 - Releases are built with Go 1.16
