@@ -90,6 +90,7 @@ function getHistory(cb)                     { apiCall("get", "/history", {}, cb)
 function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
 function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
 function explainQuery(query, cb)            { apiCall("post", "/explain", { query: query }, cb); }
+function analyzeQuery(query, cb)            { apiCall("post", "/analyze", { query: query }, cb); }
 function disconnect(cb)                     { apiCall("post", "/disconnect", {}, cb); }
 
 function encodeQuery(query) {
@@ -671,6 +672,28 @@ function runExplain() {
   });
 }
 
+function runAnalyze() {
+  setCurrentTab("table_query");
+
+  showQueryProgressMessage();
+
+  var query = $.trim(editor.getSelectedText() || editor.getValue());
+
+  if (query.length == 0) {
+    hideQueryProgressMessage();
+    return;
+  }
+
+  analyzeQuery(query, function(data) {
+    buildTable(data);
+
+    hideQueryProgressMessage();
+    $("#input").show();
+    $("#body").removeClass("full");
+    $("#results").addClass("no-crop");
+  });
+}
+
 function exportTo(format) {
   var query = $.trim(editor.getSelectedText() || editor.getValue());
 
@@ -1119,6 +1142,10 @@ $(document).ready(function() {
 
   $("#explain").on("click", function() {
     runExplain();
+  });
+
+  $("#analyze").on("click", function() {
+    runAnalyze();
   });
 
   $("#csv").on("click", function() {
