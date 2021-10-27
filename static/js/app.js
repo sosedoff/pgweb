@@ -607,25 +607,33 @@ function showActivityPanel() {
   });
 }
 
+function showQueryProgressMessage() {
+  $("#run, #explain-dropdown-toggle, #csv, #json, #xml").prop("disabled", true);
+  $("#explain-dropdown").removeClass("open");
+  $("#query_progress").show();
+}
+
+function hideQueryProgressMessage() {
+  $("#run, #explain-dropdown-toggle, #csv, #json, #xml").prop("disabled", false);
+  $("#query_progress").hide();
+}
+
 function runQuery() {
   setCurrentTab("table_query");
 
-  $("#run, #explain, #csv, #json, #xml").prop("disabled", true);
-  $("#query_progress").show();
+  showQueryProgressMessage();
 
   var query = $.trim(editor.getSelectedText() || editor.getValue());
 
   if (query.length == 0) {
-    $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
-    $("#query_progress").hide();
+    hideQueryProgressMessage();
     return;
   }
 
   executeQuery(query, function(data) {
     buildTable(data);
 
-    $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
-    $("#query_progress").hide();
+    hideQueryProgressMessage();
     $("#input").show();
     $("#body").removeClass("full");
     $("#results").data("mode", "query");
@@ -644,22 +652,19 @@ function runQuery() {
 function runExplain() {
   setCurrentTab("table_query");
 
-  $("#run, #explain, #csv, #json, #xml").prop("disabled", true);
-  $("#query_progress").show();
+  showQueryProgressMessage();
 
   var query = $.trim(editor.getSelectedText() || editor.getValue());
 
   if (query.length == 0) {
-    $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
-    $("#query_progress").hide();
+    hideQueryProgressMessage();
     return;
   }
 
   explainQuery(query, function(data) {
     buildTable(data);
 
-    $("#run, #explain, #csv, #json, #xml").prop("disabled", false);
-    $("#query_progress").hide();
+    hideQueryProgressMessage();
     $("#input").show();
     $("#body").removeClass("full");
     $("#results").addClass("no-crop");
