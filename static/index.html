@@ -14,6 +14,7 @@
   <script type="text/javascript" src="static/js/ace-pgsql.js"></script>
   <script type="text/javascript" src="static/js/ext-language_tools.js"></script>
   <script type="text/javascript" src="static/js/bootstrap-contextmenu.js"></script>
+  <script type="text/javascript" src="static/js/bootstrap-dropdown.js"></script>
   <script type="text/javascript" src="static/js/utils.js"></script>
   <script type="text/javascript" src="static/js/bootstrap3-typeahead.min.js"></script>
   <script type="text/javascript" src="static/js/app.js"></script> 
@@ -76,7 +77,15 @@
           <div id="custom_query"></div>
           <div class="actions">
             <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
-            <input type="button" id="explain" value="Explain Query" class="btn btn-sm btn-default" />
+            <div id="explain-dropdown" class="btn-group">
+              <button id="explain-dropdown-toggle" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Explain Query <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#" id="explain">Explain Query</a></li>
+                <li><a href="#" id="analyze">Analyze Query</a></li>
+              </ul>
+            </div>
             <div id="query_progress">Please wait, query is executing...</div>
             <div class="pull-right">
               <span id="result-rows-count"></span>
