@@ -411,8 +411,19 @@ func GetConnectionInfo(c *gin.Context) {
 	res, err := DB(c).Info()
 
 	if err != nil {
-		badRequest(c, err)
-		return
+		// try to reconnect automatically
+		cl, err := client.New()
+		if err != nil {
+			badRequest(c, err)
+			return
+		}
+
+		setClient(c, cl)
+		res, err = DB(c).Info()
+		if err != nil {
+			badRequest(c, err)
+			return
+		}
 	}
 
 	info := res.Format()[0]
