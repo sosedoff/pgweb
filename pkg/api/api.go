@@ -140,7 +140,26 @@ func Connect(c *gin.Context) {
 	}
 
 	var sshInfo *shared.SSHInfo
-	url := c.Request.FormValue("url")
+	var url string
+	bookmark_id := c.Request.FormValue("bookmark")
+
+	if bookmark_id != "" {
+		bookmarks, err := bookmarks.ReadAll(bookmarks.Path(command.Opts.BookmarksDir))
+		if err != nil {
+			serveResult(c, "", err)
+			return
+		}
+
+		bookmark, found := bookmarks[bookmark_id]
+		if !found {
+			badRequest(c, errBookmarkNotFound)
+			return
+		}
+
+		url = bookmark.URL
+	} else {
+		url = c.Request.FormValue("url")
+	}
 
 	if url == "" {
 		badRequest(c, errURLRequired)
@@ -478,7 +497,18 @@ func HandleQuery(query string, c *gin.Context) {
 // GetBookmarks renders the list of available bookmarks
 func GetBookmarks(c *gin.Context) {
 	bookmarks, err := bookmarks.ReadAll(bookmarks.Path(command.Opts.BookmarksDir))
-	serveResult(c, bookmarks, err)
+	if err != nil {
+		serveResult(c, "", err)
+		return
+	}
+
+	names := make([]string, len(bookmarks))
+	i := 0
+	for k := range(bookmarks) {
+		names[i] = k
+		i++
+	}
+	successResponse(c, names)
 }
 
 // GetInfo renders the pgweb system information
