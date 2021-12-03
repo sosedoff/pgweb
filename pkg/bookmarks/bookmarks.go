@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -41,6 +42,15 @@ func (b Bookmark) ConvertToOptions() command.Options {
 		DbName: b.Database,
 		Ssl:    b.Ssl,
 	}
+}
+
+// GetURL returns the url if provided or constructs it and returns it
+func (b Bookmark) GetURL() string {
+	if b.URL != "" {
+		return b.URL
+	}
+
+	return "postgres://" + b.User + ":" + b.Password + "@" + b.Host + ":" + strconv.Itoa(b.Port) + "/" + b.Database + "?sslmode=" + b.Ssl
 }
 
 func readServerConfig(path string) (Bookmark, error) {

@@ -848,9 +848,9 @@ function showConnectionSettings() {
       $("<option value=''></option>").appendTo("#connection_bookmarks");
 
       // Add all available bookmarks
-      for (key in data) {
+      data.forEach(key => {
         $("<option value='" + key + "''>" + key + "</option>").appendTo("#connection_bookmarks");
-      }
+      })
 
       $(".bookmarks").show();
     }
@@ -1359,43 +1359,24 @@ $(document).ready(function() {
   $("#connection_bookmarks").on("change", function(e) {
     var name = $.trim($(this).val());
     if (name == "") return;
+    var button = $(this).find("button.open-connection");
 
-    var item = bookmarks[name];
+    apiCall("post", "/connect", {bookmark: name}, function(resp) {
+      button.prop("disabled", false).text("Connect");
 
-    // Check if bookmark only has url set
-    if (item.url && item.url != "") {
-      $("#connection_url").val(item.url);
-      $("#connection_scheme").click();
-      return;
-    }
+      if (resp.error) {
+        connected = false;
+        $("#connection_error").text(resp.error).show();
+      }
+      else {
+        connected = true;
+        loadSchemas();
 
-    // Fill in bookmarked connection settings
-    $("#pg_host").val(item.host);
-    $("#pg_port").val(item.port);
-    $("#pg_user").val(item.user);
-    $("#pg_password").val(item.password);
-    $("#pg_db").val(item.database);
-    $("#connection_ssl").val(item.ssl);
-
-    if (item.ssh && Object.keys(item.ssh).length > 0) {
-      $("#ssh_host").val(item.ssh.host);
-      $("#ssh_port").val(item.ssh.port);
-      $("#ssh_user").val(item.ssh.user);
-      $("#ssh_password").val(item.ssh.password);
-      $("#ssh_key").val(item.ssh.key);
-      $("#ssh_key_password").val(item.ssh.keypassword);
-      $("#connection_ssh").click();
-    }
-    else {
-      $("#ssh_host").val("");
-      $("#ssh_port").val("");
-      $("#ssh_user").val("");
-      $("#ssh_password").val("");
-      $("#ssh_key").val("");
-      $("#ssh_key_password").val("");
-      $(".connection-ssh-group").hide();
-      $("#connection_standard").click();
-    }
+        $("#connection_window").hide();
+        $("#current_database").text(resp.current_database);
+        $("#main").show();
+      }
+    });
   });
 
   $("#connection_form").on("submit", function(e) {

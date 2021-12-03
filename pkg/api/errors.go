@@ -16,4 +16,5 @@ var (
 	errDatabaseNameRequired = errors.New("Database name is required")
 	errPgDumpNotFound       = errors.New("pg_dump utility is not found")
 	errBackendConnectError  = errors.New("Unable to connect to the auth backend")
+	errBookmarkNotFound     = errors.New("Unknown bookmark")
 )
