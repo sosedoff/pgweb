@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_PrepareBigints(t *testing.T) {
+func Test_PostProcess(t *testing.T) {
 	result := Result{
 		Columns: []string{"value"},
 		Rows: []Row{
@@ -19,7 +19,7 @@ func Test_PrepareBigints(t *testing.T) {
 		},
 	}
 
-	result.PrepareBigints()
+	result.PostProcess()
 
 	assert.Equal(t, 1234, result.Rows[0][0])
 	assert.Equal(t, "9223372036854775807", result.Rows[1][0])

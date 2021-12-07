@@ -3,10 +3,10 @@ package client
 import (
 	"bytes"
 	"encoding/csv"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math"
-	"reflect"
 	"strconv"
 	"time"
 
@@ -37,22 +37,19 @@ type Objects struct {
 
 // Due to big int number limitations in javascript, numbers should be encoded
 // as strings so they could be properly loaded on the frontend.
-func (res *Result) PrepareBigints() {
+func (res *Result) PostProcess() {
 	for i, row := range res.Rows {
 		for j, col := range row {
 			if col == nil {
 				continue
 			}
 
-			switch reflect.TypeOf(col).Kind() {
-			case reflect.Int64:
-				val := col.(int64)
+			switch val := col.(type) {
+			case int64:
 				if val < -9007199254740991 || val > 9007199254740991 {
 					res.Rows[i][j] = strconv.FormatInt(col.(int64), 10)
 				}
-			case reflect.Float64:
-				val := col.(float64)
-
+			case float64:
 				// json.Marshal panics when dealing with NaN/Inf values
 				// issue: https://github.com/golang/go/issues/25721
 				if math.IsNaN(val) {
@@ -62,6 +59,10 @@ func (res *Result) PrepareBigints() {
 
 				if val < -999999999999999 || val > 999999999999999 {
 					res.Rows[i][j] = strconv.FormatFloat(val, 'e', -1, 64)
+				}
+			case string:
+				if hasBinary(val, 8) {
+					res.Rows[i][j] = hex.EncodeToString([]byte(val))
 				}
 			}
 		}

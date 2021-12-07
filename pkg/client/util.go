@@ -31,3 +31,15 @@ func containsRestrictedKeywords(str string) bool {
 
 	return reRestrictedKeywords.MatchString(str)
 }
+
+func hasBinary(data string, checkLen int) bool {
+	for idx, chr := range data {
+		if int(chr) < 32 || int(chr) > 126 {
+			return true
+		}
+		if idx >= checkLen {
+			break
+		}
+	}
+	return false
+}
