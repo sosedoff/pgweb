@@ -207,7 +207,7 @@ function resetTable() {
     data("mode", "").
     removeClass("empty").
     removeClass("no-crop");
-  
+
   $("#results_header").html("");
   $("#results_body").html("");
 }
@@ -701,7 +701,7 @@ function showUniqueColumnsValues(table, column, showCounts) {
 // Show numeric stats on the field
 function showFieldNumStats(table, column) {
   var query = 'SELECT count(1), min(' + column + '), max(' + column + '), avg(' + column + ') FROM ' + table;
-  
+
   executeQuery(query, function(data) {
     $("#input").hide();
     $("#body").prop("class", "full");
@@ -950,7 +950,6 @@ function bindTableHeaderMenu() {
       switch(menuItem.data("action")) {
         case "copy_value":
           copyToClipboard($(context).text());
-          alert("Requested cell value has been copied to the clipboard!");
           break;
         case "filter_by_value":
           var colIdx   = $(context).data("col");
@@ -1074,7 +1073,7 @@ function bindContextMenus() {
 
 function toggleDatabaseSearch() {
   $("#current_database").toggle();
-  $("#database_search").toggle();  
+  $("#database_search").toggle();
 }
 
 function enableDatabaseSearch(data) {
@@ -1082,10 +1081,10 @@ function enableDatabaseSearch(data) {
 
   input.typeahead("destroy");
 
-  input.typeahead({ 
-    source: data, 
-    minLength: 0, 
-    items: "all", 
+  input.typeahead({
+    source: data,
+    minLength: 0,
+    items: "all",
     autoSelect: false,
     fitToElement: true
   });
@@ -1283,13 +1282,13 @@ $(document).ready(function() {
       enableDatabaseSearch(resp);
     });
   });
-  
+
   $("#database_search").change(function(e) {
     var current = $("#database_search").typeahead("getActive");
     if (current && current == $("#database_search").val()) {
       apiCall("post", "/switchdb", { db: current }, function(resp) {
         if (resp.error) {
-          alert(resp.error);            
+          alert(resp.error);
           return;
         };
         window.location.reload();
