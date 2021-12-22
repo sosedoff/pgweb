@@ -71,7 +71,7 @@ docker:
 	docker build --no-cache -t pgweb .
 
 docker-release:
-	docker build --no-cache -t $(DOCKER_RELEASE_TAG) .
+	docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag --no-cache -t $(DOCKER_RELEASE_TAG) .
 	docker tag $(DOCKER_RELEASE_TAG) $(DOCKER_LATEST_TAG)
 	docker images $(DOCKER_RELEASE_TAG)
 
