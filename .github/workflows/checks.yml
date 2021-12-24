@@ -19,4 +19,5 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: ${{ env.GO_VERSION }}
+      - run: go mod download
       - run: script/check_formatting.sh
