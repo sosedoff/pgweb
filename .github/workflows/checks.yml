@@ -1,0 +1,22 @@
+name: checks
+
+on:
+  - pull_request
+  - push
+
+env:
+  GO_VERSION: 1.17
+  CGO_ENABLED: 0
+
+jobs:
+  fmt:
+    name: fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: script/check_formatting.sh
