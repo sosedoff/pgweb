@@ -22,6 +22,7 @@ jobs:
       - run: go mod download
       - run: make test
         env:
+          MallocNanoZone: 0 # https://github.com/golang/go/issues/49138
           CGO_ENABLED: 1
 
 
