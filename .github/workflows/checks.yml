@@ -34,9 +34,7 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
       - run: go mod download
-      - run: |
-          find /etc/ | grep mime
-          make test
+      - run: make test
         env:
           MallocNanoZone: 0 # https://github.com/golang/go/issues/49138
           CGO_ENABLED: 1

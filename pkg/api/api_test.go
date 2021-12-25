@@ -21,7 +21,20 @@ func Test_assetContentType(t *testing.T) {
 		"foo":      "text/plain; charset=utf-8",
 	}
 
+	alternatives := map[string]string{
+		"foo.js": "text/javascript; charset=utf-8",
+	}
+
 	for name, expected := range samples {
-		assert.Equal(t, expected, assetContentType(name))
+		if alternatives[name] == "" {
+			assert.Equal(t, expected, assetContentType(name))
+			continue
+		}
+
+		actual := assetContentType(name)
+
+		if actual != expected && actual != alternatives[name] {
+			t.Errorf("expected %v but got %v (alternative value failed)", expected, actual)
+		}
 	}
 }
