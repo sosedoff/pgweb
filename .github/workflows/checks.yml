@@ -39,7 +39,7 @@ jobs:
           MallocNanoZone: 0 # https://github.com/golang/go/issues/49138
           CGO_ENABLED: 1
           PGHOST: localhost
-          PGUSER: posrgres
+          PGUSER: postgres
           PGPASSWORD: postgres
           PGDATABASE: booktown
 
