@@ -19,6 +19,8 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: booktown
+        ports:
+          - 5432:5432
         options: >-
             --health-cmd pg_isready
             --health-interval 10s
@@ -36,7 +38,7 @@ jobs:
         env:
           MallocNanoZone: 0 # https://github.com/golang/go/issues/49138
           CGO_ENABLED: 1
-          PGHOST: postgres
+          PGHOST: localhost
           PGUSER: posrgres
           PGPASSWORD: postgres
           PGDATABASE: booktown
