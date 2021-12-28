@@ -3,7 +3,6 @@ package client
 import (
 	"bytes"
 	"encoding/csv"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -62,7 +61,7 @@ func (res *Result) PostProcess() {
 				}
 			case string:
 				if hasBinary(val, 8) {
-					res.Rows[i][j] = hex.EncodeToString([]byte(val))
+					res.Rows[i][j] = encodeBinaryData([]byte(val))
 				}
 			}
 		}

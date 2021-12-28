@@ -150,6 +150,12 @@ func initOptions() {
 		fmt.Println(readonlyWarning)
 	}
 
+	if options.BinaryCodec != "" {
+		if err := client.SetBinaryCodec(options.BinaryCodec); err != nil {
+			exitWithMessage(err.Error())
+		}
+	}
+
 	printVersion()
 }
 
