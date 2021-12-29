@@ -22,7 +22,7 @@ func SetBinaryCodec(codec string) error {
 	case CodecNone, CodecHex, CodecBase64:
 		BinaryCodec = codec
 	default:
-		return fmt.Errorf("invalid binary codec value: %v", codec)
+		return fmt.Errorf("invalid binary codec: %v", codec)
 	}
 
 	return nil
