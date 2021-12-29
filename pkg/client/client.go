@@ -416,7 +416,7 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 		}
 	}
 
-	result.PrepareBigints()
+	result.PostProcess()
 
 	return &result, nil
 }
