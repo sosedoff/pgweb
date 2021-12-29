@@ -28,8 +28,8 @@ func SetBinaryCodec(codec string) error {
 	return nil
 }
 
-func encodeBinaryData(data []byte) string {
-	switch BinaryCodec {
+func encodeBinaryData(data []byte, codec string) string {
+	switch codec {
 	case CodecHex:
 		return hex.EncodeToString(data)
 	case CodecBase64:

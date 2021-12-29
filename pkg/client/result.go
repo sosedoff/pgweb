@@ -60,8 +60,8 @@ func (res *Result) PostProcess() {
 					res.Rows[i][j] = strconv.FormatFloat(val, 'e', -1, 64)
 				}
 			case string:
-				if hasBinary(val, 8) {
-					res.Rows[i][j] = encodeBinaryData([]byte(val))
+				if hasBinary(val, 8) && BinaryCodec != CodecNone {
+					res.Rows[i][j] = encodeBinaryData([]byte(val), BinaryCodec)
 				}
 			}
 		}

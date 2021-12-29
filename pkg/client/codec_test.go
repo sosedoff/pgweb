@@ -20,6 +20,11 @@ func TestSetBinaryCodec(t *testing.T) {
 
 	for _, ex := range examples {
 		t.Run(ex.input, func(t *testing.T) {
+			val := BinaryCodec
+			defer func() {
+				BinaryCodec = val
+			}()
+
 			assert.Equal(t, ex.err, SetBinaryCodec(ex.input))
 		})
 	}
@@ -38,8 +43,7 @@ func Test_encodeBinaryData(t *testing.T) {
 
 	for _, ex := range examples {
 		t.Run(ex.input, func(t *testing.T) {
-			SetBinaryCodec(ex.encoding)
-			assert.Equal(t, ex.expected, encodeBinaryData([]byte(ex.input)))
+			assert.Equal(t, ex.expected, encodeBinaryData([]byte(ex.input), ex.encoding))
 		})
 	}
 }
