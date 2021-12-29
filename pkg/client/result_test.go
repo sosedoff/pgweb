@@ -35,7 +35,7 @@ func TestPostProcess(t *testing.T) {
 			Rows: []Row{
 				{"text value"},
 				{"text with symbols !@#$%"},
-				{[]byte{10, 11, 12, 13}},
+				{string([]byte{10, 11, 12, 13})},
 			},
 		}
 
@@ -43,7 +43,7 @@ func TestPostProcess(t *testing.T) {
 
 		assert.Equal(t, "text value", result.Rows[0][0])
 		assert.Equal(t, "text with symbols !@#$%", result.Rows[1][0])
-		assert.Equal(t, "text value", result.Rows[2][0])
+		assert.Equal(t, "CgsMDQ==", result.Rows[2][0])
 	})
 }
 
