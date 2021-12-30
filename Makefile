@@ -4,6 +4,8 @@ BUILD_TIME = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ" | tr -d '\n')
 GO_VERSION = $(shell go version | awk {'print $$3'})
 DOCKER_RELEASE_TAG = "sosedoff/pgweb:$(shell git describe --abbrev=0 --tags | sed 's/v//')"
 DOCKER_LATEST_TAG = "sosedoff/pgweb:latest"
+LDFLAGS = -s -w
+PKG = github.com/sosedoff/pgweb
 
 usage:
 	@echo ""
@@ -37,22 +39,21 @@ build:
 	go build
 	@echo "You can now execute ./pgweb"
 
+release: LDFLAGS += -X $(PKG)/pkg/command.GitCommit=$(GIT_COMMIT)
+release: LDFLAGS += -X $(PKG)/pkg/command.BuildTime=$(BUILD_TIME)
+release: LDFLAGS += -X $(PKG)/pkg/command.GoVersion=$(GO_VERSION)
 release:
 	@echo "Building binaries..."
 	@gox \
 		-osarch "$(TARGETS)" \
-		-ldflags "-s -w -X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME) -X github.com/sosedoff/pgweb/pkg/command.GoVersion=$(GO_VERSION)" \
+		-ldflags "$(LDFLAGS)" \
 		-output "./bin/pgweb_{{.OS}}_{{.Arch}}"
 
 	@echo "Building ARM binaries..."
-	GOOS=linux GOARCH=arm GOARM=5 go build \
-	  -ldflags "-s -w -X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME) -X github.com/sosedoff/pgweb/pkg/command.GoVersion=$(GO_VERSION)" \
-		-o "./bin/pgweb_linux_arm_v5"
+	GOOS=linux GOARCH=arm GOARM=5 go build -ldflags "$(LDFLAGS)" -o "./bin/pgweb_linux_arm_v5"
 
 	@echo "Building ARM64 binaries..."
-	GOOS=linux GOARCH=arm64 GOARM=7 go build \
-	  -ldflags "-s -w -X github.com/sosedoff/pgweb/pkg/command.GitCommit=$(GIT_COMMIT) -X github.com/sosedoff/pgweb/pkg/command.BuildTime=$(BUILD_TIME) -X github.com/sosedoff/pgweb/pkg/command.GoVersion=$(GO_VERSION)" \
-		-o "./bin/pgweb_linux_arm64_v7"
+	GOOS=linux GOARCH=arm64 GOARM=7 go build -ldflags "$(LDFLAGS)" -o "./bin/pgweb_linux_arm64_v7"
 
 	@echo "\nPackaging binaries...\n"
 	@./script/package.sh
