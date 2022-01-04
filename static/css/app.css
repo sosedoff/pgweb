@@ -284,7 +284,6 @@
 
 #input {
   height: 255px;
-  overflow: hidden;
 }
 
 #input .wrapper {
@@ -569,6 +568,10 @@
 
 .with-pagination #pagination {
   display: block;
+}
+
+.left {
+  float: left;
 }
 
 /* -------------------------------------------------------------------------- */

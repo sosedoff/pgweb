@@ -280,8 +280,20 @@ func RunQuery(c *gin.Context) {
 	HandleQuery(query, c)
 }
 
-// ExplainQuery renders query analyze profile
+// ExplainQuery renders query explain plan
 func ExplainQuery(c *gin.Context) {
+	query := cleanQuery(c.Request.FormValue("query"))
+
+	if query == "" {
+		badRequest(c, errQueryRequired)
+		return
+	}
+
+	HandleQuery(fmt.Sprintf("EXPLAIN %s", query), c)
+}
+
+// AnalyzeQuery renders query explain plan and analyze profile
+func AnalyzeQuery(c *gin.Context) {
 	query := cleanQuery(c.Request.FormValue("query"))
 
 	if query == "" {
