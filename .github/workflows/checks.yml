@@ -1,7 +1,6 @@
 name: checks
 
 on:
-  - pull_request
   - push
 
 env:
