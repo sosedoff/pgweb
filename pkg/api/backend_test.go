@@ -96,6 +96,12 @@ func TestBackendFetchCredential(t *testing.T) {
 func startTestBackend(ctx context.Context, listenAddr string) {
 	router := gin.New()
 
+	router.Use(func(c *gin.Context) {
+		if c.GetHeader("content-type") != "application/json" {
+			c.AbortWithStatus(http.StatusBadRequest)
+		}
+	})
+
 	router.POST("/unauthorized", func(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 	})
