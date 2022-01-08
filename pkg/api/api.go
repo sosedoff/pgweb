@@ -129,7 +129,7 @@ func ConnectWithBackend(c *gin.Context) {
 	}
 
 	redirectURI := fmt.Sprintf("/%s?session=%s", command.Opts.Prefix, sid)
-	c.Redirect(301, redirectURI)
+	c.Redirect(302, redirectURI)
 }
 
 // Connect creates a new client connection
