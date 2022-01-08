@@ -27,4 +27,4 @@ build_script:
 test_script:
   - go test -cover ./...
 
-deploy: off
+deploy: false
