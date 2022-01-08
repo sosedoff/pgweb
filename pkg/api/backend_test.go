@@ -67,9 +67,10 @@ func TestBackendFetchCredential(t *testing.T) {
 		},
 	}
 
-	testCtx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-	go startTestBackend(testCtx, "localhost:5555")
+	srvCtx, srvCancel := context.WithTimeout(context.Background(), time.Minute)
+	defer srvCancel()
+
+	go startTestBackend(srvCtx, "localhost:5555")
 
 	for _, ex := range examples {
 		t.Run(ex.name, func(t *testing.T) {
@@ -139,9 +140,7 @@ func startTestBackend(ctx context.Context, listenAddr string) {
 	})
 
 	server := &http.Server{Addr: listenAddr, Handler: router}
-	if err := server.ListenAndServe(); err != nil {
-		panic(err)
-	}
+	go server.ListenAndServe()
 
 	select {
 	case <-ctx.Done():
