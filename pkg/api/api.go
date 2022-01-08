@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -94,8 +95,11 @@ func ConnectWithBackend(c *gin.Context) {
 		PassHeaders: command.Opts.ConnectHeaders,
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
 	// Fetch connection credentials
-	cred, err := backend.FetchCredential(c.Param("resource"), c)
+	cred, err := backend.FetchCredential(ctx, c.Param("resource"), c)
 	if err != nil {
 		badRequest(c, err)
 		return

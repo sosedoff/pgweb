@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -31,7 +32,7 @@ type BackendCredential struct {
 }
 
 // FetchCredential sends an authentication request to a third-party service
-func (be Backend) FetchCredential(resource string, c *gin.Context) (*BackendCredential, error) {
+func (be Backend) FetchCredential(ctx context.Context, resource string, c *gin.Context) (*BackendCredential, error) {
 	request := BackendRequest{
 		Resource: resource,
 		Token:    be.Token,
@@ -45,21 +46,27 @@ func (be Backend) FetchCredential(resource string, c *gin.Context) (*BackendCred
 
 	body, err := json.Marshal(request)
 	if err != nil {
+		log.Println("[BACKEND] backend request serialization error:", err)
+
 		return nil, err
 	}
 
-	resp, err := http.Post(be.Endpoint, "application/json", bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, be.Endpoint, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("content-type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		// Any connection-related issues will show up in the server log
-		log.Println("Unable to fetch backend credential:", err)
-
-		// We dont want to expose the url of the backend here, so reply with generic error
+		log.Println("[BACKEND] unable to fetch credential:", err)
 		return nil, errBackendConnectError
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Got HTTP error %v from backend", resp.StatusCode)
+		return nil, fmt.Errorf("received HTTP status code %v", resp.StatusCode)
 	}
 
 	cred := &BackendCredential{}
