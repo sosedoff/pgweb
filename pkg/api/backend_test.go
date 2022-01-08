@@ -60,10 +60,9 @@ func TestBackendFetchCredential(t *testing.T) {
 			cred: &BackendCredential{DatabaseURL: "postgres://hostname/bar"},
 		},
 		{
-			name:         "Success",
-			resourceName: "default",
-			backend:      Backend{Endpoint: "http://localhost:5555/success"},
-			cred:         &BackendCredential{DatabaseURL: "postgres://hostname/dbname"},
+			name:    "Success",
+			backend: Backend{Endpoint: "http://localhost:5555/success"},
+			cred:    &BackendCredential{DatabaseURL: "postgres://hostname/dbname"},
 		},
 	}
 
