@@ -631,7 +631,9 @@ function getEditorSelection() {
   // Determine which query we should run when there are multiple queries without a delimiter
   if (query.indexOf(";") == -1) {
     var subquery = getSubquery(query, editor.getCursorPosition());
+
     if (subquery) {
+      // Highlight query selection so user knows what is being executed
       if (subquery.numChunks > 1) {
         editor.selection.setSelectionRange({
           start: { row: subquery.startRow, column: 0 },
