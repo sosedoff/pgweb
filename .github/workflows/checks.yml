@@ -10,7 +10,10 @@ env:
 jobs:
   tests:
     name: tests
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
     services:
       postgres:
         image: postgres:12
