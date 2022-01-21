@@ -1,3 +1,14 @@
+## 0.11.10 - 2022-01-20
+
+- Removes alert on column copy value, GH-536
+- Migrate test suite to Github Action, GH-540
+- Serialize binary bytea cols into hex/base64, GH-537
+- Include build time into version string, GH-541
+- Explain analyze dropdown button, GH-532
+- Switch to go 1.17, GH-543
+- Use HTTP 302 status code for successful backend redirect, GH-544
+- Add connect backend tests, GH-546
+
 ## 0.11.9 - 2021-11-08
 
 - Releases are built on Go 1.17
