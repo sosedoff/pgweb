@@ -13,6 +13,7 @@ func TestSetBinaryCodec(t *testing.T) {
 		err   error
 	}{
 		{input: CodecNone, err: nil},
+		{input: CodecBase58, err: nil},
 		{input: CodecBase64, err: nil},
 		{input: CodecHex, err: nil},
 		{input: "foobar", err: errors.New("invalid binary codec: foobar")},
@@ -37,6 +38,7 @@ func Test_encodeBinaryData(t *testing.T) {
 		encoding string
 	}{
 		{input: "hello world", expected: "hello world", encoding: CodecNone},
+		{input: "hello world", expected: "6sBRWytUdMayiK", encoding: CodecBase58},
 		{input: "hello world", expected: "aGVsbG8gd29ybGQ=", encoding: CodecBase64},
 		{input: "hello world", expected: "68656c6c6f20776f726c64", encoding: CodecHex},
 	}
