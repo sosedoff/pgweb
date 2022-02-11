@@ -619,13 +619,77 @@ function hideQueryProgressMessage() {
   $("#query_progress").hide();
 }
 
+function getEditorSelection() {
+  // Return the exact selection if user has one
+  var query = $.trim(editor.getSelectedText());
+  if (query.length > 0) {
+    return query;
+  }
+
+  query = editor.getValue();
+
+  // Determine which query we should run when there are multiple queries without a delimiter
+  if (query.indexOf(";") == -1) {
+    var subquery = getSubquery(query, editor.getCursorPosition());
+
+    if (subquery) {
+      // Highlight query selection so user knows what is being executed
+      if (subquery.numChunks > 1) {
+        editor.selection.setSelectionRange({
+          start: { row: subquery.startRow, column: 0 },
+          end: { row: subquery.endRow, column: 0 },
+        })
+      }
+
+      return subquery.text;
+    }
+  }
+
+  return query;
+}
+
+function getSubquery(text, cursor) {
+  var lines = text.split("\n");
+  var startRow = undefined;
+  var numChunks = 0;
+  var ranges = [];
+
+  for (i = 0; i < lines.length; i++) {
+    if (lines[i].trim().length == 0) {
+      if (startRow >= 0 && cursor.row >= startRow && cursor.row <= i) {
+        ranges.push([startRow, i]);
+      }
+
+      numChunks++;
+      startRow = undefined;
+      continue;
+    }
+
+    if (startRow === undefined) {
+      startRow = i;
+    }
+
+    if (i == lines.length - 1) {
+      ranges.push([startRow, i + 1]);
+      numChunks++;
+    }
+  }
+
+  if (ranges.length > 0) {
+    return {
+      text: lines.slice(ranges[0][0], ranges[0][1]).join("\n"),
+      startRow: ranges[0][0],
+      endRow: ranges[0][1],
+      numChunks: numChunks
+    };
+  }
+}
+
 function runQuery() {
   setCurrentTab("table_query");
-
   showQueryProgressMessage();
 
-  var query = $.trim(editor.getSelectedText() || editor.getValue());
-
+  var query = getEditorSelection();
   if (query.length == 0) {
     hideQueryProgressMessage();
     return;
@@ -652,11 +716,9 @@ function runQuery() {
 
 function runExplain() {
   setCurrentTab("table_query");
-
   showQueryProgressMessage();
 
-  var query = $.trim(editor.getSelectedText() || editor.getValue());
-
+  var query = getEditorSelection();
   if (query.length == 0) {
     hideQueryProgressMessage();
     return;
@@ -674,11 +736,9 @@ function runExplain() {
 
 function runAnalyze() {
   setCurrentTab("table_query");
-
   showQueryProgressMessage();
 
-  var query = $.trim(editor.getSelectedText() || editor.getValue());
-
+  var query = getEditorSelection();
   if (query.length == 0) {
     hideQueryProgressMessage();
     return;
@@ -695,8 +755,7 @@ function runAnalyze() {
 }
 
 function exportTo(format) {
-  var query = $.trim(editor.getSelectedText() || editor.getValue());
-
+  var query = getEditorSelection();
   if (query.length == 0) {
     return;
   }
