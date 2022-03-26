@@ -42,7 +42,7 @@ type Options struct {
 	ConnectionIdleTimeout        int    `long:"idle-timeout" description:"Set connection idle timeout in minutes" default:"180"`
 	Cors                         bool   `long:"cors" description:"Enable Cross-Origin Resource Sharing (CORS)"`
 	CorsOrigin                   string `long:"cors-origin" description:"Allowed CORS origins" default:"*"`
-	BinaryCodec                  string `long:"binary-codec" description:"Codec for binary data serialization, one of 'none', 'hex', 'base58', 'base64'" default:"base64"`
+	BinaryCodec                  string `long:"binary-codec" description:"Codec for binary data serialization, one of 'none', 'hex', 'base58', 'base64'" default:"none"`
 }
 
 var Opts Options
