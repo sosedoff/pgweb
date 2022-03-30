@@ -1,3 +1,9 @@
+# 0.11.11 - 2022-03-29
+
+- Auto-detect the query from the query source based on user selection, GH-547
+- Added binary codec base58 as well as improving the help for --binary-codec flag, GH-548
+- Change binary codec back to none, GH-555
+
 ## 0.11.10 - 2022-01-20
 
 - Removes alert on column copy value, GH-536
