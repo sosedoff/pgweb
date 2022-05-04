@@ -352,24 +352,34 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 
 	action := strings.ToLower(strings.Split(query, " ")[0])
 	if action == "update" || action == "delete" {
-		res, err := client.db.Exec(query, args...)
-		if err != nil {
-			return nil, err
+		foundReturningClause := false
+		for _, word := range strings.Fields(query) {
+			if strings.ToLower(word) == "returning" {
+				foundReturningClause = true
+				break
+			}
 		}
 
-		affected, err := res.RowsAffected()
-		if err != nil {
-			return nil, err
-		}
+		if !foundReturningClause {
+			res, err := client.db.Exec(query, args...)
+			if err != nil {
+				return nil, err
+			}
 
-		result := Result{
-			Columns: []string{"Rows Affected"},
-			Rows: []Row{
-				Row{affected},
-			},
-		}
+			affected, err := res.RowsAffected()
+			if err != nil {
+				return nil, err
+			}
 
-		return &result, nil
+			result := Result{
+				Columns: []string{"Rows Affected"},
+				Rows: []Row{
+					Row{affected},
+				},
+			}
+
+			return &result, nil
+		}
 	}
 
 	rows, err := client.db.Queryx(query, args...)
