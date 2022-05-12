@@ -14,7 +14,7 @@ func Test_Invalid_Bookmark_Files(t *testing.T) {
 
 	_, err = readServerConfig("../../data/invalid.toml")
 	assert.Error(t, err)
-	assert.Equal(t, "Near line 1 (last key parsed 'invalid'): expected key separator '=', but got 'e' instead", err.Error())
+	assert.Equal(t, "toml: line 1: expected '.' or '=', but got 'e' instead", err.Error())
 }
 
 func Test_Bookmark(t *testing.T) {
