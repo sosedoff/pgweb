@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  GO_VERSION: 1.18
+  CGO_ENABLED: 0
+  IMAGE_REPOSITORY: sosedoff/pgweb
+
+jobs:
+  docker-release:
+    name: Publish Docker images
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure docker build context
+        uses: docker/setup-buildx-action@v1
+
+      - name: Set reference tags
+        id: refs
+        run: |
+          echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
+          echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
+          echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/v}
+
+      - name: Login to Docker
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push docker images
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_REPOSITORY }}:${{ steps.refs.outputs.SOURCE_TAG }}
+            ${{ env.IMAGE_REPOSITORY }}:latest
+          platforms: linux/amd64,linux/arm64
