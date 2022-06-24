@@ -1,0 +1,41 @@
+---
+version: "3.9"
+
+services:
+  postgres:
+    container_name: pgweb-postgres
+    image: postgres:14
+    ports:
+      - 5433:5432
+    volumes:
+      - data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: pgweb
+      POSTGRES_PASSWORD: pgweb
+      POSTGRES_USER: pgweb
+    healthcheck:
+      test: pg_isready -U pgweb -h 127.0.0.1
+      interval: 5s
+    networks:
+      - pgweb
+
+  pgweb:
+    container_name: pgweb
+    image: sosedoff/pgweb:latest
+    environment:
+      DATABASE_URL: postgres://pgweb:pgweb@pgweb-postgres:5432/pgweb?sslmode=disable
+    ports:
+      - 8081:8081
+    networks:
+      - pgweb
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  data:
+    name: pgweb_postgres
+
+networks:
+  pgweb:
+    name: pgweb
