@@ -69,7 +69,7 @@ clean:
 	@rm -rf ./bin/*
 
 docker:
-	docker build --no-cache -t pgweb .
+	docker build --platform=linux/amd64 --no-cache -t pgweb .
 
 docker-release:
 	docker build --no-cache -t $(DOCKER_RELEASE_TAG) .

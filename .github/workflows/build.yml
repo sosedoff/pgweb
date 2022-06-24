@@ -1,4 +1,4 @@
-name: Build
+name: build
 
 on:
   - push
@@ -10,7 +10,7 @@ env:
 
 jobs:
   docker-build:
-    name: Publish Docker images
+    name: docker images
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
