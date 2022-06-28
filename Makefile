@@ -1,4 +1,4 @@
-TARGETS = darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 linux/386 windows/amd64 windows/386
+TARGETS = darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64
 GIT_COMMIT = $(shell git rev-parse HEAD)
 BUILD_TIME = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ" | tr -d '\n')
 GO_VERSION = $(shell go version | awk {'print $$3'})
