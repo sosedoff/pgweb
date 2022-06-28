@@ -30,4 +30,4 @@ jobs:
           context: .
           push: false
           tags: pgweb:latest
-          platforms: linux/amd64,linux/arm64
+          platforms: darwin/amd64,darwin/arm64,linux/amd64,linux/arm64,linux/arm/v5,linux/arm/v7,linux/386

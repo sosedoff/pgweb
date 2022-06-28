@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 # Builder Stage
 # ------------------------------------------------------------------------------
-FROM golang:1.18 AS build
+FROM golang:1.18-buster AS build
 
 WORKDIR /build
 ADD . /build
@@ -12,13 +12,15 @@ RUN make build
 # ------------------------------------------------------------------------------
 # Release Stage
 # ------------------------------------------------------------------------------
-FROM alpine:3.16
+FROM debian:buster-slim
 
 RUN \
-  apk update && \
-  apk add --no-cache ca-certificates openssl postgresql && \
+  apt-get update && \
+  apt-get install -y ca-certificates openssl postgresql && \
   update-ca-certificates && \
-  rm -rf /var/cache/apk/*
+  apt-get clean autoclean && \
+  apt-get autoremove --yes && \
+  rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 COPY --from=build /build/pgweb /usr/bin/pgweb
 
