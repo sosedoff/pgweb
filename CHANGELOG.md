@@ -1,3 +1,8 @@
+# 0.11.12 - 2022-07-05
+
+- Update base docker image (alpine), update deps, GH-558
+- Refactor docker images building, include ARM, GH-568
+
 # 0.11.11 - 2022-03-29
 
 - Auto-detect the query from the query source based on user selection, GH-547
@@ -263,7 +268,7 @@
 ## 0.6.0 - 2015-05-31
 
 - Adds ability to execute only selected SQL query in run command view, [GH-85]
-- Adds ability to delete/truncate table via context meny on sidebar view 
+- Adds ability to delete/truncate table via context meny on sidebar view
 - Adds ability to export table contents to CSV via context menu on sidebar view
 - Changes sidebar color scheme to a lighter and better looking one
 
