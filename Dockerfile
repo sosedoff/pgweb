@@ -16,7 +16,7 @@ FROM debian:buster-slim
 
 RUN \
   apt-get update && \
-  apt-get install -y ca-certificates openssl postgresql && \
+  apt-get install -y ca-certificates openssl postgresql netcat && \
   update-ca-certificates && \
   apt-get clean autoclean && \
   apt-get autoremove --yes && \
