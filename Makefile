@@ -36,6 +36,10 @@ build:
 	go build
 	@echo "You can now execute ./pgweb"
 
+install:
+	go install
+	@echo "You can now execute pgweb"
+
 release: LDFLAGS += -X $(PKG)/pkg/command.GitCommit=$(GIT_COMMIT)
 release: LDFLAGS += -X $(PKG)/pkg/command.BuildTime=$(BUILD_TIME)
 release: LDFLAGS += -X $(PKG)/pkg/command.GoVersion=$(GO_VERSION)
