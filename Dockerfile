@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 # Builder Stage
 # ------------------------------------------------------------------------------
-FROM golang:1.18-buster AS build
+FROM golang:1.18-bullseye AS build
 
 WORKDIR /build
 ADD . /build
@@ -12,7 +12,7 @@ RUN make build
 # ------------------------------------------------------------------------------
 # Release Stage
 # ------------------------------------------------------------------------------
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 RUN \
   apt-get update && \
