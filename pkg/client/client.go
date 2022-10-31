@@ -172,7 +172,11 @@ func (client *Client) Test() error {
 }
 
 func (client *Client) Info() (*Result, error) {
-	return client.query(statements.Info)
+	info, err := client.query(statements.Info)
+	if(err != nil){
+		return client.query(statements.InfoSimplified)
+	}
+	return info, nil
 }
 
 func (client *Client) Databases() ([]string, error) {
