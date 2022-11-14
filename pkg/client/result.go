@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"strconv"
 	"time"
@@ -88,7 +89,9 @@ func (res *Result) CSV() []byte {
 	buff := &bytes.Buffer{}
 	writer := csv.NewWriter(buff)
 
-	writer.Write(res.Columns)
+	if err := writer.Write(res.Columns); err != nil {
+		log.Printf("result csv write error: %v\n", err)
+	}
 
 	for _, row := range res.Rows {
 		record := make([]string, len(res.Columns))

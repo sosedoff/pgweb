@@ -533,7 +533,7 @@ func DataExport(c *gin.Context) {
 	if dump.Table != "" {
 		filename = filename + "_" + dump.Table
 	}
-	reg := regexp.MustCompile("[^._\\w]+")
+	reg := regexp.MustCompile(`[^._\\w]+`)
 	cleanFilename := reg.ReplaceAllString(filename, "")
 
 	c.Header(

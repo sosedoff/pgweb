@@ -26,7 +26,7 @@ var (
 
 func mapKeys(data map[string]*Objects) []string {
 	result := []string{}
-	for k, _ := range data {
+	for k := range data {
 		result = append(result, k)
 	}
 	return result
@@ -421,8 +421,10 @@ func testHistoryUniqueness(t *testing.T) {
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 	client, _ := NewFromUrl(url, nil)
 
-	client.Query("SELECT * FROM books WHERE id = 1")
-	client.Query("SELECT * FROM books WHERE id = 1")
+	for i := 0; i < 3; i++ {
+		_, err := client.Query("SELECT * FROM books WHERE id = 1")
+		assert.NoError(t, err)
+	}
 
 	assert.Equal(t, 1, len(client.History))
 	assert.Equal(t, "SELECT * FROM books WHERE id = 1", client.History[0].Query)
@@ -445,7 +447,8 @@ func testReadOnlyMode(t *testing.T) {
 	assert.Error(t, err, "query contains keywords not allowed in read-only mode")
 
 	// Turn off guard
-	client.db.Exec("SET default_transaction_read_only=off;")
+	_, err = client.db.Exec("SET default_transaction_read_only=off;")
+	assert.NoError(t, err)
 
 	_, err = client.Query("\nCREATE TABLE foobar(id integer);\n")
 	assert.NotNil(t, err)
@@ -471,6 +474,7 @@ func TestAll(t *testing.T) {
 	setupClient()
 
 	testNewClientFromUrl(t)
+	testNewClientFromUrl2(t)
 	testClientIdleTime(t)
 	testTest(t)
 	testInfo(t)

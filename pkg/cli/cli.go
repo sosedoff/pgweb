@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"regexp"
 	"strings"
+	"syscall"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jessevdk/go-flags"
@@ -203,7 +204,7 @@ func startServer() {
 
 func handleSignals() {
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c
 }
 
@@ -220,7 +221,10 @@ func openPage() {
 		return
 	}
 
-	exec.Command("open", url).Output()
+	_, err = exec.Command("open", url).Output()
+	if err != nil {
+		fmt.Println("Unable to auto-open pgweb URL:", err)
+	}
 }
 
 func Run() {

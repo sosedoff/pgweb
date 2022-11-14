@@ -11,10 +11,7 @@ import (
 func IsPortAvailable(port int) bool {
 	conn, err := net.Dial("tcp", fmt.Sprintf("127.0.0.1:%v", port))
 	if err != nil {
-		if strings.Index(err.Error(), "connection refused") > 0 {
-			return true
-		}
-		return false
+		return strings.Index(err.Error(), "connection refused") > 0
 	}
 
 	conn.Close()
