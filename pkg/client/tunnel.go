@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/url"
@@ -54,7 +53,7 @@ func fileExists(path string) bool {
 }
 
 func parsePrivateKey(keyPath string, keyPass string) (ssh.Signer, error) {
-	buff, err := ioutil.ReadFile(keyPath)
+	buff, err := os.ReadFile(keyPath)
 	if err != nil {
 		return nil, err
 	}

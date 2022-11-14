@@ -2,7 +2,7 @@ package bookmarks
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -46,7 +46,7 @@ func (b Bookmark) ConvertToOptions() command.Options {
 func readServerConfig(path string) (Bookmark, error) {
 	bookmark := Bookmark{}
 
-	buff, err := ioutil.ReadFile(path)
+	buff, err := os.ReadFile(path)
 	if err != nil {
 		return bookmark, err
 	}
@@ -100,7 +100,7 @@ func Path(overrideDir string) string {
 func ReadAll(path string) (map[string]Bookmark, error) {
 	results := map[string]Bookmark{}
 
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return results, err
 	}
