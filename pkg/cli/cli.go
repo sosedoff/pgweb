@@ -221,7 +221,10 @@ func openPage() {
 		return
 	}
 
-	exec.Command("open", url).Output()
+	_, err = exec.Command("open", url).Output()
+	if err != nil {
+		fmt.Println("Unable to auto-open pgweb URL:", err)
+	}
 }
 
 func Run() {

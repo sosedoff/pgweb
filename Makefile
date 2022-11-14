@@ -28,6 +28,9 @@ test-all:
 	@./script/test_all.sh
 	@./script/test_cockroach.sh
 
+lint:
+	golangci-lint run
+
 dev:
 	go build
 	@echo "You can now execute ./pgweb"

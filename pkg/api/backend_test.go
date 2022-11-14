@@ -139,10 +139,17 @@ func startTestBackend(ctx context.Context, listenAddr string) {
 	})
 
 	server := &http.Server{Addr: listenAddr, Handler: router}
-	go server.ListenAndServe()
+	go mustStartServer(server)
 
-	select {
-	case <-ctx.Done():
-		server.Shutdown(context.Background())
+	<-ctx.Done()
+	if err := server.Shutdown(context.Background()); err != nil && err != http.ErrServerClosed {
+		panic(err)
+	}
+}
+
+func mustStartServer(server *http.Server) {
+	err := server.ListenAndServe()
+	if err != nil && err != http.ErrServerClosed {
+		panic(err)
 	}
 }
