@@ -42,6 +42,24 @@ jobs:
           PGPASSWORD: postgres
           PGDATABASE: booktown
 
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.50.1
+
   fmt:
     name: fmt
     runs-on: ubuntu-latest
