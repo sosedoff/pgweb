@@ -157,3 +157,17 @@ func getPrefixedEnvVar(name string) string {
 	}
 	return val
 }
+
+// AvailableEnvVars returns list of supported env vars .
+// TODO: These should probably embedded into flag parsing logic so we dont have
+// to maintain the list manually.
+func AvailableEnvVars() string {
+	return strings.Join([]string{
+		"  " + envVarPrefix + "DATABASE_URL  Database connection string",
+		"  " + envVarPrefix + "URL_PREFIX    HTTP server path prefix",
+		"  " + envVarPrefix + "SESSIONS:     Enable multiple database sessions",
+		"  " + envVarPrefix + "LOCK_SESSION  Lock session to a single database connection",
+		"  " + envVarPrefix + "AUTH_USER     HTTP basic auth username",
+		"  " + envVarPrefix + "AUTH_PASS     HTTP basic auth password",
+	}, "\n")
+}
