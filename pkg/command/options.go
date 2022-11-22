@@ -2,11 +2,17 @@ package command
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"os/user"
 	"strings"
 
 	"github.com/jessevdk/go-flags"
+)
+
+const (
+	// Prefix to use for all pgweb env vars, ie PGWEB_HOST, PGWEB_PORT, etc
+	envVarPrefix = "PGWEB_"
 )
 
 type Options struct {
@@ -57,28 +63,28 @@ func ParseOptions(args []string) (Options, error) {
 	}
 
 	if opts.URL == "" {
-		opts.URL = os.Getenv("DATABASE_URL")
+		opts.URL = getPrefixedEnvVar("DATABASE_URL")
 	}
 
 	if opts.Prefix == "" {
-		opts.Prefix = os.Getenv("URL_PREFIX")
+		opts.Prefix = getPrefixedEnvVar("URL_PREFIX")
 	}
 
 	// Handle edge case where pgweb is started with a default host `localhost` and no user.
 	// When user is not set the `lib/pq` connection will fail and cause pgweb's termination.
 	if (opts.Host == "localhost" || opts.Host == "127.0.0.1") && opts.User == "" {
-		if username := GetCurrentUser(); username != "" {
+		if username := getCurrentUser(); username != "" {
 			opts.User = username
 		} else {
 			opts.Host = ""
 		}
 	}
 
-	if os.Getenv("SESSIONS") != "" {
+	if getPrefixedEnvVar("SESSIONS") != "" {
 		opts.Sessions = true
 	}
 
-	if os.Getenv("LOCK_SESSION") != "" {
+	if getPrefixedEnvVar("LOCK_SESSION") != "" {
 		opts.LockSession = true
 		opts.Sessions = false
 	}
@@ -97,12 +103,12 @@ func ParseOptions(args []string) (Options, error) {
 		opts.Prefix = opts.Prefix + "/"
 	}
 
-	if opts.AuthUser == "" && os.Getenv("AUTH_USER") != "" {
-		opts.AuthUser = os.Getenv("AUTH_USER")
+	if opts.AuthUser == "" {
+		opts.AuthUser = getPrefixedEnvVar("AUTH_USER")
 	}
 
-	if opts.AuthPass == "" && os.Getenv("AUTH_PASS") != "" {
-		opts.AuthPass = os.Getenv("AUTH_PASS")
+	if opts.AuthPass == "" {
+		opts.AuthPass = getPrefixedEnvVar("AUTH_PASS")
 	}
 
 	if opts.ConnectBackend != "" {
@@ -131,11 +137,23 @@ func SetDefaultOptions() error {
 	return nil
 }
 
-// GetCurrentUser returns a current user name
-func GetCurrentUser() string {
+// getCurrentUser returns a current user name
+func getCurrentUser() string {
 	u, _ := user.Current()
 	if u != nil {
 		return u.Username
 	}
 	return os.Getenv("USER")
+}
+
+// getPrefixedEnvVar returns env var with prefix, or falls back to unprefixed one
+func getPrefixedEnvVar(name string) string {
+	val := os.Getenv(envVarPrefix + name)
+	if val == "" {
+		val = os.Getenv(name)
+		if val != "" {
+			fmt.Printf("[DEPRECATION] Usage of %s env var is deprecated, please use PGWEB_%s variable instead\n", name, name)
+		}
+	}
+	return val
 }
