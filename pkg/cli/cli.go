@@ -131,8 +131,12 @@ func initClient() {
 func initOptions() {
 	opts, err := command.ParseOptions(os.Args)
 	if err != nil {
-		switch err.(type) {
+		switch errVal := err.(type) {
 		case *flags.Error:
+			if errVal.Type == flags.ErrHelp {
+				fmt.Println("Available environment variables:")
+				fmt.Println(command.AvailableEnvVars())
+			}
 			// no need to print error, flags package already does that
 		default:
 			fmt.Println(err.Error())
