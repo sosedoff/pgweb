@@ -9,6 +9,11 @@ import (
 	"github.com/jessevdk/go-flags"
 )
 
+const (
+	// Prefix to use for all pgweb env vars, ie PGWEB_HOST, PGWEB_PORT, etc
+	envVarPrefix = "PGWEB_"
+)
+
 type Options struct {
 	Version                      bool   `short:"v" long:"version" description:"Print version"`
 	Debug                        bool   `short:"d" long:"debug" description:"Enable debugging mode"`
@@ -57,11 +62,11 @@ func ParseOptions(args []string) (Options, error) {
 	}
 
 	if opts.URL == "" {
-		opts.URL = os.Getenv("DATABASE_URL")
+		opts.URL = getPrefixedEnvVar("DATABASE_URL")
 	}
 
 	if opts.Prefix == "" {
-		opts.Prefix = os.Getenv("URL_PREFIX")
+		opts.Prefix = getPrefixedEnvVar("URL_PREFIX")
 	}
 
 	// Handle edge case where pgweb is started with a default host `localhost` and no user.
@@ -74,11 +79,11 @@ func ParseOptions(args []string) (Options, error) {
 		}
 	}
 
-	if os.Getenv("SESSIONS") != "" {
+	if getPrefixedEnvVar("SESSIONS") != "" {
 		opts.Sessions = true
 	}
 
-	if os.Getenv("LOCK_SESSION") != "" {
+	if getPrefixedEnvVar("LOCK_SESSION") != "" {
 		opts.LockSession = true
 		opts.Sessions = false
 	}
@@ -97,12 +102,12 @@ func ParseOptions(args []string) (Options, error) {
 		opts.Prefix = opts.Prefix + "/"
 	}
 
-	if opts.AuthUser == "" && os.Getenv("AUTH_USER") != "" {
-		opts.AuthUser = os.Getenv("AUTH_USER")
+	if opts.AuthUser == "" {
+		opts.AuthUser = getPrefixedEnvVar("AUTH_USER")
 	}
 
-	if opts.AuthPass == "" && os.Getenv("AUTH_PASS") != "" {
-		opts.AuthPass = os.Getenv("AUTH_PASS")
+	if opts.AuthPass == "" {
+		opts.AuthPass = getPrefixedEnvVar("AUTH_PASS")
 	}
 
 	if opts.ConnectBackend != "" {
@@ -138,4 +143,13 @@ func getCurrentUser() string {
 		return u.Username
 	}
 	return os.Getenv("USER")
+}
+
+// getPrefixedEnvVar returns env var with prefix, or falls back to unprefixed one
+func getPrefixedEnvVar(name string) string {
+	val := os.Getenv(envVarPrefix + name)
+	if val == "" {
+		val = os.Getenv(name)
+	}
+	return val
 }
