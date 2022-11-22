@@ -67,7 +67,7 @@ func ParseOptions(args []string) (Options, error) {
 	// Handle edge case where pgweb is started with a default host `localhost` and no user.
 	// When user is not set the `lib/pq` connection will fail and cause pgweb's termination.
 	if (opts.Host == "localhost" || opts.Host == "127.0.0.1") && opts.User == "" {
-		if username := GetCurrentUser(); username != "" {
+		if username := getCurrentUser(); username != "" {
 			opts.User = username
 		} else {
 			opts.Host = ""
@@ -131,8 +131,8 @@ func SetDefaultOptions() error {
 	return nil
 }
 
-// GetCurrentUser returns a current user name
-func GetCurrentUser() string {
+// getCurrentUser returns a current user name
+func getCurrentUser() string {
 	u, _ := user.Current()
 	if u != nil {
 		return u.Username
