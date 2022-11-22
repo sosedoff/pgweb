@@ -158,8 +158,9 @@ func getPrefixedEnvVar(name string) string {
 	return val
 }
 
-// AvailableEnvVars returns list of supported env vars .
-// TODO: These should probably embedded into flag parsing logic so we dont have
+// AvailableEnvVars returns list of supported env vars.
+//
+// TODO: These should probably be embedded into flag parsing logic so we dont have
 // to maintain the list manually.
 func AvailableEnvVars() string {
 	return strings.Join([]string{
