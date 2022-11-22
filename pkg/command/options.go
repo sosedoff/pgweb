@@ -2,6 +2,7 @@ package command
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"os/user"
 	"strings"
@@ -150,6 +151,9 @@ func getPrefixedEnvVar(name string) string {
 	val := os.Getenv(envVarPrefix + name)
 	if val == "" {
 		val = os.Getenv(name)
+		if val != "" {
+			fmt.Printf("[DEPRECATION] Usage of %s env var is deprecated, please use PGWEB_%s variable instead\n", name, name)
+		}
 	}
 	return val
 }
