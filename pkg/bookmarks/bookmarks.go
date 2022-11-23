@@ -21,7 +21,7 @@ type Bookmark struct {
 	User     string          `json:"user"`     // Database user
 	Password string          `json:"password"` // User password
 	Database string          `json:"database"` // Database name
-	Ssl      string          `json:"ssl"`      // Connection SSL mode
+	SSLMode  string          `json:"ssl"`      // Connection SSL mode
 	SSH      *shared.SSHInfo `json:"ssh"`      // SSH tunnel config
 }
 
@@ -33,13 +33,13 @@ func (b Bookmark) SSHInfoIsEmpty() bool {
 // ConvertToOptions returns an options struct from connection details
 func (b Bookmark) ConvertToOptions() command.Options {
 	return command.Options{
-		URL:    b.URL,
-		Host:   b.Host,
-		Port:   b.Port,
-		User:   b.User,
-		Pass:   b.Password,
-		DbName: b.Database,
-		Ssl:    b.Ssl,
+		URL:     b.URL,
+		Host:    b.Host,
+		Port:    b.Port,
+		User:    b.User,
+		Pass:    b.Password,
+		DbName:  b.Database,
+		SSLMode: b.SSLMode,
 	}
 }
 
@@ -62,7 +62,7 @@ func readServerConfig(path string) (Bookmark, error) {
 	valid := false
 
 	for _, mode := range modes {
-		if bookmark.Ssl == mode {
+		if bookmark.SSLMode == mode {
 			valid = true
 			break
 		}
@@ -70,8 +70,8 @@ func readServerConfig(path string) (Bookmark, error) {
 
 	// Fall back to a default mode if mode is not set or invalid
 	// Typical typo: ssl mode set to "disabled"
-	if bookmark.Ssl == "" || !valid {
-		bookmark.Ssl = "disable"
+	if bookmark.SSLMode == "" || !valid {
+		bookmark.SSLMode = "disable"
 	}
 
 	// Set default SSH port if it's not provided by user

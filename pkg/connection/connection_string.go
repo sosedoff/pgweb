@@ -66,13 +66,13 @@ func FormatURL(opts command.Options) (string, error) {
 
 	// Determine if we need to specify sslmode if it's missing
 	if params["sslmode"] == "" {
-		if opts.Ssl == "" {
+		if opts.SSLMode == "" {
 			// Only modify sslmode for local connections
 			if strings.Contains(uri.Host, "localhost") || strings.Contains(uri.Host, "127.0.0.1") {
 				params["sslmode"] = "disable"
 			}
 		} else {
-			params["sslmode"] = opts.Ssl
+			params["sslmode"] = opts.SSLMode
 		}
 	}
 
@@ -108,21 +108,21 @@ func BuildStringFromOptions(opts command.Options) (string, error) {
 		}
 	}
 
-	if opts.Ssl != "" {
-		query.Add("sslmode", opts.Ssl)
+	if opts.SSLMode != "" {
+		query.Add("sslmode", opts.SSLMode)
 	} else {
 		if opts.Host == "localhost" || opts.Host == "127.0.0.1" {
 			query.Add("sslmode", "disable")
 		}
 	}
-	if opts.SslCert != "" {
-		query.Add("sslcert", opts.SslCert)
+	if opts.SSLCert != "" {
+		query.Add("sslcert", opts.SSLCert)
 	}
-	if opts.SslKey != "" {
-		query.Add("sslkey", opts.SslKey)
+	if opts.SSLKey != "" {
+		query.Add("sslkey", opts.SSLKey)
 	}
-	if opts.SslRootCert != "" {
-		query.Add("sslrootcert", opts.SslRootCert)
+	if opts.SSLRootCert != "" {
+		query.Add("sslrootcert", opts.SSLRootCert)
 	}
 
 	url := neturl.URL{
