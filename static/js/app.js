@@ -754,13 +754,29 @@ function runAnalyze() {
   });
 }
 
+function exportURL(path, params) {
+  var url = new URL(window.location.href.split("#")[0]);
+
+  url.pathname += path;
+  for (key in params) {
+    url.searchParams.append(key, params[key]);
+  }
+
+  return url.toString();
+}
+
 function exportTo(format) {
   var query = getEditorSelection();
   if (query.length == 0) {
     return;
   }
 
-  var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&query=" + encodeQuery(query) + "&_session_id=" + getSessionId();
+  var url = exportURL("api/query", {
+    "format": format,
+    "query": encodeQuery(query),
+    "_session_id": getSessionId()
+  })
+
   var win = window.open(url, '_blank');
 
   setCurrentTab("table_query");
