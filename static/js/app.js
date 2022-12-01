@@ -748,7 +748,7 @@ function runAnalyze() {
   });
 }
 
-function exportURL(path, params) {
+function generateURL(path, params) {
   var url = new URL(window.location.href.split("#")[0]);
 
   url.pathname += path;
@@ -760,7 +760,7 @@ function exportURL(path, params) {
 }
 
 function openInNewWindow(path, params) {
-  var url = exportURL(path, params);
+  var url = generateURL(path, params);
   var win = window.open(url, '_blank');
   win.focus();
 }
