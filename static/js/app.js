@@ -237,15 +237,11 @@ function performTableAction(table, action, el) {
       var format = el.data("format");
       var db = $("#current_database").text();
       var filename = db + "." + table + "." + format;
-      var query = window.encodeURI("SELECT * FROM " + table);
-      var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
-      var win  = window.open(url, "_blank");
-      win.focus();
+      var query = "SELECT * FROM " + table;
+      openInNewWindow("api/query", { "format": format, "filename": filename, "query": query });
       break;
     case "dump":
-      var url = window.location.href.split("#")[0] + "api/export?table=" + table + "&_session_id=" + getSessionId();
-      var win  = window.open(url, "_blank");
-      win.focus();
+      openInNewWindow("api/export", { "table": table });
       break;
     case "copy":
       copyToClipboard(table.split('.')[1]);
@@ -271,10 +267,8 @@ function performViewAction(view, action, el) {
       var format = el.data("format");
       var db = $("#current_database").text();
       var filename = db + "." + view + "." + format;
-      var query = window.encodeURI("SELECT * FROM " + view);
-      var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
-      var win  = window.open(url, "_blank");
-      win.focus();
+      var query = "SELECT * FROM " + view;
+      openInNewWindow("api/query", { "format": format, "filename": filename, "query": query });
       break;
     case "copy":
       copyToClipboard(view.split('.')[1]);
@@ -754,17 +748,38 @@ function runAnalyze() {
   });
 }
 
+function generateURL(path, params) {
+  var url = new URL(window.location.href.split("#")[0]);
+
+  url.pathname += path;
+  for (key in params) {
+    url.searchParams.append(key, params[key]);
+  }
+
+  // Automatically append session id so we dont have to do that everywhere
+  url.searchParams.append("_session_id", getSessionId());
+
+  return url.toString();
+}
+
+function openInNewWindow(path, params) {
+  var url = generateURL(path, params);
+  var win = window.open(url, '_blank');
+  win.focus();
+}
+
 function exportTo(format) {
   var query = getEditorSelection();
   if (query.length == 0) {
     return;
   }
 
-  var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&query=" + encodeQuery(query) + "&_session_id=" + getSessionId();
-  var win = window.open(url, '_blank');
-
   setCurrentTab("table_query");
-  win.focus();
+
+  openInNewWindow("api/query", {
+    "format": format,
+    "query": encodeQuery(query)
+  })
 }
 
 // Fetch all unique values for the selected column in the table
@@ -1060,9 +1075,7 @@ function bindCurrentDatabaseMenu() {
 
       switch(menuItem.data("action")) {
         case "export":
-          var url = window.location.href.split("#")[0] + "api/export?_session_id=" + getSessionId();
-          var win  = window.open(url, "_blank");
-          win.focus();
+          openInNewWindow("api/export");
           break;
       }
     }
