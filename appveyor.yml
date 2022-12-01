@@ -2,17 +2,17 @@ clone_folder: c:\gopath\src\github.com\sosedoff\pgweb
 
 environment:
   GOPATH: c:\gopath
-  GOROOT: c:\goroot116\go
-  GOTOOLDIR: c:\goroot116\go\pkg\tool\windows_amd64
+  GOROOT: c:\goroot118\go
+  GOTOOLDIR: c:\goroot118\go\pkg\tool\windows_amd64
   CGO_ENABLED: 0
 
 services:
   - postgresql
 
 install:
-  - ps: mkdir c:\goroot116
-  - ps: iwr -outf c:\goroot116\go1.16.windows-amd64.zip https://golang.org/dl/go1.16.windows-amd64.zip
-  - ps: Expand-Archive c:\goroot116\go1.16.windows-amd64.zip -DestinationPath c:\goroot116
+  - ps: mkdir c:\goroot118
+  - ps: iwr -outf c:\goroot118\go1.18.windows-amd64.zip https://golang.org/dl/go1.18.windows-amd64.zip
+  - ps: Expand-Archive c:\goroot118\go1.18.windows-amd64.zip -DestinationPath c:\goroot118
   - set PATH=%GOPATH%\bin;%PATH%
   - set PATH=%GOROOT%\bin;%PATH%
   - echo %PATH%
