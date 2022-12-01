@@ -12,6 +12,8 @@ import (
 const loggerMessage = "http_request"
 
 func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
+	debug := logger.Level > logrus.InfoLevel
+
 	return func(c *gin.Context) {
 		start := time.Now()
 		path := c.Request.URL.Path
@@ -20,7 +22,7 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 		c.Next()
 
 		// Skip logging static assets
-		if strings.Contains(path, "/static/") {
+		if strings.Contains(path, "/static/") && !debug {
 			return
 		}
 
@@ -38,6 +40,11 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 
 		if err := c.Errors.Last(); err != nil {
 			fields["error"] = err.Error()
+		}
+
+		// Additional fields for debugging
+		if debug {
+			fields["raw_query"] = c.Request.URL.RawQuery
 		}
 
 		entry := logrus.WithFields(fields)

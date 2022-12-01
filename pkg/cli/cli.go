@@ -184,9 +184,13 @@ func printVersion() {
 }
 
 func startServer() {
-	router := gin.New()
+	logger := logrus.New()
+	if options.Debug {
+		logger.SetLevel(logrus.DebugLevel)
+	}
 
-	router.Use(api.RequestLogger(logrus.New()))
+	router := gin.New()
+	router.Use(api.RequestLogger(logger))
 	router.Use(gin.Recovery())
 
 	// Enable HTTP basic authentication only if both user and password are set
