@@ -14,4 +14,21 @@ var (
 
 	// GoVersion contains the build time Go version
 	GoVersion string
+
+	// Info contains all version information
+	Info VersionInfo
 )
+
+type VersionInfo struct {
+	Version   string `json:"version"`
+	GitCommit string `json:"git_sha"`
+	BuildTime string `json:"build_time"`
+	GoVersion string `json:"go_version"`
+}
+
+func init() {
+	Info.Version = Version
+	Info.GitCommit = GitCommit
+	Info.BuildTime = BuildTime
+	Info.GoVersion = GoVersion
+}
