@@ -13,27 +13,36 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 )
 
-type Row []interface{}
+const (
+	ObjTypeTable            = "table"
+	ObjTypeView             = "view"
+	ObjTypeMaterializedView = "materialized_view"
+	ObjTypeSequence         = "sequence"
+)
 
-type Pagination struct {
-	Rows    int64 `json:"rows_count"`
-	Page    int64 `json:"page"`
-	Pages   int64 `json:"pages_count"`
-	PerPage int64 `json:"per_page"`
-}
+type (
+	Row []interface{}
 
-type Result struct {
-	Pagination *Pagination `json:"pagination,omitempty"`
-	Columns    []string    `json:"columns"`
-	Rows       []Row       `json:"rows"`
-}
+	Pagination struct {
+		Rows    int64 `json:"rows_count"`
+		Page    int64 `json:"page"`
+		Pages   int64 `json:"pages_count"`
+		PerPage int64 `json:"per_page"`
+	}
 
-type Objects struct {
-	Tables            []string `json:"table"`
-	Views             []string `json:"view"`
-	MaterializedViews []string `json:"materialized_view"`
-	Sequences         []string `json:"sequence"`
-}
+	Result struct {
+		Pagination *Pagination `json:"pagination,omitempty"`
+		Columns    []string    `json:"columns"`
+		Rows       []Row       `json:"rows"`
+	}
+
+	Objects struct {
+		Tables            []string `json:"table"`
+		Views             []string `json:"view"`
+		MaterializedViews []string `json:"materialized_view"`
+		Sequences         []string `json:"sequence"`
+	}
+)
 
 // Due to big int number limitations in javascript, numbers should be encoded
 // as strings so they could be properly loaded on the frontend.
@@ -139,7 +148,7 @@ func ObjectsFromResult(res *Result) map[string]*Objects {
 	for _, row := range res.Rows {
 		schema := row[0].(string)
 		name := row[1].(string)
-		object_type := row[2].(string)
+		objectType := row[2].(string)
 
 		if objects[schema] == nil {
 			objects[schema] = &Objects{
@@ -150,14 +159,14 @@ func ObjectsFromResult(res *Result) map[string]*Objects {
 			}
 		}
 
-		switch object_type {
-		case "table":
+		switch objectType {
+		case ObjTypeTable:
 			objects[schema].Tables = append(objects[schema].Tables, name)
-		case "view":
+		case ObjTypeView:
 			objects[schema].Views = append(objects[schema].Views, name)
-		case "materialized_view":
+		case ObjTypeMaterializedView:
 			objects[schema].MaterializedViews = append(objects[schema].MaterializedViews, name)
-		case "sequence":
+		case ObjTypeSequence:
 			objects[schema].Sequences = append(objects[schema].Sequences, name)
 		}
 	}

@@ -15,6 +15,7 @@ usage:
 	@echo "make release         : Generate binaries for all supported OSes"
 	@echo "make test            : Execute test suite"
 	@echo "make test-all        : Execute test suite on multiple PG versions"
+	@echo "make lint            : Execute code linter"
 	@echo "make clean           : Remove all build files and reset assets"
 	@echo "make docker          : Build docker image"
 	@echo "make docker-release  : Build and tag docker image"

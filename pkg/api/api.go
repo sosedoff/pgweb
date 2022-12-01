@@ -345,7 +345,7 @@ func GetTable(c *gin.Context) {
 	var res *client.Result
 	var err error
 
-	if c.Request.FormValue("type") == "materialized_view" {
+	if c.Request.FormValue("type") == client.ObjTypeMaterializedView {
 		res, err = DB(c).MaterializedView(c.Params.ByName("table"))
 	} else {
 		res, err = DB(c).Table(c.Params.ByName("table"))
