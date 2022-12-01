@@ -238,10 +238,10 @@ function performTableAction(table, action, el) {
       var db = $("#current_database").text();
       var filename = db + "." + table + "." + format;
       var query = "SELECT * FROM " + table;
-      openInNewWindow("api/query", { "format": format, "filename": filename, "query": query, "_session_id": getSessionId() });
+      openInNewWindow("api/query", { "format": format, "filename": filename, "query": query });
       break;
     case "dump":
-      openInNewWindow("api/export", { "table": table, "_session_id": getSessionId() });
+      openInNewWindow("api/export", { "table": table });
       break;
     case "copy":
       copyToClipboard(table.split('.')[1]);
@@ -268,7 +268,7 @@ function performViewAction(view, action, el) {
       var db = $("#current_database").text();
       var filename = db + "." + view + "." + format;
       var query = "SELECT * FROM " + view;
-      openInNewWindow("api/query", { "format": format, "filename": filename, "query": query, "_session_id": getSessionId() });
+      openInNewWindow("api/query", { "format": format, "filename": filename, "query": query });
       break;
     case "copy":
       copyToClipboard(view.split('.')[1]);
@@ -756,6 +756,9 @@ function generateURL(path, params) {
     url.searchParams.append(key, params[key]);
   }
 
+  // Automatically append session id so we dont have to do that everywhere
+  url.searchParams.append("_session_id", getSessionId());
+
   return url.toString();
 }
 
@@ -775,8 +778,7 @@ function exportTo(format) {
 
   openInNewWindow("api/query", {
     "format": format,
-    "query": encodeQuery(query),
-    "_session_id": getSessionId()
+    "query": encodeQuery(query)
   })
 }
 
@@ -1073,7 +1075,7 @@ function bindCurrentDatabaseMenu() {
 
       switch(menuItem.data("action")) {
         case "export":
-          openInNewWindow("api/export", { "_session_id": getSessionId() });
+          openInNewWindow("api/export");
           break;
       }
     }
