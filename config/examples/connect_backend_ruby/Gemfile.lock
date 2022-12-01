@@ -1,0 +1,30 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    json (2.6.2)
+    mustermann (3.0.0)
+      ruby2_keywords (~> 0.0.1)
+    nio4r (2.5.8)
+    puma (6.0.0)
+      nio4r (~> 2.0)
+    rack (2.2.4)
+    rack-protection (3.0.4)
+      rack
+    ruby2_keywords (0.0.5)
+    sinatra (3.0.4)
+      mustermann (~> 3.0)
+      rack (~> 2.2, >= 2.2.4)
+      rack-protection (= 3.0.4)
+      tilt (~> 2.0)
+    tilt (2.0.11)
+
+PLATFORMS
+  arm64-darwin-21
+
+DEPENDENCIES
+  json
+  puma
+  sinatra
+
+BUNDLED WITH
+   2.3.9
