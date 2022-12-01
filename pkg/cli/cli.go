@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jessevdk/go-flags"
+	"github.com/sirupsen/logrus"
 
 	"github.com/sosedoff/pgweb/pkg/api"
 	"github.com/sosedoff/pgweb/pkg/bookmarks"
@@ -183,7 +184,14 @@ func printVersion() {
 }
 
 func startServer() {
-	router := gin.Default()
+	logger := logrus.New()
+	if options.Debug {
+		logger.SetLevel(logrus.DebugLevel)
+	}
+
+	router := gin.New()
+	router.Use(api.RequestLogger(logger))
+	router.Use(gin.Recovery())
 
 	// Enable HTTP basic authentication only if both user and password are set
 	if options.AuthUser != "" && options.AuthPass != "" {
