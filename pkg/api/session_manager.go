@@ -10,9 +10,10 @@ import (
 )
 
 type SessionManager struct {
-	logger   *logrus.Logger
-	sessions map[string]*client.Client
-	mu       sync.Mutex
+	logger      *logrus.Logger
+	sessions    map[string]*client.Client
+	mu          sync.Mutex
+	idleTimeout time.Duration
 }
 
 func NewSessionManager(logger *logrus.Logger) *SessionManager {
@@ -21,6 +22,10 @@ func NewSessionManager(logger *logrus.Logger) *SessionManager {
 		sessions: map[string]*client.Client{},
 		mu:       sync.Mutex{},
 	}
+}
+
+func (m *SessionManager) SetIdleTimeout(timeout time.Duration) {
+	m.idleTimeout = timeout
 }
 
 func (m *SessionManager) IDs() []string {
@@ -79,6 +84,10 @@ func (m *SessionManager) Len() int {
 }
 
 func (m *SessionManager) Cleanup() int {
+	if m.idleTimeout == 0 {
+		return 0
+	}
+
 	removed := 0
 
 	m.logger.Debug("starting idle sessions cleanup")
@@ -97,6 +106,8 @@ func (m *SessionManager) Cleanup() int {
 }
 
 func (m *SessionManager) RunPeriodicCleanup() {
+	m.logger.WithField("timeout", m.idleTimeout).Info("session manager cleanup enabled")
+
 	for range time.Tick(time.Minute) {
 		m.Cleanup()
 	}
@@ -106,9 +117,11 @@ func (m *SessionManager) staleSessions() []string {
 	m.mu.TryLock()
 	defer m.mu.Unlock()
 
+	now := time.Now()
 	ids := []string{}
+
 	for id, conn := range m.sessions {
-		if conn.IsIdle() {
+		if now.Sub(conn.LastQueryTime()) > m.idleTimeout {
 			ids = append(ids, id)
 		}
 	}

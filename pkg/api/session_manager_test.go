@@ -3,12 +3,12 @@ package api
 import (
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/sosedoff/pgweb/pkg/client"
-	"github.com/sosedoff/pgweb/pkg/command"
 )
 
 func TestSessionManager(t *testing.T) {
@@ -60,20 +60,16 @@ func TestSessionManager(t *testing.T) {
 	})
 
 	t.Run("clean up stale sessions", func(t *testing.T) {
-		defer func() {
-			command.Opts.ConnectionIdleTimeout = 0
-		}()
-
 		manager := NewSessionManager(logrus.New())
 		conn := &client.Client{}
 		manager.Add("foo", conn)
 
-		command.Opts.ConnectionIdleTimeout = 0
 		assert.Equal(t, 1, manager.Len())
 		assert.Equal(t, 0, manager.Cleanup())
 		assert.Equal(t, 1, manager.Len())
 
-		command.Opts.ConnectionIdleTimeout = 1
+		conn.Query("select 1")
+		manager.SetIdleTimeout(time.Minute)
 		assert.Equal(t, 1, manager.Cleanup())
 		assert.Equal(t, 0, manager.Len())
 		assert.True(t, conn.IsClosed())

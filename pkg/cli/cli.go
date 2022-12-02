@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jessevdk/go-flags"
@@ -266,6 +267,7 @@ func Run() {
 		api.DbSessions = api.NewSessionManager(logger)
 
 		if !command.Opts.DisableConnectionIdleTimeout {
+			api.DbSessions.SetIdleTimeout(time.Minute * time.Duration(command.Opts.ConnectionIdleTimeout))
 			go api.DbSessions.RunPeriodicCleanup()
 		}
 	}
