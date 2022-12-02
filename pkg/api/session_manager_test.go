@@ -11,7 +11,7 @@ import (
 )
 
 func TestSessionManager(t *testing.T) {
-	t.Run("returns ids", func(t *testing.T) {
+	t.Run("return ids", func(t *testing.T) {
 		manager := NewSessionManager(nil)
 		assert.Equal(t, []string{}, manager.IDs())
 
@@ -50,7 +50,7 @@ func TestSessionManager(t *testing.T) {
 		assert.Nil(t, manager.Get("foo"))
 	})
 
-	t.Run("returns len", func(t *testing.T) {
+	t.Run("return len", func(t *testing.T) {
 		manager := NewSessionManager(nil)
 		manager.sessions["foo"] = &client.Client{}
 		manager.sessions["bar"] = &client.Client{}
@@ -58,7 +58,7 @@ func TestSessionManager(t *testing.T) {
 		assert.Equal(t, 2, manager.Len())
 	})
 
-	t.Run("cleans up stale sessions", func(t *testing.T) {
+	t.Run("clean up stale sessions", func(t *testing.T) {
 		defer func() {
 			command.Opts.ConnectionIdleTimeout = 0
 		}()
