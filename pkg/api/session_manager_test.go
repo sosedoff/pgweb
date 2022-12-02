@@ -68,7 +68,10 @@ func TestSessionManager(t *testing.T) {
 		assert.Equal(t, 0, manager.Cleanup())
 		assert.Equal(t, 1, manager.Len())
 
-		conn.Query("select 1")
+		res, err := conn.Query("select 1")
+		assert.Nil(t, res)
+		assert.Nil(t, err)
+
 		manager.SetIdleTimeout(time.Minute)
 		assert.Equal(t, 1, manager.Cleanup())
 		assert.Equal(t, 0, manager.Len())
