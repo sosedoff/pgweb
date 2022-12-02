@@ -1,10 +1,15 @@
-GIT_COMMIT = $(shell git rev-parse HEAD)
-BUILD_TIME = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ" | tr -d '\n')
-GO_VERSION = $(shell go version | awk {'print $$3'})
+PKG = github.com/sosedoff/pgweb
+GIT_COMMIT ?= $(shell git rev-parse HEAD)
+BUILD_TIME ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ" | tr -d '\n')
+GO_VERSION ?= $(shell go version | awk {'print $$3'})
+
 DOCKER_RELEASE_TAG = "sosedoff/pgweb:$(shell git describe --abbrev=0 --tags | sed 's/v//')"
 DOCKER_LATEST_TAG = "sosedoff/pgweb:latest"
+
 LDFLAGS = -s -w
-PKG = github.com/sosedoff/pgweb
+LDFLAGS += -X $(PKG)/pkg/command.GitCommit=$(GIT_COMMIT)
+LDFLAGS += -X $(PKG)/pkg/command.BuildTime=$(BUILD_TIME)
+LDFLAGS += -X $(PKG)/pkg/command.GoVersion=$(GO_VERSION)
 
 usage:
 	@echo ""
@@ -37,16 +42,13 @@ dev:
 	@echo "You can now execute ./pgweb"
 
 build:
-	go build
+	go build -ldflags '${LDFLAGS}'
 	@echo "You can now execute ./pgweb"
 
 install:
 	go install
 	@echo "You can now execute pgweb"
 
-release: LDFLAGS += -X $(PKG)/pkg/command.GitCommit=$(GIT_COMMIT)
-release: LDFLAGS += -X $(PKG)/pkg/command.BuildTime=$(BUILD_TIME)
-release: LDFLAGS += -X $(PKG)/pkg/command.GoVersion=$(GO_VERSION)
 release: clean
 	@echo "Building binaries..."
 	@LDFLAGS='${LDFLAGS}' ./script/build_all.sh
