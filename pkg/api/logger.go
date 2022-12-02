@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -10,6 +11,23 @@ import (
 )
 
 const loggerMessage = "http_request"
+
+var (
+	logger *logrus.Logger
+
+	reConnectToken = regexp.MustCompile("/connect/(.*)")
+)
+
+func init() {
+	if logger == nil {
+		logger = logrus.New()
+	}
+}
+
+// TODO: Move this into server struct when it's ready
+func SetLogger(l *logrus.Logger) {
+	logger = l
+}
 
 func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 	debug := logger.Level > logrus.InfoLevel
@@ -21,9 +39,13 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 		// Process request
 		c.Next()
 
-		// Skip logging static assets
-		if strings.Contains(path, "/static/") && !debug {
-			return
+		if !debug {
+			// Skip static assets logging
+			if strings.Contains(path, "/static/") {
+				return
+			}
+
+			path = sanitizeLogPath(path)
 		}
 
 		status := c.Writer.Status()
@@ -58,4 +80,8 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 			entry.Info(loggerMessage)
 		}
 	}
+}
+
+func sanitizeLogPath(str string) string {
+	return reConnectToken.ReplaceAllString(str, "/connect/REDACTED")
 }

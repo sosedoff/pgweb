@@ -92,7 +92,7 @@ func ConnectWithBackend(c *gin.Context) {
 	backend := Backend{
 		Endpoint:    command.Opts.ConnectBackend,
 		Token:       command.Opts.ConnectToken,
-		PassHeaders: command.Opts.ConnectHeaders,
+		PassHeaders: strings.Split(command.Opts.ConnectHeaders, ","),
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
