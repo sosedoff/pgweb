@@ -287,7 +287,7 @@ func testEstimatedTableRowsCount(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, []string{"reltuples"}, res.Columns)
-	assert.Equal(t, []Row{Row{count}}, res.Rows)
+	assert.Equal(t, []Row{{count}}, res.Rows)
 }
 
 func testTableRowsCount(t *testing.T) {
@@ -296,7 +296,7 @@ func testTableRowsCount(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, []string{"count"}, res.Columns)
-	assert.Equal(t, []Row{Row{count}}, res.Rows)
+	assert.Equal(t, []Row{{count}}, res.Rows)
 }
 
 func testTableRowsCountWithLargeTable(t *testing.T) {
@@ -307,7 +307,7 @@ func testTableRowsCountWithLargeTable(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, []string{"reltuples"}, res.Columns)
-	assert.Equal(t, []Row{Row{count}}, res.Rows)
+	assert.Equal(t, []Row{{count}}, res.Rows)
 }
 
 func testTableIndexes(t *testing.T) {

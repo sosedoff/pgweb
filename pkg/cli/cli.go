@@ -199,6 +199,7 @@ func startServer() {
 		router.Use(gin.BasicAuth(auth))
 	}
 
+	api.SetLogger(logger)
 	api.SetupRoutes(router)
 
 	fmt.Println("Starting server...")

@@ -24,7 +24,7 @@ func TestBackendFetchCredential(t *testing.T) {
 		{
 			name:    "Bad auth token",
 			backend: Backend{Endpoint: "http://localhost:5555/unauthorized"},
-			err:     errors.New("received HTTP status code 401"),
+			err:     errors.New("backend credential fetch received HTTP status code 401"),
 		},
 		{
 			name:    "Backend timeout",
@@ -42,13 +42,13 @@ func TestBackendFetchCredential(t *testing.T) {
 		{
 			name:    "Missing header",
 			backend: Backend{Endpoint: "http://localhost:5555/pass-header"},
-			err:     errors.New("received HTTP status code 400"),
+			err:     errors.New("backend credential fetch received HTTP status code 400"),
 		},
 		{
 			name: "Require header",
 			backend: Backend{
 				Endpoint:    "http://localhost:5555/pass-header",
-				PassHeaders: "x-foo",
+				PassHeaders: []string{"x-foo"},
 			},
 			reqCtx: &gin.Context{
 				Request: &http.Request{

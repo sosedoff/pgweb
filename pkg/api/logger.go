@@ -11,6 +11,19 @@ import (
 
 const loggerMessage = "http_request"
 
+var logger *logrus.Logger
+
+func init() {
+	if logger == nil {
+		logger = logrus.New()
+	}
+}
+
+// TODO: Move this into server struct when it's ready
+func SetLogger(l *logrus.Logger) {
+	logger = l
+}
+
 func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 	debug := logger.Level > logrus.InfoLevel
 
