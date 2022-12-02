@@ -75,5 +75,6 @@ func TestSessionManager(t *testing.T) {
 		command.Opts.ConnectionIdleTimeout = 1
 		assert.Equal(t, 1, manager.Cleanup())
 		assert.Equal(t, 0, manager.Len())
+		assert.True(t, conn.IsClosed())
 	})
 }

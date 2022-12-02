@@ -442,6 +442,10 @@ func (client *Client) Close() error {
 	return nil
 }
 
+func (c *Client) IsClosed() bool {
+	return c.closed
+}
+
 func (client *Client) IsIdle() bool {
 	mins := int(time.Since(client.lastQueryTime).Minutes())
 
