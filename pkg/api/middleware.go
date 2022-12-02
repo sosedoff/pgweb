@@ -39,7 +39,7 @@ func dbCheckMiddleware() gin.HandlerFunc {
 		}
 
 		// Determine the database connection handle for the session
-		conn := DbSessions[sid]
+		conn := DbSessions.Get(sid)
 		if conn == nil {
 			badRequest(c, errNotConnected)
 			return

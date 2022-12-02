@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jessevdk/go-flags"
@@ -23,6 +24,7 @@ import (
 )
 
 var (
+	logger  *logrus.Logger
 	options command.Options
 
 	readonlyWarning = `
@@ -35,6 +37,10 @@ For proper read-only access please follow postgresql role management documentati
 	regexErrConnectionRefused = regexp.MustCompile(`(connection|actively) refused`)
 	regexErrAuthFailed        = regexp.MustCompile(`authentication failed`)
 )
+
+func init() {
+	logger = logrus.New()
+}
 
 func exitWithMessage(message string) {
 	fmt.Println("Error:", message)
@@ -152,6 +158,10 @@ func initOptions() {
 		os.Exit(0)
 	}
 
+	if options.Debug {
+		logger.SetLevel(logrus.DebugLevel)
+	}
+
 	if options.ReadOnly {
 		fmt.Println(readonlyWarning)
 	}
@@ -184,11 +194,6 @@ func printVersion() {
 }
 
 func startServer() {
-	logger := logrus.New()
-	if options.Debug {
-		logger.SetLevel(logrus.DebugLevel)
-	}
-
 	router := gin.New()
 	router.Use(api.RequestLogger(logger))
 	router.Use(gin.Recovery())
@@ -258,8 +263,13 @@ func Run() {
 	}
 
 	// Start session cleanup worker
-	if options.Sessions && !command.Opts.DisableConnectionIdleTimeout {
-		go api.StartSessionCleanup()
+	if options.Sessions {
+		api.DbSessions = api.NewSessionManager(logger)
+
+		if !command.Opts.DisableConnectionIdleTimeout {
+			api.DbSessions.SetIdleTimeout(time.Minute * time.Duration(command.Opts.ConnectionIdleTimeout))
+			go api.DbSessions.RunPeriodicCleanup()
+		}
 	}
 
 	startServer()

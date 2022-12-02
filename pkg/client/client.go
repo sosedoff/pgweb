@@ -34,7 +34,8 @@ type Client struct {
 	serverVersion    string
 	serverType       string
 	lastQueryTime    time.Time
-	External         bool
+	closed           bool
+	External         bool             `json:"external"`
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
 }
@@ -334,6 +335,10 @@ func (client *Client) ServerVersion() string {
 }
 
 func (client *Client) query(query string, args ...interface{}) (*Result, error) {
+	if client.db == nil {
+		return nil, nil
+	}
+
 	// Update the last usage time
 	defer func() {
 		client.lastQueryTime = time.Now().UTC()
@@ -365,7 +370,7 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 		result := Result{
 			Columns: []string{"Rows Affected"},
 			Rows: []Row{
-				Row{affected},
+				{affected},
 			},
 		}
 
@@ -423,6 +428,13 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 
 // Close database connection
 func (client *Client) Close() error {
+	if client.closed {
+		return nil
+	}
+	defer func() {
+		client.closed = true
+	}()
+
 	if client.tunnel != nil {
 		client.tunnel.Close()
 	}
@@ -432,6 +444,14 @@ func (client *Client) Close() error {
 	}
 
 	return nil
+}
+
+func (c *Client) IsClosed() bool {
+	return c.closed
+}
+
+func (c *Client) LastQueryTime() time.Time {
+	return c.lastQueryTime
 }
 
 func (client *Client) IsIdle() bool {
