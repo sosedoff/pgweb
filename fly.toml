@@ -12,7 +12,7 @@ kill_timeout = 5
   auto_rollback = true
 
 [processes]
-  web = "pgweb --bind=0.0.0.0"
+  web = "pgweb --sessions --bind=0.0.0.0"
 
 [[services]]
   http_checks = []
