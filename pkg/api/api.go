@@ -26,13 +26,13 @@ var (
 	DbClient *client.Client
 
 	// DbSessions represents the mapping for client connections
-	DbSessions = map[string]*client.Client{}
+	DbSessions *SessionManager
 )
 
 // DB returns a database connection from the client context
 func DB(c *gin.Context) *client.Client {
 	if command.Opts.Sessions {
-		return DbSessions[getSessionId(c.Request)]
+		return DbSessions.Get(getSessionId(c.Request))
 	}
 	return DbClient
 }
@@ -54,7 +54,7 @@ func setClient(c *gin.Context, newClient *client.Client) error {
 		return errSessionRequired
 	}
 
-	DbSessions[sid] = newClient
+	DbSessions.Add(sid, newClient)
 	return nil
 }
 
@@ -80,10 +80,10 @@ func GetSessions(c *gin.Context) {
 	// In debug mode endpoint will return a lot of sensitive information
 	// like full database connection string and all query history.
 	if command.Opts.Debug {
-		successResponse(c, DbSessions)
+		successResponse(c, DbSessions.Sessions())
 		return
 	}
-	successResponse(c, gin.H{"sessions": len(DbSessions)})
+	successResponse(c, gin.H{"sessions": DbSessions.Len()})
 }
 
 // ConnectWithBackend creates a new connection based on backend resource

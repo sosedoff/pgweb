@@ -34,7 +34,8 @@ type Client struct {
 	serverVersion    string
 	serverType       string
 	lastQueryTime    time.Time
-	External         bool
+	closed           bool
+	External         bool             `json:"external"`
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
 }
@@ -423,6 +424,13 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 
 // Close database connection
 func (client *Client) Close() error {
+	if client.closed {
+		return nil
+	}
+	defer func() {
+		client.closed = true
+	}()
+
 	if client.tunnel != nil {
 		client.tunnel.Close()
 	}
