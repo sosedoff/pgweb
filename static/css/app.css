@@ -558,6 +558,20 @@
   max-width: none;
 }
 
+#results_view {
+  display: none;
+  padding: 12px;
+  font-size: 14px;
+}
+
+#results_view .title {
+  margin-bottom: 8px;
+}
+
+#results_view pre {
+  border: 0px none;
+}
+
 .full #output {
   top: 0px !important;
 }

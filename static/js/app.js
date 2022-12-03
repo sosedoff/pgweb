@@ -204,13 +204,15 @@ function getCurrentObject() {
 }
 
 function resetTable() {
+  $("#results_header").html("");
+  $("#results_body").html("");
+  $("#results_view").html("").hide();
+
   $("#results").
     data("mode", "").
     removeClass("empty").
-    removeClass("no-crop");
-
-  $("#results_header").html("");
-  $("#results_body").html("");
+    removeClass("no-crop").
+    show();
 }
 
 function performTableAction(table, action, el) {
@@ -280,6 +282,15 @@ function performViewAction(view, action, el) {
           return;
         }
         copyToClipboard(data.rows[0]);
+      });
+      break;
+    case "view_def":
+      executeQuery("SELECT pg_get_viewdef('" + view + "', true);", function(data) {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+        showViewDefinition(view, data.rows[0]);
       });
       break;
   }
@@ -559,6 +570,23 @@ function showTableStructure() {
     buildTable(data);
     $("#results").addClass("no-crop");
   });
+}
+
+function showViewDefinition(viewName, viewDefintion) {
+  setCurrentTab("table_structure");
+
+  $("#results").addClass("no-crop");
+  $("#input").hide();
+  $("#body").prop("class", "full");
+  $("#results").hide();
+
+  var title = $("<div/>").prop("class", "title").html("View definition for: <strong>" + viewName + "</strong>");
+  var content = $("<pre/>").text(viewDefintion);
+
+  $("#results_view").html("");
+  title.appendTo("#results_view");
+  content.appendTo("#results_view");
+  $("#results_view").show();
 }
 
 function showQueryPanel() {
