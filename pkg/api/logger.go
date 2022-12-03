@@ -10,8 +10,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const loggerMessage = "http_request"
-
 var (
 	logger *logrus.Logger
 
@@ -55,7 +53,6 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 		fields := logrus.Fields{
 			"status":      status,
 			"method":      c.Request.Method,
-			"path":        path,
 			"remote_addr": c.ClientIP(),
 			"duration":    latency,
 		}
@@ -70,14 +67,15 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 		}
 
 		entry := logrus.WithFields(fields)
+		msg := "http_request " + path
 
 		switch {
 		case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
-			entry.Warn(loggerMessage)
+			entry.Warn(msg)
 		case status >= http.StatusInternalServerError:
-			entry.Error(loggerMessage)
+			entry.Error(msg)
 		default:
-			entry.Info(loggerMessage)
+			entry.Info(msg)
 		}
 	}
 }
