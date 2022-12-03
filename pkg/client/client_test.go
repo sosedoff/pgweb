@@ -314,7 +314,7 @@ func testTableIndexes(t *testing.T) {
 	res, err := testClient.TableIndexes("books")
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, 2, len(res.Columns))
+	assert.Equal(t, []string{"index_name", "index_size", "index_definition"}, res.Columns)
 	assert.Equal(t, 2, len(res.Rows))
 }
 
