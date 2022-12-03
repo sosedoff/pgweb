@@ -1177,6 +1177,19 @@ function bindContextMenus() {
         }
       });
     }
+
+    if (group == "materialized_view") {
+      $(el).contextmenu({
+        target: "#view_context_menu",
+        scopes: "li.schema-materialized_view",
+        onItem: function(context, e) {
+          var el      = $(e.target);
+          var table   = getQuotedSchemaTableName($(context[0]).data("id"));
+          var action  = el.data("action");
+          performViewAction(table, action, el);
+        }
+      });
+    }
   });
 }
 
