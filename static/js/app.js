@@ -273,6 +273,15 @@ function performViewAction(view, action, el) {
     case "copy":
       copyToClipboard(view.split('.')[1]);
       break;
+    case "copy_def":
+      executeQuery("SELECT pg_get_viewdef('" + view + "', true);", function(data) {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+        copyToClipboard(data.rows[0]);
+      });
+      break;
   }
 }
 
