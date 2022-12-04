@@ -63,7 +63,7 @@ func GetHome(prefix string) http.Handler {
 	if prefix != "" {
 		prefix = "/" + prefix
 	}
-	return http.StripPrefix(prefix, http.FileServer(http.FS(static.Static)))
+	return http.StripPrefix(prefix, static.GetHandler())
 }
 
 func GetAssets(prefix string) http.Handler {
@@ -72,7 +72,7 @@ func GetAssets(prefix string) http.Handler {
 	} else {
 		prefix = "/static/"
 	}
-	return http.StripPrefix(prefix, http.FileServer(http.FS(static.Static)))
+	return http.StripPrefix(prefix, static.GetHandler())
 }
 
 // GetSessions renders the number of active sessions
