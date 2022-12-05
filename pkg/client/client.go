@@ -173,7 +173,7 @@ func (client *Client) Test() error {
 
 func (client *Client) Info() (*Result, error) {
 	info, err := client.query(statements.Info)
-	if(err != nil){
+	if err != nil {
 		return client.query(statements.InfoSimplified)
 	}
 	return info, nil
