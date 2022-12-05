@@ -1256,21 +1256,10 @@ function bindInputResizeEvents() {
     checkInputSize();
   }
 
-  $("body").on("mousemove", function(e) { 
-    onInputResize(e);
-  });
-
-  $("body").on("mouseup", function() { 
-    endInputResize();
-  });
-
-  $("#input_resize_handler").on("mousedown", function() {
-    beginInputResize();
-  });
-
-  $(window).on("resize", function() {
-    checkInputSize();
-  });
+  $("body").on("mousemove", onInputResize);
+  $("body").on("mouseup", endInputResize);
+  $("#input_resize_handler").on("mousedown", beginInputResize);
+  $(window).on("resize", checkInputSize);
 }
 
 function checkInputSize() {
