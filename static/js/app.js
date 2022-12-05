@@ -4,6 +4,8 @@ var bookmarks           = {};
 var default_rows_limit  = 100;
 var currentObject       = null;
 var autocompleteObjects = [];
+var inputResizing       = false;
+var inputResizeOffset   = null;
 
 var filterOptions = {
   "equal":      "= 'DATA'",
@@ -1247,7 +1249,87 @@ function enableDatabaseSearch(data) {
   });
 }
 
+function bindInputResizeEvents() {
+  var height = sessionStorage.getItem("input_height");
+  if (height) {
+    resizeInput(height);
+    checkInputSize();
+  }
+
+  $("body").on("mousemove", function(e) { 
+    onInputResize(e);
+  });
+
+  $("body").on("mouseup", function() { 
+    endInputResize();
+  });
+
+  $("#input_resize_handler").on("mousedown", function() {
+    beginInputResize();
+  });
+
+  $(window).on("resize", function() {
+    checkInputSize();
+  });
+}
+
+function checkInputSize() {
+  var inputHeight = $("#input").height();
+  var bodyHeight = $("#body").height();
+
+  if (bodyHeight == 0 || inputHeight == 0) return;
+
+  if (inputHeight > bodyHeight || bodyHeight - inputHeight < 200) {
+    resizeInput(bodyHeight - 200);
+  }
+}
+
+function resizeInput(height) {
+  var diff = 50 + 12; // actions box + padding
+
+  $("#input").height(height);
+  $("#input .input-wrapper").height(height - diff);
+  $("#custom_query").height(height - diff);
+  $("#output").css("top", height + "px");
+
+  if (editor) {
+    editor.resize();
+  }
+}
+
+function beginInputResize() {
+  inputResizing = true;
+  inputResizeOffset = $("#input").offset().top;
+
+  $("html").css("cursor", "row-resize");
+  $("#input_resize_handler").addClass("dragging");
+}
+
+function endInputResize() {
+  if (!inputResizing) return;
+
+  inputResizing = false;
+  inputResizeOffset = null;
+
+  $("html").css("cursor", "auto");
+  $("#input_resize_handler").removeClass("dragging");
+
+  // Save current settings for page reloads
+  sessionStorage.setItem("input_height", $("#input").height());
+}
+
+function onInputResize(event) {
+  if (!inputResizing) return;
+
+  var computedHeight = event.clientY - inputResizeOffset;
+  if (computedHeight < 150) computedHeight = 150;
+
+  resizeInput(computedHeight);
+}
+
 $(document).ready(function() {
+  bindInputResizeEvents();
+
   $("#table_content").on("click",     function() { showTableContent();     });
   $("#table_structure").on("click",   function() { showTableStructure();   });
   $("#table_indexes").on("click",     function() { showTableIndexes();     });
@@ -1627,3 +1709,4 @@ $(document).ready(function() {
 
   bindDatabaseObjectsFilter();
 });
+
