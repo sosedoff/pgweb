@@ -3,7 +3,7 @@ name: deploy
 on:
   push:
     branches:
-      - fly-ci-cd
+      - master
 
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_TOKEN }}
