@@ -283,18 +283,34 @@
 }
 
 #input {
-  height: 255px;
+  width: 100%;
+  height: 300px;
+  position: relative;
 }
 
-#input .wrapper {
-  position: relative;
+#input .input-wrapper {
+  height: 250px;
+  padding-top: 12px;
+}
+
+#input_resize_handler {
+  width: 100%;
+  height: 1px;
+  background: #ddd;
+  cursor: row-resize;
+  position: absolute;
+  bottom: 0px;
+}
+
+#input_resize_handler:hover, #input_resize_handler.dragging {
+  height: 3px;
 }
 
 #input .actions {
   background: #fff;
   padding: 10px;
   height: 50px;
-  border-bottom: solid 1px #ddd;
+  bottom: 0px;
 }
 
 #input .actions #result-rows-count {
@@ -363,13 +379,10 @@
   margin-right: 0px;
 }
 
-#objects {
-}
-
 #output {
   position: absolute;
   left: 0px;
-  top: 256px;
+  top: 300px;
   bottom: 0px;
   right: 0px;
   margin: 0px;
@@ -591,8 +604,7 @@
 /* -------------------------------------------------------------------------- */
 
 #custom_query {
-  height: 193px;
-  margin-top: 12px;
+  height: 238px;
 }
 
 #connection_window {
