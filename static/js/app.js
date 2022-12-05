@@ -1274,6 +1274,8 @@ function checkInputSize() {
 }
 
 function resizeInput(height) {
+  if (height < 100) height = 100;
+
   var diff = 50 + 12; // actions box + padding
 
   $("#input").height(height);
