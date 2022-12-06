@@ -1,6 +1,7 @@
 PKG = github.com/sosedoff/pgweb
 GIT_COMMIT ?= $(shell git rev-parse HEAD)
 BUILD_TIME ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ" | tr -d '\n')
+BUILD_ARCH ?= $(shell uname -s | awk '{print tolower($0)}')/$(shell uname -m)
 GO_VERSION ?= $(shell go version | awk {'print $$3'})
 
 DOCKER_RELEASE_TAG = "sosedoff/pgweb:$(shell git describe --abbrev=0 --tags | sed 's/v//')"
@@ -9,6 +10,7 @@ DOCKER_LATEST_TAG = "sosedoff/pgweb:latest"
 LDFLAGS = -s -w
 LDFLAGS += -X $(PKG)/pkg/command.GitCommit=$(GIT_COMMIT)
 LDFLAGS += -X $(PKG)/pkg/command.BuildTime=$(BUILD_TIME)
+LDFLAGS += -X $(PKG)/pkg/command.BuildArch=$(BUILD_ARCH)
 LDFLAGS += -X $(PKG)/pkg/command.GoVersion=$(GO_VERSION)
 
 usage:

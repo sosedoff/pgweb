@@ -17,6 +17,9 @@ var (
 	// BuildTime contains the binary build time
 	BuildTime string
 
+	// BuildArch contains the OS architecture of the binary
+	BuildArch string
+
 	// GoVersion contains the build time Go version
 	GoVersion string
 
@@ -29,12 +32,14 @@ type VersionInfo struct {
 	GitCommit string `json:"git_sha"`
 	BuildTime string `json:"build_time"`
 	GoVersion string `json:"go_version"`
+	BuildArch string `json:"build_arch"`
 }
 
 func init() {
 	Info.Version = Version
 	Info.GitCommit = GitCommit
 	Info.BuildTime = BuildTime
+	Info.BuildArch = BuildArch
 	Info.GoVersion = GoVersion
 }
 
@@ -49,6 +54,9 @@ func VersionString() string {
 	}
 	if BuildTime != "" {
 		chunks = append(chunks, fmt.Sprintf("(build time: %s)", BuildTime))
+	}
+	if BuildArch != "" {
+		chunks = append(chunks, fmt.Sprintf("(arch: %s)", BuildArch))
 	}
 
 	return strings.Join(chunks, " ")
