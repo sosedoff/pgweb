@@ -46,7 +46,7 @@ build:
 	@echo "You can now execute ./pgweb"
 
 install:
-	go install
+	go install -ldflags '${LDFLAGS}'
 	@echo "You can now execute pgweb"
 
 release: clean
