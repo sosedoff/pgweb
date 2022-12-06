@@ -1,6 +1,6 @@
 SELECT
-	reltuples
+  reltuples
 FROM
-	pg_class
+  pg_class
 WHERE
-	oid = ('"' || $1::text || '"."' || $2::text || '"')::regclass
+  oid = ('"' || $1::text || '"."' || $2::text || '"')::regclass

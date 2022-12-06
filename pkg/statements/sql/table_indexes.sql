@@ -5,5 +5,5 @@ SELECT
 FROM
   pg_indexes
 WHERE
-  schemaname = $1 AND
-  tablename = $2
+  schemaname = $1
+  AND tablename = $2

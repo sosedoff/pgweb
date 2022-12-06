@@ -8,7 +8,7 @@ JOIN
 JOIN
   pg_class cl ON cl.oid = c.conrelid
 WHERE
-  n.nspname = $1 AND
-  relname = $2
+  n.nspname = $1
+  AND relname = $2
 ORDER BY
   contype DESC
