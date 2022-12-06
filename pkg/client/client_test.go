@@ -198,9 +198,13 @@ func testInfo(t *testing.T) {
 }
 
 func testActivity(t *testing.T) {
+	expected := []string{"query", "query_id", "query_start", "state", "client_addr"}
+
 	res, err := testClient.Activity()
 	assert.NoError(t, err)
-	assert.Equal(t, 22, len(res.Columns))
+	for _, val := range expected {
+		assert.Contains(t, res.Columns, val)
+	}
 }
 
 func testDatabases(t *testing.T) {
