@@ -68,7 +68,7 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 		}
 
 		entry := logger.WithFields(fields)
-		msg := "http_request " + path
+		msg := "http_request"
 
 		switch {
 		case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
