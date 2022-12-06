@@ -73,6 +73,12 @@ func (res *Result) PostProcess() {
 				if hasBinary(val, 8) && BinaryCodec != CodecNone {
 					res.Rows[i][j] = encodeBinaryData([]byte(val), BinaryCodec)
 				}
+			case time.Time:
+				if val.Year() < 0 || val.Year() >= 10000 {
+					res.Rows[i][j] = "ERR: INVALID_DATE"
+				} else {
+					res.Rows[i][j] = val
+				}
 			}
 		}
 	}

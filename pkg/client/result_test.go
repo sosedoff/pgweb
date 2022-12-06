@@ -3,7 +3,9 @@ package client
 import (
 	"encoding/json"
 	"testing"
+	"time"
 
+	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -89,4 +91,28 @@ func TestJSON(t *testing.T) {
 	assert.NoError(t, json.Unmarshal(result.JSON(), &obj))
 	assert.Equal(t, 2, len(obj))
 	assert.Equal(t, expected, obj)
+
+	t.Run("invalid time", func(t *testing.T) {
+		loc, err := time.LoadLocation("UTC")
+		if err != nil {
+			panic(err)
+		}
+
+		command.Opts.DisablePrettyJSON = true
+		defer func() {
+			command.Opts.DisablePrettyJSON = false
+		}()
+
+		result := Result{
+			Columns: []string{"value"},
+			Rows: []Row{
+				{time.Unix(1640995200, 0).In(loc)},
+				{time.Unix(222539616000, 0).In(loc)},
+				{time.Unix(254096611200, 0).In(loc)},
+			},
+		}
+
+		result.PostProcess()
+		assert.Equal(t, `[{"value":"2022-01-01T00:00:00Z"},{"value":"9022-01-01T00:00:00Z"},{"value":"ERR: INVALID_DATE"}]`, string(result.JSON()))
+	})
 }
