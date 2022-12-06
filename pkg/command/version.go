@@ -1,5 +1,10 @@
 package command
 
+import (
+	"fmt"
+	"strings"
+)
+
 const (
 	// Version is the current Pgweb application version
 	Version = "0.11.12"
@@ -31,4 +36,20 @@ func init() {
 	Info.GitCommit = GitCommit
 	Info.BuildTime = BuildTime
 	Info.GoVersion = GoVersion
+}
+
+func VersionString() string {
+	chunks := []string{fmt.Sprintf("Pgweb v%s", Version)}
+
+	if GitCommit != "" {
+		chunks = append(chunks, fmt.Sprintf("(git: %s)", GitCommit))
+	}
+	if GoVersion != "" {
+		chunks = append(chunks, fmt.Sprintf("(go: %s)", GoVersion))
+	}
+	if BuildTime != "" {
+		chunks = append(chunks, fmt.Sprintf("(build time: %s)", BuildTime))
+	}
+
+	return strings.Join(chunks, " ")
 }
