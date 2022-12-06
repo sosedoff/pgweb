@@ -66,11 +66,8 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 		if debug {
 			fields["raw_query"] = c.Request.URL.RawQuery
 
-			err := c.Request.ParseForm()
-			if err == nil {
-				for k, v := range c.Request.Form {
-					fields["form_"+k] = strings.Join(v, ",")
-				}
+			if c.Request.Method != http.MethodGet {
+				fields["raw_form"] = c.Request.Form
 			}
 		}
 
