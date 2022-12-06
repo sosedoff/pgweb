@@ -198,7 +198,7 @@ func testInfo(t *testing.T) {
 }
 
 func testActivity(t *testing.T) {
-	expected := []string{"query", "query_id", "query_start", "state", "client_addr"}
+	expected := []string{"datid", "pid", "query", "query_start", "state", "client_addr"}
 
 	res, err := testClient.Activity()
 	assert.NoError(t, err)
