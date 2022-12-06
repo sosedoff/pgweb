@@ -55,6 +55,7 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 			"method":      c.Request.Method,
 			"remote_addr": c.ClientIP(),
 			"duration":    latency,
+			"path":        path,
 		}
 
 		if err := c.Errors.Last(); err != nil {
@@ -64,10 +65,14 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 		// Additional fields for debugging
 		if debug {
 			fields["raw_query"] = c.Request.URL.RawQuery
+
+			if c.Request.Method != http.MethodGet {
+				fields["raw_form"] = c.Request.Form
+			}
 		}
 
-		entry := logrus.WithFields(fields)
-		msg := "http_request " + path
+		entry := logger.WithFields(fields)
+		msg := "http_request"
 
 		switch {
 		case status >= http.StatusBadRequest && status < http.StatusInternalServerError:

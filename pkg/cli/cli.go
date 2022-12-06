@@ -158,8 +158,9 @@ func initOptions() {
 		os.Exit(0)
 	}
 
-	if options.Debug {
-		logger.SetLevel(logrus.DebugLevel)
+	if err := configureLogger(opts); err != nil {
+		exitWithMessage(err.Error())
+		return
 	}
 
 	if options.ReadOnly {
@@ -173,6 +174,29 @@ func initOptions() {
 	}
 
 	printVersion()
+}
+
+func configureLogger(opts command.Options) error {
+	if options.Debug {
+		logger.SetLevel(logrus.DebugLevel)
+	} else {
+		lvl, err := logrus.ParseLevel(opts.LogLevel)
+		if err != nil {
+			return err
+		}
+		logger.SetLevel(lvl)
+	}
+
+	switch options.LogFormat {
+	case "text":
+		logger.SetFormatter(&logrus.TextFormatter{})
+	case "json":
+		logger.SetFormatter(&logrus.JSONFormatter{})
+	default:
+		return fmt.Errorf("invalid logger format: %v", options.LogFormat)
+	}
+
+	return nil
 }
 
 func printVersion() {

@@ -7,10 +7,6 @@ import (
 )
 
 func SetupMiddlewares(group *gin.RouterGroup) {
-	if command.Opts.Debug {
-		group.Use(requestInspectMiddleware())
-	}
-
 	if command.Opts.Cors {
 		group.Use(corsMiddleware())
 	}
