@@ -74,6 +74,8 @@ func (res *Result) PostProcess() {
 					res.Rows[i][j] = encodeBinaryData([]byte(val), BinaryCodec)
 				}
 			case time.Time:
+				// RFC 3339 is clear that years are 4 digits exactly.
+				// See golang.org/issue/4556#c15 for more discussion.
 				if val.Year() < 0 || val.Year() >= 10000 {
 					res.Rows[i][j] = "ERR: INVALID_DATE"
 				} else {
