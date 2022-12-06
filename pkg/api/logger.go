@@ -55,6 +55,7 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 			"method":      c.Request.Method,
 			"remote_addr": c.ClientIP(),
 			"duration":    latency,
+			"path":        path,
 		}
 
 		if err := c.Errors.Last(); err != nil {
@@ -66,7 +67,7 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 			fields["raw_query"] = c.Request.URL.RawQuery
 		}
 
-		entry := logrus.WithFields(fields)
+		entry := logger.WithFields(fields)
 		msg := "http_request " + path
 
 		switch {

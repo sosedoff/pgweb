@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/jessevdk/go-flags"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -18,6 +19,8 @@ const (
 type Options struct {
 	Version                      bool   `short:"v" long:"version" description:"Print version"`
 	Debug                        bool   `short:"d" long:"debug" description:"Enable debugging mode"`
+	LogLevel                     string `long:"log-level" description:"Logging level" default:"info"`
+	LogFormat                    string `long:"log-format" description:"Logging output format" default:"text"`
 	URL                          string `long:"url" description:"Database connection string"`
 	Host                         string `long:"host" description:"Server hostname or IP" default:"localhost"`
 	Port                         int    `long:"port" description:"Server port" default:"5432"`
@@ -58,6 +61,11 @@ func ParseOptions(args []string) (Options, error) {
 	var opts = Options{}
 
 	_, err := flags.ParseArgs(&opts, args)
+	if err != nil {
+		return opts, err
+	}
+
+	_, err = logrus.ParseLevel(opts.LogLevel)
 	if err != nil {
 		return opts, err
 	}
