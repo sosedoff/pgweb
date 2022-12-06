@@ -361,6 +361,7 @@ func testUpdateQuery(t *testing.T) {
 	t.Run("updating data", func(t *testing.T) {
 		// Add new row
 		_, err := testClient.db.Exec("INSERT INTO books (id, title) VALUES (8888, 'Test Book'), (8889, 'Test Book 2')")
+		assert.NoError(t, err)
 
 		// Update without return values
 		res, err := testClient.Query("UPDATE books SET title = 'Foo' WHERE id >= 8888 AND id <= 8889")
@@ -379,6 +380,7 @@ func testUpdateQuery(t *testing.T) {
 	t.Run("deleting data", func(t *testing.T) {
 		// Add new row
 		_, err := testClient.db.Exec("INSERT INTO books (id, title) VALUES (9999, 'Test Book')")
+		assert.NoError(t, err)
 
 		// Delete the existing row
 		res, err := testClient.Query("DELETE FROM books WHERE id = 9999")
