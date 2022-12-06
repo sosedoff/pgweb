@@ -65,6 +65,13 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 		// Additional fields for debugging
 		if debug {
 			fields["raw_query"] = c.Request.URL.RawQuery
+
+			err := c.Request.ParseForm()
+			if err == nil {
+				for k, v := range c.Request.Form {
+					fields["form_"+k] = strings.Join(v, ",")
+				}
+			}
 		}
 
 		entry := logger.WithFields(fields)

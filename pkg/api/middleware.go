@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -46,14 +45,6 @@ func dbCheckMiddleware() gin.HandlerFunc {
 		}
 
 		c.Next()
-	}
-}
-
-// Middleware to print out request parameters and body for debugging
-func requestInspectMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		err := c.Request.ParseForm()
-		log.Println("Request params:", err, c.Request.Form)
 	}
 }
 
