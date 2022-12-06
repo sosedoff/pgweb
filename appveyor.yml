@@ -11,8 +11,8 @@ services:
 
 install:
   - ps: mkdir c:\goroot119
-  - ps: iwr -outf c:\goroot118\go1.19.windows-amd64.zip https://golang.org/dl/go1.19.windows-amd64.zip
-  - ps: Expand-Archive c:\goroot118\go1.19.windows-amd64.zip -DestinationPath c:\goroot118
+  - ps: iwr -outf c:\goroot119\go1.19.windows-amd64.zip https://golang.org/dl/go1.19.windows-amd64.zip
+  - ps: Expand-Archive c:\goroot119\go1.19.windows-amd64.zip -DestinationPath c:\goroot119
   - set PATH=%GOPATH%\bin;%PATH%
   - set PATH=%GOROOT%\bin;%PATH%
   - echo %PATH%
