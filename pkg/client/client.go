@@ -356,7 +356,9 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 	}
 
 	action := strings.ToLower(strings.Split(query, " ")[0])
-	if action == "update" || action == "delete" {
+	hasReturnValues := strings.Contains(strings.ToLower(query), " returning ")
+
+	if (action == "update" || action == "delete") && !hasReturnValues {
 		res, err := client.db.Exec(query, args...)
 		if err != nil {
 			return nil, err
