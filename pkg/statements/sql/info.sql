@@ -1,0 +1,10 @@
+SELECT
+  session_user,
+  current_user,
+  current_database(),
+  current_schemas(false),
+  inet_client_addr(),
+  inet_client_port(),
+  inet_server_addr(),
+  inet_server_port(),
+  version()
