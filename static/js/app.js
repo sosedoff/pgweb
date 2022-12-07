@@ -599,31 +599,25 @@ function showTableStructure() {
 
 function showViewDefinition(viewName, viewDefintion) {
   setCurrentTab("table_structure");
-
-  $("#results").addClass("no-crop");
-  $("#input").hide();
-  $("#body").prop("class", "full");
-  $("#results").hide();
-
-  var title = $("<div/>").prop("class", "title").html("View definition for: <strong>" + viewName + "</strong>");
-  var content = $("<pre/>").text(viewDefintion);
-
-  $("#results_view").html("");
-  title.appendTo("#results_view");
-  content.appendTo("#results_view");
-  $("#results_view").show();
+  renderResultsView("View definition for: <strong>" + viewName + "</strong>", viewDefintion);
 }
 
 function showFunctionDefinition(functionName, definition) {
   setCurrentTab("table_structure");
+  renderResultsView("Function definition for: <strong>" + functionName + "</strong>", definition)
+}
 
+function renderResultsView(title, content) {
   $("#results").addClass("no-crop");
   $("#input").hide();
   $("#body").prop("class", "full");
   $("#results").hide();
 
-  var title = $("<div/>").prop("class", "title").html("Function definition for: <strong>" + functionName + "</strong>");
-  var content = $("<pre/>").text(definition);
+  var title = $("<div/>").prop("class", "title").html(title);
+  var content = $("<pre/>").text(content);
+  console.log(content);
+
+  $("<div/>").html("<i class='fa fa-copy'></i>").addClass("copy").appendTo(content);
 
   $("#results_view").html("");
   title.appendTo("#results_view");
@@ -1392,6 +1386,10 @@ $(document).ready(function() {
 
   $("#xml").on("click", function() {
     exportTo("xml");
+  });
+
+  $("#results_view").on("click", ".copy", function() {
+    copyToClipboard($(this).parent().text());
   });
 
   $("#results").on("click", "tr", function(e) {
