@@ -18,6 +18,7 @@ const (
 	ObjTypeView             = "view"
 	ObjTypeMaterializedView = "materialized_view"
 	ObjTypeSequence         = "sequence"
+	ObjTypeFunction         = "function"
 )
 
 type (
@@ -40,6 +41,7 @@ type (
 		Tables            []string `json:"table"`
 		Views             []string `json:"view"`
 		MaterializedViews []string `json:"materialized_view"`
+		Functions         []string `json:"function"`
 		Sequences         []string `json:"sequence"`
 	}
 )
@@ -163,6 +165,7 @@ func ObjectsFromResult(res *Result) map[string]*Objects {
 				Tables:            []string{},
 				Views:             []string{},
 				MaterializedViews: []string{},
+				Functions:         []string{},
 				Sequences:         []string{},
 			}
 		}
@@ -174,6 +177,8 @@ func ObjectsFromResult(res *Result) map[string]*Objects {
 			objects[schema].Views = append(objects[schema].Views, name)
 		case ObjTypeMaterializedView:
 			objects[schema].MaterializedViews = append(objects[schema].MaterializedViews, name)
+		case ObjTypeFunction:
+			objects[schema].Functions = append(objects[schema].Functions, name)
 		case ObjTypeSequence:
 			objects[schema].Sequences = append(objects[schema].Sequences, name)
 		}

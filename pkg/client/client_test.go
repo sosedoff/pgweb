@@ -245,12 +245,15 @@ func testObjects(t *testing.T) {
 		"text_sorting",
 	}
 
+	functions := []string{"add_shipment", "add_two_loop", "books_by_subject", "compound_word", "count_by_two", "double_price", "extract_all_titles", "extract_all_titles2", "extract_title", "first", "get_author", "get_customer_id", "get_customer_name", "html_linebreaks", "in_stock", "isbn_to_title", "mixed", "raise_test", "ship_item", "stock_amount", "test", "title", "triple_price"}
+
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"schema", "name", "type", "owner", "comment"}, res.Columns)
 	assert.Equal(t, []string{"public"}, mapKeys(objects))
 	assert.Equal(t, tables, objects["public"].Tables)
 	assert.Equal(t, []string{"recent_shipments", "stock_view"}, objects["public"].Views)
 	assert.Equal(t, []string{"author_ids", "book_ids", "shipments_ship_id_seq", "subject_ids"}, objects["public"].Sequences)
+	assert.Equal(t, functions, objects["public"].Functions)
 
 	major, minor := pgVersion()
 	if minor == 0 || minor >= 3 {
