@@ -536,10 +536,8 @@ func testHistory(t *testing.T) {
 	t.Run("unique queries", func(t *testing.T) {
 		url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 
-		client, err := NewFromUrl(url, nil)
+		client, _ := NewFromUrl(url, nil)
 		defer client.Close()
-
-		assert.NoError(t, err)
 
 		for i := 0; i < 3; i++ {
 			_, err := client.Query("SELECT * FROM books WHERE id = 1")
