@@ -474,6 +474,33 @@ func testTableRowsOrderEscape(t *testing.T) {
 	assert.Nil(t, rows)
 }
 
+func testFunctions(t *testing.T) {
+	funcName := "get_customer_name"
+	funcID := ""
+
+	res, err := testClient.Objects()
+	assert.NoError(t, err)
+
+	for _, row := range res.Rows {
+		if row[2] == funcName {
+			funcID = row[0].(string)
+			break
+		}
+	}
+
+	res, err = testClient.Function("12345")
+	assert.NoError(t, err)
+	assertMatches(t, []string{"oid", "proname", "functiondef"}, res.Columns)
+	assert.Equal(t, 0, len(res.Rows))
+
+	res, err = testClient.Function(funcID)
+	assert.NoError(t, err)
+	assertMatches(t, []string{"oid", "proname", "functiondef"}, res.Columns)
+	assert.Equal(t, 1, len(res.Rows))
+	assert.Equal(t, funcName, res.Rows[0][1])
+	assert.Contains(t, res.Rows[0][len(res.Columns)-1], "SELECT INTO customer_fname, customer_lname")
+}
+
 func testResult(t *testing.T) {
 	t.Run("json", func(t *testing.T) {
 		result, err := testClient.Query("SELECT * FROM books LIMIT 1")
@@ -590,6 +617,7 @@ func TestAll(t *testing.T) {
 	testQueryError(t)
 	testQueryInvalidTable(t)
 	testTableRowsOrderEscape(t)
+	testFunctions(t)
 	testResult(t)
 	testHistory(t)
 	testReadOnlyMode(t)
