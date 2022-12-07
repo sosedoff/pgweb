@@ -356,7 +356,7 @@ func GetTable(c *gin.Context) {
 	case client.ObjTypeFunction:
 		res, err = db.Function(tableName)
 	default:
-		res, err = db.Table(c.Params.ByName("table"))
+		res, err = db.Table(tableName)
 	}
 
 	serveResult(c, res, err)

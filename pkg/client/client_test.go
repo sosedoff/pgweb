@@ -43,7 +43,7 @@ func objectNames(data []Object) []string {
 	return names
 }
 
-// assertMatches is a helper method to check if expected slice contains any elements of src slice
+// assertMatches is a helper method to check if src slice contains any elements of expected slice
 func assertMatches(t *testing.T, expected, src []string) {
 	assert.NotEqual(t, 0, len(expected))
 	assert.NotEqual(t, 0, len(src))
