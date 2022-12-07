@@ -38,6 +38,9 @@ var (
 	//go:embed sql/objects.sql
 	Objects string
 
+	//go:embed sql/function.sql
+	Function string
+
 	// Activity queries for specific PG versions
 	Activity = map[string]string{
 		"default": "SELECT * FROM pg_stat_activity WHERE datname = current_database()",

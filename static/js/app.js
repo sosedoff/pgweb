@@ -88,6 +88,7 @@ function getTableRows(table, opts, cb)      { apiCall("get", "/tables/" + table 
 function getTableStructure(table, opts, cb) { apiCall("get", "/tables/" + table, opts, cb); }
 function getTableIndexes(table, cb)         { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
 function getTableConstraints(table, cb)     { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
+function getFunction(id, cb)                { apiCall("get", "/functions/" + id, {}, cb); }
 function getHistory(cb)                     { apiCall("get", "/history", {}, cb); }
 function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
 function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
@@ -135,8 +136,14 @@ function buildSchemaSection(name, objects) {
 
     if (objects[group]) {
       objects[group].forEach(function(item) {
-        var id = name + "." + item;
-        section += "<li class='schema-item schema-" + group + "' data-type='" + group + "' data-id='" + id + "' data-name='" + item + "'>" + icons[group] + "&nbsp;" + item + "</li>";
+        var id = name + "." + item.name;
+
+        // Use function OID since multiple functions with the same name might exist
+        if (group == "function") {
+          id = item.oid;
+        }
+
+        section += "<li class='schema-item schema-" + group + "' data-type='" + group + "' data-id='" + id + "' data-name='" + item + "'>" + icons[group] + "&nbsp;" + item.name + "</li>";
       });
       section += "</ul></div>";
     }
@@ -176,10 +183,11 @@ function loadSchemas() {
         if (!(kind == "table" || kind == "view" || kind == "materialized_view" || kind == "function")) {
           continue
         }
+
         for (item in data[schema][kind]) {
           autocompleteObjects.push({
-            caption: data[schema][kind][item],
-            value: data[schema][kind][item],
+            caption: data[schema][kind][item].name,
+            value: data[schema][kind][item].name,
             meta: kind
           });
         }
@@ -510,6 +518,11 @@ function showTableContent(sortColumn, sortOrder) {
     return;
   }
 
+  if (getCurrentObject().type == "function") {
+    alert("Cant view rows for a function");
+    return;
+  }
+
   var opts = {
     limit:       getRowsLimit(),
     offset:      getPaginationOffset(),
@@ -572,6 +585,13 @@ function showTableStructure() {
   $("#body").prop("class", "full");
 
   getTableStructure(name, { type: getCurrentObject().type }, function(data) {
+    if (getCurrentObject().type == "function") {
+      var name = data.rows[0][data.columns.indexOf("proname")];
+      var definition = data.rows[0][data.columns.indexOf("functiondef")];
+      showFunctionDefinition(name, definition);
+      return
+    }
+
     buildTable(data);
     $("#results").addClass("no-crop");
   });
@@ -587,6 +607,23 @@ function showViewDefinition(viewName, viewDefintion) {
 
   var title = $("<div/>").prop("class", "title").html("View definition for: <strong>" + viewName + "</strong>");
   var content = $("<pre/>").text(viewDefintion);
+
+  $("#results_view").html("");
+  title.appendTo("#results_view");
+  content.appendTo("#results_view");
+  $("#results_view").show();
+}
+
+function showFunctionDefinition(functionName, definition) {
+  setCurrentTab("table_structure");
+
+  $("#results").addClass("no-crop");
+  $("#input").hide();
+  $("#body").prop("class", "full");
+  $("#results").hide();
+
+  var title = $("<div/>").prop("class", "title").html("Function definition for: <strong>" + functionName + "</strong>");
+  var content = $("<pre/>").text(definition);
 
   $("#results_view").html("");
   title.appendTo("#results_view");
@@ -1381,7 +1418,11 @@ $(document).ready(function() {
     $(".current-page").data("page", 1);
     $(".filters select, .filters input").val("");
 
-    showTableInfo();
+    if (currentObject.type == "function") {
+      sessionStorage.setItem("tab", "table_structure");
+    } else {
+      showTableInfo();
+    }
 
     switch(sessionStorage.getItem("tab")) {
       case "table_content":

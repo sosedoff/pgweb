@@ -1,5 +1,6 @@
 WITH all_objects AS (
   SELECT
+    c.oid,
     n.nspname AS schema,
     c.relname AS name,
     CASE c.relkind
@@ -26,6 +27,7 @@ WITH all_objects AS (
   UNION
 
   SELECT
+    p.oid,
     n.nspname AS schema,
     p.proname AS name,
     'function' AS function,

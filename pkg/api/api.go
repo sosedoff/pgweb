@@ -342,13 +342,21 @@ func GetSchemas(c *gin.Context) {
 
 // GetTable renders table information
 func GetTable(c *gin.Context) {
-	var res *client.Result
-	var err error
+	var (
+		res *client.Result
+		err error
+	)
 
-	if c.Request.FormValue("type") == client.ObjTypeMaterializedView {
-		res, err = DB(c).MaterializedView(c.Params.ByName("table"))
-	} else {
-		res, err = DB(c).Table(c.Params.ByName("table"))
+	db := DB(c)
+	tableName := c.Params.ByName("table")
+
+	switch c.Request.FormValue("type") {
+	case client.ObjTypeMaterializedView:
+		res, err = db.MaterializedView(tableName)
+	case client.ObjTypeFunction:
+		res, err = db.Function(tableName)
+	default:
+		res, err = db.Table(c.Params.ByName("table"))
 	}
 
 	serveResult(c, res, err)
@@ -540,4 +548,10 @@ func DataExport(c *gin.Context) {
 	if err != nil {
 		badRequest(c, err)
 	}
+}
+
+// GetFunction renders function information
+func GetFunction(c *gin.Context) {
+	res, err := DB(c).Function(c.Param("id"))
+	serveResult(c, res, err)
 }
