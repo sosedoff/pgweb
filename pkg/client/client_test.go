@@ -139,12 +139,12 @@ func setupClient() {
 
 func teardownClient() {
 	if testClient != nil {
-		testClient.db.Close()
+		testClient.Close()
 	}
 }
 
 func teardown() {
-	_, err := exec.Command(
+	output, err := exec.Command(
 		testCommands["dropdb"],
 		"-U", serverUser,
 		"-h", serverHost,
@@ -154,31 +154,28 @@ func teardown() {
 
 	if err != nil {
 		fmt.Println("Teardown error:", err)
+		fmt.Printf("%s\n", output)
 	}
 }
 
-func testNewClientFromUrl(t *testing.T) {
-	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	client, err := NewFromUrl(url, nil)
+func testNewClientFromURL(t *testing.T) {
+	t.Run("postgres prefix", func(t *testing.T) {
+		url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
+		client, err := NewFromUrl(url, nil)
 
-	if err != nil {
-		defer client.Close()
-	}
+		assert.Equal(t, nil, err)
+		assert.Equal(t, url, client.ConnectionString)
+		assert.NoError(t, client.Close())
+	})
 
-	assert.Equal(t, nil, err)
-	assert.Equal(t, url, client.ConnectionString)
-}
+	t.Run("postgresql prefix", func(t *testing.T) {
+		url := fmt.Sprintf("postgresql://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
+		client, err := NewFromUrl(url, nil)
 
-func testNewClientFromUrl2(t *testing.T) {
-	url := fmt.Sprintf("postgresql://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	client, err := NewFromUrl(url, nil)
-
-	if err != nil {
-		defer client.Close()
-	}
-
-	assert.Equal(t, nil, err)
-	assert.Equal(t, url, client.ConnectionString)
+		assert.Equal(t, nil, err)
+		assert.Equal(t, url, client.ConnectionString)
+		assert.NoError(t, client.Close())
+	})
 }
 
 func testClientIdleTime(t *testing.T) {
@@ -540,6 +537,8 @@ func testHistory(t *testing.T) {
 		url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 
 		client, err := NewFromUrl(url, nil)
+		defer client.Close()
+
 		assert.NoError(t, err)
 
 		for i := 0; i < 3; i++ {
@@ -560,6 +559,7 @@ func testReadOnlyMode(t *testing.T) {
 
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 	client, _ := NewFromUrl(url, nil)
+	defer client.Close()
 
 	err := client.SetReadOnlyMode()
 	assert.NoError(t, err)
@@ -595,8 +595,7 @@ func TestAll(t *testing.T) {
 	setup()
 	setupClient()
 
-	testNewClientFromUrl(t)
-	testNewClientFromUrl2(t)
+	testNewClientFromURL(t)
 	testClientIdleTime(t)
 	testTest(t)
 	testInfo(t)
