@@ -1,8 +1,8 @@
 module github.com/sosedoff/pgweb
 
-go 1.17
+go 1.19
 
-// +heroku goVersion go1.17
+// +heroku goVersion go1.19
 
 require (
 	github.com/BurntSushi/toml v1.1.0
