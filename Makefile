@@ -1,7 +1,7 @@
 PKG = github.com/sosedoff/pgweb
 GIT_COMMIT ?= $(shell git rev-parse HEAD)
 BUILD_TIME ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ" | tr -d '\n')
-BUILD_ARCH ?= $(shell uname -s | awk '{print tolower($0)}')/$(shell uname -m)
+BUILD_ARCH ?= $(shell uname -s | awk '{print tolower($$0)}')/$(shell uname -m)
 GO_VERSION ?= $(shell go version | awk {'print $$3'})
 
 DOCKER_RELEASE_TAG = "sosedoff/pgweb:$(shell git describe --abbrev=0 --tags | sed 's/v//')"
