@@ -615,9 +615,11 @@ function renderResultsView(title, content) {
 
   var title = $("<div/>").prop("class", "title").html(title);
   var content = $("<pre/>").text(content);
-  console.log(content);
 
-  $("<div/>").html("<i class='fa fa-copy'></i>").addClass("copy").appendTo(content);
+  $("<div/>").
+    html("<i class='fa fa-copy'></i>").
+    addClass("copy").
+    appendTo(content);
 
   $("#results_view").html("");
   title.appendTo("#results_view");
