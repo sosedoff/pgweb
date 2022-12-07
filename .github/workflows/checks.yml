@@ -4,7 +4,7 @@ on:
   - push
 
 env:
-  GO_VERSION: 1.18
+  GO_VERSION: 1.19
   CGO_ENABLED: 0
 
 jobs:

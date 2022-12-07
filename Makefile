@@ -60,6 +60,9 @@ clean:
 docker:
 	docker build --no-cache -t pgweb .
 
+docker-run:
+	docker run --rm -p 8081:8081 -it pgweb
+
 docker-release:
 	docker build --no-cache -t $(DOCKER_RELEASE_TAG) .
 	docker tag $(DOCKER_RELEASE_TAG) $(DOCKER_LATEST_TAG)
