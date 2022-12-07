@@ -43,6 +43,16 @@ func objectNames(data []Object) []string {
 	return names
 }
 
+// assertMatches is a helper method to check if expected slice contains any elements of src slice
+func assertMatches(t *testing.T, expected, src []string) {
+	assert.NotEqual(t, 0, len(expected))
+	assert.NotEqual(t, 0, len(src))
+
+	for _, val := range expected {
+		assert.Contains(t, src, val)
+	}
+}
+
 func pgVersion() (int, int) {
 	var major, minor int
 	fmt.Sscanf(os.Getenv("PGVERSION"), "%d.%d", &major, &minor)
@@ -213,16 +223,13 @@ func testActivity(t *testing.T) {
 
 	res, err := testClient.Activity()
 	assert.NoError(t, err)
-	for _, val := range expected {
-		assert.Contains(t, res.Columns, val)
-	}
+	assertMatches(t, expected, res.Columns)
 }
 
 func testDatabases(t *testing.T) {
 	res, err := testClient.Databases()
 	assert.NoError(t, err)
-	assert.Contains(t, res, "booktown")
-	assert.Contains(t, res, "postgres")
+	assertMatches(t, []string{"booktown", "postgres"}, res)
 }
 
 func testObjects(t *testing.T) {
@@ -287,9 +294,9 @@ func testObjects(t *testing.T) {
 	assert.Equal(t, []string{"oid", "schema", "name", "type", "owner", "comment"}, res.Columns)
 	assert.Equal(t, []string{"public"}, mapKeys(objects))
 	assert.Equal(t, tables, objectNames(objects["public"].Tables))
+	assertMatches(t, functions, objectNames(objects["public"].Functions))
 	assert.Equal(t, []string{"recent_shipments", "stock_view"}, objectNames(objects["public"].Views))
 	assert.Equal(t, []string{"author_ids", "book_ids", "shipments_ship_id_seq", "subject_ids"}, objectNames(objects["public"].Sequences))
-	assert.Equal(t, functions, objectNames(objects["public"].Functions))
 
 	major, minor := pgVersion()
 	if minor == 0 || minor >= 3 {
