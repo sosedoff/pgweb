@@ -143,7 +143,7 @@ function buildSchemaSection(name, objects) {
           id = item.oid;
         }
 
-        section += "<li class='schema-item schema-" + group + "' data-type='" + group + "' data-id='" + id + "' data-name='" + item + "'>" + icons[group] + "&nbsp;" + item.name + "</li>";
+        section += "<li class='schema-item schema-" + group + "' data-type='" + group + "' data-id='" + id + "' data-name='" + item.name + "'>" + icons[group] + "&nbsp;" + item.name + "</li>";
       });
       section += "</ul></div>";
     }
@@ -1178,7 +1178,7 @@ function bindDatabaseObjectsFilter() {
     $(".clear-objects-filter").show();
     $(".schema-group").addClass("expanded");
 
-    filterTimeout = setTimeout(function () {
+    filterTimeout = setTimeout(function() {
       filterObjectsByName(val)
     }, 200);
   });
