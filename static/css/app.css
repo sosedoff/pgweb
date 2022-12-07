@@ -583,6 +583,30 @@
 
 #results_view pre {
   border: 0px none;
+  position: relative;
+}
+
+#results_view .copy {
+  position: absolute;
+  display: none;
+  text-align: center;
+  line-height: 30px;
+  right: 4px;
+  top: 4px;
+  width: 30px;
+  height: 30px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#results_view .copy:hover {
+  border-color: #999;
+}
+
+#results_view pre:hover .copy {
+  display: block;
 }
 
 .full #output {

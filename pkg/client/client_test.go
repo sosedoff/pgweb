@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"sort"
 	"testing"
 	"time"
 
@@ -30,6 +31,26 @@ func mapKeys(data map[string]*Objects) []string {
 		result = append(result, k)
 	}
 	return result
+}
+
+func objectNames(data []Object) []string {
+	names := make([]string, len(data))
+	for i, obj := range data {
+		names[i] = obj.Name
+	}
+
+	sort.Strings(names)
+	return names
+}
+
+// assertMatches is a helper method to check if src slice contains any elements of expected slice
+func assertMatches(t *testing.T, expected, src []string) {
+	assert.NotEqual(t, 0, len(expected))
+	assert.NotEqual(t, 0, len(src))
+
+	for _, val := range expected {
+		assert.Contains(t, src, val)
+	}
 }
 
 func pgVersion() (int, int) {
@@ -118,12 +139,12 @@ func setupClient() {
 
 func teardownClient() {
 	if testClient != nil {
-		testClient.db.Close()
+		testClient.Close()
 	}
 }
 
 func teardown() {
-	_, err := exec.Command(
+	output, err := exec.Command(
 		testCommands["dropdb"],
 		"-U", serverUser,
 		"-h", serverHost,
@@ -133,31 +154,28 @@ func teardown() {
 
 	if err != nil {
 		fmt.Println("Teardown error:", err)
+		fmt.Printf("%s\n", output)
 	}
 }
 
-func testNewClientFromUrl(t *testing.T) {
-	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	client, err := NewFromUrl(url, nil)
+func testNewClientFromURL(t *testing.T) {
+	t.Run("postgres prefix", func(t *testing.T) {
+		url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
+		client, err := NewFromUrl(url, nil)
 
-	if err != nil {
-		defer client.Close()
-	}
+		assert.Equal(t, nil, err)
+		assert.Equal(t, url, client.ConnectionString)
+		assert.NoError(t, client.Close())
+	})
 
-	assert.Equal(t, nil, err)
-	assert.Equal(t, url, client.ConnectionString)
-}
+	t.Run("postgresql prefix", func(t *testing.T) {
+		url := fmt.Sprintf("postgresql://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
+		client, err := NewFromUrl(url, nil)
 
-func testNewClientFromUrl2(t *testing.T) {
-	url := fmt.Sprintf("postgresql://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
-	client, err := NewFromUrl(url, nil)
-
-	if err != nil {
-		defer client.Close()
-	}
-
-	assert.Equal(t, nil, err)
-	assert.Equal(t, url, client.ConnectionString)
+		assert.Equal(t, nil, err)
+		assert.Equal(t, url, client.ConnectionString)
+		assert.NoError(t, client.Close())
+	})
 }
 
 func testClientIdleTime(t *testing.T) {
@@ -202,16 +220,13 @@ func testActivity(t *testing.T) {
 
 	res, err := testClient.Activity()
 	assert.NoError(t, err)
-	for _, val := range expected {
-		assert.Contains(t, res.Columns, val)
-	}
+	assertMatches(t, expected, res.Columns)
 }
 
 func testDatabases(t *testing.T) {
 	res, err := testClient.Databases()
 	assert.NoError(t, err)
-	assert.Contains(t, res, "booktown")
-	assert.Contains(t, res, "postgres")
+	assertMatches(t, []string{"booktown", "postgres"}, res)
 }
 
 func testObjects(t *testing.T) {
@@ -245,16 +260,44 @@ func testObjects(t *testing.T) {
 		"text_sorting",
 	}
 
+	functions := []string{
+		"add_shipment",
+		"add_two_loop",
+		"books_by_subject",
+		"compound_word",
+		"count_by_two",
+		"double_price",
+		"extract_all_titles",
+		"extract_all_titles2",
+		"extract_title",
+		"first",
+		"get_author",
+		"get_author",
+		"get_customer_id",
+		"get_customer_name",
+		"html_linebreaks",
+		"in_stock",
+		"isbn_to_title",
+		"mixed",
+		"raise_test",
+		"ship_item",
+		"stock_amount",
+		"test",
+		"title",
+		"triple_price",
+	}
+
 	assert.NoError(t, err)
-	assert.Equal(t, []string{"schema", "name", "type", "owner", "comment"}, res.Columns)
+	assert.Equal(t, []string{"oid", "schema", "name", "type", "owner", "comment"}, res.Columns)
 	assert.Equal(t, []string{"public"}, mapKeys(objects))
-	assert.Equal(t, tables, objects["public"].Tables)
-	assert.Equal(t, []string{"recent_shipments", "stock_view"}, objects["public"].Views)
-	assert.Equal(t, []string{"author_ids", "book_ids", "shipments_ship_id_seq", "subject_ids"}, objects["public"].Sequences)
+	assert.Equal(t, tables, objectNames(objects["public"].Tables))
+	assertMatches(t, functions, objectNames(objects["public"].Functions))
+	assert.Equal(t, []string{"recent_shipments", "stock_view"}, objectNames(objects["public"].Views))
+	assert.Equal(t, []string{"author_ids", "book_ids", "shipments_ship_id_seq", "subject_ids"}, objectNames(objects["public"].Sequences))
 
 	major, minor := pgVersion()
 	if minor == 0 || minor >= 3 {
-		assert.Equal(t, []string{"m_stock_view"}, objects["public"].MaterializedViews)
+		assert.Equal(t, []string{"m_stock_view"}, objectNames(objects["public"].MaterializedViews))
 	} else {
 		t.Logf("Skipping materialized view on %d.%d\n", major, minor)
 	}
@@ -428,6 +471,33 @@ func testTableRowsOrderEscape(t *testing.T) {
 	assert.Nil(t, rows)
 }
 
+func testFunctions(t *testing.T) {
+	funcName := "get_customer_name"
+	funcID := ""
+
+	res, err := testClient.Objects()
+	assert.NoError(t, err)
+
+	for _, row := range res.Rows {
+		if row[2] == funcName {
+			funcID = row[0].(string)
+			break
+		}
+	}
+
+	res, err = testClient.Function("12345")
+	assert.NoError(t, err)
+	assertMatches(t, []string{"oid", "proname", "functiondef"}, res.Columns)
+	assert.Equal(t, 0, len(res.Rows))
+
+	res, err = testClient.Function(funcID)
+	assert.NoError(t, err)
+	assertMatches(t, []string{"oid", "proname", "functiondef"}, res.Columns)
+	assert.Equal(t, 1, len(res.Rows))
+	assert.Equal(t, funcName, res.Rows[0][1])
+	assert.Contains(t, res.Rows[0][len(res.Columns)-1], "SELECT INTO customer_fname, customer_lname")
+}
+
 func testResult(t *testing.T) {
 	t.Run("json", func(t *testing.T) {
 		result, err := testClient.Query("SELECT * FROM books LIMIT 1")
@@ -466,8 +536,8 @@ func testHistory(t *testing.T) {
 	t.Run("unique queries", func(t *testing.T) {
 		url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 
-		client, err := NewFromUrl(url, nil)
-		assert.NoError(t, err)
+		client, _ := NewFromUrl(url, nil)
+		defer client.Close()
 
 		for i := 0; i < 3; i++ {
 			_, err := client.Query("SELECT * FROM books WHERE id = 1")
@@ -487,6 +557,7 @@ func testReadOnlyMode(t *testing.T) {
 
 	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
 	client, _ := NewFromUrl(url, nil)
+	defer client.Close()
 
 	err := client.SetReadOnlyMode()
 	assert.NoError(t, err)
@@ -522,8 +593,7 @@ func TestAll(t *testing.T) {
 	setup()
 	setupClient()
 
-	testNewClientFromUrl(t)
-	testNewClientFromUrl2(t)
+	testNewClientFromURL(t)
 	testClientIdleTime(t)
 	testTest(t)
 	testInfo(t)
@@ -544,6 +614,7 @@ func TestAll(t *testing.T) {
 	testQueryError(t)
 	testQueryInvalidTable(t)
 	testTableRowsOrderEscape(t)
+	testFunctions(t)
 	testResult(t)
 	testHistory(t)
 	testReadOnlyMode(t)

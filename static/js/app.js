@@ -88,6 +88,7 @@ function getTableRows(table, opts, cb)      { apiCall("get", "/tables/" + table 
 function getTableStructure(table, opts, cb) { apiCall("get", "/tables/" + table, opts, cb); }
 function getTableIndexes(table, cb)         { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
 function getTableConstraints(table, cb)     { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
+function getFunction(id, cb)                { apiCall("get", "/functions/" + id, {}, cb); }
 function getHistory(cb)                     { apiCall("get", "/history", {}, cb); }
 function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
 function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
@@ -106,6 +107,7 @@ function buildSchemaSection(name, objects) {
     "table":             "Tables",
     "view":              "Views",
     "materialized_view": "Materialized Views",
+    "function":          "Functions",
     "sequence":          "Sequences"
   };
 
@@ -113,6 +115,7 @@ function buildSchemaSection(name, objects) {
     "table":             '<i class="fa fa-table"></i>',
     "view":              '<i class="fa fa-table"></i>',
     "materialized_view": '<i class="fa fa-table"></i>',
+    "function":          '<i class="fa fa-bolt"></i>',
     "sequence":          '<i class="fa fa-circle-o"></i>'
   };
 
@@ -123,7 +126,7 @@ function buildSchemaSection(name, objects) {
   section += "<div class='schema-name'><i class='fa fa-folder-o'></i><i class='fa fa-folder-open-o'></i> " + name + "</div>";
   section += "<div class='schema-container'>";
 
-  ["table", "view", "materialized_view", "sequence"].forEach(function(group) {
+  ["table", "view", "materialized_view", "function", "sequence"].forEach(function(group) {
     group_klass = "";
     if (name == "public" && group == "table") group_klass = "expanded";
 
@@ -133,8 +136,14 @@ function buildSchemaSection(name, objects) {
 
     if (objects[group]) {
       objects[group].forEach(function(item) {
-        var id = name + "." + item;
-        section += "<li class='schema-item schema-" + group + "' data-type='" + group + "' data-id='" + id + "' data-name='" + item + "'>" + icons[group] + "&nbsp;" + item + "</li>";
+        var id = name + "." + item.name;
+
+        // Use function OID since multiple functions with the same name might exist
+        if (group == "function") {
+          id = item.oid;
+        }
+
+        section += "<li class='schema-item schema-" + group + "' data-type='" + group + "' data-id='" + id + "' data-name='" + item.name + "'>" + icons[group] + "&nbsp;" + item.name + "</li>";
       });
       section += "</ul></div>";
     }
@@ -154,6 +163,7 @@ function loadSchemas() {
         table: [],
         view: [],
         materialized_view: [],
+        function: [],
         sequence: []
       };
     }
@@ -170,13 +180,14 @@ function loadSchemas() {
     autocompleteObjects = [];
     for (schema in data) {
       for (kind in data[schema]) {
-        if (!(kind == "table" || kind == "view" || kind == "materialized_view")) {
+        if (!(kind == "table" || kind == "view" || kind == "materialized_view" || kind == "function")) {
           continue
         }
+
         for (item in data[schema][kind]) {
           autocompleteObjects.push({
-            caption: data[schema][kind][item],
-            value: data[schema][kind][item],
+            caption: data[schema][kind][item].name,
+            value: data[schema][kind][item].name,
             meta: kind
           });
         }
@@ -507,6 +518,11 @@ function showTableContent(sortColumn, sortOrder) {
     return;
   }
 
+  if (getCurrentObject().type == "function") {
+    alert("Cant view rows for a function");
+    return;
+  }
+
   var opts = {
     limit:       getRowsLimit(),
     offset:      getPaginationOffset(),
@@ -569,6 +585,13 @@ function showTableStructure() {
   $("#body").prop("class", "full");
 
   getTableStructure(name, { type: getCurrentObject().type }, function(data) {
+    if (getCurrentObject().type == "function") {
+      var name = data.rows[0][data.columns.indexOf("proname")];
+      var definition = data.rows[0][data.columns.indexOf("functiondef")];
+      showFunctionDefinition(name, definition);
+      return
+    }
+
     buildTable(data);
     $("#results").addClass("no-crop");
   });
@@ -576,14 +599,25 @@ function showTableStructure() {
 
 function showViewDefinition(viewName, viewDefintion) {
   setCurrentTab("table_structure");
+  renderResultsView("View definition for: <strong>" + viewName + "</strong>", viewDefintion);
+}
 
+function showFunctionDefinition(functionName, definition) {
+  setCurrentTab("table_structure");
+  renderResultsView("Function definition for: <strong>" + functionName + "</strong>", definition)
+}
+
+function renderResultsView(title, content) {
   $("#results").addClass("no-crop");
   $("#input").hide();
   $("#body").prop("class", "full");
   $("#results").hide();
 
-  var title = $("<div/>").prop("class", "title").html("View definition for: <strong>" + viewName + "</strong>");
-  var content = $("<pre/>").text(viewDefintion);
+  var title = $("<div/>").prop("class", "title").html(title);
+  var content = $("<pre/>").text(content);
+  console.log(content);
+
+  $("<div/>").html("<i class='fa fa-copy'></i>").addClass("copy").appendTo(content);
 
   $("#results_view").html("");
   title.appendTo("#results_view");
@@ -1138,7 +1172,7 @@ function bindDatabaseObjectsFilter() {
     $(".clear-objects-filter").show();
     $(".schema-group").addClass("expanded");
 
-    filterTimeout = setTimeout(function () {
+    filterTimeout = setTimeout(function() {
       filterObjectsByName(val)
     }, 200);
   });
@@ -1354,6 +1388,10 @@ $(document).ready(function() {
     exportTo("xml");
   });
 
+  $("#results_view").on("click", ".copy", function() {
+    copyToClipboard($(this).parent().text());
+  });
+
   $("#results").on("click", "tr", function(e) {
     $("#results tr.selected").removeClass();
     $(this).addClass("selected");
@@ -1378,7 +1416,11 @@ $(document).ready(function() {
     $(".current-page").data("page", 1);
     $(".filters select, .filters input").val("");
 
-    showTableInfo();
+    if (currentObject.type == "function") {
+      sessionStorage.setItem("tab", "table_structure");
+    } else {
+      showTableInfo();
+    }
 
     switch(sessionStorage.getItem("tab")) {
       case "table_content":

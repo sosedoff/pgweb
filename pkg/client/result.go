@@ -18,6 +18,7 @@ const (
 	ObjTypeView             = "view"
 	ObjTypeMaterializedView = "materialized_view"
 	ObjTypeSequence         = "sequence"
+	ObjTypeFunction         = "function"
 )
 
 type (
@@ -36,11 +37,17 @@ type (
 		Rows       []Row       `json:"rows"`
 	}
 
+	Object struct {
+		OID  string `json:"oid"`
+		Name string `json:"name"`
+	}
+
 	Objects struct {
-		Tables            []string `json:"table"`
-		Views             []string `json:"view"`
-		MaterializedViews []string `json:"materialized_view"`
-		Sequences         []string `json:"sequence"`
+		Tables            []Object `json:"table"`
+		Views             []Object `json:"view"`
+		MaterializedViews []Object `json:"materialized_view"`
+		Functions         []Object `json:"function"`
+		Sequences         []Object `json:"sequence"`
 	}
 )
 
@@ -154,28 +161,34 @@ func ObjectsFromResult(res *Result) map[string]*Objects {
 	objects := map[string]*Objects{}
 
 	for _, row := range res.Rows {
-		schema := row[0].(string)
-		name := row[1].(string)
-		objectType := row[2].(string)
+		oid := row[0].(string)
+		schema := row[1].(string)
+		name := row[2].(string)
+		objectType := row[3].(string)
 
 		if objects[schema] == nil {
 			objects[schema] = &Objects{
-				Tables:            []string{},
-				Views:             []string{},
-				MaterializedViews: []string{},
-				Sequences:         []string{},
+				Tables:            []Object{},
+				Views:             []Object{},
+				MaterializedViews: []Object{},
+				Functions:         []Object{},
+				Sequences:         []Object{},
 			}
 		}
 
+		obj := Object{OID: oid, Name: name}
+
 		switch objectType {
 		case ObjTypeTable:
-			objects[schema].Tables = append(objects[schema].Tables, name)
+			objects[schema].Tables = append(objects[schema].Tables, obj)
 		case ObjTypeView:
-			objects[schema].Views = append(objects[schema].Views, name)
+			objects[schema].Views = append(objects[schema].Views, obj)
 		case ObjTypeMaterializedView:
-			objects[schema].MaterializedViews = append(objects[schema].MaterializedViews, name)
+			objects[schema].MaterializedViews = append(objects[schema].MaterializedViews, obj)
+		case ObjTypeFunction:
+			objects[schema].Functions = append(objects[schema].Functions, obj)
 		case ObjTypeSequence:
-			objects[schema].Sequences = append(objects[schema].Sequences, name)
+			objects[schema].Sequences = append(objects[schema].Sequences, obj)
 		}
 	}
 

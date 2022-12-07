@@ -42,6 +42,7 @@ func SetupRoutes(router *gin.Engine) {
 	api.GET("/tables/:table/info", GetTableInfo)
 	api.GET("/tables/:table/indexes", GetTableIndexes)
 	api.GET("/tables/:table/constraints", GetTableConstraints)
+	api.GET("/functions/:id", GetFunction)
 	api.GET("/query", RunQuery)
 	api.POST("/query", RunQuery)
 	api.GET("/explain", ExplainQuery)

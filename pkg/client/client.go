@@ -197,6 +197,10 @@ func (client *Client) MaterializedView(name string) (*Result, error) {
 	return client.query(statements.MaterializedView, name)
 }
 
+func (client *Client) Function(id string) (*Result, error) {
+	return client.query(statements.Function, id)
+}
+
 func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error) {
 	schema, table := getSchemaAndTable(table)
 	sql := fmt.Sprintf(`SELECT * FROM "%s"."%s"`, schema, table)
