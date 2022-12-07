@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"runtime"
 	"strings"
 )
 
@@ -18,7 +19,7 @@ var (
 	BuildTime string
 
 	// BuildArch contains the OS architecture of the binary
-	BuildArch string
+	BuildArch string = fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH)
 
 	// GoVersion contains the build time Go version
 	GoVersion string
@@ -31,8 +32,8 @@ type VersionInfo struct {
 	Version   string `json:"version"`
 	GitCommit string `json:"git_sha"`
 	BuildTime string `json:"build_time"`
-	GoVersion string `json:"go_version"`
 	BuildArch string `json:"build_arch"`
+	GoVersion string `json:"go_version"`
 }
 
 func init() {
