@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"errors"
+	"net"
 	"net/http"
 	"testing"
 	"time"
@@ -24,7 +25,7 @@ func TestBackendFetchCredential(t *testing.T) {
 		{
 			name:    "Bad auth token",
 			backend: Backend{Endpoint: "http://localhost:5555/unauthorized"},
-			err:     errors.New("received HTTP status code 401"),
+			err:     errors.New("backend credential fetch received HTTP status code 401"),
 		},
 		{
 			name:    "Backend timeout",
@@ -42,13 +43,13 @@ func TestBackendFetchCredential(t *testing.T) {
 		{
 			name:    "Missing header",
 			backend: Backend{Endpoint: "http://localhost:5555/pass-header"},
-			err:     errors.New("received HTTP status code 400"),
+			err:     errors.New("backend credential fetch received HTTP status code 400"),
 		},
 		{
 			name: "Require header",
 			backend: Backend{
 				Endpoint:    "http://localhost:5555/pass-header",
-				PassHeaders: "x-foo",
+				PassHeaders: []string{"x-foo"},
 			},
 			reqCtx: &gin.Context{
 				Request: &http.Request{
@@ -69,7 +70,7 @@ func TestBackendFetchCredential(t *testing.T) {
 	srvCtx, srvCancel := context.WithTimeout(context.Background(), time.Minute)
 	defer srvCancel()
 
-	go startTestBackend(srvCtx, "localhost:5555")
+	startTestBackend(srvCtx, "localhost:5555")
 
 	for _, ex := range examples {
 		t.Run(ex.name, func(t *testing.T) {
@@ -139,10 +140,42 @@ func startTestBackend(ctx context.Context, listenAddr string) {
 	})
 
 	server := &http.Server{Addr: listenAddr, Handler: router}
-	go server.ListenAndServe()
+	mustStartServer(server)
 
-	select {
-	case <-ctx.Done():
-		server.Shutdown(context.Background())
+	go func() {
+		<-ctx.Done()
+		if err := server.Shutdown(context.Background()); err != nil && err != http.ErrServerClosed {
+			panic(err)
+		}
+	}()
+}
+
+func mustStartServer(server *http.Server) {
+	go func() {
+		err := server.ListenAndServe()
+		if err != nil && err != http.ErrServerClosed {
+			panic(err)
+		}
+	}()
+
+	if err := waitForServer(server.Addr, 5); err != nil {
+		panic(err)
 	}
+}
+
+func waitForServer(addr string, n int) error {
+	var lastErr error
+
+	for i := 0; i < n; i++ {
+		conn, err := net.Dial("tcp", addr)
+		if err == nil {
+			conn.Close()
+			return nil
+		}
+
+		lastErr = err
+		time.Sleep(time.Millisecond * 100)
+	}
+
+	return lastErr
 }

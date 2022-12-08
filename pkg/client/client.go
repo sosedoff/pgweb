@@ -1,12 +1,12 @@
 package client
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
 	neturl "net/url"
 	"reflect"
-	"regexp"
 	"strings"
 	"time"
 
@@ -20,21 +20,15 @@ import (
 	"github.com/sosedoff/pgweb/pkg/statements"
 )
 
-var (
-	postgresSignature = regexp.MustCompile(`(?i)postgresql ([\d\.]+)\s`)
-	postgresType      = "PostgreSQL"
-
-	cockroachSignature = regexp.MustCompile(`(?i)cockroachdb ccl v([\d\.]+)\s`)
-	cockroachType      = "CockroachDB"
-)
-
 type Client struct {
 	db               *sqlx.DB
 	tunnel           *Tunnel
 	serverVersion    string
 	serverType       string
 	lastQueryTime    time.Time
-	External         bool
+	queryTimeout     time.Duration
+	closed           bool
+	External         bool             `json:"external"`
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
 }
@@ -78,7 +72,7 @@ func New() (*Client, error) {
 		History:          history.New(),
 	}
 
-	client.setServerVersion()
+	client.init()
 	return &client, nil
 }
 
@@ -134,12 +128,21 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 	client := Client{
 		db:               db,
 		tunnel:           tunnel,
+		serverType:       postgresType,
 		ConnectionString: url,
 		History:          history.New(),
 	}
 
-	client.setServerVersion()
+	client.init()
 	return &client, nil
+}
+
+func (client *Client) init() {
+	if command.Opts.QueryTimeout > 0 {
+		client.queryTimeout = time.Second * time.Duration(command.Opts.QueryTimeout)
+	}
+
+	client.setServerVersion()
 }
 
 func (client *Client) setServerVersion() {
@@ -149,21 +152,10 @@ func (client *Client) setServerVersion() {
 	}
 
 	version := res.Rows[0][0].(string)
-
-	// Detect postgresql
-	matches := postgresSignature.FindAllStringSubmatch(version, 1)
-	if len(matches) > 0 {
-		client.serverType = postgresType
-		client.serverVersion = matches[0][1]
-		return
-	}
-
-	// Detect cockroachdb
-	matches = cockroachSignature.FindAllStringSubmatch(version, 1)
-	if len(matches) > 0 {
-		client.serverType = cockroachType
-		client.serverVersion = matches[0][1]
-		return
+	match, serverType, serverVersion := detectServerTypeAndVersion(version)
+	if match {
+		client.serverType = serverType
+		client.serverVersion = serverVersion
 	}
 }
 
@@ -199,6 +191,10 @@ func (client *Client) Table(table string) (*Result, error) {
 
 func (client *Client) MaterializedView(name string) (*Result, error) {
 	return client.query(statements.MaterializedView, name)
+}
+
+func (client *Client) Function(id string) (*Result, error) {
+	return client.query(statements.Function, id)
 }
 
 func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error) {
@@ -338,7 +334,42 @@ func (client *Client) ServerVersion() string {
 	return fmt.Sprintf("%s %s", client.serverType, client.serverVersion)
 }
 
+func (client *Client) context() (context.Context, context.CancelFunc) {
+	if client.queryTimeout > 0 {
+		return context.WithTimeout(context.Background(), client.queryTimeout)
+	}
+	return context.Background(), func() {}
+}
+
+func (client *Client) exec(query string, args ...interface{}) (*Result, error) {
+	ctx, cancel := client.context()
+	defer cancel()
+
+	res, err := client.db.ExecContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+
+	result := Result{
+		Columns: []string{"Rows Affected"},
+		Rows: []Row{
+			{affected},
+		},
+	}
+
+	return &result, nil
+}
+
 func (client *Client) query(query string, args ...interface{}) (*Result, error) {
+	if client.db == nil {
+		return nil, nil
+	}
+
 	// Update the last usage time
 	defer func() {
 		client.lastQueryTime = time.Now().UTC()
@@ -356,28 +387,16 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 	}
 
 	action := strings.ToLower(strings.Split(query, " ")[0])
-	if action == "update" || action == "delete" {
-		res, err := client.db.Exec(query, args...)
-		if err != nil {
-			return nil, err
-		}
+	hasReturnValues := strings.Contains(strings.ToLower(query), " returning ")
 
-		affected, err := res.RowsAffected()
-		if err != nil {
-			return nil, err
-		}
-
-		result := Result{
-			Columns: []string{"Rows Affected"},
-			Rows: []Row{
-				Row{affected},
-			},
-		}
-
-		return &result, nil
+	if (action == "update" || action == "delete") && !hasReturnValues {
+		return client.exec(query, args...)
 	}
 
-	rows, err := client.db.Queryx(query, args...)
+	ctx, cancel := client.context()
+	defer cancel()
+
+	rows, err := client.db.QueryxContext(ctx, query, args...)
 	if err != nil {
 		if command.Opts.Debug {
 			log.Println("Failed query:", query, "\nArgs:", args)
@@ -428,6 +447,13 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 
 // Close database connection
 func (client *Client) Close() error {
+	if client.closed {
+		return nil
+	}
+	defer func() {
+		client.closed = true
+	}()
+
 	if client.tunnel != nil {
 		client.tunnel.Close()
 	}
@@ -437,6 +463,14 @@ func (client *Client) Close() error {
 	}
 
 	return nil
+}
+
+func (c *Client) IsClosed() bool {
+	return c.closed
+}
+
+func (c *Client) LastQueryTime() time.Time {
+	return c.lastQueryTime
 }
 
 func (client *Client) IsIdle() bool {

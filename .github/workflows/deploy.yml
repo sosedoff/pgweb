@@ -1,0 +1,20 @@
+name: demo deploy
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_TOKEN }}
+
+jobs:
+  deploy:
+    name: Deploy to Fly
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only

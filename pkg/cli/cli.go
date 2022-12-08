@@ -7,9 +7,12 @@ import (
 	"os/signal"
 	"regexp"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jessevdk/go-flags"
+	"github.com/sirupsen/logrus"
 
 	"github.com/sosedoff/pgweb/pkg/api"
 	"github.com/sosedoff/pgweb/pkg/bookmarks"
@@ -21,6 +24,7 @@ import (
 )
 
 var (
+	logger  *logrus.Logger
 	options command.Options
 
 	readonlyWarning = `
@@ -33,6 +37,10 @@ For proper read-only access please follow postgresql role management documentati
 	regexErrConnectionRefused = regexp.MustCompile(`(connection|actively) refused`)
 	regexErrAuthFailed        = regexp.MustCompile(`authentication failed`)
 )
+
+func init() {
+	logger = logrus.New()
+}
 
 func exitWithMessage(message string) {
 	fmt.Println("Error:", message)
@@ -130,8 +138,12 @@ func initClient() {
 func initOptions() {
 	opts, err := command.ParseOptions(os.Args)
 	if err != nil {
-		switch err.(type) {
+		switch errVal := err.(type) {
 		case *flags.Error:
+			if errVal.Type == flags.ErrHelp {
+				fmt.Println("Available environment variables:")
+				fmt.Println(command.AvailableEnvVars())
+			}
 			// no need to print error, flags package already does that
 		default:
 			fmt.Println(err.Error())
@@ -144,6 +156,11 @@ func initOptions() {
 	if options.Version {
 		printVersion()
 		os.Exit(0)
+	}
+
+	if err := configureLogger(opts); err != nil {
+		exitWithMessage(err.Error())
+		return
 	}
 
 	if options.ReadOnly {
@@ -159,26 +176,37 @@ func initOptions() {
 	printVersion()
 }
 
+func configureLogger(opts command.Options) error {
+	if options.Debug {
+		logger.SetLevel(logrus.DebugLevel)
+	} else {
+		lvl, err := logrus.ParseLevel(opts.LogLevel)
+		if err != nil {
+			return err
+		}
+		logger.SetLevel(lvl)
+	}
+
+	switch options.LogFormat {
+	case "text":
+		logger.SetFormatter(&logrus.TextFormatter{})
+	case "json":
+		logger.SetFormatter(&logrus.JSONFormatter{})
+	default:
+		return fmt.Errorf("invalid logger format: %v", options.LogFormat)
+	}
+
+	return nil
+}
+
 func printVersion() {
-	chunks := []string{fmt.Sprintf("Pgweb v%s", command.Version)}
-
-	if command.GitCommit != "" {
-		chunks = append(chunks, fmt.Sprintf("(git: %s)", command.GitCommit))
-	}
-
-	if command.GoVersion != "" {
-		chunks = append(chunks, fmt.Sprintf("(go: %s)", command.GoVersion))
-	}
-
-	if command.BuildTime != "" {
-		chunks = append(chunks, fmt.Sprintf("(build time: %s)", command.BuildTime))
-	}
-
-	fmt.Println(strings.Join(chunks, " "))
+	fmt.Println(command.VersionString())
 }
 
 func startServer() {
-	router := gin.Default()
+	router := gin.New()
+	router.Use(api.RequestLogger(logger))
+	router.Use(gin.Recovery())
 
 	// Enable HTTP basic authentication only if both user and password are set
 	if options.AuthUser != "" && options.AuthPass != "" {
@@ -186,6 +214,7 @@ func startServer() {
 		router.Use(gin.BasicAuth(auth))
 	}
 
+	api.SetLogger(logger)
 	api.SetupRoutes(router)
 
 	fmt.Println("Starting server...")
@@ -203,7 +232,7 @@ func startServer() {
 
 func handleSignals() {
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c
 }
 
@@ -220,7 +249,10 @@ func openPage() {
 		return
 	}
 
-	exec.Command("open", url).Output()
+	_, err = exec.Command("open", url).Output()
+	if err != nil {
+		fmt.Println("Unable to auto-open pgweb URL:", err)
+	}
 }
 
 func Run() {
@@ -241,8 +273,13 @@ func Run() {
 	}
 
 	// Start session cleanup worker
-	if options.Sessions && !command.Opts.DisableConnectionIdleTimeout {
-		go api.StartSessionCleanup()
+	if options.Sessions {
+		api.DbSessions = api.NewSessionManager(logger)
+
+		if !command.Opts.DisableConnectionIdleTimeout {
+			api.DbSessions.SetIdleTimeout(time.Minute * time.Duration(command.Opts.ConnectionIdleTimeout))
+			go api.DbSessions.RunPeriodicCleanup()
+		}
 	}
 
 	startServer()

@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"strconv"
 	"time"
@@ -12,27 +13,43 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 )
 
-type Row []interface{}
+const (
+	ObjTypeTable            = "table"
+	ObjTypeView             = "view"
+	ObjTypeMaterializedView = "materialized_view"
+	ObjTypeSequence         = "sequence"
+	ObjTypeFunction         = "function"
+)
 
-type Pagination struct {
-	Rows    int64 `json:"rows_count"`
-	Page    int64 `json:"page"`
-	Pages   int64 `json:"pages_count"`
-	PerPage int64 `json:"per_page"`
-}
+type (
+	Row []interface{}
 
-type Result struct {
-	Pagination *Pagination `json:"pagination,omitempty"`
-	Columns    []string    `json:"columns"`
-	Rows       []Row       `json:"rows"`
-}
+	Pagination struct {
+		Rows    int64 `json:"rows_count"`
+		Page    int64 `json:"page"`
+		Pages   int64 `json:"pages_count"`
+		PerPage int64 `json:"per_page"`
+	}
 
-type Objects struct {
-	Tables            []string `json:"table"`
-	Views             []string `json:"view"`
-	MaterializedViews []string `json:"materialized_view"`
-	Sequences         []string `json:"sequence"`
-}
+	Result struct {
+		Pagination *Pagination `json:"pagination,omitempty"`
+		Columns    []string    `json:"columns"`
+		Rows       []Row       `json:"rows"`
+	}
+
+	Object struct {
+		OID  string `json:"oid"`
+		Name string `json:"name"`
+	}
+
+	Objects struct {
+		Tables            []Object `json:"table"`
+		Views             []Object `json:"view"`
+		MaterializedViews []Object `json:"materialized_view"`
+		Functions         []Object `json:"function"`
+		Sequences         []Object `json:"sequence"`
+	}
+)
 
 // Due to big int number limitations in javascript, numbers should be encoded
 // as strings so they could be properly loaded on the frontend.
@@ -63,6 +80,14 @@ func (res *Result) PostProcess() {
 				if hasBinary(val, 8) && BinaryCodec != CodecNone {
 					res.Rows[i][j] = encodeBinaryData([]byte(val), BinaryCodec)
 				}
+			case time.Time:
+				// RFC 3339 is clear that years are 4 digits exactly.
+				// See golang.org/issue/4556#c15 for more discussion.
+				if val.Year() < 0 || val.Year() >= 10000 {
+					res.Rows[i][j] = "ERR: INVALID_DATE"
+				} else {
+					res.Rows[i][j] = val
+				}
 			}
 		}
 	}
@@ -88,7 +113,9 @@ func (res *Result) CSV() []byte {
 	buff := &bytes.Buffer{}
 	writer := csv.NewWriter(buff)
 
-	writer.Write(res.Columns)
+	if err := writer.Write(res.Columns); err != nil {
+		log.Printf("result csv write error: %v\n", err)
+	}
 
 	for _, row := range res.Rows {
 		record := make([]string, len(res.Columns))
@@ -134,28 +161,34 @@ func ObjectsFromResult(res *Result) map[string]*Objects {
 	objects := map[string]*Objects{}
 
 	for _, row := range res.Rows {
-		schema := row[0].(string)
-		name := row[1].(string)
-		object_type := row[2].(string)
+		oid := row[0].(string)
+		schema := row[1].(string)
+		name := row[2].(string)
+		objectType := row[3].(string)
 
 		if objects[schema] == nil {
 			objects[schema] = &Objects{
-				Tables:            []string{},
-				Views:             []string{},
-				MaterializedViews: []string{},
-				Sequences:         []string{},
+				Tables:            []Object{},
+				Views:             []Object{},
+				MaterializedViews: []Object{},
+				Functions:         []Object{},
+				Sequences:         []Object{},
 			}
 		}
 
-		switch object_type {
-		case "table":
-			objects[schema].Tables = append(objects[schema].Tables, name)
-		case "view":
-			objects[schema].Views = append(objects[schema].Views, name)
-		case "materialized_view":
-			objects[schema].MaterializedViews = append(objects[schema].MaterializedViews, name)
-		case "sequence":
-			objects[schema].Sequences = append(objects[schema].Sequences, name)
+		obj := Object{OID: oid, Name: name}
+
+		switch objectType {
+		case ObjTypeTable:
+			objects[schema].Tables = append(objects[schema].Tables, obj)
+		case ObjTypeView:
+			objects[schema].Views = append(objects[schema].Views, obj)
+		case ObjTypeMaterializedView:
+			objects[schema].MaterializedViews = append(objects[schema].MaterializedViews, obj)
+		case ObjTypeFunction:
+			objects[schema].Functions = append(objects[schema].Functions, obj)
+		case ObjTypeSequence:
+			objects[schema].Sequences = append(objects[schema].Sequences, obj)
 		}
 	}
 

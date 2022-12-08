@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -16,7 +15,7 @@ import (
 type Backend struct {
 	Endpoint    string
 	Token       string
-	PassHeaders string
+	PassHeaders []string
 }
 
 // BackendRequest represents a payload sent to the third-party source
@@ -33,6 +32,8 @@ type BackendCredential struct {
 
 // FetchCredential sends an authentication request to a third-party service
 func (be Backend) FetchCredential(ctx context.Context, resource string, c *gin.Context) (*BackendCredential, error) {
+	logger.WithField("resource", resource).Debug("fetching database credential")
+
 	request := BackendRequest{
 		Resource: resource,
 		Token:    be.Token,
@@ -40,14 +41,13 @@ func (be Backend) FetchCredential(ctx context.Context, resource string, c *gin.C
 	}
 
 	// Pass white-listed client headers to the backend request
-	for _, name := range strings.Split(be.PassHeaders, ",") {
+	for _, name := range be.PassHeaders {
 		request.Headers[strings.ToLower(name)] = c.Request.Header.Get(name)
 	}
 
 	body, err := json.Marshal(request)
 	if err != nil {
-		log.Println("[BACKEND] backend request serialization error:", err)
-
+		logger.WithField("resource", resource).Error("backend request serialization error:", err)
 		return nil, err
 	}
 
@@ -59,14 +59,20 @@ func (be Backend) FetchCredential(ctx context.Context, resource string, c *gin.C
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		// Any connection-related issues will show up in the server log
-		log.Println("[BACKEND] unable to fetch credential:", err)
+		logger.WithField("resource", resource).Error("backend credential fetch failed:", err)
 		return nil, errBackendConnectError
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("received HTTP status code %v", resp.StatusCode)
+		err = fmt.Errorf("backend credential fetch received HTTP status code %v", resp.StatusCode)
+
+		logger.
+			WithField("resource", resource).
+			WithField("status", resp.StatusCode).
+			Error(err)
+
+		return nil, err
 	}
 
 	cred := &BackendCredential{}

@@ -26,13 +26,13 @@ var (
 	DbClient *client.Client
 
 	// DbSessions represents the mapping for client connections
-	DbSessions = map[string]*client.Client{}
+	DbSessions *SessionManager
 )
 
 // DB returns a database connection from the client context
 func DB(c *gin.Context) *client.Client {
 	if command.Opts.Sessions {
-		return DbSessions[getSessionId(c.Request)]
+		return DbSessions.Get(getSessionId(c.Request))
 	}
 	return DbClient
 }
@@ -54,7 +54,7 @@ func setClient(c *gin.Context, newClient *client.Client) error {
 		return errSessionRequired
 	}
 
-	DbSessions[sid] = newClient
+	DbSessions.Add(sid, newClient)
 	return nil
 }
 
@@ -63,7 +63,7 @@ func GetHome(prefix string) http.Handler {
 	if prefix != "" {
 		prefix = "/" + prefix
 	}
-	return http.StripPrefix(prefix, http.FileServer(http.FS(static.Static)))
+	return http.StripPrefix(prefix, static.GetHandler())
 }
 
 func GetAssets(prefix string) http.Handler {
@@ -72,7 +72,7 @@ func GetAssets(prefix string) http.Handler {
 	} else {
 		prefix = "/static/"
 	}
-	return http.StripPrefix(prefix, http.FileServer(http.FS(static.Static)))
+	return http.StripPrefix(prefix, static.GetHandler())
 }
 
 // GetSessions renders the number of active sessions
@@ -80,10 +80,10 @@ func GetSessions(c *gin.Context) {
 	// In debug mode endpoint will return a lot of sensitive information
 	// like full database connection string and all query history.
 	if command.Opts.Debug {
-		successResponse(c, DbSessions)
+		successResponse(c, DbSessions.Sessions())
 		return
 	}
-	successResponse(c, gin.H{"sessions": len(DbSessions)})
+	successResponse(c, gin.H{"sessions": DbSessions.Len()})
 }
 
 // ConnectWithBackend creates a new connection based on backend resource
@@ -92,7 +92,7 @@ func ConnectWithBackend(c *gin.Context) {
 	backend := Backend{
 		Endpoint:    command.Opts.ConnectBackend,
 		Token:       command.Opts.ConnectToken,
-		PassHeaders: command.Opts.ConnectHeaders,
+		PassHeaders: strings.Split(command.Opts.ConnectHeaders, ","),
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
@@ -342,13 +342,21 @@ func GetSchemas(c *gin.Context) {
 
 // GetTable renders table information
 func GetTable(c *gin.Context) {
-	var res *client.Result
-	var err error
+	var (
+		res *client.Result
+		err error
+	)
 
-	if c.Request.FormValue("type") == "materialized_view" {
-		res, err = DB(c).MaterializedView(c.Params.ByName("table"))
-	} else {
-		res, err = DB(c).Table(c.Params.ByName("table"))
+	db := DB(c)
+	tableName := c.Params.ByName("table")
+
+	switch c.Request.FormValue("type") {
+	case client.ObjTypeMaterializedView:
+		res, err = db.MaterializedView(tableName)
+	case client.ObjTypeFunction:
+		res, err = db.Function(tableName)
+	default:
+		res, err = db.Table(tableName)
 	}
 
 	serveResult(c, res, err)
@@ -499,12 +507,7 @@ func GetBookmarks(c *gin.Context) {
 
 // GetInfo renders the pgweb system information
 func GetInfo(c *gin.Context) {
-	successResponse(c, gin.H{
-		"version":    command.Version,
-		"go_version": command.GoVersion,
-		"git_sha":    command.GitCommit,
-		"build_time": command.BuildTime,
-	})
+	successResponse(c, command.Info)
 }
 
 // DataExport performs database table export
@@ -533,7 +536,7 @@ func DataExport(c *gin.Context) {
 	if dump.Table != "" {
 		filename = filename + "_" + dump.Table
 	}
-	reg := regexp.MustCompile("[^._\\w]+")
+	reg := regexp.MustCompile(`[^._\\w]+`)
 	cleanFilename := reg.ReplaceAllString(filename, "")
 
 	c.Header(
@@ -545,4 +548,10 @@ func DataExport(c *gin.Context) {
 	if err != nil {
 		badRequest(c, err)
 	}
+}
+
+// GetFunction renders function information
+func GetFunction(c *gin.Context) {
+	res, err := DB(c).Function(c.Param("id"))
+	serveResult(c, res, err)
 }

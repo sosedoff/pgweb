@@ -38,8 +38,8 @@ func Test_Valid_Url(t *testing.T) {
 
 func Test_Url_And_Ssl_Flag(t *testing.T) {
 	str, err := BuildStringFromOptions(command.Options{
-		URL: "postgres://myhost/database",
-		Ssl: "disable",
+		URL:     "postgres://myhost/database",
+		SSLMode: "disable",
 	})
 
 	assert.Equal(t, nil, err)
@@ -62,15 +62,15 @@ func Test_Localhost_Url_And_No_Ssl_Flag(t *testing.T) {
 
 func Test_Localhost_Url_And_Ssl_Flag(t *testing.T) {
 	str, err := BuildStringFromOptions(command.Options{
-		URL: "postgres://localhost/database",
-		Ssl: "require",
+		URL:     "postgres://localhost/database",
+		SSLMode: "require",
 	})
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://localhost/database?sslmode=require", str)
 
 	str, err = BuildStringFromOptions(command.Options{
-		URL: "postgres://127.0.0.1/database",
-		Ssl: "require",
+		URL:     "postgres://127.0.0.1/database",
+		SSLMode: "require",
 	})
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "postgres://127.0.0.1/database?sslmode=require", str)
@@ -137,10 +137,10 @@ func Test_Localhost_And_Ssl(t *testing.T) {
 		User:        "user",
 		Pass:        "password",
 		DbName:      "db",
-		Ssl:         "require",
-		SslKey:      "keyPath",
-		SslCert:     "certPath",
-		SslRootCert: "caPath",
+		SSLMode:     "require",
+		SSLKey:      "keyPath",
+		SSLCert:     "certPath",
+		SSLRootCert: "caPath",
 	}
 
 	str, err := BuildStringFromOptions(opts)
