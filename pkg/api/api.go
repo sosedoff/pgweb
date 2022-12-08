@@ -507,7 +507,13 @@ func GetBookmarks(c *gin.Context) {
 
 // GetInfo renders the pgweb system information
 func GetInfo(c *gin.Context) {
-	successResponse(c, command.Info)
+	successResponse(c, gin.H{
+		"app": command.Info,
+		"features": gin.H{
+			"session_lock":  command.Opts.LockSession,
+			"query_timeout": command.Opts.QueryTimeout,
+		},
+	})
 }
 
 // DataExport performs database table export

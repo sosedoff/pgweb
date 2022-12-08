@@ -1,3 +1,5 @@
+var appInfo             = {};
+var appFeatures         = {};
 var editor              = null;
 var connected           = false;
 var bookmarks           = {};
@@ -57,10 +59,13 @@ function getPagesCount(rowsCount) {
 }
 
 function apiCall(method, path, params, cb) {
-  var timeout = 300000; // 5 mins is enough
+  var timeout = appFeatures.query_timeout;
+  if (timeout == null) {
+    timeout = 300; // in seconds
+  }
 
   $.ajax({
-    timeout: timeout,
+    timeout: timeout * 1000, // in milliseconds
     url: "api" + path,
     method: method,
     cache: false,
@@ -68,12 +73,10 @@ function apiCall(method, path, params, cb) {
     headers: {
       "x-session-id": getSessionId()
     },
-    success: function(data) {
-      cb(data);
-    },
+    success: cb,
     error: function(xhr, status, data) {
       if (status == "timeout") {
-        return cb({ error: "Query timeout after " + (timeout / 1000) + "s" });
+        return cb({ error: "Query timeout after " + timeout + "s" });
       }
 
       cb(jQuery.parseJSON(xhr.responseText));
@@ -82,6 +85,7 @@ function apiCall(method, path, params, cb) {
 }
 
 function getInfo(cb)                        { apiCall("get", "/info", {}, cb); }
+function getConnection(cb)                  { apiCall("get", "/connection", {}, cb); }
 function getObjects(cb)                     { apiCall("get", "/objects", {}, cb); }
 function getTables(cb)                      { apiCall("get", "/tables", {}, cb); }
 function getTableRows(table, opts, cb)      { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
@@ -644,7 +648,7 @@ function showConnectionPanel() {
   $("#input").hide();
   $("#body").addClass("full");
 
-  apiCall("get", "/connection", {}, function(data) {
+  getConnection(function(data) {
     var rows = [];
 
     for(key in data) {
@@ -994,23 +998,16 @@ function getLatestReleaseInfo(current) {
 }
 
 function showConnectionSettings() {
-  // Fetch server info
-  getInfo(function(data) {
-    if (data.error) return;
-    if (!data.version) return;
+  // Show the current postgres version
+  $(".connection-settings .version").text("v" + appInfo.version).show();
 
-    // Show the current postgres version
-    $(".connection-settings .version").text("v" + data.version).show();
-
-    // Check for updates if running the actual release from Github
-    if (data.git_sha == "") {
-      getLatestReleaseInfo(data);
-    }
-  });
+  // Check github release page for updates
+  getLatestReleaseInfo(appInfo);
 
   getBookmarks(function(data) {
     // Do not add any bookmarks if we've got an error
     if (data.error) {
+      console.log("Cant get bookmarks:", data.error);
       return;
     }
 
@@ -1713,6 +1710,7 @@ $(document).ready(function() {
 
   initEditor();
   addShortcutTooltips();
+  bindDatabaseObjectsFilter();
 
   // Set session from the url
   var reqUrl = new URL(window.location);
@@ -1723,25 +1721,33 @@ $(document).ready(function() {
     window.history.pushState({}, document.title, window.location.pathname);
   }
 
-  apiCall("get", "/connection", {}, function(resp) {
+  getInfo(function(resp) {
     if (resp.error) {
-      connected = false;
-      showConnectionSettings();
-      $(".connection-actions").show();
+      alert("Unable to fetch app info: " + resp.error + ". Please reload the browser page.");
+      return;
     }
-    else {
+
+    appInfo = resp.app;
+    appFeatures = resp.features;
+
+    getConnection(function(resp) {
+      if (resp.error) {
+        connected = false;
+        showConnectionSettings();
+        $(".connection-actions").show();
+        return;
+      }
+
       connected = true;
       loadSchemas();
 
       $("#current_database").text(resp.current_database);
       $("#main").show();
 
-      if (!resp.session_lock) {
+      if (!appFeatures.session_lock) {
         $(".connection-actions").show();
       }
-    }
+    });
   });
-
-  bindDatabaseObjectsFilter();
 });
 
