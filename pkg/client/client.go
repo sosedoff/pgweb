@@ -173,10 +173,11 @@ func (client *Client) Test() error {
 
 func (client *Client) Info() (*Result, error) {
 	info, err := client.query(statements.Info)
-	if err != nil {
+	if err != nil && strings.Contains(err.Error(), "inet_") {
+		// If error containes any reference to `inet_*` functions fall back to simplified query
 		return client.query(statements.InfoSimplified)
 	}
-	return info, nil
+	return info, err
 }
 
 func (client *Client) Databases() ([]string, error) {
