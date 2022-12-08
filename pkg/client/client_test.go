@@ -397,10 +397,37 @@ func testTableNameWithCamelCase(t *testing.T) {
 }
 
 func testQuery(t *testing.T) {
-	res, err := testClient.Query("SELECT * FROM books")
-	assert.NoError(t, err)
-	assert.Equal(t, 4, len(res.Columns))
-	assert.Equal(t, 15, len(res.Rows))
+	t.Run("basic query", func(t *testing.T) {
+		res, err := testClient.Query("SELECT * FROM books")
+		assert.NoError(t, err)
+		assert.Equal(t, 4, len(res.Columns))
+		assert.Equal(t, 15, len(res.Rows))
+	})
+
+	t.Run("error", func(t *testing.T) {
+		res, err := testClient.Query("SELCT * FROM books")
+		assert.NotNil(t, err)
+		assert.Equal(t, "pq: syntax error at or near \"SELCT\"", err.Error())
+		assert.Nil(t, res)
+	})
+
+	t.Run("invalid table", func(t *testing.T) {
+		res, err := testClient.Query("SELECT * FROM books2")
+		assert.NotNil(t, err)
+		assert.Equal(t, "pq: relation \"books2\" does not exist", err.Error())
+		assert.Nil(t, res)
+	})
+
+	t.Run("timeout", func(t *testing.T) {
+		testClient.queryTimeout = time.Millisecond * 100
+		defer func() {
+			testClient.queryTimeout = 0
+		}()
+
+		res, err := testClient.query("SELECT pg_sleep(1);")
+		assert.Equal(t, "pq: canceling statement due to user request", err.Error())
+		assert.Nil(t, res)
+	})
 }
 
 func testUpdateQuery(t *testing.T) {
@@ -444,20 +471,6 @@ func testUpdateQuery(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, int64(9999), res.Rows[0][0])
 	})
-}
-
-func testQueryError(t *testing.T) {
-	res, err := testClient.Query("SELCT * FROM books")
-	assert.NotNil(t, err)
-	assert.Equal(t, "pq: syntax error at or near \"SELCT\"", err.Error())
-	assert.Nil(t, res)
-}
-
-func testQueryInvalidTable(t *testing.T) {
-	res, err := testClient.Query("SELECT * FROM books2")
-	assert.NotNil(t, err)
-	assert.Equal(t, "pq: relation \"books2\" does not exist", err.Error())
-	assert.Nil(t, res)
 }
 
 func testTableRowsOrderEscape(t *testing.T) {
@@ -611,8 +624,6 @@ func TestAll(t *testing.T) {
 	testTableNameWithCamelCase(t)
 	testQuery(t)
 	testUpdateQuery(t)
-	testQueryError(t)
-	testQueryInvalidTable(t)
 	testTableRowsOrderEscape(t)
 	testFunctions(t)
 	testResult(t)
