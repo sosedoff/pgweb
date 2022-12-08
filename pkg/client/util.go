@@ -12,6 +12,14 @@ var (
 	// Comment regular expressions
 	reSlashComment = regexp.MustCompile(`(?m)/\*.+\*/`)
 	reDashComment  = regexp.MustCompile(`(?m)--.+`)
+
+	// Postgres version signature
+	postgresSignature = regexp.MustCompile(`(?i)postgresql ([\d\.]+)\s?`)
+	postgresType      = "PostgreSQL"
+
+	// Cockroach version signature
+	cockroachSignature = regexp.MustCompile(`(?i)cockroachdb ccl v([\d\.]+)\s?`)
+	cockroachType      = "CockroachDB"
 )
 
 // Get short version from the string
@@ -22,6 +30,24 @@ func getMajorMinorVersion(str string) string {
 		return str
 	}
 	return strings.Join(chunks[0:2], ".")
+}
+
+func detectServerTypeAndVersion(version string) (bool, string, string) {
+	version = strings.TrimSpace(version)
+
+	// Detect postgresql
+	matches := postgresSignature.FindAllStringSubmatch(version, 1)
+	if len(matches) > 0 {
+		return true, postgresType, matches[0][1]
+	}
+
+	// Detect cockroachdb
+	matches = cockroachSignature.FindAllStringSubmatch(version, 1)
+	if len(matches) > 0 {
+		return true, cockroachType, matches[0][1]
+	}
+
+	return false, "", ""
 }
 
 // containsRestrictedKeywords returns true if given keyword is not allowed in read-only mode
