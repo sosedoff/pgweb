@@ -458,6 +458,45 @@ func testReadOnlyMode(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+
+func testInetFunctionsFullAndSimplifiedQuery(t *testing.T) {
+
+	url := fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase)
+	client, _ := NewFromUrl(url, nil)
+
+
+	// Normally, client.Info() result should include columns for the values returned by inet_* function calls
+
+	info, _ := client.Info()
+	assert.Contains(t, info.Columns, "session_user")
+	assert.Contains(t, info.Columns, "inet_client_addr")
+	assert.Contains(t, info.Columns, "inet_client_port")
+	assert.Contains(t, info.Columns, "inet_server_addr")
+	assert.Contains(t, info.Columns, "inet_server_port")
+
+	// Prepare our restricted database and revoke execution permissions on inet_client_addr() function
+	client.Query("\nCREATE USER IF NOT EXISTS testuser WITH PASSWORD 'secret';\n")
+	client.Query("\nCREATE DATABASE IF NOT EXISTS testdb OWNER testuser;\n")
+
+	url = fmt.Sprintf("postgres://%s@%s:%s/testdb?sslmode=disable", serverUser, serverHost, serverPort)
+	client, _ = NewFromUrl(url, nil)
+
+	client.Query("\nREVOKE EXECUTE ON FUNCTION inet_client_addr() FROM PUBLIC;\n")
+
+	// Now results from client.Info() should not include any of the inet_* columns, but still include the other columns.
+	url = fmt.Sprintf("postgres://testuser:secret@%s:%s/testdb?sslmode=disable", serverHost, serverPort)
+	client, _ = NewFromUrl(url, nil)
+
+	info, _ = client.Info()
+	assert.Contains(t, info.Columns, "session_user")
+	assert.NotContains(t, info.Columns, "inet_client_addr")
+	assert.NotContains(t, info.Columns, "inet_client_port")
+	assert.NotContains(t, info.Columns, "inet_server_addr")
+	assert.NotContains(t, info.Columns, "inet_server_port")
+
+}
+
+
 func TestAll(t *testing.T) {
 	if onWindows() {
 		t.Log("Unit testing on Windows platform is not supported.")
@@ -497,6 +536,7 @@ func TestAll(t *testing.T) {
 	testHistoryError(t)
 	testReadOnlyMode(t)
 	testDumpExport(t)
+	testInetFunctionsFullAndSimplifiedQuery(t)
 
 	teardownClient()
 	teardown()
