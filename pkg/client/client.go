@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -34,6 +35,7 @@ type Client struct {
 	serverVersion    string
 	serverType       string
 	lastQueryTime    time.Time
+	queryTimeout     time.Duration
 	closed           bool
 	External         bool             `json:"external"`
 	History          []history.Record `json:"history"`
@@ -79,7 +81,7 @@ func New() (*Client, error) {
 		History:          history.New(),
 	}
 
-	client.setServerVersion()
+	client.init()
 	return &client, nil
 }
 
@@ -139,8 +141,16 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 		History:          history.New(),
 	}
 
-	client.setServerVersion()
+	client.init()
 	return &client, nil
+}
+
+func (client *Client) init() {
+	if command.Opts.QueryTimeout > 0 {
+		client.queryTimeout = time.Second * time.Duration(command.Opts.QueryTimeout)
+	}
+
+	client.setServerVersion()
 }
 
 func (client *Client) setServerVersion() {
@@ -338,6 +348,37 @@ func (client *Client) ServerVersion() string {
 	return fmt.Sprintf("%s %s", client.serverType, client.serverVersion)
 }
 
+func (client *Client) context() (context.Context, context.CancelFunc) {
+	if client.queryTimeout > 0 {
+		return context.WithTimeout(context.Background(), client.queryTimeout)
+	}
+	return context.Background(), func() {}
+}
+
+func (client *Client) exec(query string, args ...interface{}) (*Result, error) {
+	ctx, cancel := client.context()
+	defer cancel()
+
+	res, err := client.db.ExecContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+
+	result := Result{
+		Columns: []string{"Rows Affected"},
+		Rows: []Row{
+			{affected},
+		},
+	}
+
+	return &result, nil
+}
+
 func (client *Client) query(query string, args ...interface{}) (*Result, error) {
 	if client.db == nil {
 		return nil, nil
@@ -363,27 +404,13 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 	hasReturnValues := strings.Contains(strings.ToLower(query), " returning ")
 
 	if (action == "update" || action == "delete") && !hasReturnValues {
-		res, err := client.db.Exec(query, args...)
-		if err != nil {
-			return nil, err
-		}
-
-		affected, err := res.RowsAffected()
-		if err != nil {
-			return nil, err
-		}
-
-		result := Result{
-			Columns: []string{"Rows Affected"},
-			Rows: []Row{
-				{affected},
-			},
-		}
-
-		return &result, nil
+		return client.exec(query, args...)
 	}
 
-	rows, err := client.db.Queryx(query, args...)
+	ctx, cancel := client.context()
+	defer cancel()
+
+	rows, err := client.db.QueryxContext(ctx, query, args...)
 	if err != nil {
 		if command.Opts.Debug {
 			log.Println("Failed query:", query, "\nArgs:", args)
