@@ -7,7 +7,6 @@ import (
 	"log"
 	neturl "net/url"
 	"reflect"
-	"regexp"
 	"strings"
 	"time"
 
@@ -19,14 +18,6 @@ import (
 	"github.com/sosedoff/pgweb/pkg/history"
 	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/pkg/statements"
-)
-
-var (
-	postgresSignature = regexp.MustCompile(`(?i)postgresql ([\d\.]+)\s`)
-	postgresType      = "PostgreSQL"
-
-	cockroachSignature = regexp.MustCompile(`(?i)cockroachdb ccl v([\d\.]+)\s`)
-	cockroachType      = "CockroachDB"
 )
 
 type Client struct {
@@ -137,6 +128,7 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 	client := Client{
 		db:               db,
 		tunnel:           tunnel,
+		serverType:       postgresType,
 		ConnectionString: url,
 		History:          history.New(),
 	}
@@ -160,21 +152,10 @@ func (client *Client) setServerVersion() {
 	}
 
 	version := res.Rows[0][0].(string)
-
-	// Detect postgresql
-	matches := postgresSignature.FindAllStringSubmatch(version, 1)
-	if len(matches) > 0 {
-		client.serverType = postgresType
-		client.serverVersion = matches[0][1]
-		return
-	}
-
-	// Detect cockroachdb
-	matches = cockroachSignature.FindAllStringSubmatch(version, 1)
-	if len(matches) > 0 {
-		client.serverType = cockroachType
-		client.serverVersion = matches[0][1]
-		return
+	match, serverType, serverVersion := detectServerTypeAndVersion(version)
+	if match {
+		client.serverType = serverType
+		client.serverVersion = serverVersion
 	}
 }
 
