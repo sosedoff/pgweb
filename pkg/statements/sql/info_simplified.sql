@@ -4,3 +4,4 @@ SELECT
   current_database(),
   current_schemas(false),
   version()
+  
