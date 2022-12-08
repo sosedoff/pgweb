@@ -1001,10 +1001,8 @@ function showConnectionSettings() {
   // Show the current postgres version
   $(".connection-settings .version").text("v" + appInfo.version).show();
 
-  // Check for updates if running the actual release from Github
-  if (appInfo.git_sha == "") {
-    getLatestReleaseInfo(appInfo);
-  }
+  // Check github release page for updates
+  getLatestReleaseInfo(appInfo);
 
   getBookmarks(function(data) {
     // Do not add any bookmarks if we've got an error
