@@ -645,6 +645,8 @@ function showQueryPanel() {
 
 function showConnectionPanel() {
   setCurrentTab("table_connection");
+  $("#input").hide();
+  $("#body").addClass("full");
 
   getConnection(function(data) {
     var rows = [];
@@ -657,9 +659,6 @@ function showConnectionPanel() {
       columns: ["attribute", "value"],
       rows: rows
     });
-
-    $("#input").hide();
-    $("#body").addClass("full");
   });
 }
 
@@ -674,10 +673,11 @@ function showActivityPanel() {
   }
 
   setCurrentTab("table_activity");
+  $("#input").hide();
+  $("#body").addClass("full");
+
   apiCall("get", "/activity", {}, function(data) {
     buildTable(data, null, null, options);
-    $("#input").hide();
-    $("#body").addClass("full");
   });
 }
 
