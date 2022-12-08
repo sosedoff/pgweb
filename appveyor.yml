@@ -25,6 +25,6 @@ build_script:
   - go build
 
 test_script:
-  - go test -v -race -cover ./pkg/...
+  - go test -v -cover ./pkg/...
 
 deploy: false
