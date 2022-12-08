@@ -1723,7 +1723,7 @@ $(document).ready(function() {
 
   getInfo(function(resp) {
     if (resp.error) {
-      alert("Unable to fetch app info: " + resp.error + ". Please reload the broser page");
+      alert("Unable to fetch app info: " + resp.error + ". Please reload the browser page.");
       return;
     }
 
