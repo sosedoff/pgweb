@@ -73,9 +73,7 @@ function apiCall(method, path, params, cb) {
     headers: {
       "x-session-id": getSessionId()
     },
-    success: function(data) {
-      cb(data);
-    },
+    success: cb,
     error: function(xhr, status, data) {
       if (status == "timeout") {
         return cb({ error: "Query timeout after " + timeout + "s" });
