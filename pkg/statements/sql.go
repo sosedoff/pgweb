@@ -14,6 +14,9 @@ var (
 	//go:embed sql/info.sql
 	Info string
 
+	//go:embed sql/info_simplified.sql
+	InfoSimplified string
+
 	//go:embed sql/estimated_row_count.sql
 	EstimatedTableRowCount string
 
