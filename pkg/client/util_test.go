@@ -48,3 +48,25 @@ func TestDetectServerType(t *testing.T) {
 		})
 	}
 }
+
+func TestDetectDumpVersion(t *testing.T) {
+	examples := []struct {
+		input   string
+		match   bool
+		version string
+	}{
+		{"", false, ""},
+		{"pg_dump (PostgreSQL) 9.6", true, "9.6"},
+		{"pg_dump 10", true, "10"},
+		{"pg_dump (PostgreSQL) 14.5 (Homebrew)", true, "14.5"},
+	}
+
+	for _, ex := range examples {
+		t.Run("input:"+ex.input, func(t *testing.T) {
+			match, version := detectDumpVersion(ex.input)
+
+			assert.Equal(t, ex.match, match)
+			assert.Equal(t, ex.version, version)
+		})
+	}
+}

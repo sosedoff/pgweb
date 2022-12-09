@@ -14,8 +14,9 @@ var (
 	reDashComment  = regexp.MustCompile(`(?m)--.+`)
 
 	// Postgres version signature
-	postgresSignature = regexp.MustCompile(`(?i)postgresql ([\d\.]+)\s?`)
-	postgresType      = "PostgreSQL"
+	postgresSignature     = regexp.MustCompile(`(?i)postgresql ([\d\.]+)\s?`)
+	postgresDumpSignature = regexp.MustCompile(`\s([\d\.]+)\s?`)
+	postgresType          = "PostgreSQL"
 
 	// Cockroach version signature
 	cockroachSignature = regexp.MustCompile(`(?i)cockroachdb ccl v([\d\.]+)\s?`)
@@ -48,6 +49,15 @@ func detectServerTypeAndVersion(version string) (bool, string, string) {
 	}
 
 	return false, "", ""
+}
+
+// detectDumpVersion parses out version from `pg_dump -V` command.
+func detectDumpVersion(version string) (bool, string) {
+	matches := postgresDumpSignature.FindAllStringSubmatch(version, 1)
+	if len(matches) > 0 {
+		return true, matches[0][1]
+	}
+	return false, ""
 }
 
 // containsRestrictedKeywords returns true if given keyword is not allowed in read-only mode
