@@ -530,10 +530,10 @@ func DataExport(c *gin.Context) {
 		Table: strings.TrimSpace(c.Request.FormValue("table")),
 	}
 
-	// If pg_dump is not available the following code will not show an error in browser.
-	// This is due to the headers being written first.
-	if !dump.CanExport() {
-		badRequest(c, errPgDumpNotFound)
+	// Perform validation of pg_dump command availability and compatibility.
+	// Must be done before the actual command is executed to display errors.
+	if err := dump.Validate(db.ServerVersion()); err != nil {
+		badRequest(c, err)
 		return
 	}
 
@@ -550,8 +550,9 @@ func DataExport(c *gin.Context) {
 		fmt.Sprintf(`attachment; filename="%s.sql.gz"`, cleanFilename),
 	)
 
-	err = dump.Export(db.ConnectionString, c.Writer)
+	err = dump.Export(c.Request.Context(), db.ConnectionString, c.Writer)
 	if err != nil {
+		logger.WithError(err).Error("pg_dump command failed")
 		badRequest(c, err)
 	}
 }

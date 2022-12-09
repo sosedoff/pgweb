@@ -325,8 +325,12 @@ func (client *Client) SetReadOnlyMode() error {
 	return nil
 }
 
-func (client *Client) ServerVersion() string {
+func (client *Client) ServerVersionInfo() string {
 	return fmt.Sprintf("%s %s", client.serverType, client.serverVersion)
+}
+
+func (client *Client) ServerVersion() string {
+	return client.serverVersion
 }
 
 func (client *Client) context() (context.Context, context.CancelFunc) {

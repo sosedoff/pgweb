@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/url"
@@ -20,20 +21,39 @@ type Dump struct {
 	Table string
 }
 
-// CanExport returns true if database dump tool could be used without an error
-func (d *Dump) CanExport() bool {
-	return exec.Command("pg_dump", "--version").Run() == nil
+// Validate checks availability and version of pg_dump CLI
+func (d *Dump) Validate(serverVersion string) error {
+	out := bytes.NewBuffer(nil)
+
+	cmd := exec.Command("pg_dump", "--version")
+	cmd.Stdout = out
+	cmd.Stderr = out
+
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("pg_dump command failed: %s", out.Bytes())
+	}
+
+	detected, dumpVersion := detectDumpVersion(out.String())
+	if detected && serverVersion != "" {
+		satisfied, err := checkVersionRequirement(dumpVersion, serverVersion)
+		if err != nil {
+			return err
+		}
+		if !satisfied {
+			return fmt.Errorf("pg_dump version %v is too low, must be running %v or order", dumpVersion, serverVersion)
+		}
+	}
+
+	return nil
 }
 
 // Export streams the database dump to the specified writer
-func (d *Dump) Export(connstr string, writer io.Writer) error {
+func (d *Dump) Export(ctx context.Context, connstr string, writer io.Writer) error {
 	if str, err := removeUnsupportedOptions(connstr); err != nil {
 		return err
 	} else {
 		connstr = str
 	}
-
-	errOutput := bytes.NewBuffer(nil)
 
 	opts := []string{
 		"--no-owner",      // skip restoration of object ownership in plain-text format
@@ -46,8 +66,9 @@ func (d *Dump) Export(connstr string, writer io.Writer) error {
 	}
 
 	opts = append(opts, connstr)
+	errOutput := bytes.NewBuffer(nil)
 
-	cmd := exec.Command("pg_dump", opts...)
+	cmd := exec.CommandContext(ctx, "pg_dump", opts...)
 	cmd.Stdout = writer
 	cmd.Stderr = errOutput
 

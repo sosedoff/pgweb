@@ -123,7 +123,7 @@ func initClient() {
 	}
 
 	if !command.Opts.Sessions {
-		fmt.Printf("Connected to %s\n", cl.ServerVersion())
+		fmt.Printf("Connected to %s\n", cl.ServerVersionInfo())
 	}
 
 	fmt.Println("Checking database objects...")

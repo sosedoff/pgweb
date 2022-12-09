@@ -3,6 +3,8 @@ package client
 import (
 	"regexp"
 	"strings"
+
+	"github.com/hashicorp/go-version"
 )
 
 var (
@@ -58,6 +60,20 @@ func detectDumpVersion(version string) (bool, string) {
 		return true, matches[0][1]
 	}
 	return false, ""
+}
+
+func checkVersionRequirement(cur string, min string) (bool, error) {
+	current, err := version.NewVersion(cur)
+	if err != nil {
+		return false, err
+	}
+
+	minimum, err := version.NewVersion(min)
+	if err != nil {
+		return false, err
+	}
+
+	return current.GreaterThanOrEqual(minimum), nil
 }
 
 // containsRestrictedKeywords returns true if given keyword is not allowed in read-only mode
