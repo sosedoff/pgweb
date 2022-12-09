@@ -29,6 +29,7 @@ func testDumpExport(t *testing.T) {
 
 	// Test for pg_dump presence
 	assert.NoError(t, dump.Validate("10.0"))
+	assert.NoError(t, dump.Validate(""))
 	assert.Contains(t, dump.Validate("20").Error(), "is too low, must be running 20 or order")
 
 	// Test full db dump
