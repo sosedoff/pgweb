@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	neturl "net/url"
-	"regexp"
 	"strings"
 	"time"
 
@@ -542,12 +541,13 @@ func DataExport(c *gin.Context) {
 	if dump.Table != "" {
 		filename = filename + "_" + dump.Table
 	}
-	reg := regexp.MustCompile(`[^._\\w]+`)
-	cleanFilename := reg.ReplaceAllString(filename, "")
+
+	filename = sanitizeFilename(filename)
+	filename = fmt.Sprintf("%s_%s", filename, time.Now().Format("20060102_150405"))
 
 	c.Header(
 		"Content-Disposition",
-		fmt.Sprintf(`attachment; filename="%s.sql.gz"`, cleanFilename),
+		fmt.Sprintf(`attachment; filename="%s.sql.gz"`, filename),
 	)
 
 	err = dump.Export(c.Request.Context(), db.ConnectionString, c.Writer)
