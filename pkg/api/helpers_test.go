@@ -30,6 +30,22 @@ func Test_cleanQuery(t *testing.T) {
 	assert.Equal(t, "test", cleanQuery("--test\ntest\n   -- test\n"))
 }
 
+func Test_sanitizeFilename(t *testing.T) {
+	examples := map[string]string{
+		"foo":              "foo",
+		"fooBar":           "fooBar",
+		"foo.bar":          "foo_bar",
+		`"foo"."bar"`:      "foo_bar",
+		"!@#$foo.&&*(&bar": "foo_bar",
+	}
+
+	for given, expected := range examples {
+		t.Run(given, func(t *testing.T) {
+			assert.Equal(t, expected, sanitizeFilename(given))
+		})
+	}
+}
+
 func Test_getSessionId(t *testing.T) {
 	req := &http.Request{Header: http.Header{}}
 	req.Header.Add("x-session-id", "token")
