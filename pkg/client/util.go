@@ -1,10 +1,9 @@
 package client
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
-
-	"github.com/hashicorp/go-version"
 )
 
 var (
@@ -25,14 +24,22 @@ var (
 	cockroachType      = "CockroachDB"
 )
 
+// Get major and minor version components
+// Example: 10.2.3.1 -> 10.2
+func getMajorMinorVersion(str string) (major int, minor int) {
+	chunks := strings.Split(str, ".")
+	fmt.Sscanf(chunks[0], "%d", &major)
+	if len(chunks) > 1 {
+		fmt.Sscanf(chunks[1], "%d", &minor)
+	}
+	return
+}
+
 // Get short version from the string
 // Example: 10.2.3.1 -> 10.2
-func getMajorMinorVersion(str string) string {
-	chunks := strings.Split(str, ".")
-	if len(chunks) == 0 {
-		return str
-	}
-	return strings.Join(chunks[0:2], ".")
+func getMajorMinorVersionString(str string) string {
+	major, minor := getMajorMinorVersion(str)
+	return fmt.Sprintf("%d.%d", major, minor)
 }
 
 func detectServerTypeAndVersion(version string) (bool, string, string) {
@@ -62,18 +69,15 @@ func detectDumpVersion(version string) (bool, string) {
 	return false, ""
 }
 
-func checkVersionRequirement(cur string, min string) (bool, error) {
-	current, err := version.NewVersion(cur)
-	if err != nil {
-		return false, err
+func checkVersionRequirement(client, server string) bool {
+	clientMajor, clientMinor := getMajorMinorVersion(client)
+	serverMajor, serverMinor := getMajorMinorVersion(server)
+
+	if serverMajor < 10 {
+		return clientMajor >= serverMajor && clientMinor >= serverMinor
 	}
 
-	minimum, err := version.NewVersion(min)
-	if err != nil {
-		return false, err
-	}
-
-	return current.GreaterThanOrEqual(minimum), nil
+	return clientMajor >= serverMajor
 }
 
 // containsRestrictedKeywords returns true if given keyword is not allowed in read-only mode

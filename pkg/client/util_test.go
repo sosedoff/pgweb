@@ -70,3 +70,47 @@ func TestDetectDumpVersion(t *testing.T) {
 		})
 	}
 }
+
+func TestGetMajorMinorVersion(t *testing.T) {
+	examples := []struct {
+		input string
+		major int
+		minor int
+	}{
+		{"", 0, 0},
+		{"   ", 0, 0},
+		{"0", 0, 0},
+		{"9.6", 9, 6},
+		{"9.6.1.1", 9, 6},
+		{"10", 10, 0},
+		{"10.1 ", 10, 1},
+	}
+
+	for _, ex := range examples {
+		t.Run(ex.input, func(t *testing.T) {
+			major, minor := getMajorMinorVersion(ex.input)
+			assert.Equal(t, ex.major, major)
+			assert.Equal(t, ex.minor, minor)
+		})
+	}
+}
+
+func TestCheckVersionRequirement(t *testing.T) {
+	examples := []struct {
+		client string
+		server string
+		result bool
+	}{
+		{"", "", true},
+		{"0", "0", true},
+		{"9.6", "9.7", false},
+		{"9.6.10", "9.6.25", true},
+		{"10.0", "10.1", true},
+		{"10.5", "10.1", true},
+		{"14.5", "15.1", false},
+	}
+
+	for _, ex := range examples {
+		assert.Equal(t, ex.result, checkVersionRequirement(ex.client, ex.server))
+	}
+}

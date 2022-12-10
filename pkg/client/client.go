@@ -291,7 +291,7 @@ func (client *Client) Activity() (*Result, error) {
 		return client.query("SHOW QUERIES")
 	}
 
-	version := getMajorMinorVersion(client.serverVersion)
+	version := getMajorMinorVersionString(client.serverVersion)
 	query := statements.Activity[version]
 	if query == "" {
 		query = statements.Activity["default"]

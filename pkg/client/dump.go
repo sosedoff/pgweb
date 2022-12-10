@@ -35,10 +35,7 @@ func (d *Dump) Validate(serverVersion string) error {
 
 	detected, dumpVersion := detectDumpVersion(out.String())
 	if detected && serverVersion != "" {
-		satisfied, err := checkVersionRequirement(dumpVersion, serverVersion)
-		if err != nil {
-			return err
-		}
+		satisfied := checkVersionRequirement(dumpVersion, serverVersion)
 		if !satisfied {
 			return fmt.Errorf("pg_dump version %v is too low, must be running %v or order", dumpVersion, serverVersion)
 		}
