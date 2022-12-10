@@ -57,7 +57,7 @@ func setClient(c *gin.Context, newClient *client.Client) error {
 	return nil
 }
 
-// GetHome renderes the home page
+// GetHome renders the home page
 func GetHome(prefix string) http.Handler {
 	if prefix != "" {
 		prefix = "/" + prefix

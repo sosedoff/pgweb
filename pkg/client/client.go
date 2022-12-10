@@ -409,7 +409,7 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 		return nil, err
 	}
 
-	// Make sure to never return null colums
+	// Make sure to never return null columns
 	if cols == nil {
 		cols = []string{}
 	}

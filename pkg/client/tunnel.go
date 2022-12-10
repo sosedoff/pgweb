@@ -85,7 +85,7 @@ func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
 		return nil, errors.New("ssh public key not found at " + keyPath)
 	}
 
-	// Appen public key authentication method
+	// Append public key authentication method
 	key, err := parsePrivateKey(keyPath, info.KeyPassword)
 	if err != nil {
 		return nil, err

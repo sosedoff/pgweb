@@ -41,7 +41,7 @@ var (
 		".": "=",
 	}
 
-	// Regular expression to remove unwated characters in filenames
+	// Regular expression to remove unwanted characters in filenames
 	regexCleanFilename = regexp.MustCompile(`[^\w]+`)
 )
 
