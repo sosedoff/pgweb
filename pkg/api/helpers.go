@@ -5,6 +5,7 @@ import (
 	"mime"
 	"net/http"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -39,6 +40,9 @@ var (
 		"_": "/",
 		".": "=",
 	}
+
+	// Regular expression to remove unwanted characters in filenames
+	regexCleanFilename = regexp.MustCompile(`[^\w]+`)
 )
 
 type Error struct {
@@ -72,6 +76,11 @@ func desanitize64(query string) string {
 	}
 
 	return query
+}
+
+func sanitizeFilename(str string) string {
+	str = strings.ReplaceAll(str, ".", "_")
+	return regexCleanFilename.ReplaceAllString(str, "")
 }
 
 func getSessionId(req *http.Request) string {

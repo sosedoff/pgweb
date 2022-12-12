@@ -48,3 +48,69 @@ func TestDetectServerType(t *testing.T) {
 		})
 	}
 }
+
+func TestDetectDumpVersion(t *testing.T) {
+	examples := []struct {
+		input   string
+		match   bool
+		version string
+	}{
+		{"", false, ""},
+		{"pg_dump (PostgreSQL) 9.6", true, "9.6"},
+		{"pg_dump 10", true, "10"},
+		{"pg_dump (PostgreSQL) 14.5 (Homebrew)", true, "14.5"},
+	}
+
+	for _, ex := range examples {
+		t.Run("input:"+ex.input, func(t *testing.T) {
+			match, version := detectDumpVersion(ex.input)
+
+			assert.Equal(t, ex.match, match)
+			assert.Equal(t, ex.version, version)
+		})
+	}
+}
+
+func TestGetMajorMinorVersion(t *testing.T) {
+	examples := []struct {
+		input string
+		major int
+		minor int
+	}{
+		{"", 0, 0},
+		{"   ", 0, 0},
+		{"0", 0, 0},
+		{"9.6", 9, 6},
+		{"9.6.1.1", 9, 6},
+		{"10", 10, 0},
+		{"10.1 ", 10, 1},
+	}
+
+	for _, ex := range examples {
+		t.Run(ex.input, func(t *testing.T) {
+			major, minor := getMajorMinorVersion(ex.input)
+			assert.Equal(t, ex.major, major)
+			assert.Equal(t, ex.minor, minor)
+		})
+	}
+}
+
+func TestCheckVersionRequirement(t *testing.T) {
+	examples := []struct {
+		client string
+		server string
+		result bool
+	}{
+		{"", "", true},
+		{"0", "0", true},
+		{"9.6", "9.7", false},
+		{"9.6.10", "9.6.25", true},
+		{"10.0", "10.1", true},
+		{"10.5", "10.1", true},
+		{"14.5", "15.1", false},
+	}
+
+	for _, ex := range examples {
+		assert.Equal(t, ex.result, checkVersionRequirement(ex.client, ex.server))
+	}
+}

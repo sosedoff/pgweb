@@ -25,7 +25,7 @@ type Bookmark struct {
 	SSH      *shared.SSHInfo `json:"ssh"`      // SSH tunnel config
 }
 
-// SSHInfoIsEmpty returns true if ssh configration is not provided
+// SSHInfoIsEmpty returns true if ssh configuration is not provided
 func (b Bookmark) SSHInfoIsEmpty() bool {
 	return b.SSH == nil || b.SSH.User == "" && b.SSH.Host == "" && b.SSH.Port == ""
 }

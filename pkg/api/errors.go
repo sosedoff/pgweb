@@ -14,6 +14,5 @@ var (
 	errURLRequired          = errors.New("URL parameter is required")
 	errQueryRequired        = errors.New("Query parameter is required")
 	errDatabaseNameRequired = errors.New("Database name is required")
-	errPgDumpNotFound       = errors.New("pg_dump utility is not found")
 	errBackendConnectError  = errors.New("Unable to connect to the auth backend")
 )

@@ -291,7 +291,7 @@ func (client *Client) Activity() (*Result, error) {
 		return client.query("SHOW QUERIES")
 	}
 
-	version := getMajorMinorVersion(client.serverVersion)
+	version := getMajorMinorVersionString(client.serverVersion)
 	query := statements.Activity[version]
 	if query == "" {
 		query = statements.Activity["default"]
@@ -325,8 +325,12 @@ func (client *Client) SetReadOnlyMode() error {
 	return nil
 }
 
-func (client *Client) ServerVersion() string {
+func (client *Client) ServerVersionInfo() string {
 	return fmt.Sprintf("%s %s", client.serverType, client.serverVersion)
+}
+
+func (client *Client) ServerVersion() string {
+	return client.serverVersion
 }
 
 func (client *Client) context() (context.Context, context.CancelFunc) {
@@ -405,7 +409,7 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 		return nil, err
 	}
 
-	// Make sure to never return null colums
+	// Make sure to never return null columns
 	if cols == nil {
 		cols = []string{}
 	}

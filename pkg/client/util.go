@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -14,22 +15,31 @@ var (
 	reDashComment  = regexp.MustCompile(`(?m)--.+`)
 
 	// Postgres version signature
-	postgresSignature = regexp.MustCompile(`(?i)postgresql ([\d\.]+)\s?`)
-	postgresType      = "PostgreSQL"
+	postgresSignature     = regexp.MustCompile(`(?i)postgresql ([\d\.]+)\s?`)
+	postgresDumpSignature = regexp.MustCompile(`\s([\d\.]+)\s?`)
+	postgresType          = "PostgreSQL"
 
 	// Cockroach version signature
 	cockroachSignature = regexp.MustCompile(`(?i)cockroachdb ccl v([\d\.]+)\s?`)
 	cockroachType      = "CockroachDB"
 )
 
+// Get major and minor version components
+// Example: 10.2.3.1 -> 10.2
+func getMajorMinorVersion(str string) (major int, minor int) {
+	chunks := strings.Split(str, ".")
+	fmt.Sscanf(chunks[0], "%d", &major)
+	if len(chunks) > 1 {
+		fmt.Sscanf(chunks[1], "%d", &minor)
+	}
+	return
+}
+
 // Get short version from the string
 // Example: 10.2.3.1 -> 10.2
-func getMajorMinorVersion(str string) string {
-	chunks := strings.Split(str, ".")
-	if len(chunks) == 0 {
-		return str
-	}
-	return strings.Join(chunks[0:2], ".")
+func getMajorMinorVersionString(str string) string {
+	major, minor := getMajorMinorVersion(str)
+	return fmt.Sprintf("%d.%d", major, minor)
 }
 
 func detectServerTypeAndVersion(version string) (bool, string, string) {
@@ -48,6 +58,26 @@ func detectServerTypeAndVersion(version string) (bool, string, string) {
 	}
 
 	return false, "", ""
+}
+
+// detectDumpVersion parses out version from `pg_dump -V` command.
+func detectDumpVersion(version string) (bool, string) {
+	matches := postgresDumpSignature.FindAllStringSubmatch(version, 1)
+	if len(matches) > 0 {
+		return true, matches[0][1]
+	}
+	return false, ""
+}
+
+func checkVersionRequirement(client, server string) bool {
+	clientMajor, clientMinor := getMajorMinorVersion(client)
+	serverMajor, serverMinor := getMajorMinorVersion(server)
+
+	if serverMajor < 10 {
+		return clientMajor >= serverMajor && clientMinor >= serverMinor
+	}
+
+	return clientMajor >= serverMajor
 }
 
 // containsRestrictedKeywords returns true if given keyword is not allowed in read-only mode
