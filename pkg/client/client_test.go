@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"runtime"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -152,7 +153,7 @@ func teardown(t *testing.T, allowFail bool) {
 		serverDatabase,
 	).CombinedOutput()
 
-	if err != nil {
+	if err != nil && strings.Contains(err.Error(), "does not exist") {
 		t.Log("Teardown error:", err)
 		t.Logf("%s\n", output)
 

@@ -40,7 +40,6 @@ WITH all_objects AS (
   WHERE
     n.nspname !~ '^pg_toast'
     AND n.nspname NOT IN ('information_schema', 'pg_catalog')
-    AND p.prokind = 'f'
 )
 SELECT * FROM all_objects
 ORDER BY 1, 2
