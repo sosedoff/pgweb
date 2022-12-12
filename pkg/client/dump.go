@@ -37,7 +37,7 @@ func (d *Dump) Validate(serverVersion string) error {
 	if detected && serverVersion != "" {
 		satisfied := checkVersionRequirement(dumpVersion, serverVersion)
 		if !satisfied {
-			return fmt.Errorf("pg_dump version %v is too low, must be running %v or order", dumpVersion, serverVersion)
+			return fmt.Errorf("pg_dump version %v not compatible with server version %v", dumpVersion, serverVersion)
 		}
 	}
 
