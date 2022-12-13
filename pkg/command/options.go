@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"os"
 	"os/user"
+	"path/filepath"
 	"strings"
 
+	"github.com/jackc/pgpassfile"
 	"github.com/jessevdk/go-flags"
 	"github.com/sirupsen/logrus"
 )
@@ -26,6 +28,7 @@ type Options struct {
 	Port                         int    `long:"port" description:"Server port" default:"5432"`
 	User                         string `long:"user" description:"Database user"`
 	Pass                         string `long:"pass" description:"Password for user"`
+	Passfile                     string `long:"passfile" description:"Local passwords file location"`
 	DbName                       string `long:"db" description:"Database name"`
 	SSLMode                      string `long:"ssl" description:"SSL mode"`
 	SSLRootCert                  string `long:"ssl-rootcert" description:"SSL certificate authority file"`
@@ -77,6 +80,23 @@ func ParseOptions(args []string) (Options, error) {
 
 	if opts.Prefix == "" {
 		opts.Prefix = getPrefixedEnvVar("URL_PREFIX")
+	}
+
+	if opts.Passfile == "" {
+		passfile := os.Getenv("PGPASSFILE")
+		if passfile == "" {
+			passfile = filepath.Join(os.Getenv("HOME"), ".pgpass")
+		}
+
+		_, err := os.Stat(passfile)
+		if err == nil {
+			_, err = pgpassfile.ReadPassfile(passfile)
+			if err == nil {
+				opts.Passfile = passfile
+			} else {
+				fmt.Printf("[WARN] Pgpass file unreadable: %s\n", err)
+			}
+		}
 	}
 
 	// Handle edge case where pgweb is started with a default host `localhost` and no user.

@@ -8,6 +8,8 @@ import (
 	"os/user"
 	"strings"
 
+	"github.com/jackc/pgpassfile"
+
 	"github.com/sosedoff/pgweb/pkg/command"
 )
 
@@ -123,6 +125,15 @@ func BuildStringFromOptions(opts command.Options) (string, error) {
 	}
 	if opts.SSLRootCert != "" {
 		query.Add("sslrootcert", opts.SSLRootCert)
+	}
+
+	// Grab password from .pgpass file if it's available
+	if opts.Pass == "" && opts.Passfile != "" {
+		passfile, err := pgpassfile.ReadPassfile(opts.Passfile)
+		// Do not return error here as we want to maintain the default behaviour
+		if err == nil {
+			opts.Pass = passfile.FindPassword(opts.Host, fmt.Sprintf("%d", opts.Port), opts.DbName, opts.User)
+		}
 	}
 
 	url := neturl.URL{
