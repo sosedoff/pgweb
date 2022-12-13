@@ -1,0 +1,48 @@
+---
+version: "3.9"
+
+x-base: &base
+  environment: &env
+    POSTGRES_DB: pgweb
+    POSTGRES_PASSWORD: pgweb
+    POSTGRES_USER: pgweb
+  healthcheck:
+    test: pg_isready -U pgweb -h 127.0.0.1
+    interval: 5s
+
+services:
+  postgres15:
+    <<: *base
+    image: postgres:15
+    ports:
+      - 5433:5432
+  postgres14:
+    <<: *base
+    image: postgres:14
+    ports:
+      - 5434:5432
+  postgres13:
+    <<: *base
+    image: postgres:13
+    ports:
+      - 5435:5432
+  postgres12:
+    <<: *base
+    image: postgres:12
+    ports:
+      - 5436:5432
+  postgres11:
+    <<: *base
+    image: postgres:11
+    ports:
+      - 5437:5432
+  postgres10:
+    <<: *base
+    image: postgres:10
+    ports:
+      - 5438:5432
+  postgres9.6:
+    <<: *base
+    image: postgres:9.6
+    ports:
+      - 5439:5432

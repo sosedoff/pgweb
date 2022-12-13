@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"runtime"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -143,7 +144,7 @@ func teardownClient() {
 	}
 }
 
-func teardown() {
+func teardown(t *testing.T, allowFail bool) {
 	output, err := exec.Command(
 		testCommands["dropdb"],
 		"-U", serverUser,
@@ -152,9 +153,13 @@ func teardown() {
 		serverDatabase,
 	).CombinedOutput()
 
-	if err != nil {
-		fmt.Println("Teardown error:", err)
-		fmt.Printf("%s\n", output)
+	if err != nil && strings.Contains(err.Error(), "does not exist") {
+		t.Log("Teardown error:", err)
+		t.Logf("%s\n", output)
+
+		if !allowFail {
+			assert.NoError(t, err)
+		}
 	}
 }
 
@@ -602,7 +607,7 @@ func TestAll(t *testing.T) {
 
 	initVars()
 	setupCommands()
-	teardown()
+	teardown(t, false)
 	setup()
 	setupClient()
 
@@ -632,5 +637,5 @@ func TestAll(t *testing.T) {
 	testDumpExport(t)
 
 	teardownClient()
-	teardown()
+	teardown(t, true)
 }
