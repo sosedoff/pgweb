@@ -92,10 +92,6 @@ Or set environment variable:
 SESSIONS=1 pgweb
 ```
 
-## Deploy on Heroku
-
-[![Heroku Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/sosedoff/pgweb)
-
 ## Testing
 
 Before running tests, make sure you have PostgreSQL server running on `localhost:5432`
