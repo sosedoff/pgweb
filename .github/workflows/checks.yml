@@ -32,9 +32,10 @@ jobs:
             --health-timeout 5s
             --health-retries 5
     steps:
-      - run: |
-          dpkg -l | grep postgres
-          foo
+      - name: Install latest postgres client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-15
 
       - uses: actions/checkout@v3
         with:
