@@ -1,3 +1,30 @@
+# 0.12.0 - 2022-12-13
+
+- Deprecate usage of Gox for binary builds, GH-571
+- Add netcat install in dockerfile to provide a way to healthcheck, GH-572
+- Install latest postgres client in docker image, GH-577
+- Add support for `PGWEB_` prefix environment variables, GH-585
+- Fix export URL generation, refactor export code, GH-588
+- Add logrus-based request logger, GH-589
+- Configure logger for connect backend, GH-591
+- Set LDFLAGS for make build/release commands, GH-592
+- Add internal sessions manager, GH-593
+- Include index size on the index list view, GH-595
+- Fix flaky backend connection test, GH-596
+- Add ability to view and copy views/materialized views definitions, GH-594
+- Enable dev assets mode with PGWEB_ASSETS_DEVMODE env var, GH-597
+- Make query input box resizable, GH-599
+- Deprecate Heroku demo deployments and switch to Fly, GH-600
+- Handle returning values in update/delete queries, GH-601
+- Fix panic with invalid time marshaling, GH-602
+- Configure logging level and format, GH-605
+- Use go embed to load queries from static files, GH-607
+- Switch go build target to 1.19, GH-603
+- Add support for user functions, GH-608
+- Implement global query timeout option, GH-609
+- Switch windows tests from Appveyor to Github Actions, GH-611
+- Fix activity endpoint panic when server version is not detected, GH-612
+
 # 0.11.12 - 2022-07-05
 
 - Update base docker image (alpine), update deps, GH-558
