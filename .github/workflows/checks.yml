@@ -8,6 +8,10 @@ env:
   GO_VERSION: 1.19
   CGO_ENABLED: 0
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: tests
@@ -15,7 +19,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        pg_version: [10, 11, 12, 13, 14, 15]
+        pg_version: [9.6, 10, 11, 12, 13, 14, 15]
 
     services:
       postgres:
