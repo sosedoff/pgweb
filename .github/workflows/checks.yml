@@ -32,6 +32,10 @@ jobs:
             --health-timeout 5s
             --health-retries 5
     steps:
+      - run: |
+          dpkg -l | grep postgres
+          foo
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0

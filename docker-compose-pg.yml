@@ -41,3 +41,8 @@ services:
     image: postgres:10
     ports:
       - 5438:5432
+  postgres9.6:
+    <<: *base
+    image: postgres:9.6
+    ports:
+      - 5439:5432
