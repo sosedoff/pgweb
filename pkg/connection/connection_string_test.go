@@ -192,6 +192,60 @@ func TestBuildStringFromOptions(t *testing.T) {
 	})
 }
 
+func TestFormatURL(t *testing.T) {
+	examples := []struct {
+		name   string
+		input  command.Options
+		result string
+		err    string
+	}{
+		{
+			name:  "empty opts",
+			input: command.Options{},
+		},
+		{
+			name:  "invalid url",
+			input: command.Options{URL: "barurl"},
+			err:   "Invalid URL",
+		},
+		{
+			name: "good",
+			input: command.Options{
+				URL: "postgres://user:pass@localhost:5432/dbname",
+			},
+			result: "postgres://user:pass@localhost:5432/dbname?sslmode=disable",
+		},
+		{
+			name: "password lookup, password set",
+			input: command.Options{
+				URL:      "postgres://username:@localhost:5432/dbname",
+				Passfile: "../../data/passfile",
+			},
+			result: "postgres://username:password@localhost:5432/dbname?sslmode=disable",
+		},
+		{
+			name: "password lookup, password not set",
+			input: command.Options{
+				URL:      "postgres://username@localhost:5432/dbname",
+				Passfile: "../../data/passfile",
+			},
+			result: "postgres://username:password@localhost:5432/dbname?sslmode=disable",
+		},
+	}
+
+	for _, ex := range examples {
+		t.Run(ex.name, func(t *testing.T) {
+			str, err := FormatURL(ex.input)
+
+			if ex.err != "" {
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), ex.err)
+			}
+			assert.Equal(t, ex.result, str)
+		})
+	}
+}
+
 func TestIsBlank(t *testing.T) {
 	assert.Equal(t, true, IsBlank(command.Options{}))
 	assert.Equal(t, false, IsBlank(command.Options{Host: "host", User: "user"}))

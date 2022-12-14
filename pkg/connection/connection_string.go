@@ -79,8 +79,8 @@ func FormatURL(opts command.Options) (string, error) {
 
 	// When password is not provided, look it up from a .pgpass file
 	if uri.User != nil {
-		pass, passSet := uri.User.Password()
-		if passSet && pass == "" && opts.Passfile != "" {
+		pass, _ := uri.User.Password()
+		if pass == "" && opts.Passfile != "" {
 			pass = lookupPassword(opts, uri)
 			if pass != "" {
 				uri.User = neturl.UserPassword(uri.User.Username(), pass)
