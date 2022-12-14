@@ -137,6 +137,11 @@ func BuildStringFromOptions(opts command.Options) (string, error) {
 		query.Add("sslrootcert", opts.SSLRootCert)
 	}
 
+	// Grab password from .pgpass file if it's available
+	if opts.Pass == "" && opts.Passfile != "" {
+		opts.Pass = lookupPassword(opts, nil)
+	}
+
 	url := neturl.URL{
 		Scheme:   "postgres",
 		Host:     fmt.Sprintf("%v:%v", opts.Host, opts.Port),
