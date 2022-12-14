@@ -8,6 +8,7 @@ import (
 	"os/user"
 	"strings"
 
+	"github.com/jackc/pgpassfile"
 	"github.com/sosedoff/pgweb/pkg/command"
 )
 
@@ -76,6 +77,17 @@ func FormatURL(opts command.Options) (string, error) {
 		}
 	}
 
+	// When password is not provided, look it up from a .pgpass file
+	if uri.User != nil {
+		pass, _ := uri.User.Password()
+		if pass == "" && opts.Passfile != "" {
+			pass = lookupPassword(opts, uri)
+			if pass != "" {
+				uri.User = neturl.UserPassword(uri.User.Username(), pass)
+			}
+		}
+	}
+
 	// Rebuild query params
 	query := neturl.Values{}
 	for k, v := range params {
@@ -125,6 +137,11 @@ func BuildStringFromOptions(opts command.Options) (string, error) {
 		query.Add("sslrootcert", opts.SSLRootCert)
 	}
 
+	// Grab password from .pgpass file if it's available
+	if opts.Pass == "" && opts.Passfile != "" {
+		opts.Pass = lookupPassword(opts, nil)
+	}
+
 	url := neturl.URL{
 		Scheme:   "postgres",
 		Host:     fmt.Sprintf("%v:%v", opts.Host, opts.Port),
@@ -134,4 +151,35 @@ func BuildStringFromOptions(opts command.Options) (string, error) {
 	}
 
 	return url.String(), nil
+}
+
+func lookupPassword(opts command.Options, url *neturl.URL) string {
+	if opts.Passfile == "" {
+		return ""
+	}
+
+	passfile, err := pgpassfile.ReadPassfile(opts.Passfile)
+	if err != nil {
+		fmt.Println("[WARN] .pgpassfile", opts.Passfile, "is not readable")
+		return ""
+	}
+
+	if url != nil {
+		var dbName string
+		fmt.Sscanf(url.Path, "/%s", &dbName)
+
+		return passfile.FindPassword(
+			url.Hostname(),
+			url.Port(),
+			dbName,
+			url.User.Username(),
+		)
+	}
+
+	return passfile.FindPassword(
+		opts.Host,
+		fmt.Sprintf("%d", opts.Port),
+		opts.DbName,
+		opts.User,
+	)
 }

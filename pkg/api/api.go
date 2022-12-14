@@ -142,22 +142,22 @@ func Connect(c *gin.Context) {
 		return
 	}
 
-	var sshInfo *shared.SSHInfo
 	url := c.Request.FormValue("url")
-
 	if url == "" {
 		badRequest(c, errURLRequired)
 		return
 	}
 
-	opts := command.Options{URL: url}
-	url, err := connection.FormatURL(opts)
-
+	url, err := connection.FormatURL(command.Options{
+		URL:      url,
+		Passfile: command.Opts.Passfile,
+	})
 	if err != nil {
 		badRequest(c, err)
 		return
 	}
 
+	var sshInfo *shared.SSHInfo
 	if c.Request.FormValue("ssh") != "" {
 		sshInfo = parseSshInfo(c)
 	}
