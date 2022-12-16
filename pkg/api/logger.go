@@ -58,6 +58,10 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 			"path":        path,
 		}
 
+		if reqID := getRequestID(c); reqID != "" {
+			fields["id"] = reqID
+		}
+
 		if err := c.Errors.Last(); err != nil {
 			fields["error"] = err.Error()
 		}
@@ -87,4 +91,12 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 
 func sanitizeLogPath(str string) string {
 	return reConnectToken.ReplaceAllString(str, "/connect/REDACTED")
+}
+
+func getRequestID(c *gin.Context) string {
+	id := c.GetHeader("x-request-id")
+	if id == "" {
+		id = c.GetHeader("x-amzn-trace-id")
+	}
+	return id
 }
