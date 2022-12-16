@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/sosedoff/pgweb/pkg/command"
 )
 
 var (
@@ -29,6 +30,7 @@ func SetLogger(l *logrus.Logger) {
 
 func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 	debug := logger.Level > logrus.InfoLevel
+	logForwardedUser := command.Opts.LogForwardedUser
 
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -60,6 +62,15 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 
 		if reqID := getRequestID(c); reqID != "" {
 			fields["id"] = reqID
+		}
+
+		if logForwardedUser {
+			if forwardedUser := c.GetHeader("X-Forwarded-User"); forwardedUser != "" {
+				fields["forwarded_user"] = forwardedUser
+			}
+			if forwardedEmail := c.GetHeader("X-Forwarded-Email"); forwardedEmail != "" {
+				fields["forwarded_email"] = forwardedEmail
+			}
 		}
 
 		if err := c.Errors.Last(); err != nil {
