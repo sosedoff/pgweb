@@ -142,30 +142,51 @@ func Connect(c *gin.Context) {
 		return
 	}
 
-	url := c.Request.FormValue("url")
-	if url == "" {
-		badRequest(c, errURLRequired)
-		return
-	}
+	var (
+		cl  *client.Client
+		err error
+	)
 
-	url, err := connection.FormatURL(command.Options{
-		URL:      url,
-		Passfile: command.Opts.Passfile,
-	})
-	if err != nil {
-		badRequest(c, err)
-		return
-	}
+	if bookmarkID := c.Request.FormValue("bookmark_id"); bookmarkID != "" {
+		manager := bookmarks.NewManager(command.Opts.BookmarksDir)
 
-	var sshInfo *shared.SSHInfo
-	if c.Request.FormValue("ssh") != "" {
-		sshInfo = parseSshInfo(c)
-	}
+		bookmark, err := manager.Get(bookmarkID)
+		if err != nil {
+			badRequest(c, err)
+			return
+		}
 
-	cl, err := client.NewFromUrl(url, sshInfo)
-	if err != nil {
-		badRequest(c, err)
-		return
+		cl, err = client.NewFromBookmark(bookmark)
+		if err != nil {
+			badRequest(c, err)
+			return
+		}
+	} else {
+		url := c.Request.FormValue("url")
+		if url == "" {
+			badRequest(c, errURLRequired)
+			return
+		}
+
+		url, err := connection.FormatURL(command.Options{
+			URL:      url,
+			Passfile: command.Opts.Passfile,
+		})
+		if err != nil {
+			badRequest(c, err)
+			return
+		}
+
+		var sshInfo *shared.SSHInfo
+		if c.Request.FormValue("ssh") != "" {
+			sshInfo = parseSshInfo(c)
+		}
+
+		cl, err = client.NewFromUrl(url, sshInfo)
+		if err != nil {
+			badRequest(c, err)
+			return
+		}
 	}
 
 	err = cl.Test()
@@ -500,8 +521,9 @@ func HandleQuery(query string, c *gin.Context) {
 
 // GetBookmarks renders the list of available bookmarks
 func GetBookmarks(c *gin.Context) {
-	bookmarks, err := bookmarks.ReadAll(bookmarks.Path(command.Opts.BookmarksDir))
-	serveResult(c, bookmarks, err)
+	manager := bookmarks.NewManager(command.Opts.BookmarksDir)
+	ids, err := manager.ListIDs()
+	serveResult(c, ids, err)
 }
 
 // GetInfo renders the pgweb system information

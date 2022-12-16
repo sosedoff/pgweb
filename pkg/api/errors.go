@@ -13,6 +13,7 @@ var (
 	errSessionLocked        = errors.New("Session is locked")
 	errURLRequired          = errors.New("URL parameter is required")
 	errQueryRequired        = errors.New("Query parameter is required")
+	errBookmarkRequired     = errors.New("Bookmark ID is required")
 	errDatabaseNameRequired = errors.New("Database name is required")
 	errBackendConnectError  = errors.New("Unable to connect to the auth backend")
 )
