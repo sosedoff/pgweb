@@ -23,6 +23,7 @@ type Options struct {
 	Debug                        bool   `short:"d" long:"debug" description:"Enable debugging mode"`
 	LogLevel                     string `long:"log-level" description:"Logging level" default:"info"`
 	LogFormat                    string `long:"log-format" description:"Logging output format" default:"text"`
+	LogForwardedUser             bool   `long:"log-forwarded-user" description:"Log user information available in X-Forwarded-User/Email headers"`
 	URL                          string `long:"url" description:"Database connection string"`
 	Host                         string `long:"host" description:"Server hostname or IP" default:"localhost"`
 	Port                         int    `long:"port" description:"Server port" default:"5432"`
