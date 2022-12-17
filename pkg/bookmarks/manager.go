@@ -1,6 +1,7 @@
 package bookmarks
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -61,7 +62,9 @@ func (m Manager) list() ([]Bookmark, error) {
 
 	info, err := os.Stat(m.dir)
 	if err != nil {
-		if err == os.ErrNotExist {
+		// Do not fail if base dir does not exists: it's not created by default
+		if errors.Is(err, os.ErrNotExist) {
+			fmt.Fprintf(os.Stderr, "[WARN] bookmarks dir %s does not exist", m.dir)
 			return result, nil
 		}
 		return nil, err
@@ -83,8 +86,11 @@ func (m Manager) list() ([]Bookmark, error) {
 
 		bookmark, err := readBookmark(filepath.Join(m.dir, name))
 		if err != nil {
-			return nil, err
+			// Do not fail if one of the bookmarks is invalid
+			fmt.Fprintf(os.Stderr, "[WARN] bookmark file %s is invalid: %s\n", name, err)
+			continue
 		}
+
 		result = append(result, bookmark)
 	}
 

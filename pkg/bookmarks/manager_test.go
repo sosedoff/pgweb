@@ -6,29 +6,46 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-/*
-
-expBookmark := Bookmark{
-
-		Host:     "localhost",
-		Port:     5432,
-		User:     "postgres",
-		Password: "",
-		Database: "mydatabase",
-		SSLMode:  "disable",
-	}
-	b, err := GetBookmark("../../data", "bookmark")
-	if assert.NoError(t, err) {
-		assert.Equal(t, expBookmark, b)
+func TestManagerList(t *testing.T) {
+	examples := []struct {
+		dir string
+		num int
+		err string
+	}{
+		{"../../data", 3, ""},
+		{"../../data/bookmark.toml", 0, "is not a directory"},
+		{"../../data2", 0, ""},
+		{"", 0, ""},
 	}
 
-	_, err = GetBookmark("../../data", "bar")
-	expErrStr := "couldn't find a bookmark with name bar"
-	assert.Equal(t, expErrStr, err.Error())
+	for _, ex := range examples {
+		t.Run(ex.dir, func(t *testing.T) {
+			bookmarks, err := NewManager(ex.dir).List()
+			if ex.err != "" {
+				assert.Contains(t, err.Error(), ex.err)
+			}
+			assert.Len(t, bookmarks, ex.num)
+		})
+	}
+}
 
-	_, err = GetBookmark("foo", "bookmark")
-	assert.Error(t, err)
-*/
+func TestManagerListIDs(t *testing.T) {
+	ids, err := NewManager("../../data").ListIDs()
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"bookmark", "bookmark_invalid_ssl", "bookmark_url"}, ids)
+}
+
+func TestManagerGet(t *testing.T) {
+	manager := NewManager("../../data")
+
+	b, err := manager.Get("bookmark")
+	assert.NoError(t, err)
+	assert.Equal(t, "bookmark", b.ID)
+
+	b, err = manager.Get("foo")
+	assert.Equal(t, "bookmark foo not found", err.Error())
+	assert.Nil(t, b)
+}
 
 func Test_fileBasename(t *testing.T) {
 	assert.Equal(t, "filename", fileBasename("filename.toml"))
