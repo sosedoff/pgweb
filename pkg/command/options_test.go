@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -22,6 +23,7 @@ func TestParseOptions(t *testing.T) {
 		assert.Equal(t, false, opts.Cors)
 		assert.Equal(t, "*", opts.CorsOrigin)
 		assert.Equal(t, "", opts.Passfile)
+		assert.Equal(t, fmt.Sprintf("%s/.pgweb/bookmarks", os.Getenv("HOME")), opts.BookmarksDir)
 	})
 
 	t.Run("sessions", func(t *testing.T) {
