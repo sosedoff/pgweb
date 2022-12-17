@@ -64,7 +64,7 @@ func (m Manager) list() ([]Bookmark, error) {
 	if err != nil {
 		// Do not fail if base dir does not exists: it's not created by default
 		if errors.Is(err, os.ErrNotExist) {
-			fmt.Fprintf(os.Stderr, "[WARN] bookmarks dir %s does not exist", m.dir)
+			fmt.Fprintf(os.Stderr, "[WARN] bookmarks dir %s does not exist\n", m.dir)
 			return result, nil
 		}
 		return nil, err
