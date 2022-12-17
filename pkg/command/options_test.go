@@ -1,14 +1,20 @@
 package command
 
 import (
-	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestParseOptions(t *testing.T) {
+	var hdir string
+	if d, err := homedir.Dir(); err == nil {
+		hdir = d
+	}
+
 	t.Run("defaults", func(t *testing.T) {
 		opts, err := ParseOptions([]string{})
 		assert.NoError(t, err)
@@ -23,7 +29,7 @@ func TestParseOptions(t *testing.T) {
 		assert.Equal(t, false, opts.Cors)
 		assert.Equal(t, "*", opts.CorsOrigin)
 		assert.Equal(t, "", opts.Passfile)
-		assert.Equal(t, fmt.Sprintf("%s/.pgweb/bookmarks", os.Getenv("HOME")), opts.BookmarksDir)
+		assert.Equal(t, filepath.Join(hdir, ".pgweb/bookmarks"), opts.BookmarksDir)
 	})
 
 	t.Run("sessions", func(t *testing.T) {
