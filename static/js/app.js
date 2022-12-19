@@ -1000,18 +1000,18 @@ function getLatestReleaseInfo(current) {
 function showConnectionSettings() {
   // Show the current postgres version
   $(".connection-settings .version").text("v" + appInfo.version).show();
+  $("#connection_window").show();
 
   // Check github release page for updates
   getLatestReleaseInfo(appInfo);
 
   getBookmarks(function(data) {
-    // Do not add any bookmarks if we've got an error
     if (data.error) {
-      console.log("Cant get bookmarks:", data.error);
+      console.log("Error while fetching bookmarks:", data.error);
       return;
     }
 
-    if (Object.keys(data).length > 0) {
+    if (data.length > 0) {
       // Set bookmarks in global var
       bookmarks = data;
 
@@ -1019,10 +1019,10 @@ function showConnectionSettings() {
       $("#connection_bookmarks").html("");
 
       // Add blank option
-      $("<option value=''></option>").appendTo("#connection_bookmarks");
+      $("<option value=''>Select a bookmarked database to connect to</option>").appendTo("#connection_bookmarks");
 
       // Add all available bookmarks
-      for (key in data) {
+      for (key of data) {
         $("<option value='" + key + "''>" + key + "</option>").appendTo("#connection_bookmarks");
       }
 
@@ -1032,8 +1032,6 @@ function showConnectionSettings() {
       $(".bookmarks").hide();
     }
   });
-
-  $("#connection_window").show();
 }
 
 function getConnectionString() {
@@ -1624,67 +1622,43 @@ $(document).ready(function() {
   });
 
   $("#connection_bookmarks").on("change", function(e) {
-    var name = $.trim($(this).val());
-    if (name == "") return;
+    var selection = $(this).val();
 
-    var item = bookmarks[name];
+    var inputs = [
+      $("#connection_form input[type='text']"),
+      $("#connection_form input[type='password']"),
+      $("#connection_ssl")
+    ];
 
-    // Check if bookmark only has url set
-    if (item.url && item.url != "") {
-      $("#connection_url").val(item.url);
-      $("#connection_scheme").click();
-      return;
-    }
-
-    // Fill in bookmarked connection settings
-    $("#pg_host").val(item.host);
-    $("#pg_port").val(item.port);
-    $("#pg_user").val(item.user);
-    $("#pg_password").val(item.password);
-    $("#pg_db").val(item.database);
-    $("#connection_ssl").val(item.ssl);
-
-    if (item.ssh && Object.keys(item.ssh).length > 0) {
-      $("#ssh_host").val(item.ssh.host);
-      $("#ssh_port").val(item.ssh.port);
-      $("#ssh_user").val(item.ssh.user);
-      $("#ssh_password").val(item.ssh.password);
-      $("#ssh_key").val(item.ssh.key);
-      $("#ssh_key_password").val(item.ssh.keypassword);
-      $("#connection_ssh").click();
-    }
-    else {
-      $("#ssh_host").val("");
-      $("#ssh_port").val("");
-      $("#ssh_user").val("");
-      $("#ssh_password").val("");
-      $("#ssh_key").val("");
-      $("#ssh_key_password").val("");
-      $(".connection-ssh-group").hide();
-      $("#connection_standard").click();
-    }
+    inputs.forEach(function(selector) {
+      selector.val("").prop("disabled", selection == "" ? "" : "disabled");
+    });
   });
 
   $("#connection_form").on("submit", function(e) {
     e.preventDefault();
 
     var button = $(this).find("button.open-connection");
-    var params = {
-      url: getConnectionString()
-    };
+    var params = {};
 
-    if (params.url.length == 0) {
-      return;
+    if ($("#connection_bookmarks").val() != "") {
+      params["bookmark_id"] = $("#connection_bookmarks").val();
     }
+    else {
+      params.url = getConnectionString();
+      if (params.url.length == 0) {
+        return;
+      }
 
-    if ($(".connection-group-switch button.active").attr("data") == "ssh") {
-      params["ssh"]              = 1
-      params["ssh_host"]         = $("#ssh_host").val();
-      params["ssh_port"]         = $("#ssh_port").val();
-      params["ssh_user"]         = $("#ssh_user").val();
-      params["ssh_password"]     = $("#ssh_password").val();
-      params["ssh_key"]          = $("#ssh_key").val();
-      params["ssh_key_password"] = $("#ssh_key_password").val()
+      if ($(".connection-group-switch button.active").attr("data") == "ssh") {
+        params["ssh"]              = 1
+        params["ssh_host"]         = $("#ssh_host").val();
+        params["ssh_port"]         = $("#ssh_port").val();
+        params["ssh_user"]         = $("#ssh_user").val();
+        params["ssh_password"]     = $("#ssh_password").val();
+        params["ssh_key"]          = $("#ssh_key").val();
+        params["ssh_key_password"] = $("#ssh_key_password").val()
+      }
     }
 
     $("#connection_error").hide();

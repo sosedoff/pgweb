@@ -13,6 +13,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
+	"github.com/sosedoff/pgweb/pkg/bookmarks"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/history"
@@ -135,6 +136,30 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 
 	client.init()
 	return &client, nil
+}
+
+func NewFromBookmark(bookmark *bookmarks.Bookmark) (*Client, error) {
+	var (
+		connStr string
+		err     error
+	)
+
+	options := bookmark.ConvertToOptions()
+	if options.URL != "" {
+		connStr = options.URL
+	} else {
+		connStr, err = connection.BuildStringFromOptions(options)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var sshInfo *shared.SSHInfo
+	if !bookmark.SSHInfoIsEmpty() {
+		sshInfo = bookmark.SSH
+	}
+
+	return NewFromUrl(connStr, sshInfo)
 }
 
 func (client *Client) init() {

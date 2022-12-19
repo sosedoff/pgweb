@@ -19,7 +19,6 @@ import (
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
-	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/pkg/util"
 )
 
@@ -47,30 +46,14 @@ func exitWithMessage(message string) {
 	os.Exit(1)
 }
 
-func initClientUsingBookmark(bookmarkPath, bookmarkName string) (*client.Client, error) {
-	bookmark, err := bookmarks.GetBookmark(bookmarkPath, bookmarkName)
+func initClientUsingBookmark(baseDir, bookmarkName string) (*client.Client, error) {
+	manager := bookmarks.NewManager(baseDir)
+	bookmark, err := manager.Get(bookmarkName)
 	if err != nil {
 		return nil, err
 	}
 
-	opt := bookmark.ConvertToOptions()
-	var connStr string
-
-	if opt.URL != "" { // if the bookmark has url set, use it
-		connStr = opt.URL
-	} else {
-		connStr, err = connection.BuildStringFromOptions(opt)
-		if err != nil {
-			return nil, fmt.Errorf("error building connection string: %v", err)
-		}
-	}
-
-	var ssh *shared.SSHInfo
-	if !bookmark.SSHInfoIsEmpty() {
-		ssh = bookmark.SSH
-	}
-
-	return client.NewFromUrl(connStr, ssh)
+	return client.NewFromBookmark(bookmark)
 }
 
 func initClient() {
@@ -82,7 +65,7 @@ func initClient() {
 	var err error
 
 	if options.Bookmark != "" {
-		cl, err = initClientUsingBookmark(bookmarks.Path(options.BookmarksDir), options.Bookmark)
+		cl, err = initClientUsingBookmark(options.BookmarksDir, options.Bookmark)
 	} else {
 		cl, err = client.New()
 	}

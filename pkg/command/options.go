@@ -10,6 +10,7 @@ import (
 
 	"github.com/jackc/pgpassfile"
 	"github.com/jessevdk/go-flags"
+	"github.com/mitchellh/go-homedir"
 	"github.com/sirupsen/logrus"
 )
 
@@ -151,6 +152,13 @@ func ParseOptions(args []string) (Options, error) {
 	} else {
 		if opts.ConnectToken != "" || opts.ConnectHeaders != "" {
 			return opts, errors.New("--connect-backend flag must be set")
+		}
+	}
+
+	if opts.BookmarksDir == "" {
+		path, err := homedir.Dir()
+		if err == nil {
+			opts.BookmarksDir = filepath.Join(path, ".pgweb/bookmarks")
 		}
 	}
 

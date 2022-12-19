@@ -59,14 +59,13 @@ func parsePrivateKey(keyPath string, keyPass string) (ssh.Signer, error) {
 	}
 
 	signer, err := ssh.ParsePrivateKey(buff)
-	if err != nil {
-		if strings.Contains(err.Error(), "cannot decode encrypted private keys") {
-			if keyPass == "" {
-				return nil, errors.New("SSH key password is not provided")
-			}
-			return sshkeys.ParseEncryptedPrivateKey(buff, []byte(keyPass))
+	if _, ok := err.(*ssh.PassphraseMissingError); ok {
+		if keyPass == "" {
+			return nil, errors.New("SSH key password is not provided")
 		}
+		return sshkeys.ParseEncryptedPrivateKey(buff, []byte(keyPass))
 	}
+
 	return signer, err
 }
 

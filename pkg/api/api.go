@@ -142,27 +142,16 @@ func Connect(c *gin.Context) {
 		return
 	}
 
-	url := c.Request.FormValue("url")
-	if url == "" {
-		badRequest(c, errURLRequired)
-		return
-	}
+	var (
+		cl  *client.Client
+		err error
+	)
 
-	url, err := connection.FormatURL(command.Options{
-		URL:      url,
-		Passfile: command.Opts.Passfile,
-	})
-	if err != nil {
-		badRequest(c, err)
-		return
+	if bookmarkID := c.Request.FormValue("bookmark_id"); bookmarkID != "" {
+		cl, err = ConnectWithBookmark(bookmarkID)
+	} else {
+		cl, err = ConnectWithURL(c)
 	}
-
-	var sshInfo *shared.SSHInfo
-	if c.Request.FormValue("ssh") != "" {
-		sshInfo = parseSshInfo(c)
-	}
-
-	cl, err := client.NewFromUrl(url, sshInfo)
 	if err != nil {
 		badRequest(c, err)
 		return
@@ -185,6 +174,39 @@ func Connect(c *gin.Context) {
 	}
 
 	successResponse(c, info.Format()[0])
+}
+
+func ConnectWithURL(c *gin.Context) (*client.Client, error) {
+	url := c.Request.FormValue("url")
+	if url == "" {
+		return nil, errURLRequired
+	}
+
+	url, err := connection.FormatURL(command.Options{
+		URL:      url,
+		Passfile: command.Opts.Passfile,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var sshInfo *shared.SSHInfo
+	if c.Request.FormValue("ssh") != "" {
+		sshInfo = parseSshInfo(c)
+	}
+
+	return client.NewFromUrl(url, sshInfo)
+}
+
+func ConnectWithBookmark(id string) (*client.Client, error) {
+	manager := bookmarks.NewManager(command.Opts.BookmarksDir)
+
+	bookmark, err := manager.Get(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return client.NewFromBookmark(bookmark)
 }
 
 // SwitchDb perform database switch for the client connection
@@ -500,8 +522,9 @@ func HandleQuery(query string, c *gin.Context) {
 
 // GetBookmarks renders the list of available bookmarks
 func GetBookmarks(c *gin.Context) {
-	bookmarks, err := bookmarks.ReadAll(bookmarks.Path(command.Opts.BookmarksDir))
-	serveResult(c, bookmarks, err)
+	manager := bookmarks.NewManager(command.Opts.BookmarksDir)
+	ids, err := manager.ListIDs()
+	serveResult(c, ids, err)
 }
 
 // GetInfo renders the pgweb system information
