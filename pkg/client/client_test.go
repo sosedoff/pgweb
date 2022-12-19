@@ -234,6 +234,12 @@ func testDatabases(t *testing.T) {
 	assertMatches(t, []string{"booktown", "postgres"}, res)
 }
 
+func testSchemas(t *testing.T) {
+	res, err := testClient.Schemas()
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"public"}, res)
+}
+
 func testObjects(t *testing.T) {
 	res, err := testClient.Objects()
 	objects := ObjectsFromResult(res)
@@ -617,6 +623,7 @@ func TestAll(t *testing.T) {
 	testInfo(t)
 	testActivity(t)
 	testDatabases(t)
+	testSchemas(t)
 	testObjects(t)
 	testTable(t)
 	testTableRows(t)
