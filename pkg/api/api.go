@@ -453,8 +453,14 @@ func GetHistory(c *gin.Context) {
 
 // GetConnectionInfo renders information about current connection
 func GetConnectionInfo(c *gin.Context) {
-	res, err := DB(c).Info()
+	conn := DB(c)
 
+	if err := conn.TestWithTimeout(5 * time.Second); err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	res, err := conn.Info()
 	if err != nil {
 		badRequest(c, err)
 		return

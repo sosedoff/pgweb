@@ -188,6 +188,32 @@ func (client *Client) Test() error {
 	return client.db.Ping()
 }
 
+func (client *Client) TestWithTimeout(timeout time.Duration) (result error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Check connection status right away without waiting for the ticker to kick in.
+	// We're expecting to get "connection refused" here for the most part.
+	if err := client.db.PingContext(ctx); err == nil {
+		return nil
+	}
+
+	ticker := time.NewTicker(250 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			result = client.db.PingContext(ctx)
+			if result == nil {
+				return
+			}
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
 func (client *Client) Info() (*Result, error) {
 	return client.query(statements.Info)
 }
