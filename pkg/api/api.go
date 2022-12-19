@@ -148,45 +148,13 @@ func Connect(c *gin.Context) {
 	)
 
 	if bookmarkID := c.Request.FormValue("bookmark_id"); bookmarkID != "" {
-		manager := bookmarks.NewManager(command.Opts.BookmarksDir)
-
-		bookmark, err := manager.Get(bookmarkID)
-		if err != nil {
-			badRequest(c, err)
-			return
-		}
-
-		cl, err = client.NewFromBookmark(bookmark)
-		if err != nil {
-			badRequest(c, err)
-			return
-		}
+		cl, err = ConnectWithBookmark(bookmarkID)
 	} else {
-		url := c.Request.FormValue("url")
-		if url == "" {
-			badRequest(c, errURLRequired)
-			return
-		}
-
-		url, err := connection.FormatURL(command.Options{
-			URL:      url,
-			Passfile: command.Opts.Passfile,
-		})
-		if err != nil {
-			badRequest(c, err)
-			return
-		}
-
-		var sshInfo *shared.SSHInfo
-		if c.Request.FormValue("ssh") != "" {
-			sshInfo = parseSshInfo(c)
-		}
-
-		cl, err = client.NewFromUrl(url, sshInfo)
-		if err != nil {
-			badRequest(c, err)
-			return
-		}
+		cl, err = ConnectWithURL(c)
+	}
+	if err != nil {
+		badRequest(c, err)
+		return
 	}
 
 	err = cl.Test()
@@ -206,6 +174,39 @@ func Connect(c *gin.Context) {
 	}
 
 	successResponse(c, info.Format()[0])
+}
+
+func ConnectWithURL(c *gin.Context) (*client.Client, error) {
+	url := c.Request.FormValue("url")
+	if url == "" {
+		return nil, errURLRequired
+	}
+
+	url, err := connection.FormatURL(command.Options{
+		URL:      url,
+		Passfile: command.Opts.Passfile,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var sshInfo *shared.SSHInfo
+	if c.Request.FormValue("ssh") != "" {
+		sshInfo = parseSshInfo(c)
+	}
+
+	return client.NewFromUrl(url, sshInfo)
+}
+
+func ConnectWithBookmark(id string) (*client.Client, error) {
+	manager := bookmarks.NewManager(command.Opts.BookmarksDir)
+
+	bookmark, err := manager.Get(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return client.NewFromBookmark(bookmark)
 }
 
 // SwitchDb perform database switch for the client connection
