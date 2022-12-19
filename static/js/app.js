@@ -86,6 +86,7 @@ function apiCall(method, path, params, cb) {
 
 function getInfo(cb)                        { apiCall("get", "/info", {}, cb); }
 function getConnection(cb)                  { apiCall("get", "/connection", {}, cb); }
+function getSchemas(cb)                     { apiCall("get", "/schemas", {}, cb); }
 function getObjects(cb)                     { apiCall("get", "/objects", {}, cb); }
 function getTables(cb)                      { apiCall("get", "/tables", {}, cb); }
 function getTableRows(table, opts, cb)      { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
@@ -161,44 +162,65 @@ function buildSchemaSection(name, objects) {
 function loadSchemas() {
   $("#objects").html("");
 
-  getObjects(function(data) {
-    if (Object.keys(data).length == 0) {
-      data["public"] = {
-        table: [],
-        view: [],
-        materialized_view: [],
-        function: [],
-        sequence: []
-      };
+  var emptyObjectList = function() {
+    return {
+      table: [],
+      view: [],
+      materialized_view: [],
+      function: [],
+      sequence: []
+    }
+  }
+
+  getSchemas(function(schemasData) {
+    if (schemasData.error) {
+      alert("Error while fetching schemas: " + schemasData.error);
+      return;
     }
 
-    for (schema in data) {
-      $(buildSchemaSection(schema, data[schema])).appendTo("#objects");
-    }
+    getObjects(function(data) {
+      if (data.error) {
+        alert("Error while fetching database objects: " + data.error);
+        return;
+      }
 
-    if (Object.keys(data).length == 1) {
-      $(".schema").addClass("expanded");
-    }
+      if (Object.keys(data).length == 0) {
+        data["public"] = emptyObjectList();
+      }
 
-    // Clear out all autocomplete objects
-    autocompleteObjects = [];
-    for (schema in data) {
-      for (kind in data[schema]) {
-        if (!(kind == "table" || kind == "view" || kind == "materialized_view" || kind == "function")) {
-          continue
+      for (schemaName of schemasData) {
+        // Allow users to see empty schemas if we dont have any objects in them
+        if (!data[schemaName]) {
+          data[schemaName] = emptyObjectList();
         }
 
-        for (item in data[schema][kind]) {
-          autocompleteObjects.push({
-            caption: data[schema][kind][item].name,
-            value: data[schema][kind][item].name,
-            meta: kind
-          });
+        $(buildSchemaSection(schemaName, data[schemaName])).appendTo("#objects");
+      }
+
+      if (Object.keys(data).length == 1) {
+        $(".schema").addClass("expanded");
+      }
+
+      // Clear out all autocomplete objects
+      autocompleteObjects = [];
+      for (schema in data) {
+        for (kind in data[schema]) {
+          if (!(kind == "table" || kind == "view" || kind == "materialized_view" || kind == "function")) {
+            continue
+          }
+
+          for (item in data[schema][kind]) {
+            autocompleteObjects.push({
+              caption: data[schema][kind][item].name,
+              value: data[schema][kind][item].name,
+              meta: kind
+            });
+          }
         }
       }
-    }
 
-    bindContextMenus();
+      bindContextMenus();
+    });
   });
 }
 
