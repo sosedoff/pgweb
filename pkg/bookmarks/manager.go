@@ -102,6 +102,14 @@ func readBookmark(path string) (Bookmark, error) {
 		ID: fileBasename(path),
 	}
 
+	_, err := os.Stat(path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			err = fmt.Errorf("bookmark file %s does not exist", path)
+		}
+		return bookmark, err
+	}
+
 	buff, err := os.ReadFile(path)
 	if err != nil {
 		return bookmark, err

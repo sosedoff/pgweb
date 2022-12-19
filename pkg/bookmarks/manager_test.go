@@ -88,7 +88,7 @@ func Test_readBookmark(t *testing.T) {
 
 	t.Run("invalid file", func(t *testing.T) {
 		_, err := readBookmark("foobar")
-		assert.Contains(t, err.Error(), "no such file or directory")
+		assert.Equal(t, "bookmark file foobar does not exist", err.Error())
 	})
 
 	t.Run("invalid syntax", func(t *testing.T) {
