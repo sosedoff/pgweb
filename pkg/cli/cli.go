@@ -19,6 +19,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
+	"github.com/sosedoff/pgweb/pkg/metrics"
 	"github.com/sosedoff/pgweb/pkg/util"
 )
 
@@ -199,9 +200,12 @@ func startServer() {
 
 	api.SetLogger(logger)
 	api.SetupRoutes(router)
+	api.SetupMetrics(router)
 
 	fmt.Println("Starting server...")
 	go func() {
+		metrics.SetHealty(true)
+
 		err := router.Run(fmt.Sprintf("%v:%v", options.HTTPHost, options.HTTPPort))
 		if err != nil {
 			fmt.Println("Cant start server:", err)
@@ -211,6 +215,18 @@ func startServer() {
 			os.Exit(1)
 		}
 	}()
+}
+
+func startMetricsServer() {
+	serverAddr := fmt.Sprintf("%v:%v", command.Opts.HTTPHost, command.Opts.HTTPPort)
+	if options.MetricsAddr == serverAddr {
+		return
+	}
+
+	err := metrics.StartServer(logger, options.MetricsPath, options.MetricsAddr)
+	if err != nil {
+		logger.WithError(err).Fatal("unable to start prometheus metrics server")
+	}
 }
 
 func handleSignals() {
@@ -263,6 +279,10 @@ func Run() {
 			api.DbSessions.SetIdleTimeout(time.Minute * time.Duration(command.Opts.ConnectionIdleTimeout))
 			go api.DbSessions.RunPeriodicCleanup()
 		}
+	}
+
+	if options.MetricsEnabled && options.MetricsAddr != "" {
+		go startMetricsServer()
 	}
 
 	startServer()
