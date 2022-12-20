@@ -7,21 +7,18 @@ import (
 
 var (
 	sessionsGauge = promauto.NewGauge(prometheus.GaugeOpts{
-		Namespace: "pgweb",
-		Name:      "sessions_count",
-		Help:      "Total number of database sessions",
+		Name: "pgweb_sessions_count",
+		Help: "Total number of database sessions",
 	})
 
 	queriesCounter = promauto.NewCounter(prometheus.CounterOpts{
-		Namespace: "pgweb",
-		Name:      "queries_count",
-		Help:      "Total number of custom queries executed",
+		Name: "pgweb_queries_count",
+		Help: "Total number of custom queries executed",
 	})
 
 	healtyGauge = promauto.NewGauge(prometheus.GaugeOpts{
-		Name:      "healty",
-		Namespace: "pgweb",
-		Help:      "Server health status",
+		Name: "pgweb_healty",
+		Help: "Server health status",
 	})
 )
 
