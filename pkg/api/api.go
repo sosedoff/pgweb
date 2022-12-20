@@ -16,6 +16,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
+	"github.com/sosedoff/pgweb/pkg/metrics"
 	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/static"
 )
@@ -278,6 +279,12 @@ func Disconnect(c *gin.Context) {
 		return
 	}
 
+	if command.Opts.Sessions {
+		result := DbSessions.Remove(getSessionId(c.Request))
+		successResponse(c, gin.H{"success": result})
+		return
+	}
+
 	conn := DB(c)
 	if conn == nil {
 		badRequest(c, errNotConnected)
@@ -492,6 +499,8 @@ func GetTableConstraints(c *gin.Context) {
 
 // HandleQuery runs the database query
 func HandleQuery(query string, c *gin.Context) {
+	metrics.IncrementQueriesCount()
+
 	rawQuery, err := base64.StdEncoding.DecodeString(desanitize64(query))
 	if err == nil {
 		query = string(rawQuery)

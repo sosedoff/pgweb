@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/sosedoff/pgweb/pkg/command"
+	"github.com/sosedoff/pgweb/pkg/metrics"
 )
 
 func SetupMiddlewares(group *gin.RouterGroup) {
@@ -52,4 +53,10 @@ func SetupRoutes(router *gin.Engine) {
 	api.GET("/history", GetHistory)
 	api.GET("/bookmarks", GetBookmarks)
 	api.GET("/export", DataExport)
+}
+
+func SetupMetrics(engine *gin.Engine) {
+	if command.Opts.MetricsEnabled && command.Opts.MetricsAddr == "" {
+		engine.GET("/metrics", gin.WrapH(metrics.Handler()))
+	}
 }

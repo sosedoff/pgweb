@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/sosedoff/pgweb/pkg/client"
+	"github.com/sosedoff/pgweb/pkg/metrics"
 )
 
 type SessionManager struct {
@@ -58,8 +59,10 @@ func (m *SessionManager) Get(id string) *client.Client {
 
 func (m *SessionManager) Add(id string, conn *client.Client) {
 	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	m.sessions[id] = conn
-	m.mu.Unlock()
+	metrics.SetSessionsCount(len(m.sessions))
 }
 
 func (m *SessionManager) Remove(id string) bool {
@@ -72,6 +75,7 @@ func (m *SessionManager) Remove(id string) bool {
 		delete(m.sessions, id)
 	}
 
+	metrics.SetSessionsCount(len(m.sessions))
 	return ok
 }
 
