@@ -173,6 +173,28 @@ func TestBuildStringFromOptions(t *testing.T) {
 		assert.Equal(t, "postgres://foobar:password2@127.0.0.1:5432/foobar2?sslmode=disable", str)
 	})
 
+	t.Run("with connection timeout", func(t *testing.T) {
+		opts := command.Options{
+			URL:         "postgres://user:pass@localhost:5432/dbname",
+			OpenTimeout: 30,
+		}
+		str, err := BuildStringFromOptions(opts)
+		assert.NoError(t, err)
+		assert.Equal(t, "postgres://user:pass@localhost:5432/dbname?connect_timeout=30&sslmode=disable", str)
+
+		opts = command.Options{
+			Host:        "localhost",
+			Port:        5432,
+			User:        "username",
+			DbName:      "dbname",
+			OpenTimeout: 30,
+		}
+
+		str, err = BuildStringFromOptions(opts)
+		assert.NoError(t, err)
+		assert.Equal(t, "postgres://username:@localhost:5432/dbname?connect_timeout=30&sslmode=disable", str)
+	})
+
 	t.Run("invalid url", func(t *testing.T) {
 		opts := command.Options{}
 		examples := []string{
@@ -230,6 +252,14 @@ func TestFormatURL(t *testing.T) {
 				Passfile: "../../data/passfile",
 			},
 			result: "postgres://username:password@localhost:5432/dbname?sslmode=disable",
+		},
+		{
+			name: "with timeout setting",
+			input: command.Options{
+				URL:         "postgres://username@localhost:5432/dbname",
+				OpenTimeout: 30,
+			},
+			result: "postgres://username@localhost:5432/dbname?connect_timeout=30&sslmode=disable",
 		},
 	}
 
