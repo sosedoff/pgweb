@@ -175,6 +175,14 @@ func TestBuildStringFromOptions(t *testing.T) {
 
 	t.Run("with connection timeout", func(t *testing.T) {
 		opts := command.Options{
+			URL:         "postgres://user:pass@localhost:5432/dbname",
+			OpenTimeout: 30,
+		}
+		str, err := BuildStringFromOptions(opts)
+		assert.NoError(t, err)
+		assert.Equal(t, "postgres://user:pass@localhost:5432/dbname?connect_timeout=30&sslmode=disable", str)
+
+		opts = command.Options{
 			Host:        "localhost",
 			Port:        5432,
 			User:        "username",
@@ -182,7 +190,7 @@ func TestBuildStringFromOptions(t *testing.T) {
 			OpenTimeout: 30,
 		}
 
-		str, err := BuildStringFromOptions(opts)
+		str, err = BuildStringFromOptions(opts)
 		assert.NoError(t, err)
 		assert.Equal(t, "postgres://username:@localhost:5432/dbname?connect_timeout=30&sslmode=disable", str)
 	})
