@@ -6,9 +6,11 @@ import (
 	neturl "net/url"
 	"os"
 	"os/user"
+	"strconv"
 	"strings"
 
 	"github.com/jackc/pgpassfile"
+
 	"github.com/sosedoff/pgweb/pkg/command"
 )
 
@@ -88,6 +90,11 @@ func FormatURL(opts command.Options) (string, error) {
 		}
 	}
 
+	// Configure default connect timeout
+	if opts.OpenTimeout > 0 {
+		params["connect_timeout"] = strconv.Itoa(opts.OpenTimeout)
+	}
+
 	// Rebuild query params
 	query := neturl.Values{}
 	for k, v := range params {
@@ -140,6 +147,11 @@ func BuildStringFromOptions(opts command.Options) (string, error) {
 	// Grab password from .pgpass file if it's available
 	if opts.Pass == "" && opts.Passfile != "" {
 		opts.Pass = lookupPassword(opts, nil)
+	}
+
+	// Configure default connect timeout
+	if opts.OpenTimeout > 0 {
+		query.Add("connect_timeout", strconv.Itoa(opts.OpenTimeout))
 	}
 
 	url := neturl.URL{

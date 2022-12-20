@@ -36,6 +36,7 @@ type Options struct {
 	SSLRootCert                  string `long:"ssl-rootcert" description:"SSL certificate authority file"`
 	SSLCert                      string `long:"ssl-cert" description:"SSL client certificate file"`
 	SSLKey                       string `long:"ssl-key" description:"SSL client certificate key file"`
+	OpenTimeout                  int    `long:"open-timeout" description:" Maximum wait for connection, in seconds" default:"30"`
 	HTTPHost                     string `long:"bind" description:"HTTP server host" default:"localhost"`
 	HTTPPort                     uint   `long:"listen" description:"HTTP server listen port" default:"8081"`
 	AuthUser                     string `long:"auth-user" description:"HTTP basic auth user"`
