@@ -22,7 +22,17 @@ const (
 )
 
 type (
+	// Row represents a single row of data
 	Row []interface{}
+
+	// RowsOptions contains a list of parameters for table browsing requests
+	RowsOptions struct {
+		Where      string // Custom filter
+		Offset     int    // Number of rows to skip
+		Limit      int    // Number of rows to fetch
+		SortColumn string // Column to sort by
+		SortOrder  string // Sort direction (ASC, DESC)
+	}
 
 	Pagination struct {
 		Rows    int64 `json:"rows_count"`
@@ -94,7 +104,7 @@ func (res *Result) PostProcess() {
 }
 
 func (res *Result) Format() []map[string]interface{} {
-	var items []map[string]interface{}
+	items := []map[string]interface{}{}
 
 	for _, row := range res.Rows {
 		item := make(map[string]interface{})

@@ -116,3 +116,20 @@ func TestJSON(t *testing.T) {
 		assert.Equal(t, `[{"value":"2022-01-01T00:00:00Z"},{"value":"9022-01-01T00:00:00Z"},{"value":"ERR: INVALID_DATE"}]`, string(result.JSON()))
 	})
 }
+
+func TestResultFormat(t *testing.T) {
+	result := Result{
+		Columns: []string{"col1", "col2", "col3", "col4"},
+		Rows: []Row{
+			{"1", "2", "3", nil},
+			{"4", "5", "6", nil},
+		},
+	}
+
+	expected := []map[string]interface{}{
+		{"col1": "1", "col2": "2", "col3": "3", "col4": nil},
+		{"col1": "4", "col2": "5", "col3": "6", "col4": nil},
+	}
+
+	assert.Equal(t, expected, result.Format())
+}
