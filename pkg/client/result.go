@@ -104,16 +104,15 @@ func (res *Result) PostProcess() {
 }
 
 func (res *Result) Format() []map[string]interface{} {
-	items := []map[string]interface{}{}
+	items := make([]map[string]interface{}, len(res.Rows))
 
-	for _, row := range res.Rows {
+	for rowIdx, row := range res.Rows {
 		item := make(map[string]interface{})
-
 		for i, c := range res.Columns {
 			item[c] = row[i]
 		}
 
-		items = append(items, item)
+		items[rowIdx] = item
 	}
 
 	return items
