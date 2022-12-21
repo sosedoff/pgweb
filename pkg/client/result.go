@@ -130,20 +130,17 @@ func (res *Result) CSV() []byte {
 		record := make([]string, len(res.Columns))
 
 		for i, item := range row {
-			if item != nil {
-				switch v := item.(type) {
-				case time.Time:
-					record[i] = v.Format("2006-01-02 15:04:05")
-				default:
-					record[i] = fmt.Sprintf("%v", item)
-				}
-			} else {
+			switch v := item.(type) {
+			case time.Time:
+				record[i] = v.Format("2006-01-02 15:04:05")
+			case nil:
 				record[i] = ""
+			default:
+				record[i] = fmt.Sprintf("%v", item)
 			}
 		}
 
 		err := writer.Write(record)
-
 		if err != nil {
 			fmt.Println(err)
 			break

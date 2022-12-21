@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 	"time"
 
@@ -51,17 +52,20 @@ func TestPostProcess(t *testing.T) {
 
 func TestCSV(t *testing.T) {
 	result := Result{
-		Columns: []string{"id", "name", "email"},
+		Columns: []string{"id", "name", "email", "extra"},
 		Rows: []Row{
-			{1, "John", "john@example.com"},
-			{2, "Bob", "bob@example.com"},
+			{1, "John", "john@example.com", "data"},
+			{2, "Bob", "bob@example.com", nil},
 		},
 	}
 
-	expected := "id,name,email\n1,John,john@example.com\n2,Bob,bob@example.com\n"
-	output := string(result.CSV())
+	expected := strings.Join([]string{
+		"id,name,email,extra",
+		"1,John,john@example.com,data",
+		"2,Bob,bob@example.com,",
+	}, "\n") + "\n"
 
-	assert.Equal(t, expected, output)
+	assert.Equal(t, expected, string(result.CSV()))
 }
 
 func TestJSON(t *testing.T) {
