@@ -22,7 +22,17 @@ const (
 )
 
 type (
+	// Row represents a single row of data
 	Row []interface{}
+
+	// RowsOptions contains a list of parameters for table browsing requests
+	RowsOptions struct {
+		Where      string // Custom filter
+		Offset     int    // Number of rows to skip
+		Limit      int    // Number of rows to fetch
+		SortColumn string // Column to sort by
+		SortOrder  string // Sort direction (ASC, DESC)
+	}
 
 	Pagination struct {
 		Rows    int64 `json:"rows_count"`
@@ -94,16 +104,15 @@ func (res *Result) PostProcess() {
 }
 
 func (res *Result) Format() []map[string]interface{} {
-	var items []map[string]interface{}
+	items := make([]map[string]interface{}, len(res.Rows))
 
-	for _, row := range res.Rows {
+	for rowIdx, row := range res.Rows {
 		item := make(map[string]interface{})
-
 		for i, c := range res.Columns {
 			item[c] = row[i]
 		}
 
-		items = append(items, item)
+		items[rowIdx] = item
 	}
 
 	return items
@@ -121,20 +130,17 @@ func (res *Result) CSV() []byte {
 		record := make([]string, len(res.Columns))
 
 		for i, item := range row {
-			if item != nil {
-				switch v := item.(type) {
-				case time.Time:
-					record[i] = v.Format("2006-01-02 15:04:05")
-				default:
-					record[i] = fmt.Sprintf("%v", item)
-				}
-			} else {
+			switch v := item.(type) {
+			case time.Time:
+				record[i] = v.Format("2006-01-02 15:04:05")
+			case nil:
 				record[i] = ""
+			default:
+				record[i] = fmt.Sprintf("%v", item)
 			}
 		}
 
 		err := writer.Write(record)
-
 		if err != nil {
 			fmt.Println(err)
 			break

@@ -34,15 +34,6 @@ type Client struct {
 	ConnectionString string           `json:"connection_string"`
 }
 
-// Struct to hold table rows browsing options
-type RowsOptions struct {
-	Where      string // Custom filter
-	Offset     int    // Number of rows to skip
-	Limit      int    // Number of rows to fetch
-	SortColumn string // Column to sort by
-	SortOrder  string // Sort direction (ASC, DESC)
-}
-
 func getSchemaAndTable(str string) (string, string) {
 	chunks := strings.Split(str, ".")
 	if len(chunks) == 1 {

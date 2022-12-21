@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 	"time"
 
@@ -51,17 +52,20 @@ func TestPostProcess(t *testing.T) {
 
 func TestCSV(t *testing.T) {
 	result := Result{
-		Columns: []string{"id", "name", "email"},
+		Columns: []string{"id", "name", "email", "extra"},
 		Rows: []Row{
-			{1, "John", "john@example.com"},
-			{2, "Bob", "bob@example.com"},
+			{1, "John", "john@example.com", "data"},
+			{2, "Bob", "bob@example.com", nil},
 		},
 	}
 
-	expected := "id,name,email\n1,John,john@example.com\n2,Bob,bob@example.com\n"
-	output := string(result.CSV())
+	expected := strings.Join([]string{
+		"id,name,email,extra",
+		"1,John,john@example.com,data",
+		"2,Bob,bob@example.com,",
+	}, "\n") + "\n"
 
-	assert.Equal(t, expected, output)
+	assert.Equal(t, expected, string(result.CSV()))
 }
 
 func TestJSON(t *testing.T) {
@@ -115,4 +119,21 @@ func TestJSON(t *testing.T) {
 		result.PostProcess()
 		assert.Equal(t, `[{"value":"2022-01-01T00:00:00Z"},{"value":"9022-01-01T00:00:00Z"},{"value":"ERR: INVALID_DATE"}]`, string(result.JSON()))
 	})
+}
+
+func TestResultFormat(t *testing.T) {
+	result := Result{
+		Columns: []string{"col1", "col2", "col3", "col4"},
+		Rows: []Row{
+			{"1", "2", "3", nil},
+			{"4", "5", "6", nil},
+		},
+	}
+
+	expected := []map[string]interface{}{
+		{"col1": "1", "col2": "2", "col3": "3", "col4": nil},
+		{"col1": "4", "col2": "5", "col3": "6", "col4": nil},
+	}
+
+	assert.Equal(t, expected, result.Format())
 }
