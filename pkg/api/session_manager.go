@@ -44,7 +44,7 @@ func (m *SessionManager) IDs() []string {
 func (m *SessionManager) Sessions() map[string]*client.Client {
 	m.mu.Lock()
 	sessions := m.sessions
-	defer m.mu.Unlock()
+	m.mu.Unlock()
 
 	return sessions
 }
