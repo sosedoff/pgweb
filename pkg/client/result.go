@@ -42,9 +42,19 @@ type (
 	}
 
 	Result struct {
-		Pagination *Pagination `json:"pagination,omitempty"`
-		Columns    []string    `json:"columns"`
-		Rows       []Row       `json:"rows"`
+		Pagination *Pagination  `json:"pagination,omitempty"`
+		Columns    []string     `json:"columns"`
+		Rows       []Row        `json:"rows"`
+		Stats      *ResultStats `json:"stats,omitempty"`
+	}
+
+	ResultStats struct {
+		ColumnsCount    int       `json:"columns_count"`
+		RowsCount       int       `json:"rows_count"`
+		RowsAffected    int64     `json:"rows_affected"`
+		QueryStartTime  time.Time `json:"query_start_time"`
+		QueryFinishTime time.Time `json:"query_finish_time"`
+		QueryDuration   int64     `json:"query_duration_ms"`
 	}
 
 	Object struct {
