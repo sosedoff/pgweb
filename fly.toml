@@ -31,3 +31,7 @@ kill_timeout = 5
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+
+[metrics]
+  port = 8081
+  path = "/metrics"
