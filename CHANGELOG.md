@@ -1,3 +1,15 @@
+# 0.13.0 - 2022-12-25
+
+- Add support for .pgpass file, GH-617
+- Request logging additions (request id, forwarded user), GH-618
+- Establish connections using bookmark ID only, GH-619
+- Display empty schemas on the sidebar, GH-621
+- Configure timeout and retries when testing connection status, GH-623
+- Setup basic prom metrics endpoint, GH-624
+- Add default connect_timeout option to connection string, GH-626
+- Add duration_ms to log entries, GH-628
+- Add query execution stats to api endpoint, GH-629
+
 # 0.12.0 - 2022-12-13
 
 - Deprecate usage of Gox for binary builds, GH-571
