@@ -3,7 +3,7 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 
 [processes]
-  web = "pgweb --sessions --bind=0.0.0.0"
+  web = "pgweb --sessions --bind=0.0.0.0 --metrics"
 
 [[services]]
   http_checks = []
