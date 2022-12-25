@@ -57,7 +57,8 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 			"status":      status,
 			"method":      c.Request.Method,
 			"remote_addr": c.ClientIP(),
-			"duration":    latency,
+			"duration":    latency.String(),
+			"duration_ms": latency.Milliseconds(),
 			"path":        path,
 		}
 
