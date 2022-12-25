@@ -386,7 +386,9 @@ func (client *Client) exec(query string, args ...interface{}) (*Result, error) {
 	ctx, cancel := client.context()
 	defer cancel()
 
+	queryStart := time.Now()
 	res, err := client.db.ExecContext(ctx, query, args...)
+	queryFinish := time.Now()
 	if err != nil {
 		return nil, err
 	}
@@ -400,6 +402,13 @@ func (client *Client) exec(query string, args ...interface{}) (*Result, error) {
 		Columns: []string{"Rows Affected"},
 		Rows: []Row{
 			{affected},
+		},
+		Stats: &ResultStats{
+			ColumnsCount:    1,
+			RowsCount:       1,
+			QueryStartTime:  queryStart.UTC(),
+			QueryFinishTime: queryFinish.UTC(),
+			QueryDuration:   queryFinish.Sub(queryStart).Milliseconds(),
 		},
 	}
 
@@ -437,7 +446,9 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 	ctx, cancel := client.context()
 	defer cancel()
 
+	queryStart := time.Now()
 	rows, err := client.db.QueryxContext(ctx, query, args...)
+	queryFinish := time.Now()
 	if err != nil {
 		if command.Opts.Debug {
 			log.Println("Failed query:", query, "\nArgs:", args)
@@ -479,6 +490,14 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 		if err == nil {
 			result.Rows = append(result.Rows, obj)
 		}
+	}
+
+	result.Stats = &ResultStats{
+		ColumnsCount:    len(cols),
+		RowsCount:       len(result.Rows),
+		QueryStartTime:  queryStart.UTC(),
+		QueryFinishTime: queryFinish.UTC(),
+		QueryDuration:   queryFinish.Sub(queryStart).Milliseconds(),
 	}
 
 	result.PostProcess()
