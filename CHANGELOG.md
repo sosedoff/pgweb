@@ -1,3 +1,7 @@
+# 0.13.1 - 2022-12-27
+
+- Fix connect flow when `~/.pgweb/bookmarks` directory is not available, GH-631
+
 # 0.13.0 - 2022-12-25
 
 - Add support for .pgpass file, GH-617
