@@ -1662,8 +1662,9 @@ $(document).ready(function() {
 
     var button = $(this).find("button.open-connection");
     var params = {};
+    var bookmarkID = $.trim($("#connection_bookmarks").val());
 
-    if ($("#connection_bookmarks").val() != "") {
+    if (bookmarkID != "") {
       params["bookmark_id"] = $("#connection_bookmarks").val();
     }
     else {
