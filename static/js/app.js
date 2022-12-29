@@ -416,7 +416,11 @@ function buildTable(results, sortColumn, sortOrder, options) {
   $("#results_body").html(rows);
 
   // Show number of rows rendered on the page
-  $("#result-rows-count").html(results.stats.rows_count + " rows in " + results.stats.query_duration_ms + " ms");
+  if (results.stats) {
+    $("#result-rows-count").html(results.stats.rows_count + " rows in " + results.stats.query_duration_ms + " ms");
+  } else {
+    $("#result-rows-count").html(results.rows.length + " rows");
+  }
 }
 
 function setCurrentTab(id) {
