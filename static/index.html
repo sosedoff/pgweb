@@ -139,6 +139,17 @@
     </div>
   </div>
 
+  <div id="content_modal">
+    <div class="title">
+      Cell Content
+      <div class="actions">
+        <i class="fa fa-times content-modal-action" data-action="close"></i>
+        <i class="fa fa-copy content-modal-action" data-action="copy"></i>
+      </div>
+    </div>
+    <pre class="content"></pre>
+  </div>
+
   <div id="connection_window">
     <div class="connection-settings">
       <div class="header">
@@ -312,6 +323,7 @@
   </div>
   <div id="results_row_menu">
     <ul class="dropdown-menu" role="menu">
+      <li><a href="#" data-action="display_value">Display Value</a></li>
       <li><a href="#" data-action="copy_value">Copy Value</a></li>
       <li><a href="#" data-action="filter_by_value">Filter Rows By Value</a></li>
     </ul>

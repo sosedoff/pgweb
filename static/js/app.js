@@ -1146,6 +1146,11 @@ function bindTableHeaderMenu() {
       var menuItem = $(e.target);
 
       switch(menuItem.data("action")) {
+        case "display_value":
+          var value = $(context).text();
+          $("#content_modal .content").text(value);
+          $("#content_modal").show();
+          break;
         case "copy_value":
           copyToClipboard($(context).text());
           break;
@@ -1375,8 +1380,39 @@ function onInputResize(event) {
   resizeInput(computedHeight);
 }
 
+function bindContentModalEvents() {
+  var contentModal = document.getElementById("content_modal");
+
+  $(window).on("click", function(e) {
+    // Automatically hide the modal on any click outside of the modal window
+    if (e.target && !contentModal.contains(e.target)) {
+      $("#content_modal").hide();
+    }
+  });
+
+  $("#content_modal .content-modal-action").on("click", function() {
+    switch ($(this).data("action")) {
+      case "copy":
+        copyToClipboard($("#content_modal pre").text());
+        break;
+      case "close":
+        $("#content_modal").hide();
+        break;
+    }
+  });
+
+  $("#results").on("dblclick", "td > div", function() {
+    var value = unescapeHtml($(this).html());
+    if (!value) return;
+
+    $("#content_modal pre").html(value);
+    $("#content_modal").show();
+  })
+}
+
 $(document).ready(function() {
   bindInputResizeEvents();
+  bindContentModalEvents();
 
   $("#table_content").on("click",     function() { showTableContent();     });
   $("#table_structure").on("click",   function() { showTableStructure();   });
