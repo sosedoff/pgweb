@@ -203,21 +203,57 @@ func testTest(t *testing.T) {
 }
 
 func testInfo(t *testing.T) {
-	expected := []string{
-		"session_user",
-		"current_user",
-		"current_database",
-		"current_schemas",
-		"inet_client_addr",
-		"inet_client_port",
-		"inet_server_addr",
-		"inet_server_port",
-		"version",
-	}
+	t.Run("normal", func(t *testing.T) {
+		expected := []string{
+			"session_user",
+			"current_user",
+			"current_database",
+			"current_schemas",
+			"inet_client_addr",
+			"inet_client_port",
+			"inet_server_addr",
+			"inet_server_port",
+			"version",
+		}
 
-	res, err := testClient.Info()
-	assert.NoError(t, err)
-	assert.Equal(t, expected, res.Columns)
+		res, err := testClient.Info()
+		assert.NoError(t, err)
+		assert.Equal(t, expected, res.Columns)
+	})
+
+	t.Run("with restrictions", func(t *testing.T) {
+		expected := []string{
+			"session_user",
+			"current_user",
+			"current_database",
+			"current_schemas",
+			"version",
+		}
+
+		// Prepare a new user and database
+		testClient.db.MustExec("DROP DATABASE IF EXISTS testdb")
+		testClient.db.Exec("DROP OWNED BY IF EXISTS testuser")
+		testClient.db.MustExec("DROP ROLE IF EXISTS testuser")
+		testClient.db.MustExec("CREATE ROLE testuser WITH PASSWORD 'secret' LOGIN NOSUPERUSER NOINHERIT")
+		testClient.db.MustExec("CREATE DATABASE testdb OWNER testuser")
+
+		// Disable access to inet_ calls for new user
+		url := fmt.Sprintf("postgres://%s:@%s:%s/testdb?sslmode=disable", serverUser, serverHost, serverPort)
+		client, err := NewFromUrl(url, nil)
+		assert.NoError(t, err)
+		client.db.MustExec("REVOKE EXECUTE ON FUNCTION inet_client_addr() FROM PUBLIC")
+		assert.NoError(t, client.Close())
+
+		// Connect using new user
+		url = fmt.Sprintf("postgres://testuser:secret@%s:%s/testdb?sslmode=disable", serverHost, serverPort)
+		client, err = NewFromUrl(url, nil)
+		assert.NoError(t, err)
+		defer client.Close()
+
+		res, err := client.Info()
+		assert.NoError(t, err)
+		assert.Equal(t, expected, res.Columns)
+	})
 }
 
 func testActivity(t *testing.T) {
