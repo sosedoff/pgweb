@@ -206,7 +206,15 @@ func (client *Client) TestWithTimeout(timeout time.Duration) (result error) {
 }
 
 func (client *Client) Info() (*Result, error) {
-	return client.query(statements.Info)
+	result, err := client.query(statements.Info)
+	if err != nil {
+		msg := err.Error()
+		if strings.Contains(msg, "inet_") && (strings.Contains(msg, "not supported") || strings.Contains(msg, "permission denied")) {
+			// Fetch client information without inet_ function calls
+			result, err = client.query(statements.InfoSimple)
+		}
+	}
+	return result, err
 }
 
 func (client *Client) Databases() ([]string, error) {
