@@ -232,7 +232,7 @@ func testInfo(t *testing.T) {
 
 		// Prepare a new user and database
 		testClient.db.MustExec("DROP DATABASE IF EXISTS testdb")
-		testClient.db.Exec("DROP OWNED BY IF EXISTS testuser")
+		testClient.db.Exec("DROP OWNED BY IF EXISTS testuser") //nolint:all
 		testClient.db.MustExec("DROP ROLE IF EXISTS testuser")
 		testClient.db.MustExec("CREATE ROLE testuser WITH PASSWORD 'secret' LOGIN NOSUPERUSER NOINHERIT")
 		testClient.db.MustExec("CREATE DATABASE testdb OWNER testuser")
