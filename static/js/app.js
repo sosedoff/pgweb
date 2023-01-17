@@ -75,8 +75,14 @@ function apiCall(method, path, params, cb) {
     },
     success: cb,
     error: function(xhr, status, data) {
-      if (status == "timeout") {
-        return cb({ error: "Query timeout after " + timeout + "s" });
+      switch(status) {
+        case "error":
+          if (xhr.readyState == 0) { // 0 = UNSENT
+            showErrorBanner("Sorry, something went wrong with your request. Refresh the page and try again!");
+          }
+          break;
+        case "timeout":
+          return cb({ error: "Query timeout after " + timeout + "s" });
       }
 
       cb(jQuery.parseJSON(xhr.responseText));
@@ -103,6 +109,18 @@ function disconnect(cb)                     { apiCall("post", "/disconnect", {},
 
 function encodeQuery(query) {
   return Base64.encode(query).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, ".");
+}
+
+function showErrorBanner(text) {
+  if (window.errBannerTimeout != null) {
+    clearTimeout(window.errBannerTimeout);
+  }
+
+  window.errBannerTimeout = setTimeout(function() {
+    $("#error_banner").fadeOut("fast").text("");
+  }, 3000);
+
+  $("#error_banner").text(text).show();
 }
 
 function buildSchemaSection(name, objects) {
