@@ -678,6 +678,19 @@
   box-shadow: #eee 0 0 5px;
 }
 
+#error_banner {
+  line-height: 30px;
+  text-align: center;
+  background-color: #be2740;
+  color: #fff;
+  display: none;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  height: 30px;
+}
+
 /* -------------------------------------------------------------------------- */
 
 #custom_query {
