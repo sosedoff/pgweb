@@ -35,6 +35,63 @@ func TestBookmarkSSHInfoIsEmpty(t *testing.T) {
 	})
 }
 
+func TestBookmarkWithVarsConvertToOptions(t *testing.T) {
+	t.Run("literals set", func(t *testing.T) {
+		b := Bookmark{
+			User:        "user",
+			UserVar:     "",
+			Password:    "password",
+			PasswordVar: "",
+		}
+
+		expOpt := command.Options{
+			User: "user",
+			Pass: "password",
+		}
+
+		opt := b.ConvertToOptions()
+		assert.Equal(t, expOpt, opt)
+	})
+
+	t.Run("all set", func(t *testing.T) {
+		b := Bookmark{
+			User:        "user",
+			UserVar:     "DB_USER",
+			Password:    "password",
+			PasswordVar: "DB_PASSWORD",
+		}
+
+		expOpt := command.Options{
+			User: "user",
+			Pass: "password",
+		}
+
+		t.Setenv("DB_USER", "user123")
+		t.Setenv("DB_PASSWORD", "password123")
+		opt := b.ConvertToOptions()
+		assert.Equal(t, expOpt, opt)
+	})
+
+	t.Run("env vars set", func(t *testing.T) {
+		b := Bookmark{
+			User:        "",
+			UserVar:     "DB_USER",
+			Password:    "",
+			PasswordVar: "DB_PASSWORD",
+		}
+
+		expOpt := command.Options{
+			User: "user123",
+			Pass: "password123",
+		}
+
+		t.Setenv("DB_USER", "user123")
+		t.Setenv("DB_PASSWORD", "password123")
+		opt := b.ConvertToOptions()
+		assert.Equal(t, expOpt, opt)
+	})
+}
+
 func TestBookmarkConvertToOptions(t *testing.T) {
 	b := Bookmark{
 		URL:      "postgres://username:password@host:port/database?sslmode=disable",
