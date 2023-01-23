@@ -497,6 +497,12 @@ func GetTableConstraints(c *gin.Context) {
 	serveResult(c, res, err)
 }
 
+// GetTablesStats renders data sizes and estimated rows for all tables in the database
+func GetTablesStats(c *gin.Context) {
+	res, err := DB(c).TablesStats()
+	serveResult(c, res, err)
+}
+
 // HandleQuery runs the database query
 func HandleQuery(query string, c *gin.Context) {
 	metrics.IncrementQueriesCount()

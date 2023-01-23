@@ -41,6 +41,9 @@ var (
 	//go:embed sql/objects.sql
 	Objects string
 
+	//go:embed sql/tables_stats.sql
+	TablesStats string
+
 	//go:embed sql/function.sql
 	Function string
 

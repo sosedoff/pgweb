@@ -641,6 +641,25 @@ func testReadOnlyMode(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func testTablesStats(t *testing.T) {
+	columns := []string{
+		"schema_name",
+		"table_name",
+		"total_size",
+		"data_size",
+		"index_size",
+		"estimated_rows_count",
+		"estimated_rows",
+		"index_to_data_ratio",
+		"indexes_count",
+		"columns_count",
+	}
+
+	result, err := testClient.TablesStats()
+	assert.NoError(t, err)
+	assert.Equal(t, columns, result.Columns)
+}
+
 func TestAll(t *testing.T) {
 	if onWindows() {
 		t.Log("Unit testing on Windows platform is not supported.")
@@ -678,6 +697,7 @@ func TestAll(t *testing.T) {
 	testHistory(t)
 	testReadOnlyMode(t)
 	testDumpExport(t)
+	testTablesStats(t)
 
 	teardownClient()
 	teardown(t, true)
