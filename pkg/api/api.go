@@ -18,6 +18,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/metrics"
 	"github.com/sosedoff/pgweb/pkg/shared"
+	"github.com/sosedoff/pgweb/pkg/statements"
 	"github.com/sosedoff/pgweb/static"
 )
 
@@ -494,6 +495,12 @@ func GetTableIndexes(c *gin.Context) {
 // GetTableConstraints renders a list of database constraints
 func GetTableConstraints(c *gin.Context) {
 	res, err := DB(c).TableConstraints(c.Params.ByName("table"))
+	serveResult(c, res, err)
+}
+
+// GetTablesStats renders data sizes and estimated rows for all tables in the database
+func GetTablesStats(c *gin.Context) {
+	res, err := DB(c).Query(statements.TablesStats)
 	serveResult(c, res, err)
 }
 

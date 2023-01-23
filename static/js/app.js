@@ -99,6 +99,7 @@ function getTableRows(table, opts, cb)      { apiCall("get", "/tables/" + table 
 function getTableStructure(table, opts, cb) { apiCall("get", "/tables/" + table, opts, cb); }
 function getTableIndexes(table, cb)         { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
 function getTableConstraints(table, cb)     { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
+function getTablesStats(cb)                 { apiCall("get", "/tables_stats", {}, cb); }
 function getFunction(id, cb)                { apiCall("get", "/functions/" + id, {}, cb); }
 function getHistory(cb)                     { apiCall("get", "/history", {}, cb); }
 function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
@@ -617,6 +618,17 @@ function showPaginatedTableContent() {
   }
 
   showTableContent(sortColumn, sortOrder);
+}
+
+function showTablesStats() {
+  getTablesStats(function(data) {
+    buildTable(data);
+
+    setCurrentTab("table_structure");
+    $("#input").hide();
+    $("#body").prop("class", "full");
+    $("#results").addClass("no-crop");
+  });
 }
 
 function showTableStructure() {
@@ -1193,6 +1205,9 @@ function bindCurrentDatabaseMenu() {
       var menuItem = $(e.target);
 
       switch(menuItem.data("action")) {
+        case "show_tables_stats":
+          showTablesStats();
+          break;
         case "export":
           openInNewWindow("api/export");
           break;
