@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	neturl "net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -17,6 +18,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/metrics"
+	"github.com/sosedoff/pgweb/pkg/queries"
 	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/static"
 )
@@ -605,4 +607,17 @@ func DataExport(c *gin.Context) {
 func GetFunction(c *gin.Context) {
 	res, err := DB(c).Function(c.Param("id"))
 	serveResult(c, res, err)
+}
+
+// TODO: Clean this up and validate against query file matchers
+func GetLocalQueries(c *gin.Context) {
+	store := queries.NewStore(fmt.Sprintf("%s/.pgweb/queries", os.Getenv("HOME")))
+
+	queries, err := store.ReadAll()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	c.JSON(200, queries)
 }
