@@ -48,6 +48,7 @@ type Options struct {
 	LockSession                  bool   `long:"lock-session" description:"Lock session to a single database connection"`
 	Bookmark                     string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
 	BookmarksDir                 string `long:"bookmarks-dir" description:"Overrides default directory for bookmark files to search" default:""`
+	QueriesDir                   string `long:"queries-dir" description:"Overrides default directory for local queries"`
 	DisablePrettyJSON            bool   `long:"no-pretty-json" description:"Disable JSON formatting feature for result export"`
 	DisableSSH                   bool   `long:"no-ssh" description:"Disable database connections via SSH"`
 	ConnectBackend               string `long:"connect-backend" description:"Enable database authentication through a third party backend"`
@@ -159,10 +160,19 @@ func ParseOptions(args []string) (Options, error) {
 		}
 	}
 
-	if opts.BookmarksDir == "" {
-		path, err := homedir.Dir()
-		if err == nil {
-			opts.BookmarksDir = filepath.Join(path, ".pgweb/bookmarks")
+	homePath, err := homedir.Dir()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "[WARN] cant detect home dir: %v", err)
+		homePath = os.Getenv("HOME")
+	}
+
+	if homePath != "" {
+		if opts.BookmarksDir == "" {
+			opts.BookmarksDir = filepath.Join(homePath, ".pgweb/bookmarks")
+		}
+
+		if opts.QueriesDir == "" {
+			opts.QueriesDir = filepath.Join(homePath, ".pgweb/queries")
 		}
 	}
 

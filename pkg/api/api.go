@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/http"
 	neturl "net/url"
@@ -29,6 +30,9 @@ var (
 
 	// DbSessions represents the mapping for client connections
 	DbSessions *SessionManager
+
+	// QueryStore reads the SQL queries stores in the home directory
+	QueryStore *queries.Store
 )
 
 // DB returns a database connection from the client context
@@ -557,6 +561,7 @@ func GetInfo(c *gin.Context) {
 		"features": gin.H{
 			"session_lock":  command.Opts.LockSession,
 			"query_timeout": command.Opts.QueryTimeout,
+			"local_queries": QueryStore != nil,
 		},
 	})
 }
@@ -609,15 +614,52 @@ func GetFunction(c *gin.Context) {
 	serveResult(c, res, err)
 }
 
-// TODO: Clean this up and validate against query file matchers
 func GetLocalQueries(c *gin.Context) {
-	store := queries.NewStore(fmt.Sprintf("%s/.pgweb/queries", os.Getenv("HOME")))
+	if QueryStore == nil {
+		badRequest(c, "local queries are disabled")
+		return
+	}
 
-	queries, err := store.ReadAll()
+	storeQueries, err := QueryStore.ReadAll()
 	if err != nil {
 		badRequest(c, err)
 		return
 	}
 
-	c.JSON(200, queries)
+	queries := []localQuery{}
+	for _, q := range storeQueries {
+		queries = append(queries, localQuery{
+			ID:          q.ID,
+			Title:       q.Meta.Title,
+			Description: q.Meta.Description,
+			Query:       cleanQuery(q.Data),
+		})
+	}
+
+	successResponse(c, queries)
+}
+
+func RunLocalQuery(c *gin.Context) {
+	if QueryStore == nil {
+		badRequest(c, "local queries are disabled")
+		return
+	}
+
+	query, err := QueryStore.Read(c.Param("id"))
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			errorResponse(c, 404, "query not found")
+		} else {
+			badRequest(c, err)
+		}
+		return
+	}
+
+	statement := cleanQuery(query.Data)
+	if statement == "" {
+		badRequest(c, errQueryRequired)
+		return
+	}
+
+	HandleQuery(statement, c)
 }

@@ -4,16 +4,22 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Store struct {
 	dir string
 }
 
-func NewStore(dir string) Store {
-	return Store{
+func NewStore(dir string) *Store {
+	return &Store{
 		dir: dir,
 	}
+}
+
+func (s Store) Read(id string) (*Query, error) {
+	path := filepath.Join(s.dir, fmt.Sprintf("%s.sql", id))
+	return readQuery(path)
 }
 
 func (s Store) ReadAll() ([]Query, error) {
@@ -26,35 +32,42 @@ func (s Store) ReadAll() ([]Query, error) {
 
 	for _, entry := range entries {
 		name := entry.Name()
-		path := filepath.Join(s.dir, name)
-
-		fmt.Println("==>", name)
-
 		if filepath.Ext(name) != ".sql" {
 			continue
 		}
 
-		data, err := os.ReadFile(path)
+		path := filepath.Join(s.dir, name)
+		query, err := readQuery(path)
 		if err != nil {
-			return nil, err
-		}
-		dataStr := string(data)
-
-		meta, err := parseMetadata(dataStr)
-		if err != nil {
-			return nil, err
-		}
-		if meta == nil {
+			fmt.Fprintf(os.Stderr, "[WARN] skipping %q query file due to error: %v\n", name, err)
 			continue
 		}
 
-		queries = append(queries, Query{
-			ID:   entry.Name(),
-			Path: path,
-			Meta: meta,
-			Data: dataStr,
-		})
+		queries = append(queries, *query)
 	}
 
 	return queries, nil
+}
+
+func readQuery(path string) (*Query, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	dataStr := string(data)
+
+	meta, err := parseMetadata(dataStr)
+	if err != nil {
+		return nil, err
+	}
+	if meta == nil {
+		return nil, nil
+	}
+
+	return &Query{
+		ID:   strings.Replace(filepath.Base(path), ".sql", "", 1),
+		Path: path,
+		Meta: meta,
+		Data: sanitizeMetadata(dataStr),
+	}, nil
 }

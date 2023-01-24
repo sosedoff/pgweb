@@ -1,85 +1,119 @@
 package queries
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_parseMetadata(t *testing.T) {
-	type vals struct {
-		host     string
-		database string
-		user     string
-		mode     string
-	}
-
+func Test_parseFields(t *testing.T) {
 	examples := []struct {
-		input  string
-		err    error
-		values *vals
+		input string
+		err   error
+		vals  map[string]string
 	}{
-		{input: "", err: nil},
-		{input: "foobar", err: nil},
-		{input: "-- no pgweb meta", err: nil},
-		{input: "--pgweb: foo=bar", err: errors.New(`invalid meta attribute: "foo"`)},
-		{input: "--pgweb: mode=writeonly", err: errors.New(`invalid value for "mode" attribute: "writeonly"`)},
+		{input: "", err: nil, vals: nil},
+		{input: "foobar", err: nil, vals: nil},
+		{input: "-- no pgweb meta", err: nil, vals: nil},
 		{
-			input: "--pgweb: host=localhost",
+			input: `--pgweb: foo=bar`,
 			err:   nil,
-			values: &vals{
-				host:     "localhost",
-				database: "*",
-				user:     "*",
-				mode:     "*",
-			},
+			vals:  map[string]string{},
 		},
 		{
-			input: "--pgweb: host=*; user=admin; database  =mydb; mode = readonly",
+			input: `--pgweb: host="localhost"`,
 			err:   nil,
-			values: &vals{
-				host:     "*",
-				database: "mydb",
-				user:     "admin",
-				mode:     "readonly",
+			vals:  map[string]string{"host": "localhost"},
+		},
+		{
+			input: `--pgweb: host="*" user="admin" database  ="mydb"; mode = "readonly"`,
+			err:   nil,
+			vals: map[string]string{
+				"host":     "*",
+				"database": "mydb",
+				"user":     "admin",
+				"mode":     "readonly",
 			},
 		},
 	}
 
 	for _, ex := range examples {
-		meta, err := parseMetadata(ex.input)
-		assert.Equal(t, ex.err, err)
-		if ex.values != nil && meta != nil {
-			assert.Equal(t, ex.values.host, meta.host.input())
-			assert.Equal(t, ex.values.database, meta.database.input())
-			assert.Equal(t, ex.values.user, meta.user.input())
-			assert.Equal(t, ex.values.mode, meta.mode.input())
-		}
+		t.Run(ex.input, func(t *testing.T) {
+			fields, err := parseFields(ex.input)
+			assert.Equal(t, ex.err, err)
+			assert.Equal(t, ex.vals, fields)
+		})
 	}
 }
 
-func Test_matcher(t *testing.T) {
+func Test_parseMetadata(t *testing.T) {
 	examples := []struct {
-		result   bool
-		input    string
-		host     string
-		user     string
-		database string
-		mode     string
+		input string
+		err   string
+		check func(meta *Metadata) bool
 	}{
-		{true, "-- pgweb: host=localhost", "localhost", "_", "_", "readonly"},
-		{false, "-- pgweb: host=localhost", "anyhost", "_", "_", "readonly"},
-		{false, "-- pgweb: host=localhost_(dev|test)", "localhost_foo", "_", "_", "readonly"},
-		{false, "-- pgweb: host=localhost_(dev|test)", "localhost_development", "_", "_", "readonly"},
-		{true, "-- pgweb: host=localhost_(dev|test)", "localhost_dev", "_", "_", "readonly"},
+		{
+			input: `--pgweb: `,
+			err:   `host field must be set`,
+		},
+		{
+			input: `--pgweb: hello="world"`,
+			err:   `unknown key: "hello"`,
+		},
+		{
+			input: `--pgweb: host="localhost" user="anyuser" database="anydb" mode="foo"`,
+			err:   `invalid "mode" field value: "foo"`,
+		},
+		{
+			input: "--pgweb2:",
+			check: func(m *Metadata) bool {
+				return m == nil
+			},
+		},
+		{
+			input: `--pgweb: host="localhost"`,
+			check: func(m *Metadata) bool {
+				return m.Host.value == "localhost" &&
+					m.User.value == "*" &&
+					m.Database.value == "*" &&
+					m.Mode.value == "*" &&
+					m.Timeout == nil
+			},
+		},
+		{
+			input: `--pgweb: host="localhost" user="anyuser" database="anydb" mode="*"`,
+			check: func(m *Metadata) bool {
+				return m.Host.value == "localhost" &&
+					m.Host.re == nil &&
+					m.User.value == "anyuser" &&
+					m.Database.value == "anydb" &&
+					m.Mode.value == "*" &&
+					m.Timeout == nil
+			},
+		},
+		{
+			input: `--pgweb: host="localhost" timeout="foo"`,
+			err:   `error initializing "timeout" field: strconv.Atoi: parsing "foo": invalid syntax`,
+		},
+		{
+			input: `-- pgweb: host="local(host|dev)"`,
+			check: func(m *Metadata) bool {
+				return m.Host.value == "local(host|dev)" && m.Host.re != nil &&
+					m.Host.matches("localhost") && m.Host.matches("localdev") &&
+					!m.Host.matches("localfoo") && !m.Host.matches("superlocaldev")
+			},
+		},
 	}
 
 	for _, ex := range examples {
 		t.Run(ex.input, func(t *testing.T) {
 			meta, err := parseMetadata(ex.input)
-			assert.NoError(t, err)
-			assert.Equal(t, ex.result, meta.match(ex.host, ex.database, ex.user, ex.mode))
+			if ex.err != "" {
+				assert.Contains(t, err.Error(), ex.err)
+			}
+			if ex.check != nil {
+				assert.Equal(t, true, ex.check(meta))
+			}
 		})
 	}
 }
