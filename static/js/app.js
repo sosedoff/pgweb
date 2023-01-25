@@ -185,8 +185,6 @@ function loadLocalQueries() {
     var id = $(this).data("id");
 
     apiCall("get", "/local_queries/" + id, {}, function(resp) {
-      console.log(resp);
-
       editor.setValue(resp.query);
       editor.clearSelection();
     });
@@ -202,6 +200,7 @@ function loadLocalQueries() {
       $("<li><a href='#' class='load-local-query' data-id='" + item.id + "'>" + title + "</a></li>").appendTo(container);
     });
 
+    if (resp.length > 0) $("#load-local-query").prop("disabled", "");
     $("#load-query-dropdown").show();
   });
 }

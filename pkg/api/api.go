@@ -620,6 +620,12 @@ func GetLocalQueries(c *gin.Context) {
 		return
 	}
 
+	connCtx, err := DB(c).GetConnContext()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
 	storeQueries, err := QueryStore.ReadAll()
 	if err != nil {
 		badRequest(c, err)
@@ -628,6 +634,10 @@ func GetLocalQueries(c *gin.Context) {
 
 	queries := []localQuery{}
 	for _, q := range storeQueries {
+		if !q.IsPermitted(connCtx.Host, connCtx.User, connCtx.Database, connCtx.Mode) {
+			continue
+		}
+
 		queries = append(queries, localQuery{
 			ID:          q.ID,
 			Title:       q.Meta.Title,
@@ -652,6 +662,17 @@ func RunLocalQuery(c *gin.Context) {
 		} else {
 			badRequest(c, err)
 		}
+		return
+	}
+
+	connCtx, err := DB(c).GetConnContext()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	if !query.IsPermitted(connCtx.Host, connCtx.User, connCtx.Database, connCtx.Mode) {
+		errorResponse(c, 404, "query not found")
 		return
 	}
 

@@ -10,7 +10,7 @@ type Query struct {
 // IsPermitted returns true if a query is allowed to execute for a given db context
 func (q Query) IsPermitted(host, user, database, mode string) bool {
 	// All fields must be provided for matching
-	if host == "" || user == "" || database == "" || mode == "" {
+	if q.Meta == nil || host == "" || user == "" || database == "" || mode == "" {
 		return false
 	}
 
