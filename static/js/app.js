@@ -765,13 +765,13 @@ function showActivityPanel() {
 }
 
 function showQueryProgressMessage() {
-  $("#run, #explain-dropdown-toggle, #csv, #json, #xml").prop("disabled", true);
+  $("#run, #explain-dropdown-toggle, #csv, #json, #xml, #load-local-query").prop("disabled", true);
   $("#explain-dropdown").removeClass("open");
   $("#query_progress").show();
 }
 
 function hideQueryProgressMessage() {
-  $("#run, #explain-dropdown-toggle, #csv, #json, #xml").prop("disabled", false);
+  $("#run, #explain-dropdown-toggle, #csv, #json, #xml, #load-local-query").prop("disabled", false);
   $("#query_progress").hide();
 }
 

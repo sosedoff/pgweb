@@ -171,15 +171,15 @@ func configureLocalQueryStore() {
 	stat, err := os.Stat(options.QueriesDir)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			fmt.Fprintf(os.Stderr, "[WARN] local queries directory %q does not exist, disabling feature", options.QueriesDir)
+			logger.Debugf("local queries directory %q does not exist, disabling feature", options.QueriesDir)
 		} else {
-			fmt.Fprintf(os.Stderr, "[WARN] local queries feature disabled due to error: %v", err)
+			logger.Debugf("local queries feature disabled due to error: %v", err)
 		}
 		return
 	}
 
 	if !stat.IsDir() {
-		fmt.Fprintf(os.Stderr, "[WARN] local queries path %q is not a directory", options.QueriesDir)
+		logger.Debugf("local queries path %q is not a directory", options.QueriesDir)
 		return
 	}
 
