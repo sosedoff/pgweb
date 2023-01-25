@@ -655,6 +655,16 @@ func RunLocalQuery(c *gin.Context) {
 		return
 	}
 
+	if c.Request.Method == http.MethodGet {
+		successResponse(c, localQuery{
+			ID:          query.ID,
+			Title:       query.Meta.Title,
+			Description: query.Meta.Description,
+			Query:       query.Data,
+		})
+		return
+	}
+
 	statement := cleanQuery(query.Data)
 	if statement == "" {
 		badRequest(c, errQueryRequired)

@@ -117,3 +117,30 @@ func Test_parseMetadata(t *testing.T) {
 		})
 	}
 }
+
+func Test_sanitizeMetadata(t *testing.T) {
+	examples := []struct {
+		input  string
+		output string
+	}{
+		{input: "", output: ""},
+		{input: "foo", output: "foo"},
+		{
+			input: `
+-- pgweb: metadata
+query1
+-- pgweb: more metadata
+
+query2
+
+`,
+			output: "query1\nquery2",
+		},
+	}
+
+	for _, ex := range examples {
+		t.Run(ex.input, func(t *testing.T) {
+			assert.Equal(t, ex.output, sanitizeMetadata(ex.input))
+		})
+	}
+}

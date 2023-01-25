@@ -17,7 +17,7 @@
   <script type="text/javascript" src="static/js/bootstrap-dropdown.js"></script>
   <script type="text/javascript" src="static/js/utils.js"></script>
   <script type="text/javascript" src="static/js/bootstrap3-typeahead.min.js"></script>
-  <script type="text/javascript" src="static/js/app.js"></script> 
+  <script type="text/javascript" src="static/js/app.js"></script>
   <script type="text/javascript" src="static/js/base64.js"></script>
 </head>
 <body>
@@ -85,6 +85,13 @@
             <ul class="dropdown-menu" role="menu">
               <li><a href="#" id="explain">Explain Query</a></li>
               <li><a href="#" id="analyze">Analyze Query</a></li>
+            </ul>
+          </div>
+          <div id="load-query-dropdown" class="btn-group left" style="display: none">
+            <button id="load-local-query" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              Local <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
             </ul>
           </div>
           <div id="query_progress">Please wait, query is executing...</div>

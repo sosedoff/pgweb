@@ -137,5 +137,12 @@ func parseFields(input string) (map[string]string, error) {
 }
 
 func sanitizeMetadata(input string) string {
-	return strings.TrimSpace(reMetaPrefix.ReplaceAllString(input, ""))
+	lines := []string{}
+	for _, line := range strings.Split(input, "\n") {
+		line = reMetaPrefix.ReplaceAllString(line, "")
+		if len(line) > 0 {
+			lines = append(lines, line)
+		}
+	}
+	return strings.Join(lines, "\n")
 }

@@ -178,6 +178,34 @@ function buildSchemaSection(name, objects) {
   return section;
 }
 
+function loadLocalQueries() {
+  if (!appFeatures.local_queries) return;
+
+  $("body").on("click", "a.load-local-query", function(e) {
+    var id = $(this).data("id");
+
+    apiCall("get", "/local_queries/" + id, {}, function(resp) {
+      console.log(resp);
+
+      editor.setValue(resp.query);
+      editor.clearSelection();
+    });
+  });
+
+  apiCall("get", "/local_queries", {}, function(resp) {
+    if (resp.error) return;
+
+    var container = $("#load-query-dropdown").find(".dropdown-menu");
+
+    resp.forEach(function(item) {
+      var title = item.title || item.id;
+      $("<li><a href='#' class='load-local-query' data-id='" + item.id + "'>" + title + "</a></li>").appendTo(container);
+    });
+
+    $("#load-query-dropdown").show();
+  });
+}
+
 function loadSchemas() {
   $("#objects").html("");
 
@@ -1810,6 +1838,7 @@ $(document).ready(function() {
 
       connected = true;
       loadSchemas();
+      loadLocalQueries();
 
       $("#current_database").text(resp.current_database);
       $("#main").show();
