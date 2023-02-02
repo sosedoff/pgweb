@@ -54,9 +54,9 @@ func SetupRoutes(router *gin.Engine) {
 	api.GET("/history", GetHistory)
 	api.GET("/bookmarks", GetBookmarks)
 	api.GET("/export", DataExport)
-	api.GET("/local_queries", GetLocalQueries)
-	api.GET("/local_queries/:id", RunLocalQuery)
-	api.POST("/local_queries/:id", RunLocalQuery)
+	api.GET("/local_queries", requireLocalQueries(), GetLocalQueries)
+	api.GET("/local_queries/:id", requireLocalQueries(), RunLocalQuery)
+	api.POST("/local_queries/:id", requireLocalQueries(), RunLocalQuery)
 }
 
 func SetupMetrics(engine *gin.Engine) {

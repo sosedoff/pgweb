@@ -615,11 +615,6 @@ func GetFunction(c *gin.Context) {
 }
 
 func GetLocalQueries(c *gin.Context) {
-	if QueryStore == nil {
-		badRequest(c, "local queries are disabled")
-		return
-	}
-
 	connCtx, err := DB(c).GetConnContext()
 	if err != nil {
 		badRequest(c, err)
@@ -650,11 +645,6 @@ func GetLocalQueries(c *gin.Context) {
 }
 
 func RunLocalQuery(c *gin.Context) {
-	if QueryStore == nil {
-		badRequest(c, "local queries are disabled")
-		return
-	}
-
 	query, err := QueryStore.Read(c.Param("id"))
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
