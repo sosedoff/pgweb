@@ -42,6 +42,9 @@ func (s Store) ReadAll() ([]Query, error) {
 			fmt.Fprintf(os.Stderr, "[WARN] skipping %q query file due to error: %v\n", name, err)
 			continue
 		}
+		if query == nil {
+			continue
+		}
 
 		queries = append(queries, *query)
 	}
