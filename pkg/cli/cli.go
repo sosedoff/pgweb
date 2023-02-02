@@ -164,7 +164,7 @@ func initOptions() {
 }
 
 func configureLocalQueryStore() {
-	if options.QueriesDir == "" {
+	if options.Sessions || options.QueriesDir == "" {
 		return
 	}
 
