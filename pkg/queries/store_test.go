@@ -15,7 +15,7 @@ func TestStoreReadAll(t *testing.T) {
 
 	t.Run("invalid dir", func(t *testing.T) {
 		queries, err := NewStore("../../data2").ReadAll()
-		assert.Contains(t, err.Error(), "no such file or directory")
+		assert.Equal(t, err.Error(), "queries directory does not exist")
 		assert.Equal(t, 0, len(queries))
 	})
 }
@@ -26,7 +26,7 @@ func TestStoreRead(t *testing.T) {
 		err   string
 		check func(*testing.T, *Query)
 	}{
-		{id: "foo", err: "open ../../data/foo.sql: no such file or directory"},
+		{id: "foo", err: "query file does not exist"},
 		{id: "lc_no_meta"},
 		{id: "lc_invalid_meta", err: `invalid "mode" field value: "foo"`},
 		{

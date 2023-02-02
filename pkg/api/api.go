@@ -3,11 +3,9 @@ package api
 import (
 	"context"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"net/http"
 	neturl "net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -647,7 +645,7 @@ func GetLocalQueries(c *gin.Context) {
 func RunLocalQuery(c *gin.Context) {
 	query, err := QueryStore.Read(c.Param("id"))
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
+		if err == queries.ErrQueryFileNotExist {
 			query = nil
 		} else {
 			badRequest(c, err)

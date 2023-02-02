@@ -1,10 +1,16 @@
 package queries
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+)
+
+var (
+	ErrQueryDirNotExist  = errors.New("queries directory does not exist")
+	ErrQueryFileNotExist = errors.New("query file does not exist")
 )
 
 type Store struct {
@@ -25,6 +31,9 @@ func (s Store) Read(id string) (*Query, error) {
 func (s Store) ReadAll() ([]Query, error) {
 	entries, err := os.ReadDir(s.dir)
 	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			err = ErrQueryDirNotExist
+		}
 		return nil, err
 	}
 
@@ -55,6 +64,9 @@ func (s Store) ReadAll() ([]Query, error) {
 func readQuery(path string) (*Query, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil, ErrQueryFileNotExist
+		}
 		return nil, err
 	}
 	dataStr := string(data)
