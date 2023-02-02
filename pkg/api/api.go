@@ -17,6 +17,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/metrics"
+	"github.com/sosedoff/pgweb/pkg/queries"
 	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/static"
 )
@@ -27,6 +28,9 @@ var (
 
 	// DbSessions represents the mapping for client connections
 	DbSessions *SessionManager
+
+	// QueryStore reads the SQL queries stores in the home directory
+	QueryStore *queries.Store
 )
 
 // DB returns a database connection from the client context
@@ -555,6 +559,7 @@ func GetInfo(c *gin.Context) {
 		"features": gin.H{
 			"session_lock":  command.Opts.LockSession,
 			"query_timeout": command.Opts.QueryTimeout,
+			"local_queries": QueryStore != nil,
 		},
 	})
 }
@@ -605,4 +610,79 @@ func DataExport(c *gin.Context) {
 func GetFunction(c *gin.Context) {
 	res, err := DB(c).Function(c.Param("id"))
 	serveResult(c, res, err)
+}
+
+func GetLocalQueries(c *gin.Context) {
+	connCtx, err := DB(c).GetConnContext()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	storeQueries, err := QueryStore.ReadAll()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	queries := []localQuery{}
+	for _, q := range storeQueries {
+		if !q.IsPermitted(connCtx.Host, connCtx.User, connCtx.Database, connCtx.Mode) {
+			continue
+		}
+
+		queries = append(queries, localQuery{
+			ID:          q.ID,
+			Title:       q.Meta.Title,
+			Description: q.Meta.Description,
+			Query:       cleanQuery(q.Data),
+		})
+	}
+
+	successResponse(c, queries)
+}
+
+func RunLocalQuery(c *gin.Context) {
+	query, err := QueryStore.Read(c.Param("id"))
+	if err != nil {
+		if err == queries.ErrQueryFileNotExist {
+			query = nil
+		} else {
+			badRequest(c, err)
+			return
+		}
+	}
+	if query == nil {
+		errorResponse(c, 404, "query not found")
+		return
+	}
+
+	connCtx, err := DB(c).GetConnContext()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	if !query.IsPermitted(connCtx.Host, connCtx.User, connCtx.Database, connCtx.Mode) {
+		errorResponse(c, 404, "query not found")
+		return
+	}
+
+	if c.Request.Method == http.MethodGet {
+		successResponse(c, localQuery{
+			ID:          query.ID,
+			Title:       query.Meta.Title,
+			Description: query.Meta.Description,
+			Query:       query.Data,
+		})
+		return
+	}
+
+	statement := cleanQuery(query.Data)
+	if statement == "" {
+		badRequest(c, errQueryRequired)
+		return
+	}
+
+	HandleQuery(statement, c)
 }

@@ -585,3 +585,44 @@ func (client *Client) hasHistoryRecord(query string) bool {
 
 	return result
 }
+
+type ConnContext struct {
+	Host     string
+	User     string
+	Database string
+	Mode     string
+}
+
+func (c ConnContext) String() string {
+	return fmt.Sprintf(
+		"host=%q user=%q database=%q mode=%q",
+		c.Host, c.User, c.Database, c.Mode,
+	)
+}
+
+// ConnContext returns information about current database connection
+func (client *Client) GetConnContext() (*ConnContext, error) {
+	url, err := neturl.Parse(client.ConnectionString)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	connCtx := ConnContext{
+		Host: url.Hostname(),
+		Mode: "default",
+	}
+
+	if command.Opts.ReadOnly {
+		connCtx.Mode = "readonly"
+	}
+
+	row := client.db.QueryRowContext(ctx, "SELECT current_user, current_database()")
+	if err := row.Scan(&connCtx.User, &connCtx.Database); err != nil {
+		return nil, err
+	}
+
+	return &connCtx, nil
+}

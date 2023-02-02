@@ -56,3 +56,14 @@ func corsMiddleware() gin.HandlerFunc {
 		c.Header("Access-Control-Allow-Origin", command.Opts.CorsOrigin)
 	}
 }
+
+func requireLocalQueries() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if QueryStore == nil {
+			badRequest(c, "local queries are disabled")
+			return
+		}
+
+		c.Next()
+	}
+}

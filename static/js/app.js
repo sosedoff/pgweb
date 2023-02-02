@@ -178,6 +178,33 @@ function buildSchemaSection(name, objects) {
   return section;
 }
 
+function loadLocalQueries() {
+  if (!appFeatures.local_queries) return;
+
+  $("body").on("click", "a.load-local-query", function(e) {
+    var id = $(this).data("id");
+
+    apiCall("get", "/local_queries/" + id, {}, function(resp) {
+      editor.setValue(resp.query);
+      editor.clearSelection();
+    });
+  });
+
+  apiCall("get", "/local_queries", {}, function(resp) {
+    if (resp.error) return;
+
+    var container = $("#load-query-dropdown").find(".dropdown-menu");
+
+    resp.forEach(function(item) {
+      var title = item.title || item.id;
+      $("<li><a href='#' class='load-local-query' data-id='" + item.id + "'>" + title + "</a></li>").appendTo(container);
+    });
+
+    if (resp.length > 0) $("#load-local-query").prop("disabled", "");
+    $("#load-query-dropdown").show();
+  });
+}
+
 function loadSchemas() {
   $("#objects").html("");
 
@@ -738,13 +765,13 @@ function showActivityPanel() {
 }
 
 function showQueryProgressMessage() {
-  $("#run, #explain-dropdown-toggle, #csv, #json, #xml").prop("disabled", true);
+  $("#run, #explain-dropdown-toggle, #csv, #json, #xml, #load-local-query").prop("disabled", true);
   $("#explain-dropdown").removeClass("open");
   $("#query_progress").show();
 }
 
 function hideQueryProgressMessage() {
-  $("#run, #explain-dropdown-toggle, #csv, #json, #xml").prop("disabled", false);
+  $("#run, #explain-dropdown-toggle, #csv, #json, #xml, #load-local-query").prop("disabled", false);
   $("#query_progress").hide();
 }
 
@@ -1810,6 +1837,7 @@ $(document).ready(function() {
 
       connected = true;
       loadSchemas();
+      loadLocalQueries();
 
       $("#current_database").text(resp.current_database);
       $("#main").show();

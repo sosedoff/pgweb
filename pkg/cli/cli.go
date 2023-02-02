@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -20,6 +21,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/metrics"
+	"github.com/sosedoff/pgweb/pkg/queries"
 	"github.com/sosedoff/pgweb/pkg/util"
 )
 
@@ -28,11 +30,11 @@ var (
 	options command.Options
 
 	readonlyWarning = `
-------------------------------------------------------
-SECURITY WARNING: You are running pgweb in read-only mode.
-This mode is designed for environments where users could potentially delete / change data.
-For proper read-only access please follow postgresql role management documentation.
-------------------------------------------------------`
+--------------------------------------------------------------------------------
+SECURITY WARNING: You are running Pgweb in read-only mode.
+This mode is designed for environments where users could potentially delete or change data.
+For proper read-only access please follow PostgreSQL role management documentation.
+--------------------------------------------------------------------------------`
 
 	regexErrConnectionRefused = regexp.MustCompile(`(connection|actively) refused`)
 	regexErrAuthFailed        = regexp.MustCompile(`authentication failed`)
@@ -157,7 +159,31 @@ func initOptions() {
 		}
 	}
 
+	configureLocalQueryStore()
 	printVersion()
+}
+
+func configureLocalQueryStore() {
+	if options.Sessions || options.QueriesDir == "" {
+		return
+	}
+
+	stat, err := os.Stat(options.QueriesDir)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			logger.Debugf("local queries directory %q does not exist, disabling feature", options.QueriesDir)
+		} else {
+			logger.Debugf("local queries feature disabled due to error: %v", err)
+		}
+		return
+	}
+
+	if !stat.IsDir() {
+		logger.Debugf("local queries path %q is not a directory", options.QueriesDir)
+		return
+	}
+
+	api.QueryStore = queries.NewStore(options.QueriesDir)
 }
 
 func configureLogger(opts command.Options) error {

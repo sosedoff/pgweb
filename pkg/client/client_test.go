@@ -660,6 +660,15 @@ func testTablesStats(t *testing.T) {
 	assert.Equal(t, columns, result.Columns)
 }
 
+func testConnContext(t *testing.T) {
+	result, err := testClient.GetConnContext()
+	assert.NoError(t, err)
+	assert.Equal(t, "localhost", result.Host)
+	assert.Equal(t, "postgres", result.User)
+	assert.Equal(t, "booktown", result.Database)
+	assert.Equal(t, "default", result.Mode)
+}
+
 func TestAll(t *testing.T) {
 	if onWindows() {
 		t.Log("Unit testing on Windows platform is not supported.")
@@ -698,6 +707,7 @@ func TestAll(t *testing.T) {
 	testReadOnlyMode(t)
 	testDumpExport(t)
 	testTablesStats(t)
+	testConnContext(t)
 
 	teardownClient()
 	teardown(t, true)
