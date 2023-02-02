@@ -648,10 +648,14 @@ func RunLocalQuery(c *gin.Context) {
 	query, err := QueryStore.Read(c.Param("id"))
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			errorResponse(c, 404, "query not found")
+			query = nil
 		} else {
 			badRequest(c, err)
+			return
 		}
+	}
+	if query == nil {
+		errorResponse(c, 404, "query not found")
 		return
 	}
 
