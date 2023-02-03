@@ -15,24 +15,25 @@ COPY .git/ .
 RUN make build
 
 # ------------------------------------------------------------------------------
+# Fetch signing key
+# ------------------------------------------------------------------------------
+FROM debian:bullseye-slim AS keyring
+ADD https://www.postgresql.org/media/keys/ACCC4CF8.asc keyring.asc
+RUN apt-get update && \
+    apt-get install -qq --no-install-recommends gpg
+RUN gpg -o keyring.pgp --dearmor keyring.asc
+
+# ------------------------------------------------------------------------------
 # Release Stage
 # ------------------------------------------------------------------------------
 FROM debian:bullseye-slim
 
-RUN \
-  apt-get update && \
-  apt-get install -y ca-certificates openssl netcat curl gnupg lsb-release && \
-  update-ca-certificates
-
-RUN \
-  curl --silent https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add && \
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | tee  /etc/apt/sources.list.d/pgdg.list && \
-  apt-get update && apt-get install -y postgresql-client
-
-RUN \
-  apt-get clean autoclean && \
-  apt-get autoremove --yes && \
-  rm -rf /var/lib/{apt,dpkg,cache,log}/
+ARG keyring=/usr/share/keyrings/postgresql-archive-keyring.pgp
+COPY --from=keyring /keyring.pgp $keyring
+RUN . /etc/os-release && \
+    echo "deb [signed-by=${keyring}] http://apt.postgresql.org/pub/repos/apt/ ${VERSION_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    apt-get update && \
+    apt-get install -qq --no-install-recommends ca-certificates openssl netcat curl postgresql-client
 
 COPY --from=build /build/pgweb /usr/bin/pgweb
 
