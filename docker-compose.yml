@@ -22,6 +22,7 @@ services:
   pgweb:
     container_name: pgweb
     image: sosedoff/pgweb:latest
+    build: .
     environment:
       PGWEB_DATABASE_URL: postgres://pgweb:pgweb@pgweb-postgres:5432/pgweb?sslmode=disable
     ports:
