@@ -17,5 +17,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: git config --global --add safe.directory /build
       - run: flyctl deploy --remote-only

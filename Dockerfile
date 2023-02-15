@@ -6,6 +6,7 @@ FROM golang:1.19-bullseye AS build
 WORKDIR /build
 ADD . /build
 
+RUN git config --global --add safe.directory /build
 RUN go mod download
 RUN make build
 
