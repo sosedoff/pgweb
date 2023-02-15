@@ -42,4 +42,4 @@ WITH all_objects AS (
     AND n.nspname NOT IN ('information_schema', 'pg_catalog')
 )
 SELECT * FROM all_objects
-ORDER BY 1, 2
+ORDER BY 2, 3
