@@ -1,6 +1,6 @@
 # pgweb
 
-Web-based PostgreSQL database browser written in Go.
+Simple web-based and cross platform PostgreSQL database explorer.
 
 [![Release](https://img.shields.io/github/release/sosedoff/pgweb.svg?label=Release)](https://github.com/sosedoff/pgweb/releases)
 [![Linux Build](https://github.com/sosedoff/pgweb/actions/workflows/checks.yml/badge.svg)](https://github.com/sosedoff/pgweb/actions?query=branch%3Amaster)
@@ -10,50 +10,34 @@ Web-based PostgreSQL database browser written in Go.
 
 ## Overview
 
-Pgweb is a web-based database browser for PostgreSQL, written in Go and works
-on OSX, Linux and Windows machines. Main idea behind using Go for backend development
-is to utilize ability of the compiler to produce zero-dependency binaries for
-multiple platforms. Pgweb was created as an attempt to build very simple and portable
-application to work with local or remote PostgreSQL databases.
+Pgweb is a web-based database explorer for PostgreSQL, written in Go, and works
+on Mac, Linux and Windows machines. Distributed as a simple binary with zero dependencies.
+Very easy to use and packs just the right amount of features.
 
 [See application screenshots](SCREENS.md)
 
 ## Features
 
-- Cross-platform support OSX/Linux/Windows 32/64-bit
-- Simple installation (distributed as a single binary)
-- Zero dependencies
-- Works with PostgreSQL 9.1+
-- SSH Connections
-- Multiple database sessions
-- Simple database browser
-- Execute and analyze custom SQL queries
-- Table and query data export to CSV/JSON/XML
-- Query history
-- Server bookmarks
+- Cross-platform: Mac/Linux/Windows (64bit).
+- Simple installation (distributed as a single binary).
+- Zero dependencies.
+- Works with PostgreSQL 9.1+.
+- Supports native SSH tunnels.
+- Multiple database sessions.
+- Execute and analyze custom SQL queries.
+- Table and query data export to CSV/JSON/XML.
+- Query history.
+- Server bookmarks.
 
-Visit [WIKI](https://github.com/sosedoff/pgweb/wiki) for more details
-
-## Pgweb Pro
-
-Pgweb Pro is the next major version of Pgweb and includes features like:
-
-- Table structure editing
-- Data editing (update row content)
-- Charting
-- History persistence
-- Multiple tabs
-
-Please get in touch via: https://goo.gl/forms/euQOGWg5uPdPH70b2
+Visit [WIKI](https://github.com/sosedoff/pgweb/wiki) for more details.
 
 ## Demo
 
-Visit https://pgweb-demo.fly.dev/ to see pgweb in action.
+Visit https://pgweb-demo.fly.dev/ to see Pgweb in action.
 
 ## Installation
 
-- [Precompiled binaries](https://github.com/sosedoff/pgweb/releases) for supported
-  operating systems are available.
+- [Precompiled binaries](https://github.com/sosedoff/pgweb/releases) for supported operating systems are available.
 - [More installation options](https://github.com/sosedoff/pgweb/wiki/Installation)
 
 ## Usage
@@ -88,7 +72,7 @@ pgweb --sessions
 Or set environment variable:
 
 ```
-SESSIONS=1 pgweb
+PGWEB_SESSIONS=1 pgweb
 ```
 
 ## Testing
