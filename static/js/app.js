@@ -1797,6 +1797,7 @@ $(document).ready(function() {
       else {
         connected = true;
         loadSchemas();
+        loadLocalQueries();
 
         $("#connection_window").hide();
         $("#current_database").text(resp.current_database);
