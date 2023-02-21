@@ -1,3 +1,15 @@
+# 0.14.0 - 2023-02-21
+
+- FIX: History page query loading fixup, GH-632
+- NEW: Display cell content via context menu, GH-634
+- NEW: Handle support/permissions errors in info call, GH-635
+- NEW: Show error message when API calls fail, GH-636
+- NEW: Add bookmark options to load username/password from env vars, GH-638
+- NEW: Add context menu to display database tables stats, GH-639
+- NEW: Added Local Queries feature, GH-641
+- FIX: Ensure that objects are sorted by schema and name, GH-648
+- FIX: Fetch local queries on db connect, GH-650
+
 # 0.13.1 - 2022-12-27
 
 - Fix connect flow when `~/.pgweb/bookmarks` directory is not available, GH-631
