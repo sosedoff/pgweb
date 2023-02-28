@@ -230,7 +230,7 @@ func startServer() {
 
 	fmt.Println("Starting server...")
 	go func() {
-		metrics.SetHealty(true)
+		metrics.SetHealthy(true)
 
 		err := router.Run(fmt.Sprintf("%v:%v", options.HTTPHost, options.HTTPPort))
 		if err != nil {
