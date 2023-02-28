@@ -16,8 +16,8 @@ var (
 		Help: "Total number of custom queries executed",
 	})
 
-	healtyGauge = promauto.NewGauge(prometheus.GaugeOpts{
-		Name: "pgweb_healty",
+	healthyGauge = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "pgweb_healthy",
 		Help: "Server health status",
 	})
 )
@@ -30,10 +30,10 @@ func SetSessionsCount(val int) {
 	sessionsGauge.Set(float64(val))
 }
 
-func SetHealty(val bool) {
+func SetHealthy(val bool) {
 	healthy := 0.0
 	if val {
 		healthy = 1.0
 	}
-	healtyGauge.Set(float64(healthy))
+	healthyGauge.Set(float64(healthy))
 }
