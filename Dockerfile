@@ -4,10 +4,14 @@
 FROM golang:1.19-bullseye AS build
 
 WORKDIR /build
-ADD . /build
 
 RUN git config --global --add safe.directory /build
+COPY go.mod go.sum ./
 RUN go mod download
+COPY Makefile main.go ./
+COPY static/ static/
+COPY pkg/ pkg/
+COPY .git/ .
 RUN make build
 
 # ------------------------------------------------------------------------------
