@@ -61,6 +61,6 @@ func SetupRoutes(router *gin.Engine) {
 
 func SetupMetrics(engine *gin.Engine) {
 	if command.Opts.MetricsEnabled && command.Opts.MetricsAddr == "" {
-		engine.GET("/metrics", gin.WrapH(metrics.Handler()))
+		engine.GET("/metrics", gin.WrapH(metrics.NewHandler()))
 	}
 }

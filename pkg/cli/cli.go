@@ -307,6 +307,7 @@ func Run() {
 		}
 	}
 
+	// Start a separate metrics http server
 	if options.MetricsEnabled && options.MetricsAddr != "" {
 		go startMetricsServer()
 	}
