@@ -61,6 +61,7 @@ func SetupRoutes(router *gin.Engine) {
 
 func SetupMetrics(engine *gin.Engine) {
 	if command.Opts.MetricsEnabled && command.Opts.MetricsAddr == "" {
-		engine.GET("/metrics", gin.WrapH(metrics.Handler()))
+		// NOTE: We're not supporting the MetricsPath CLI option here to avoid the route conflicts.
+		engine.GET("/metrics", gin.WrapH(metrics.NewHandler()))
 	}
 }

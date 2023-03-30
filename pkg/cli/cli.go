@@ -307,6 +307,8 @@ func Run() {
 		}
 	}
 
+	// Start a separate metrics http server. If metrics addr is not provided, we
+	// add the metrics endpoint in the existing application server (see api.go).
 	if options.MetricsEnabled && options.MetricsAddr != "" {
 		go startMetricsServer()
 	}

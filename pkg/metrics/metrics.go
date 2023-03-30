@@ -20,6 +20,11 @@ var (
 		Name: "pgweb_healthy",
 		Help: "Server health status",
 	})
+
+	uptimeGauge = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "pgweb_uptime",
+		Help: "Server application uptime in seconds",
+	})
 )
 
 func IncrementQueriesCount() {
