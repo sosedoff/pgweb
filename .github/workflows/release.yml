@@ -6,7 +6,7 @@ on:
       - "v*"
 
 env:
-  GO_VERSION: 1.19
+  GO_VERSION: 1.20
   CGO_ENABLED: 0
   DOCKER_REPOSITORY: sosedoff/pgweb
   GHCR_REPOSITORY: sosedoff/pgweb
