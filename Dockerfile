@@ -39,3 +39,4 @@ COPY --from=build /build/pgweb /usr/bin/pgweb
 
 EXPOSE 8081
 ENTRYPOINT ["/usr/bin/pgweb", "--bind=0.0.0.0", "--listen=8081"]
+USER 1000
