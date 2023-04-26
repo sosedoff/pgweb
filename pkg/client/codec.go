@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	// BinaryEncodingFormat specifies the default serialization format of binary data
+	// BinaryCodec sets the serialization format of binary data
 	BinaryCodec = CodecBase64
 )
 
