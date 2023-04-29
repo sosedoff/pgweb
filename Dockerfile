@@ -37,7 +37,7 @@ RUN . /etc/os-release && \
 
 COPY --from=build /build/pgweb /usr/bin/pgweb
 
-RUN useradd --no-create-home --shell /bin/false pgweb
+RUN useradd --uid 1000 --no-create-home --shell /bin/false pgweb
 USER pgweb
 
 EXPOSE 8081
