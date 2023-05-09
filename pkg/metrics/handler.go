@@ -14,6 +14,7 @@ type Handler struct {
 
 func (h Handler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	uptimeGauge.Set(time.Since(h.startTime).Seconds())
+
 	h.promHandler.ServeHTTP(rw, req)
 }
 

@@ -1,6 +1,8 @@
 package metrics
 
 import (
+	"time"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -21,11 +23,20 @@ var (
 		Help: "Server health status",
 	})
 
+	startTimeGauge = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "pgweb_process_start_time",
+		Help: "Server start time, seconds since unix epoch",
+	})
+
 	uptimeGauge = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "pgweb_uptime",
 		Help: "Server application uptime in seconds",
 	})
 )
+
+func init() {
+	startTimeGauge.Set(float64(time.Now().Unix()))
+}
 
 func IncrementQueriesCount() {
 	queriesCounter.Inc()
