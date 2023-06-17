@@ -1,3 +1,11 @@
+# 0.14.1 - 2023-06-17
+
+- NEW: Add process start time metric, GH-675
+- NEW: Configure pgweb user for docker container, GH-674
+- NEW: Updated dockerfile, GH-645
+- FIX: Fix typo in the healthy metric, GH-657
+- NEW: Use entrypoint instead of cmd in in dockerfile, GH-654
+
 # 0.14.0 - 2023-02-21
 
 - FIX: History page query loading fixup, GH-632
