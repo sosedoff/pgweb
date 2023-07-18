@@ -12,7 +12,7 @@ SELECT
   tables.schemaname AS schema_name,
   tables.relname AS table_name,
   pg_size_pretty(pg_total_relation_size(tables.relid)) AS total_size,
-  pg_size_pretty(pg_relation_size(tables.relid)) AS data_size,
+  pg_size_pretty(pg_table_size(tables.relid)) AS data_size,
   pg_size_pretty(pg_indexes_size(tables.relid)) AS index_size,
   pg_class.reltuples AS estimated_rows_count,
   CASE
@@ -25,7 +25,7 @@ SELECT
   END AS estimated_rows,
   CASE
     WHEN pg_class.reltuples > 1000
-      THEN ROUND(pg_indexes_size(tables.relid)::numeric / pg_relation_size(tables.relid), 2)
+      THEN ROUND(pg_indexes_size(tables.relid)::numeric / pg_table_size(tables.relid), 2)
   END AS index_to_data_ratio,
   indexes_counts.num AS indexes_count,
   columns_counts.num AS columns_count
@@ -41,4 +41,4 @@ LEFT JOIN columns_counts
   AND columns_counts.table_name = tables.relname
 ORDER BY
   pg_total_relation_size(tables.relid) DESC,
-  pg_relation_size(tables.relid) DESC
+  pg_table_size(tables.relid) DESC
