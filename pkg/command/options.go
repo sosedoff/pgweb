@@ -135,7 +135,7 @@ func ParseOptions(args []string) (Options, error) {
 		opts.SSLMode = ""
 	}
 
-	if opts.Prefix != "" && !strings.Contains(opts.Prefix, "/") {
+	if opts.Prefix != "" && !strings.HasSuffix(opts.Prefix, "/") {
 		opts.Prefix = opts.Prefix + "/"
 	}
 
