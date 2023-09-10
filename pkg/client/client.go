@@ -69,7 +69,10 @@ func New() (*Client, error) {
 }
 
 func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
-	var tunnel *Tunnel
+	var (
+		tunnel *Tunnel
+		err    error
+	)
 
 	if sshInfo != nil {
 		if command.Opts.DisableSSH {
@@ -79,7 +82,7 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 			fmt.Println("Opening SSH tunnel for:", sshInfo)
 		}
 
-		tunnel, err := NewTunnel(sshInfo, url)
+		tunnel, err = NewTunnel(sshInfo, url)
 		if err != nil {
 			tunnel.Close()
 			return nil, err
@@ -524,6 +527,7 @@ func (client *Client) Close() error {
 	}
 	defer func() {
 		client.closed = true
+		client.tunnel = nil
 	}()
 
 	if client.tunnel != nil {

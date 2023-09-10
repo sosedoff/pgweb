@@ -301,6 +301,7 @@ func Disconnect(c *gin.Context) {
 		return
 	}
 
+	DbClient = nil
 	successResponse(c, gin.H{"success": true})
 }
 
