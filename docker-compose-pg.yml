@@ -11,6 +11,11 @@ x-base: &base
     interval: 5s
 
 services:
+  postgres16:
+    <<: *base
+    image: postgres:16
+    ports:
+      - 5433:5432
   postgres15:
     <<: *base
     image: postgres:15
