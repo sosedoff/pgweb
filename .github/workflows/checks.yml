@@ -50,7 +50,7 @@ jobs:
           sudo rm -f /etc/apt/sources.list.d/pgdg.list
           curl --silent https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add
           echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-          sudo apt-get update && sudo apt-get install -y postgresql-client-15
+          sudo apt-get update && sudo apt-get install -y postgresql-client-16
 
       - uses: actions/checkout@v3
         with:
