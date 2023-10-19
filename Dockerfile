@@ -36,9 +36,11 @@ RUN . /etc/os-release && \
     apt-get install -qq --no-install-recommends ca-certificates openssl netcat curl postgresql-client
 
 COPY --from=build /build/pgweb /usr/bin/pgweb
+COPY entrypoint.sh /
 
 RUN useradd --uid 1000 --no-create-home --shell /bin/false pgweb
 USER pgweb
 
 EXPOSE 8081
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/pgweb", "--bind=0.0.0.0", "--listen=8081"]
