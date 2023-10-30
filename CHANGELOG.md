@@ -1,3 +1,10 @@
+# 0.14.2 - 2023-10-29
+
+- NEW: Execute tests using PostgreSQL 16, GH-691
+- FIX: Unclosed database sessions and tunnels, GH-688
+- FIX: Use pg_table_size for table stats query, GH-685
+- FIX: Use `HasSuffix` to correctly determine URL prefix, GH-684
+
 # 0.14.1 - 2023-06-17
 
 - NEW: Add process start time metric, GH-675
