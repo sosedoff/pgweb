@@ -1,29 +1,29 @@
 # 0.14.2 - 2023-10-29
 
-- NEW: Execute tests using PostgreSQL 16, GH-691
-- FIX: Unclosed database sessions and tunnels, GH-688
-- FIX: Use pg_table_size for table stats query, GH-685
-- FIX: Use `HasSuffix` to correctly determine URL prefix, GH-684
+- `NEW` Execute tests using PostgreSQL 16, GH-691
+- `FIX` Unclosed database sessions and tunnels, GH-688
+- `FIX` Use pg_table_size for table stats query, GH-685
+- `FIX` Use `HasSuffix` to correctly determine URL prefix, GH-684
 
 # 0.14.1 - 2023-06-17
 
-- NEW: Add process start time metric, GH-675
-- NEW: Configure pgweb user for docker container, GH-674
-- NEW: Updated dockerfile, GH-645
-- FIX: Fix typo in the healthy metric, GH-657
-- NEW: Use entrypoint instead of cmd in in dockerfile, GH-654
+- `NEW` Add process start time metric, GH-675
+- `NEW` Configure pgweb user for docker container, GH-674
+- `NEW` Updated dockerfile, GH-645
+- `FIX` Fix typo in the healthy metric, GH-657
+- `NEW` Use entrypoint instead of cmd in in dockerfile, GH-654
 
 # 0.14.0 - 2023-02-21
 
-- FIX: History page query loading fixup, GH-632
-- NEW: Display cell content via context menu, GH-634
-- NEW: Handle support/permissions errors in info call, GH-635
-- NEW: Show error message when API calls fail, GH-636
-- NEW: Add bookmark options to load username/password from env vars, GH-638
-- NEW: Add context menu to display database tables stats, GH-639
-- NEW: Added Local Queries feature, GH-641
-- FIX: Ensure that objects are sorted by schema and name, GH-648
-- FIX: Fetch local queries on db connect, GH-650
+- `FIX` History page query loading fixup, GH-632
+- `NEW` Display cell content via context menu, GH-634
+- `NEW` Handle support/permissions errors in info call, GH-635
+- `NEW` Show error message when API calls fail, GH-636
+- `NEW` Add bookmark options to load username/password from env vars, GH-638
+- `NEW` Add context menu to display database tables stats, GH-639
+- `NEW` Added Local Queries feature, GH-641
+- `FIX` Ensure that objects are sorted by schema and name, GH-648
+- `FIX` Fetch local queries on db connect, GH-650
 
 # 0.13.1 - 2022-12-27
 
