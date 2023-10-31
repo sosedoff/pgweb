@@ -192,6 +192,7 @@ func (client *Client) setServerVersion() {
 }
 
 func (client *Client) Test() error {
+	// NOTE: This is a different timeout defined in CLI OpenTimeout
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
