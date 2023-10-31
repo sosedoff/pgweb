@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"regexp"
 	"strings"
 	"syscall"
 	"time"
@@ -35,9 +34,6 @@ SECURITY WARNING: You are running Pgweb in read-only mode.
 This mode is designed for environments where users could potentially delete or change data.
 For proper read-only access please follow PostgreSQL role management documentation.
 --------------------------------------------------------------------------------`
-
-	regexErrConnectionRefused = regexp.MustCompile(`(connection|actively) refused`)
-	regexErrAuthFailed        = regexp.MustCompile(`authentication failed`)
 )
 
 func init() {
