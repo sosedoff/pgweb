@@ -76,10 +76,11 @@ func initClient() {
 		fmt.Println("Opening database connection using string:", cl.ConnectionString)
 	}
 
-	fmt.Println("Connecting to server...")
+	retryCount := command.Opts.RetryCount
+	retryDelay := time.Second * time.Duration(command.Opts.RetryDelay)
 
-	// TODO: move args to CLI options with a default value
-	if err := testClient(*cl, 5, 3*time.Second); err != nil {
+	fmt.Println("Connecting to server...")
+	if err := testClient(cl, retryCount, retryDelay); err != nil {
 		exitWithMessage(err.Error())
 		return
 	}
@@ -258,8 +259,8 @@ func openPage() {
 
 // testWithRetry attempts to establish a database connection until it succeeds or
 // give up after certain number of retries.
-func testClient(cl client.Client, retryCount int, retryDelay time.Duration) (err error) {
-	allowRetry := command.Opts.DbName != "" && command.Opts.URL != ""
+func testClient(cl *client.Client, retryCount int, retryDelay time.Duration) (err error) {
+	usingDefaultDB := command.Opts.DbName == "" || command.Opts.URL == ""
 
 	for i := 0; i < retryCount-1; i++ {
 		err = cl.Test()
@@ -267,22 +268,19 @@ func testClient(cl client.Client, retryCount int, retryDelay time.Duration) (err
 			return nil
 		}
 
-		// Retrying on a default database is not allowed.
-		if !allowRetry {
-			fmt.Printf("Connection error: %v\n", err)
-			if err == client.ErrConnectionRefused || err == client.ErrAuthFailed || err == client.ErrDatabaseNotExist {
-				return nil
-			}
-			return err
+		if errors.Is(err, client.ErrConnectionRefused) && retryCount > 0 {
+			fmt.Printf("Connection error: %v, retrying in %v\n", err, retryDelay)
+			<-time.After(retryDelay)
+			continue
 		}
 
-		// Only retry connection errors.
-		if !errors.Is(err, client.ErrConnectionRefused) {
-			return err
-		}
+		break
+	}
 
-		fmt.Printf("Connection error: %v, retrying in %v\n", err, retryDelay)
-		<-time.After(retryDelay)
+	if usingDefaultDB {
+		if err == client.ErrConnectionRefused || err == client.ErrAuthFailed || err == client.ErrDatabaseNotExist {
+			return nil
+		}
 	}
 
 	return err
