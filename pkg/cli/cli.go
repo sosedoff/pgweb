@@ -80,9 +80,13 @@ func initClient() {
 	retryDelay := time.Second * time.Duration(command.Opts.RetryDelay)
 
 	fmt.Println("Connecting to server...")
-	if err := testClient(cl, retryCount, retryDelay); err != nil {
-		exitWithMessage(err.Error())
-		return
+	abort, err := testClient(cl, retryCount, retryDelay)
+	if err != nil {
+		if abort {
+			exitWithMessage(err.Error())
+		} else {
+			return
+		}
 	}
 
 	if !command.Opts.Sessions {
@@ -259,31 +263,34 @@ func openPage() {
 
 // testWithRetry attempts to establish a database connection until it succeeds or
 // give up after certain number of retries.
-func testClient(cl *client.Client, retryCount int, retryDelay time.Duration) (err error) {
-	usingDefaultDB := command.Opts.DbName == "" || command.Opts.URL == ""
+func testClient(cl *client.Client, retryCount int, retryDelay time.Duration) (abort bool, err error) {
+	usingDefaultDB := command.Opts.DbName == "" && command.Opts.URL == ""
 
-	for i := 0; i < retryCount-1; i++ {
+	for {
 		err = cl.Test()
 		if err == nil {
-			return nil
+			return false, nil
 		}
 
+		// AContinue normal start up if can't connect locally without database details.
+		if usingDefaultDB {
+			if errors.Is(err, client.ErrConnectionRefused) ||
+				errors.Is(err, client.ErrAuthFailed) ||
+				errors.Is(err, client.ErrDatabaseNotExist) {
+				return false, err
+			}
+		}
+
+		// Only retry if can't establish connection to the server.
 		if errors.Is(err, client.ErrConnectionRefused) && retryCount > 0 {
-			fmt.Printf("Connection error: %v, retrying in %v\n", err, retryDelay)
+			fmt.Printf("Connection error: %v, retrying in %v (%d remaining)\n", err, retryDelay, retryCount)
+			retryCount--
 			<-time.After(retryDelay)
 			continue
 		}
 
-		break
+		return true, err
 	}
-
-	if usingDefaultDB {
-		if err == client.ErrConnectionRefused || err == client.ErrAuthFailed || err == client.ErrDatabaseNotExist {
-			return nil
-		}
-	}
-
-	return err
 }
 
 func Run() {

@@ -37,7 +37,7 @@ type Options struct {
 	SSLCert                      string `long:"ssl-cert" description:"SSL client certificate file"`
 	SSLKey                       string `long:"ssl-key" description:"SSL client certificate key file"`
 	OpenTimeout                  int    `long:"open-timeout" description:"Maximum wait time for connection, in seconds" default:"30"`
-	RetryDelay                   int    `long:"open-retry-delay" description:"Number of seconds to wait before retrying the connection" default:"1"`
+	RetryDelay                   int    `long:"open-retry-delay" description:"Number of seconds to wait before retrying the connection" default:"3"`
 	RetryCount                   int    `long:"open-retry" description:"Number of times to retry establishing connection" default:"0"`
 	HTTPHost                     string `long:"bind" description:"HTTP server host" default:"localhost"`
 	HTTPPort                     uint   `long:"listen" description:"HTTP server listen port" default:"8081"`
