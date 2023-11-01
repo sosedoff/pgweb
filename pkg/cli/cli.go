@@ -261,8 +261,9 @@ func openPage() {
 	}
 }
 
-// testWithRetry attempts to establish a database connection until it succeeds or
-// give up after certain number of retries.
+// testClient attempts to establish a database connection until it succeeds or
+// give up after certain number of retries. Retries only available when database
+// name or a connection string is provided.
 func testClient(cl *client.Client, retryCount int, retryDelay time.Duration) (abort bool, err error) {
 	usingDefaultDB := command.Opts.DbName == "" && command.Opts.URL == ""
 
