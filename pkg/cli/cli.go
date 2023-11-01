@@ -272,7 +272,7 @@ func testClient(cl *client.Client, retryCount int, retryDelay time.Duration) (ab
 			return false, nil
 		}
 
-		// AContinue normal start up if can't connect locally without database details.
+		// Continue normal start up if can't connect locally without database details.
 		if usingDefaultDB {
 			if errors.Is(err, client.ErrConnectionRefused) ||
 				errors.Is(err, client.ErrAuthFailed) ||
