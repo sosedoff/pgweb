@@ -217,7 +217,7 @@ func testTest(t *testing.T) {
 		},
 		{
 			name:  "invalid user",
-			input: fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", "foo", serverHost, serverPort, serverDatabase),
+			input: fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", "foo", serverPassword, serverHost, serverPort, serverDatabase),
 			err:   ErrAuthFailed,
 		},
 		{
