@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	regexErrAuthFailed        = regexp.MustCompile(`authentication failed`)
+	regexErrAuthFailed        = regexp.MustCompile(`(authentication failed|role "(.*)" does not exist)`)
 	regexErrConnectionRefused = regexp.MustCompile(`(connection|actively) refused`)
 	regexErrDatabaseNotExist  = regexp.MustCompile(`database "(.*)" does not exist`)
 )
