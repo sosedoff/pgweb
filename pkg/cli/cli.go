@@ -80,7 +80,7 @@ func initClient() {
 	retryDelay := time.Second * time.Duration(command.Opts.RetryDelay)
 
 	fmt.Println("Connecting to server...")
-	abort, err := testClient(cl, retryCount, retryDelay)
+	abort, err := testClient(cl, int(retryCount), retryDelay)
 	if err != nil {
 		if abort {
 			exitWithMessage(err.Error())
