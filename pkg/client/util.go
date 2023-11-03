@@ -8,7 +8,7 @@ import (
 
 var (
 	// List of keywords that are not allowed in read-only mode
-	reRestrictedKeywords = regexp.MustCompile(`(?mi)\s?(CREATE|INSERT|DROP|DELETE|TRUNCATE|GRANT|OPEN|IMPORT|COPY)\s`)
+	reRestrictedKeywords = regexp.MustCompile(`(?mi)\s?(CREATE|INSERT|UPDATE|DROP|DELETE|TRUNCATE|GRANT|OPEN|IMPORT|COPY)\s`)
 
 	// Comment regular expressions
 	reSlashComment = regexp.MustCompile(`(?m)/\*.+\*/`)
