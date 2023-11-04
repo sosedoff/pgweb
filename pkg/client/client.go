@@ -7,6 +7,7 @@ import (
 	"log"
 	neturl "net/url"
 	"reflect"
+	"regexp"
 	"strings"
 	"time"
 
@@ -19,6 +20,18 @@ import (
 	"github.com/sosedoff/pgweb/pkg/history"
 	"github.com/sosedoff/pgweb/pkg/shared"
 	"github.com/sosedoff/pgweb/pkg/statements"
+)
+
+var (
+	regexErrAuthFailed        = regexp.MustCompile(`(authentication failed|role "(.*)" does not exist)`)
+	regexErrConnectionRefused = regexp.MustCompile(`(connection|actively) refused`)
+	regexErrDatabaseNotExist  = regexp.MustCompile(`database "(.*)" does not exist`)
+)
+
+var (
+	ErrAuthFailed        = errors.New("authentication failed")
+	ErrConnectionRefused = errors.New("connection refused")
+	ErrDatabaseNotExist  = errors.New("database does not exist")
 )
 
 type Client struct {
@@ -179,7 +192,28 @@ func (client *Client) setServerVersion() {
 }
 
 func (client *Client) Test() error {
-	return client.db.Ping()
+	// NOTE: This is a different timeout defined in CLI OpenTimeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err := client.db.PingContext(ctx)
+	if err == nil {
+		return nil
+	}
+
+	errMsg := err.Error()
+
+	if regexErrConnectionRefused.MatchString(errMsg) {
+		return ErrConnectionRefused
+	}
+	if regexErrAuthFailed.MatchString(errMsg) {
+		return ErrAuthFailed
+	}
+	if regexErrDatabaseNotExist.MatchString(errMsg) {
+		return ErrDatabaseNotExist
+	}
+
+	return err
 }
 
 func (client *Client) TestWithTimeout(timeout time.Duration) (result error) {

@@ -14,6 +14,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/command"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -199,7 +200,46 @@ func testClientIdleTime(t *testing.T) {
 }
 
 func testTest(t *testing.T) {
-	assert.NoError(t, testClient.Test())
+	examples := []struct {
+		name  string
+		input string
+		err   error
+	}{
+		{
+			name:  "success",
+			input: fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, serverDatabase),
+			err:   nil,
+		},
+		{
+			name:  "connection refused",
+			input: "postgresql://localhost:5433/dbname",
+			err:   ErrConnectionRefused,
+		},
+		{
+			name:  "invalid user",
+			input: fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", "foo", serverPassword, serverHost, serverPort, serverDatabase),
+			err:   ErrAuthFailed,
+		},
+		{
+			name:  "invalid password",
+			input: fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", serverUser, "foo", serverHost, serverPort, serverDatabase),
+			err:   ErrAuthFailed,
+		},
+		{
+			name:  "invalid database",
+			input: fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable", serverUser, serverHost, serverPort, "foo"),
+			err:   ErrDatabaseNotExist,
+		},
+	}
+
+	for _, ex := range examples {
+		t.Run(ex.name, func(t *testing.T) {
+			conn, err := NewFromUrl(ex.input, nil)
+			require.NoError(t, err)
+
+			require.Equal(t, ex.err, conn.Test())
+		})
+	}
 }
 
 func testInfo(t *testing.T) {

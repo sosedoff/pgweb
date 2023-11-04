@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"regexp"
 	"strings"
 	"syscall"
 	"time"
@@ -35,9 +34,6 @@ SECURITY WARNING: You are running Pgweb in read-only mode.
 This mode is designed for environments where users could potentially delete or change data.
 For proper read-only access please follow PostgreSQL role management documentation.
 --------------------------------------------------------------------------------`
-
-	regexErrConnectionRefused = regexp.MustCompile(`(connection|actively) refused`)
-	regexErrAuthFailed        = regexp.MustCompile(`authentication failed`)
 )
 
 func init() {
@@ -77,35 +73,20 @@ func initClient() {
 	}
 
 	if command.Opts.Debug {
-		fmt.Println("Server connection string:", cl.ConnectionString)
+		fmt.Println("Opening database connection using string:", cl.ConnectionString)
 	}
 
+	retryCount := command.Opts.RetryCount
+	retryDelay := time.Second * time.Duration(command.Opts.RetryDelay)
+
 	fmt.Println("Connecting to server...")
-	if err := cl.Test(); err != nil {
-		msg := err.Error()
-
-		// Check if we're trying to connect to the default database.
-		if command.Opts.DbName == "" && command.Opts.URL == "" {
-			// If database does not exist, allow user to connect from the UI.
-			if strings.Contains(msg, "database") && strings.Contains(msg, "does not exist") {
-				fmt.Println("Error:", msg)
-				return
-			}
-
-			// Do not bail if local server is not running.
-			if regexErrConnectionRefused.MatchString(msg) {
-				fmt.Println("Error:", msg)
-				return
-			}
-
-			// Do not bail if local auth is invalid
-			if regexErrAuthFailed.MatchString(msg) {
-				fmt.Println("Error:", msg)
-				return
-			}
+	abort, err := testClient(cl, int(retryCount), retryDelay)
+	if err != nil {
+		if abort {
+			exitWithMessage(err.Error())
+		} else {
+			return
 		}
-
-		exitWithMessage(msg)
 	}
 
 	if !command.Opts.Sessions {
@@ -277,6 +258,39 @@ func openPage() {
 	_, err = exec.Command("open", url).Output()
 	if err != nil {
 		fmt.Println("Unable to auto-open pgweb URL:", err)
+	}
+}
+
+// testClient attempts to establish a database connection until it succeeds or
+// give up after certain number of retries. Retries only available when database
+// name or a connection string is provided.
+func testClient(cl *client.Client, retryCount int, retryDelay time.Duration) (abort bool, err error) {
+	usingDefaultDB := command.Opts.DbName == "" && command.Opts.URL == ""
+
+	for {
+		err = cl.Test()
+		if err == nil {
+			return false, nil
+		}
+
+		// Continue normal start up if can't connect locally without database details.
+		if usingDefaultDB {
+			if errors.Is(err, client.ErrConnectionRefused) ||
+				errors.Is(err, client.ErrAuthFailed) ||
+				errors.Is(err, client.ErrDatabaseNotExist) {
+				return false, err
+			}
+		}
+
+		// Only retry if can't establish connection to the server.
+		if errors.Is(err, client.ErrConnectionRefused) && retryCount > 0 {
+			fmt.Printf("Connection error: %v, retrying in %v (%d remaining)\n", err, retryDelay, retryCount)
+			retryCount--
+			<-time.After(retryDelay)
+			continue
+		}
+
+		return true, err
 	}
 }
 
