@@ -1,13 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html data-bs-theme="light" lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
   <title>pgweb</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="Content-Language" content="en">
-  <link rel="stylesheet" href="static/css/bootstrap.min.css"></link>
-  <link rel="stylesheet" href="static/css/font-awesome.css"></link>
-  <link rel="stylesheet" href="static/css/app.css"></link>
+  <link rel="stylesheet" href="static/css/bootstrap.min.css">
+  </link>
+  <link rel="stylesheet" href="static/css/font-awesome.css">
+  </link>
+  <link rel="stylesheet" href="static/css/app.css">
+  </link>
   <link rel="icon" type="image/x-icon" href="static/img/icon.ico" />
   <script type="text/javascript" src="static/js/jquery.js"></script>
   <script type="text/javascript" src="static/js/ace.js"></script>
@@ -20,6 +24,7 @@
   <script type="text/javascript" src="static/js/app.js"></script>
   <script type="text/javascript" src="static/js/base64.js"></script>
 </head>
+
 <body>
   <div id="main">
     <div id="nav">
@@ -35,14 +40,17 @@
       </ul>
 
       <div class="connection-actions">
-        <a href="#" id="edit_connection" class="btn btn-default btn-sm"><i class="fa fa-database"></i> Connect</a>
-        <a href="#" id="close_connection" class="btn btn-default btn-sm">Disconnect</a>
+        <a href="#" id="edit_connection" class="btn btn-default text-white btn-sm"><i
+            class="text-white fa fa-database"></i>
+          Connect</a>
+        <a href="#" id="close_connection" class="btn btn-default text-white btn-sm">Disconnect</a>
+        <a href="#" id="toggle_theme" class=""><i class="fa fa-moon-o text-white mx-2"></i></a>
       </div>
     </div>
     <div id="sidebar">
       <div class="current-database">
         <div class="wrap">
-          <i class="fa fa-database"></i> <span class="current-database-name" id="current_database"></span>
+          <i class="text-white fa fa-database"></i> <span class="text-white current-database-name" id="current_database"></span>
           <input class="typeahead" id="database_search" type="text" placeholder="Search database" autocomplete="off" />
           <span class="refresh" id="refresh_tables" title="Refresh tables list"><i class="fa fa-refresh"></i></span>
         </div>
@@ -77,18 +85,17 @@
           <div id="custom_query"></div>
         </div>
         <div class="actions">
-          <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
-          <div id="explain-dropdown" class="btn-group left">
-            <button id="explain-dropdown-toggle" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-              Explain Query <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="#" id="explain">Explain Query</a></li>
-              <li><a href="#" id="analyze">Analyze Query</a></li>
-            </ul>
-          </div>
+          <input type="button" id="run" value="Run Query" class="btn btn-sm btn-default" />
+          <button id="explain" class="btn btn-sm btn-default">
+            Explain Query
+          </button>
+          <button id="analyze" class="btn btn-sm btn-default">
+            Analyze Query
+          </button>
+
           <div id="load-query-dropdown" class="btn-group left" style="display: none">
-            <button id="load-local-query" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" disabled="disabled">
+            <button id="load-local-query" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+              disabled="disabled">
               Template <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
@@ -106,7 +113,7 @@
       </div>
       <div id="output">
         <div class="wrapper">
-          <table id="results" class="table">
+          <table id="results" class="table table-striped table-hover">
             <thead id="results_header"></thead>
             <tbody id="results_body"></tbody>
           </table>
@@ -135,8 +142,10 @@
           <button class="btn btn-default btn-sm reset-filters"><i class="fa fa-times"></i></button>
         </form>
         <div class="btn-group">
-          <button type="button" class="btn btn-default btn-sm prev-page" disabled="disabled"><i class="fa fa-angle-left"></i></button>
-          <button type="button" class="btn btn-default btn-sm page change-limit" title="Click to change row limit"></button>
+          <button type="button" class="btn btn-default btn-sm prev-page" disabled="disabled"><i
+              class="fa fa-angle-left"></i></button>
+          <button type="button" class="btn btn-default btn-sm page change-limit"
+            title="Click to change row limit"></button>
           <button type="button" class="btn btn-default btn-sm next-page"><i class="fa fa-angle-right"></i></button>
         </div>
         <div class="current-page" data-page="1" data-pages="1">
@@ -146,15 +155,29 @@
     </div>
   </div>
 
-  <div id="content_modal">
-    <div class="title">
-      Cell Content
-      <div class="actions">
-        <i class="fa fa-times content-modal-action" data-action="close"></i>
-        <i class="fa fa-copy content-modal-action" data-action="copy"></i>
+  <div class="modal" id="content_modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          Cell Content
+        </div>
+
+
+        <div class="modal-body">
+          <pre class="content"></pre>
+        </div>
+
+        <div class="modal-footer">
+          <div class="btn-group">
+            <i class="fa fa-times content-modal-action btn btn-secondary" data-action="close"></i>
+            <i class="fa fa-copy content-modal-action btn btn-success" data-action="copy"></i>
+          </div>
+        </div>
+
+
       </div>
     </div>
-    <pre class="content"></pre>
   </div>
 
   <div id="connection_window">
@@ -169,12 +192,13 @@
         <div class="text-center">
           <div class="btn-group btn-group-sm connection-group-switch">
             <button type="button" data="scheme" class="btn btn-secondary" id="connection_scheme">Scheme</button>
-            <button type="button" data="standard" class="btn btn-secondary active" id="connection_standard">Standard</button>
+            <button type="button" data="standard" class="btn btn-secondary active"
+              id="connection_standard">Standard</button>
             <button type="button" data="ssh" class="btn btn-secondary" id="connection_ssh">SSH</button>
           </div>
         </div>
 
-        <hr/>
+        <hr />
 
         <div class="connection-scheme-group">
           <div class="form-group row">
@@ -182,8 +206,10 @@
               <label class="form-label" for="connection_url">Enter server URL scheme</label>
               <input type="text" class="form-control" id="connection_url" name="url" autocomplete="off">
               <p class="help-block form-text">
-                URL format: postgres://user:password@host:port/db?sslmode=mode<br/>
-                Read more on PostgreSQL <a href="https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">connection string format</a>.
+                URL format: postgres://user:password@host:port/db?sslmode=mode<br />
+                Read more on PostgreSQL <a
+                  href="https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING"
+                  target="_blank">connection string format</a>.
               </p>
             </div>
           </div>
@@ -245,7 +271,7 @@
         </div>
 
         <div class="connection-ssh-group">
-          <hr/>
+          <hr />
 
           <h3 class="text-center">SSH Connection</h3>
 
@@ -279,7 +305,7 @@
             </div>
           </div>
 
-          <hr/>
+          <hr />
         </div>
 
         <div id="connection_error" class="alert alert-danger"></div>
@@ -342,4 +368,5 @@
   </div>
   <div id="error_banner"></div>
 </body>
+
 </html>
