@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta http-equiv="Content-Language" content="en">
-  <link rel="stylesheet" href="static/css/bootstrap.css"></link>
+  <link rel="stylesheet" href="static/css/bootstrap.min.css"></link>
   <link rel="stylesheet" href="static/css/font-awesome.css"></link>
   <link rel="stylesheet" href="static/css/app.css"></link>
   <link rel="icon" type="image/x-icon" href="static/img/icon.ico" />
@@ -168,20 +168,20 @@
       <form role="form" class="form-horizontal" id="connection_form">
         <div class="text-center">
           <div class="btn-group btn-group-sm connection-group-switch">
-            <button type="button" data="scheme" class="btn btn-default" id="connection_scheme">Scheme</button>
-            <button type="button" data="standard" class="btn btn-default active" id="connection_standard">Standard</button>
-            <button type="button" data="ssh" class="btn btn-default" id="connection_ssh">SSH</button>
+            <button type="button" data="scheme" class="btn btn-secondary" id="connection_scheme">Scheme</button>
+            <button type="button" data="standard" class="btn btn-secondary active" id="connection_standard">Standard</button>
+            <button type="button" data="ssh" class="btn btn-secondary" id="connection_ssh">SSH</button>
           </div>
         </div>
 
         <hr/>
 
         <div class="connection-scheme-group">
-          <div class="form-group">
+          <div class="form-group row">
             <div class="col-sm-12">
-              <label>Enter server URL scheme</label>
+              <label class="form-label" for="connection_url">Enter server URL scheme</label>
               <input type="text" class="form-control" id="connection_url" name="url" autocomplete="off">
-              <p class="help-block">
+              <p class="help-block form-text">
                 URL format: postgres://user:password@host:port/db?sslmode=mode<br/>
                 Read more on PostgreSQL <a href="https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">connection string format</a>.
               </p>
@@ -190,15 +190,15 @@
         </div>
 
         <div class="connection-standard-group">
-          <div class="form-group bookmarks">
-            <label class="col-sm-3 control-label">Bookmark</label>
+          <div class="form-group row bookmarks">
+            <label class="col-sm-3 form-label">Bookmark</label>
             <div class="col-sm-9">
               <select class="form-control" id="connection_bookmarks"></select>
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Host</label>
+          <div class="form-group row">
+            <label class="col-sm-3 form-label">Host</label>
             <div class="col-sm-9">
               <div class="row">
                 <div class="col-sm-9 col-xs-9">
@@ -211,31 +211,31 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Username</label>
+          <div class="form-group row">
+            <label class="col-sm-3 form-label">Username</label>
             <div class="col-sm-9">
               <input type="text" id="pg_user" class="form-control" />
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Password</label>
+          <div class="form-group row">
+            <label class="col-sm-3 form-label">Password</label>
             <div class="col-sm-9">
               <input type="password" id="pg_password" class="form-control" />
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Database</label>
+          <div class="form-group row">
+            <label class="col-sm-3 form-label">Database</label>
             <div class="col-sm-9">
               <input type="text" id="pg_db" class="form-control" />
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">SSL Mode</label>
+          <div class="form-group row">
+            <label class="col-sm-3 form-label">SSL Mode</label>
             <div class="col-sm-9">
-              <select class="form-control" id="connection_ssl">
+              <select class="form-select" id="connection_ssl">
                 <option value="disable">disable</option>
                 <option value="require" selected="selected">require</option>
                 <option value="verify-full">verify-full</option>
@@ -249,8 +249,8 @@
 
           <h3 class="text-center">SSH Connection</h3>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Host</label>
+          <div class="form-group row">
+            <label class="col-sm-3 form-label">Host</label>
             <div class="col-sm-7">
               <input type="text" id="ssh_host" class="form-control" />
             </div>
@@ -259,8 +259,8 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Credentials</label>
+          <div class="form-group row">
+            <label class="col-sm-3 form-label">Credentials</label>
             <div class="col-sm-5">
               <input type="text" id="ssh_user" class="form-control" placeholder="Username" />
             </div>
@@ -269,8 +269,8 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Auth Key</label>
+          <div class="form-group row">
+            <label class="col-sm-3 form-label">Auth Key</label>
             <div class="col-sm-5">
               <input type="text" id="ssh_key" class="form-control" placeholder="Key path" />
             </div>
@@ -284,9 +284,9 @@
 
         <div id="connection_error" class="alert alert-danger"></div>
 
-        <div class="form-group">
+        <div class="form-group row">
           <div class="col-sm-12">
-            <button type="submit" class="btn btn-block btn-primary open-connection">Connect</button>
+            <button type="submit" class="btn w-100 btn-primary open-connection">Connect</button>
             <button type="button" id="close_connection_window" class="btn btn-block btn-default">Cancel</button>
           </div>
         </div>

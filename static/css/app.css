@@ -427,7 +427,6 @@
   font-size: 12px;
   width: 100px;
   float: left;
-  line-height: 30px;
   height: 30px;
   margin-right: 8px;
   outline: none;
@@ -913,4 +912,8 @@
 
 .ace_autocomplete .ace_active-line {
   background: #eee !important;
+}
+
+.form-group {
+  margin: 8px auto;
 }
