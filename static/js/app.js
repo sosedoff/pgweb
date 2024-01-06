@@ -1002,6 +1002,7 @@ var objectAutocompleter = {
 
 function initEditor() {
   var writeQueryTimeout = null;
+  var lastSelectedMode = localStorage.getItem("editorMode") || null;
 
   editor = ace.edit("custom_query");
   editor.setOptions({
@@ -1016,6 +1017,7 @@ function initEditor() {
   editor.getSession().setMode("ace/mode/pgsql");
   editor.getSession().setTabSize(2);
   editor.getSession().setUseSoftTabs(true);
+  editor.setKeyboardHandler(lastSelectedMode);
 
   editor.commands.addCommands([{
     name: "run_query",
@@ -1023,7 +1025,7 @@ function initEditor() {
       win: "Ctrl-Enter",
       mac: "Command-Enter"
     },
-    exec: function(editor) {
+    exec: function (editor) {
       runQuery();
     }
   }, {
@@ -1032,17 +1034,17 @@ function initEditor() {
       win: "Ctrl-E",
       mac: "Command-E"
     },
-    exec: function(editor) {
+    exec: function (editor) {
       runExplain();
     }
   }]);
 
-  editor.on("change", function() {
+  editor.on("change", function () {
     if (writeQueryTimeout) {
       clearTimeout(writeQueryTimeout);
     }
 
-    writeQueryTimeout = setTimeout(function() {
+    writeQueryTimeout = setTimeout(function () {
       localStorage.setItem("pgweb_query", editor.getValue());
     }, 1000);
   });
@@ -1052,6 +1054,25 @@ function initEditor() {
     editor.setValue(query);
     editor.clearSelection();
   }
+
+  if(lastSelectedMode == "ace/keyboard/vim") {
+    $("#vim-mode").addClass("active");
+    $("#norm-mode").removeClass("active");
+  }
+
+  $("#vim-mode").click(function () {
+    editor.setKeyboardHandler("ace/keyboard/vim");
+    $("#vim-mode").addClass("active");
+    $("#norm-mode").removeClass("active");
+    localStorage.setItem("editorMode", "ace/keyboard/vim");
+  })
+
+  $("#norm-mode").click(function () {
+    editor.setKeyboardHandler(null);
+    $("#norm-mode").addClass("active");
+    $("#vim-mode").removeClass("active");
+    localStorage.setItem("editorMode", null);
+  })
 }
 
 function addShortcutTooltips() {

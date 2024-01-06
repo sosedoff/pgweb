@@ -54,7 +54,8 @@
   content: ' ';
   position: absolute;
   bottom: -1px;
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   height: 1px;
   widows: 100%;
   background: #fff;
@@ -227,7 +228,9 @@
 }
 
 
-#sidebar div.tables-list #tables, #sequences, #objects {
+#sidebar div.tables-list #tables,
+#sequences,
+#objects {
   font-size: 12px;
 }
 
@@ -302,7 +305,8 @@
   bottom: 0px;
 }
 
-#input_resize_handler:hover, #input_resize_handler.dragging {
+#input_resize_handler:hover,
+#input_resize_handler.dragging {
   height: 3px;
 }
 
@@ -311,6 +315,15 @@
   padding: 10px;
   height: 50px;
   bottom: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#input .actions .pull-left {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 #input .actions #result-rows-count {
@@ -487,12 +500,12 @@
   border: 0px none;
 }
 
-#results tr:nth-child(even) > td {
+#results tr:nth-child(even)>td {
   border: none;
   background: #ffffff;
 }
 
-#results tr:nth-child(odd) > td {
+#results tr:nth-child(odd)>td {
   border: none;
   background: #f9f9f9;
 }
@@ -717,7 +730,8 @@
   display: none;
 }
 
-#edit_connection, #close_connection {
+#edit_connection,
+#close_connection {
   background: #79589f;
   color: #fff;
   border-color: #fff;
@@ -807,11 +821,27 @@
 /* -------------------------------------------------------------------------- */
 
 .schema {}
-.schema i                           { display: inline-block; margin-right: 4px; }
-.schema i.fa-folder-o               { display: inline-block; }
-.schema i.fa-folder-open-o          { display: none; }
-.schema.expanded i.fa-folder-open-o { display: inline-block; }
-.schema.expanded i.fa-folder-o      { display: none; }
+
+.schema i {
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.schema i.fa-folder-o {
+  display: inline-block;
+}
+
+.schema i.fa-folder-open-o {
+  display: none;
+}
+
+.schema.expanded i.fa-folder-open-o {
+  display: inline-block;
+}
+
+.schema.expanded i.fa-folder-o {
+  display: none;
+}
 
 .schema .schema-name {
   font-weight: bold;
@@ -901,7 +931,8 @@
 /* Ace Customizations */
 /* -------------------------------------------------------------------------- */
 
-.ace_gutter, .ace_gutter-cell {
+.ace_gutter,
+.ace_gutter-cell {
   background: #fff !important;
   color: #bbb;
   font-size: 12px;

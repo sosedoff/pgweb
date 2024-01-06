@@ -77,24 +77,38 @@
           <div id="custom_query"></div>
         </div>
         <div class="actions">
-          <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
-          <div id="explain-dropdown" class="btn-group left">
-            <button id="explain-dropdown-toggle" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-              Explain Query <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="#" id="explain">Explain Query</a></li>
-              <li><a href="#" id="analyze">Analyze Query</a></li>
-            </ul>
+          <div class="pull-left">
+            <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
+            <div id="explain-dropdown" class="btn-group left">
+              <button id="explain-dropdown-toggle" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Explain Query <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#" id="explain">Explain Query</a></li>
+                <li><a href="#" id="analyze">Analyze Query</a></li>
+              </ul>
+            </div>
+            <div class="editor-modes">
+              <div id="editor-dropdown" class="btn-group left">
+                <button id="editor-dropdown-toggle" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                 <i class="fa fa-cog"></i>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li class="active" id="norm-mode"><a href="#" >Normal</a></li>
+                  <li  id="vim-mode"><a href="#" >Vim</a></li>
+                </ul>
+              </div>
+            </div>
+            <div id="load-query-dropdown" class="btn-group left" style="display: none">
+              <button id="load-local-query" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" disabled="disabled">
+                Template <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+              </ul>
+            </div>
+            <div id="query_progress">Please wait, query is executing...</div>
           </div>
-          <div id="load-query-dropdown" class="btn-group left" style="display: none">
-            <button id="load-local-query" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" disabled="disabled">
-              Template <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-            </ul>
-          </div>
-          <div id="query_progress">Please wait, query is executing...</div>
+
           <div class="pull-right">
             <span id="result-rows-count"></span>
             <input type="button" id="json" value="JSON" class="btn btn-sm btn-default" />
