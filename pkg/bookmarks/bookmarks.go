@@ -20,6 +20,7 @@ type Bookmark struct {
 	Database    string          // Database name
 	SSLMode     string          // Connection SSL mode
 	SSH         *shared.SSHInfo // SSH tunnel config
+	ReadOnly    bool            // Enable read-only transaction mode
 }
 
 // SSHInfoIsEmpty returns true if ssh configuration is not provided
@@ -40,12 +41,13 @@ func (b Bookmark) ConvertToOptions() command.Options {
 	}
 
 	return command.Options{
-		URL:     b.URL,
-		Host:    b.Host,
-		Port:    b.Port,
-		User:    user,
-		Pass:    pass,
-		DbName:  b.Database,
-		SSLMode: b.SSLMode,
+		URL:      b.URL,
+		Host:     b.Host,
+		Port:     b.Port,
+		User:     user,
+		Pass:     pass,
+		DbName:   b.Database,
+		SSLMode:  b.SSLMode,
+		ReadOnly: b.ReadOnly,
 	}
 }
