@@ -41,6 +41,7 @@ type Client struct {
 	serverType       string
 	lastQueryTime    time.Time
 	queryTimeout     time.Duration
+	readonly         bool
 	closed           bool
 	External         bool             `json:"external"`
 	History          []history.Record `json:"history"`
@@ -166,7 +167,16 @@ func NewFromBookmark(bookmark *bookmarks.Bookmark) (*Client, error) {
 		sshInfo = bookmark.SSH
 	}
 
-	return NewFromUrl(connStr, sshInfo)
+	client, err := NewFromUrl(connStr, sshInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	if bookmark.ReadOnly {
+		client.readonly = true
+	}
+
+	return client, nil
 }
 
 func (client *Client) init() {
@@ -476,7 +486,7 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 
 	// We're going to force-set transaction mode on every query.
 	// This is needed so that default mode could not be changed by user.
-	if command.Opts.ReadOnly {
+	if command.Opts.ReadOnly || client.readonly {
 		if err := client.SetReadOnlyMode(); err != nil {
 			return nil, err
 		}

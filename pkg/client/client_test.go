@@ -679,6 +679,14 @@ func testReadOnlyMode(t *testing.T) {
 
 	_, err = client.Query("/* CREATE TABLE foobar(id integer); */ SELECT 'foo';")
 	assert.NoError(t, err)
+
+	t.Run("with local readonly flag", func(t *testing.T) {
+		command.Opts.ReadOnly = false
+		client.readonly = true
+
+		_, err := client.Query("INSERT INTO foobar(id) VALUES(1)")
+		assert.Error(t, err, "query contains keywords not allowed in read-only mode")
+	})
 }
 
 func testTablesStats(t *testing.T) {

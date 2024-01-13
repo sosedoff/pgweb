@@ -68,6 +68,7 @@ func TestBookmarkWithVarsConvertToOptions(t *testing.T) {
 
 		t.Setenv("DB_USER", "user123")
 		t.Setenv("DB_PASSWORD", "password123")
+
 		opt := b.ConvertToOptions()
 		assert.Equal(t, expOpt, opt)
 	})
@@ -87,6 +88,7 @@ func TestBookmarkWithVarsConvertToOptions(t *testing.T) {
 
 		t.Setenv("DB_USER", "user123")
 		t.Setenv("DB_PASSWORD", "password123")
+
 		opt := b.ConvertToOptions()
 		assert.Equal(t, expOpt, opt)
 	})
@@ -101,16 +103,18 @@ func TestBookmarkConvertToOptions(t *testing.T) {
 		Password: "password",
 		Database: "mydatabase",
 		SSLMode:  "disable",
+		ReadOnly: true,
 	}
 
 	expOpt := command.Options{
-		URL:     "postgres://username:password@host:port/database?sslmode=disable",
-		Host:    "localhost",
-		Port:    5432,
-		User:    "postgres",
-		Pass:    "password",
-		DbName:  "mydatabase",
-		SSLMode: "disable",
+		URL:      "postgres://username:password@host:port/database?sslmode=disable",
+		Host:     "localhost",
+		Port:     5432,
+		User:     "postgres",
+		Pass:     "password",
+		DbName:   "mydatabase",
+		SSLMode:  "disable",
+		ReadOnly: true,
 	}
 
 	opt := b.ConvertToOptions()
