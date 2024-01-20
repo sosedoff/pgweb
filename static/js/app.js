@@ -1025,7 +1025,7 @@ function initEditor() {
       win: "Ctrl-Enter",
       mac: "Command-Enter"
     },
-    exec: function (editor) {
+    exec: function(editor) {
       runQuery();
     }
   }, {
@@ -1034,17 +1034,17 @@ function initEditor() {
       win: "Ctrl-E",
       mac: "Command-E"
     },
-    exec: function (editor) {
+    exec: function(editor) {
       runExplain();
     }
   }]);
 
-  editor.on("change", function () {
+  editor.on("change", function() {
     if (writeQueryTimeout) {
       clearTimeout(writeQueryTimeout);
     }
 
-    writeQueryTimeout = setTimeout(function () {
+    writeQueryTimeout = setTimeout(function() {
       localStorage.setItem("pgweb_query", editor.getValue());
     }, 1000);
   });
