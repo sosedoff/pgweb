@@ -1,3 +1,9 @@
+# 0.14.3 - 2024-01-28
+
+- `NEW` Allow retrying a connection on startup, GH-695
+- `NEW` Allow setting readonly mode in bookmarks, GH-707
+- `FIX` Add UPDATE to list of restricted keywords in read-only mode, GH-697
+
 # 0.14.2 - 2023-10-29
 
 - `NEW` Execute tests using PostgreSQL 16, GH-691

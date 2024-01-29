@@ -8,7 +8,7 @@ import (
 
 const (
 	// Version is the current Pgweb application version
-	Version = "0.14.2"
+	Version = "0.14.3"
 )
 
 var (
