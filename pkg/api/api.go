@@ -154,6 +154,8 @@ func Connect(c *gin.Context) {
 
 	if bookmarkID := c.Request.FormValue("bookmark_id"); bookmarkID != "" {
 		cl, err = ConnectWithBookmark(bookmarkID)
+	} else if command.Opts.BookmarksOnly {
+		err = errNotPermitted
 	} else {
 		cl, err = ConnectWithURL(c)
 	}
@@ -558,9 +560,10 @@ func GetInfo(c *gin.Context) {
 	successResponse(c, gin.H{
 		"app": command.Info,
 		"features": gin.H{
-			"session_lock":  command.Opts.LockSession,
-			"query_timeout": command.Opts.QueryTimeout,
-			"local_queries": QueryStore != nil,
+			"session_lock":   command.Opts.LockSession,
+			"query_timeout":  command.Opts.QueryTimeout,
+			"local_queries":  QueryStore != nil,
+			"bookmarks_only": command.Opts.BookmarksOnly,
 		},
 	})
 }
