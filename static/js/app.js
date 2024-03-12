@@ -85,7 +85,14 @@ function apiCall(method, path, params, cb) {
           return cb({ error: "Query timeout after " + timeout + "s" });
       }
 
-      cb(jQuery.parseJSON(xhr.responseText));
+      var responseText;
+      try {
+        responseText = jQuery.parseJSON(xhr.responseText);
+      }
+      catch {
+        responseText = { error: "Failed to parse the JSON response." };
+      }
+      cb(responseText);
     }
   });
 }
