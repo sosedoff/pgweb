@@ -167,6 +167,18 @@ func ParseOptions(args []string) (Options, error) {
 		}
 	}
 
+	if opts.BookmarksOnly == true {
+		if opts.URL != "" {
+			return opts, errors.New("--url not supported in bookmarks-only mode")
+		}
+		if opts.Host != "localhost" {
+			return opts, errors.New("--host not supported in bookmarks-only mode")
+		}
+		if opts.ConnectBackend != "" {
+			return opts, errors.New("--connect-backend not supported in bookmarks-only mode")
+		}
+	}
+
 	homePath, err := homedir.Dir()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[WARN] cant detect home dir: %v", err)
