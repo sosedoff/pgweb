@@ -1113,7 +1113,12 @@ function showConnectionSettings() {
       $(".bookmarks").show();
     }
     else {
-      $(".bookmarks").hide();
+      if (appFeatures.bookmarks_only) {
+        $("#connection_error").html("Running in <b>bookmarks-only</b> mode but <b>NO</b> bookmarks configured.").show();
+        $(".open-connection").hide();
+      } else {
+        $(".bookmarks").hide();
+      }
     }
   });
 }
