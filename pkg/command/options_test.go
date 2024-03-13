@@ -80,4 +80,18 @@ func TestParseOptions(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "../../data/passfile", opts.Passfile)
 	})
+
+	t.Run("bookmarks only mode", func(t *testing.T) {
+		_, err := ParseOptions([]string{"--bookmarks-only"})
+		assert.NoError(t, err)
+
+		_, err = ParseOptions([]string{"--bookmarks-only", "--url", "test"})
+		assert.EqualError(t, err, "--url not supported in bookmarks-only mode")
+
+		_, err = ParseOptions([]string{"--bookmarks-only", "--host", "test", "--port", "5432"})
+		assert.EqualError(t, err, "--host not supported in bookmarks-only mode")
+
+		_, err = ParseOptions([]string{"--bookmarks-only", "--connect-backend", "test", "--sessions", "--connect-token", "token", "--url", "127.0.0.2"})
+		assert.EqualError(t, err, "--connect-backend not supported in bookmarks-only mode")
+	})
 }

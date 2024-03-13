@@ -167,11 +167,11 @@ func ParseOptions(args []string) (Options, error) {
 		}
 	}
 
-	if opts.BookmarksOnly == true {
+	if opts.BookmarksOnly {
 		if opts.URL != "" {
 			return opts, errors.New("--url not supported in bookmarks-only mode")
 		}
-		if opts.Host != "localhost" {
+		if opts.Host != "" && opts.Host != "localhost" {
 			return opts, errors.New("--host not supported in bookmarks-only mode")
 		}
 		if opts.ConnectBackend != "" {
