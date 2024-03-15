@@ -50,6 +50,7 @@ type Options struct {
 	LockSession                  bool   `long:"lock-session" description:"Lock session to a single database connection"`
 	Bookmark                     string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
 	BookmarksDir                 string `long:"bookmarks-dir" description:"Overrides default directory for bookmark files to search" default:""`
+	BookmarksOnly                bool   `long:"bookmarks-only" description:"Allow only connections from bookmarks"`
 	QueriesDir                   string `long:"queries-dir" description:"Overrides default directory for local queries"`
 	DisablePrettyJSON            bool   `long:"no-pretty-json" description:"Disable JSON formatting feature for result export"`
 	DisableSSH                   bool   `long:"no-ssh" description:"Disable database connections via SSH"`
@@ -118,6 +119,10 @@ func ParseOptions(args []string) (Options, error) {
 		}
 	}
 
+	if getPrefixedEnvVar("BOOKMARKS_ONLY") != "" {
+		opts.BookmarksOnly = true
+	}
+
 	if getPrefixedEnvVar("SESSIONS") != "" {
 		opts.Sessions = true
 	}
@@ -159,6 +164,18 @@ func ParseOptions(args []string) (Options, error) {
 	} else {
 		if opts.ConnectToken != "" || opts.ConnectHeaders != "" {
 			return opts, errors.New("--connect-backend flag must be set")
+		}
+	}
+
+	if opts.BookmarksOnly {
+		if opts.URL != "" {
+			return opts, errors.New("--url not supported in bookmarks-only mode")
+		}
+		if opts.Host != "" && opts.Host != "localhost" {
+			return opts, errors.New("--host not supported in bookmarks-only mode")
+		}
+		if opts.ConnectBackend != "" {
+			return opts, errors.New("--connect-backend not supported in bookmarks-only mode")
 		}
 	}
 
