@@ -2,8 +2,6 @@ module github.com/sosedoff/pgweb
 
 go 1.20
 
-// +heroku goVersion go1.20
-
 require (
 	github.com/BurntSushi/toml v1.1.0
 	github.com/ScaleFT/sshkeys v0.0.0-20200327173127-6142f742bca5

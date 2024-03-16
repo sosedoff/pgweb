@@ -85,7 +85,14 @@ function apiCall(method, path, params, cb) {
           return cb({ error: "Query timeout after " + timeout + "s" });
       }
 
-      cb(jQuery.parseJSON(xhr.responseText));
+      var responseText;
+      try {
+        responseText = jQuery.parseJSON(xhr.responseText);
+      }
+      catch {
+        responseText = { error: "Failed to parse the JSON response." };
+      }
+      cb(responseText);
     }
   });
 }
@@ -1105,6 +1112,7 @@ function showConnectionSettings() {
   // Show the current postgres version
   $(".connection-settings .version").text("v" + appInfo.version).show();
   $("#connection_window").show();
+  initConnectionWindow();
 
   // Check github release page for updates
   getLatestReleaseInfo(appInfo);
@@ -1133,9 +1141,30 @@ function showConnectionSettings() {
       $(".bookmarks").show();
     }
     else {
-      $(".bookmarks").hide();
+      if (appFeatures.bookmarks_only) {
+        $("#connection_error").html("Running in <b>bookmarks-only</b> mode but <b>NO</b> bookmarks configured.").show();
+        $(".open-connection").hide();
+      } else {
+        $(".bookmarks").hide();
+      }
     }
   });
+}
+
+function initConnectionWindow() {
+  if (appFeatures.bookmarks_only) {
+    $(".connection-group-switch").hide();
+    $(".connection-scheme-group").hide();
+    $(".connection-bookmarks-group").show();
+    $(".connection-standard-group").hide();
+    $(".connection-ssh-group").hide();
+  } else {
+    $(".connection-group-switch").show();
+    $(".connection-scheme-group").hide();
+    $(".connection-bookmarks-group").show();
+    $(".connection-standard-group").show();
+    $(".connection-ssh-group").hide();
+  }
 }
 
 function getConnectionString() {

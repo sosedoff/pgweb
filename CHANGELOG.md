@@ -1,3 +1,15 @@
+# 0.15.0 - 2024-03-14
+
+- `NEW` Add support for a bookmarks-only mode, GH-716
+- `FIX` Fix missing indexes by quoting schema/table name to ::regclass, GH-711
+- `FIX` Continue on parseJSON error, GH-708
+
+# 0.14.3 - 2024-01-28
+
+- `NEW` Allow retrying a connection on startup, GH-695
+- `NEW` Allow setting readonly mode in bookmarks, GH-707
+- `FIX` Add UPDATE to list of restricted keywords in read-only mode, GH-697
+
 # 0.14.2 - 2023-10-29
 
 - `NEW` Execute tests using PostgreSQL 16, GH-691
