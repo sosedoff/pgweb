@@ -11,6 +11,10 @@ LDFLAGS += -X $(PKG)/pkg/command.GitCommit=$(GIT_COMMIT)
 LDFLAGS += -X $(PKG)/pkg/command.BuildTime=$(BUILD_TIME)
 LDFLAGS += -X $(PKG)/pkg/command.GoVersion=$(GO_VERSION)
 
+ifeq ($(STATIC), true)
+	CGO_ENABLED = 0
+endif
+
 usage:
 	@echo ""
 	@echo "Task                 : Description"
@@ -42,16 +46,16 @@ dev:
 	@echo "You can now execute ./pgweb"
 
 build:
-	go build -ldflags '${LDFLAGS}'
+	CGO_ENABLED=$(CGO_ENABLED) go build -ldflags '${LDFLAGS}'
 	@echo "You can now execute ./pgweb"
 
 install:
-	go install -ldflags '${LDFLAGS}'
+	CGO_ENABLED=$(CGO_ENABLED) go install -ldflags '${LDFLAGS}'
 	@echo "You can now execute pgweb"
 
 release: clean
 	@echo "Building binaries..."
-	@LDFLAGS='${LDFLAGS}' ./script/build_all.sh
+	@CGO_ENABLED=$(CGO_ENABLED) LDFLAGS='${LDFLAGS}' ./script/build_all.sh
 
 clean:
 	@echo "Removing all artifacts"

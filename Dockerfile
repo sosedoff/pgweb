@@ -12,7 +12,7 @@ COPY Makefile main.go ./
 COPY static/ static/
 COPY pkg/ pkg/
 COPY .git/ .
-RUN make build
+RUN make build STATIC=true
 
 # ------------------------------------------------------------------------------
 # Fetch signing key
