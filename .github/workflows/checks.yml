@@ -15,7 +15,7 @@ on:
 
 
 env:
-  GO_VERSION: "1.20"
+  GO_VERSION: "1.21"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -97,7 +97,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.51.2
+          version: v1.57.1
 
   fmt:
     name: fmt
