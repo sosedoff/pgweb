@@ -1,6 +1,6 @@
 module github.com/sosedoff/pgweb
 
-go 1.20
+go 1.22
 
 require (
 	github.com/BurntSushi/toml v1.1.0
