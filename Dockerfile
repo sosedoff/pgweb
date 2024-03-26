@@ -3,6 +3,10 @@
 # ------------------------------------------------------------------------------
 FROM golang:1.22-bullseye AS build
 
+# Set default build argument for CGO_ENABLED=0. This can be overriden by build-args
+ARG CGO_ENABLED=0
+ENV CGO_ENABLED ${CGO_ENABLED}
+
 WORKDIR /build
 
 RUN git config --global --add safe.directory /build
@@ -12,7 +16,7 @@ COPY Makefile main.go ./
 COPY static/ static/
 COPY pkg/ pkg/
 COPY .git/ .
-RUN make build STATIC=true
+RUN make build
 
 # ------------------------------------------------------------------------------
 # Fetch signing key
