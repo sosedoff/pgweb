@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
 
 env:
   GO_VERSION: "1.22"
