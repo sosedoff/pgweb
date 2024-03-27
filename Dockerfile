@@ -3,6 +3,10 @@
 # ------------------------------------------------------------------------------
 FROM golang:1.22-bullseye AS build
 
+# Set default build argument for CGO_ENABLED
+ARG CGO_ENABLED=0
+ENV CGO_ENABLED ${CGO_ENABLED}
+
 WORKDIR /build
 
 RUN git config --global --add safe.directory /build

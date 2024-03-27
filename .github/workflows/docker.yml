@@ -33,3 +33,5 @@ jobs:
           push: false
           tags: pgweb:latest
           platforms: linux/amd64,linux/arm64,linux/arm/v7
+          build-args: |
+            "CGO_ENABLED=${{ env.CGO_ENABLED }}"
