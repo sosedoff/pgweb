@@ -4,7 +4,7 @@ version: "3.9"
 services:
   postgres:
     container_name: pgweb-postgres
-    image: postgres:14
+    image: postgres:15
     ports:
       - 5433:5432
     volumes:
