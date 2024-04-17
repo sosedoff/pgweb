@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -35,8 +36,8 @@ type Tunnel struct {
 	Listener   *net.TCPListener
 }
 
-func privateKeyPath() string {
-	return os.Getenv("HOME") + "/.ssh/id_rsa"
+func defaultKeyPath() string {
+	return filepath.Join(os.Getenv("HOME"), ".ssh/id_rsa")
 }
 
 func expandKeyPath(path string) string {
@@ -61,7 +62,7 @@ func parsePrivateKey(keyPath string, keyPass string) (ssh.Signer, error) {
 	signer, err := ssh.ParsePrivateKey(buff)
 	if _, ok := err.(*ssh.PassphraseMissingError); ok {
 		if keyPass == "" {
-			return nil, errors.New("SSH key password is not provided")
+			return nil, errors.New("ssh key password is not provided")
 		}
 		return sshkeys.ParseEncryptedPrivateKey(buff, []byte(keyPass))
 	}
@@ -75,13 +76,13 @@ func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
 	// Try to use user-provided key, fallback to system default key
 	keyPath := info.Key
 	if keyPath == "" {
-		keyPath = privateKeyPath()
+		keyPath = defaultKeyPath()
 	} else {
 		keyPath = expandKeyPath(keyPath)
 	}
 
 	if !fileExists(keyPath) {
-		return nil, errors.New("ssh public key not found at " + keyPath)
+		return nil, fmt.Errorf("ssh public key not found at path %q", keyPath)
 	}
 
 	// Append public key authentication method
@@ -129,11 +130,11 @@ func (tunnel *Tunnel) handleConnection(local net.Conn) {
 		return
 	}
 
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	wg.Add(2)
 
-	go tunnel.copy(&wg, local, remote)
-	go tunnel.copy(&wg, remote, local)
+	go tunnel.copy(wg, local, remote)
+	go tunnel.copy(wg, remote, local)
 
 	wg.Wait()
 	local.Close()
