@@ -923,3 +923,9 @@
 .ace_autocomplete .ace_active-line {
   background: #eee !important;
 }
+
+.editor-modes {
+  position: absolute;
+  top:5px;
+  right:0px;
+}
