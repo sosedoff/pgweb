@@ -340,6 +340,12 @@ function performTableAction(table, action, el) {
     case "copy":
       copyToClipboard(table.split('.')[1]);
       break;
+    case "analyze":
+      executeQuery("ANALYZE " + table, function(data) {
+        if (data.error) alert(data.error);
+        resetTable();
+      });
+      break;
   }
 }
 
