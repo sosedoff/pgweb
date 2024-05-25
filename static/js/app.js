@@ -660,7 +660,7 @@ function showPaginatedTableContent() {
   showTableContent(sortColumn, sortOrder);
 }
 
-function showTablesStats() {
+function showDatabaseStats() {
   getTablesStats(function(data) {
     buildTable(data);
 
@@ -669,6 +669,10 @@ function showTablesStats() {
     $("#body").prop("class", "full");
     $("#results").addClass("no-crop");
   });
+}
+
+function downloadDatabaseStats() {
+  openInNewWindow("api/tables_stats", { format: "csv", export: "true" });
 }
 
 function showTableStructure() {
@@ -1267,8 +1271,11 @@ function bindCurrentDatabaseMenu() {
       var menuItem = $(e.target);
 
       switch(menuItem.data("action")) {
-        case "show_tables_stats":
-          showTablesStats();
+        case "show_db_stats":
+          showDatabaseStats();
+          break;
+        case "download_db_stats":
+          downloadDatabaseStats();
           break;
         case "export":
           openInNewWindow("api/export");

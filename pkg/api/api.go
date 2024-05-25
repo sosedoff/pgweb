@@ -506,8 +506,41 @@ func GetTableConstraints(c *gin.Context) {
 
 // GetTablesStats renders data sizes and estimated rows for all tables in the database
 func GetTablesStats(c *gin.Context) {
-	res, err := DB(c).TablesStats()
-	serveResult(c, res, err)
+	db := DB(c)
+
+	connCtx, err := db.GetConnContext()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	res, err := db.TablesStats()
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+
+	format := getQueryParam(c, "format")
+	if format == "" {
+		format = "json"
+	}
+
+	// Save as attachment if exporting parameter is set
+	if getQueryParam(c, "export") == "true" {
+		ts := time.Now().Format(time.DateOnly)
+
+		filename := fmt.Sprintf("pgweb-dbstats-%s-%s.%s", connCtx.Database, ts, format)
+		c.Writer.Header().Set("Content-disposition", "attachment;filename="+filename)
+	}
+
+	switch format {
+	case "json":
+		c.JSON(http.StatusOK, res)
+	case "csv":
+		c.Data(http.StatusOK, "text/csv", res.CSV())
+	default:
+		badRequest(c, "invalid format")
+	}
 }
 
 // HandleQuery runs the database query
