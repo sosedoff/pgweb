@@ -155,11 +155,12 @@ func assetContentType(name string) string {
 
 // Send a query result to client
 func serveResult(c *gin.Context, result interface{}, err interface{}) {
-	if err == nil {
-		successResponse(c, result)
-	} else {
+	if err != nil {
 		badRequest(c, err)
+		return
 	}
+
+	successResponse(c, result)
 }
 
 // Send successful response back to client
