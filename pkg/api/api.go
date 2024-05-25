@@ -538,6 +538,8 @@ func GetTablesStats(c *gin.Context) {
 		c.JSON(http.StatusOK, res)
 	case "csv":
 		c.Data(http.StatusOK, "text/csv", res.CSV())
+	case "xml":
+		c.XML(200, res)
 	default:
 		badRequest(c, "invalid format")
 	}
