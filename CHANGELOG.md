@@ -1,3 +1,13 @@
+# 0.16.0 - 2024-06-04
+
+- `NEW` Allow database stats downloads, GH-738
+- `NEW` Add analyze table action, GH-737
+- `NEW` Bump postgres version used in docker compose to 15, GH-729
+- `NEW` Build on Go 1.22, GH-726
+- `FIX` SSH tunnel cleanup and parse fixup, GH-731
+- `FIX` Drop linux/arm/v5 from docker build, GH-728
+- `FIX` Propagate CGO_ENABLED environment variable to docker build, GH-724
+
 # 0.15.0 - 2024-03-14
 
 - `NEW` Add support for a bookmarks-only mode, GH-716
