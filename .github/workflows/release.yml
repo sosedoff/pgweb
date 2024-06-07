@@ -57,4 +57,4 @@ jobs:
             ${{ env.DOCKER_REPOSITORY }}:latest
             ghcr.io/${{ env.GHCR_REPOSITORY }}:${{ steps.refs.outputs.SOURCE_TAG }}
             ghcr.io/${{ env.GHCR_REPOSITORY }}:latest
-          platforms: linux/amd64,linux/arm64,linux/arm/v5,linux/arm/v7
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
