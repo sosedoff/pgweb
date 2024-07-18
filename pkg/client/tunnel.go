@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
@@ -13,7 +14,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ScaleFT/sshkeys"
 	"golang.org/x/crypto/ssh"
 
 	"github.com/sosedoff/pgweb/pkg/connection"
@@ -64,7 +64,8 @@ func parsePrivateKey(keyPath string, keyPass string) (ssh.Signer, error) {
 		if keyPass == "" {
 			return nil, errors.New("ssh key password is not provided")
 		}
-		return sshkeys.ParseEncryptedPrivateKey(buff, []byte(keyPass))
+		return parseEncryptedPrivateKey(buff, []byte(keyPass))
+
 	}
 
 	return signer, err
@@ -216,4 +217,26 @@ func NewTunnel(sshInfo *shared.SSHInfo, dbUrl string) (*Tunnel, error) {
 	}
 
 	return tunnel, nil
+}
+
+func parseEncryptedPrivateKey(buff []byte, keyPass []byte) (ssh.Signer, error) {
+    // Decode the PEM block
+    pemBlock, _ := pem.Decode(buff)
+    if pemBlock == nil {
+        return nil, fmt.Errorf("failed to decode PEM block")
+    }
+
+    // Parse the encrypted private key with passphrase
+    decryptedKey, err := ssh.ParseRawPrivateKeyWithPassphrase(pemBlock.Bytes, keyPass)
+    if err != nil {
+        return nil, fmt.Errorf("failed to decrypt and parse private key: %v", err)
+    }
+
+    // Create a signer from the decrypted key
+    signer, err := ssh.NewSignerFromKey(decryptedKey)
+    if err != nil {
+        return nil, fmt.Errorf("failed to create signer from key: %v", err)
+    }
+
+    return signer, nil
 }
