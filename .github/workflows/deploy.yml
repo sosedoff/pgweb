@@ -3,7 +3,7 @@ name: demo deploy
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_TOKEN }}
