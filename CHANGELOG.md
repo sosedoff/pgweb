@@ -1,3 +1,7 @@
+# 0.16.1 - 2024-09-07
+
+- `FIX` Remove linux/arm/v5 from docker release action, GH-742
+
 # 0.16.0 - 2024-06-04
 
 - `NEW` Allow database stats downloads, GH-738
