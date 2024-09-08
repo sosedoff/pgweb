@@ -3,7 +3,7 @@ name: docker
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   GO_VERSION: "1.22"
