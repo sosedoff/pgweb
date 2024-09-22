@@ -213,7 +213,12 @@ func startServer() {
 	go func() {
 		metrics.SetHealthy(true)
 
-		err := router.Run(fmt.Sprintf("%v:%v", options.HTTPHost, options.HTTPPort))
+		var err error
+		if options.TLSMode {
+			err = router.RunTLS(fmt.Sprintf("%v:%v", options.HTTPHost, options.HTTPPort), options.TLSCert, options.TLSKey)
+		} else {
+			err = router.Run(fmt.Sprintf("%v:%v", options.HTTPHost, options.HTTPPort))
+		}
 		if err != nil {
 			fmt.Println("Cant start server:", err)
 			if strings.Contains(err.Error(), "address already in use") {
@@ -243,7 +248,12 @@ func handleSignals() {
 }
 
 func openPage() {
-	url := fmt.Sprintf("http://%v:%v/%s", options.HTTPHost, options.HTTPPort, options.Prefix)
+	var url string
+	if options.TLSMode {
+		url = fmt.Sprintf("https://%v:%v/%s", options.HTTPHost, options.HTTPPort, options.Prefix)
+	} else {
+		url = fmt.Sprintf("http://%v:%v/%s", options.HTTPHost, options.HTTPPort, options.Prefix)
+	}
 	fmt.Println("To view database open", url, "in browser")
 
 	if options.SkipOpen {

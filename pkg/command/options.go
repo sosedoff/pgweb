@@ -41,6 +41,9 @@ type Options struct {
 	RetryCount                   uint   `long:"open-retry" description:"Number of times to retry establishing connection" default:"0"`
 	HTTPHost                     string `long:"bind" description:"HTTP server host" default:"localhost"`
 	HTTPPort                     uint   `long:"listen" description:"HTTP server listen port" default:"8081"`
+	TLSMode                      bool   `long:"tls" description:"HTTP server SSL Mode"`
+	TLSCert                      string `long:"tls-cert" description:"HTTP server SSL certificate file"`
+	TLSKey                       string `long:"tls-key" description:"HTTP server SSL certificate key file"`
 	AuthUser                     string `long:"auth-user" description:"HTTP basic auth user"`
 	AuthPass                     string `long:"auth-pass" description:"HTTP basic auth password"`
 	SkipOpen                     bool   `short:"s" long:"skip-open" description:"Skip browser open on start"`
