@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 40
     strategy:
       matrix:
-        pg_version: [9.6, 10, 11, 12, 13, 14, 15, 16]
+        pg_version: [9.6, 10, 11, 12, 13, 14, 15, 16, 17]
 
     services:
       postgres:
