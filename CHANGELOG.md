@@ -1,14 +1,18 @@
-# 0.16.2 - 2024-11-02
+## Changelog
+
+Current [release](https://github.com/sosedoff/pgweb/releases) is `0.16.2`.
+
+## 0.16.2 - 2024-11-02
 
 - `FIX` Build a new Docker image with PostgreSQL 17 support
 - `FIX` Run CI against PostgreSQL 17, GH-758
 - `FIX` Rename master to main branch, GH-750
 
-# 0.16.1 - 2024-09-07
+## 0.16.1 - 2024-09-07
 
 - `FIX` Remove linux/arm/v5 from docker release action, GH-742
 
-# 0.16.0 - 2024-06-04
+## 0.16.0 - 2024-06-04
 
 - `NEW` Allow database stats downloads, GH-738
 - `NEW` Add analyze table action, GH-737
@@ -18,26 +22,26 @@
 - `FIX` Drop linux/arm/v5 from docker build, GH-728
 - `FIX` Propagate CGO_ENABLED environment variable to docker build, GH-724
 
-# 0.15.0 - 2024-03-14
+## 0.15.0 - 2024-03-14
 
 - `NEW` Add support for a bookmarks-only mode, GH-716
 - `FIX` Fix missing indexes by quoting schema/table name to ::regclass, GH-711
 - `FIX` Continue on parseJSON error, GH-708
 
-# 0.14.3 - 2024-01-28
+## 0.14.3 - 2024-01-28
 
 - `NEW` Allow retrying a connection on startup, GH-695
 - `NEW` Allow setting readonly mode in bookmarks, GH-707
 - `FIX` Add UPDATE to list of restricted keywords in read-only mode, GH-697
 
-# 0.14.2 - 2023-10-29
+## 0.14.2 - 2023-10-29
 
 - `NEW` Execute tests using PostgreSQL 16, GH-691
 - `FIX` Unclosed database sessions and tunnels, GH-688
 - `FIX` Use pg_table_size for table stats query, GH-685
 - `FIX` Use `HasSuffix` to correctly determine URL prefix, GH-684
 
-# 0.14.1 - 2023-06-17
+## 0.14.1 - 2023-06-17
 
 - `NEW` Add process start time metric, GH-675
 - `NEW` Configure pgweb user for docker container, GH-674
@@ -45,7 +49,7 @@
 - `FIX` Fix typo in the healthy metric, GH-657
 - `NEW` Use entrypoint instead of cmd in in dockerfile, GH-654
 
-# 0.14.0 - 2023-02-21
+## 0.14.0 - 2023-02-21
 
 - `FIX` History page query loading fixup, GH-632
 - `NEW` Display cell content via context menu, GH-634
@@ -57,11 +61,11 @@
 - `FIX` Ensure that objects are sorted by schema and name, GH-648
 - `FIX` Fetch local queries on db connect, GH-650
 
-# 0.13.1 - 2022-12-27
+## 0.13.1 - 2022-12-27
 
 - Fix connect flow when `~/.pgweb/bookmarks` directory is not available, GH-631
 
-# 0.13.0 - 2022-12-25
+## 0.13.0 - 2022-12-25
 
 - Add support for .pgpass file, GH-617
 - Request logging additions (request id, forwarded user), GH-618
@@ -73,7 +77,7 @@
 - Add duration_ms to log entries, GH-628
 - Add query execution stats to api endpoint, GH-629
 
-# 0.12.0 - 2022-12-13
+## 0.12.0 - 2022-12-13
 
 - Deprecate usage of Gox for binary builds, GH-571
 - Add netcat install in dockerfile to provide a way to healthcheck, GH-572
@@ -100,12 +104,12 @@
 - Switch windows tests from Appveyor to Github Actions, GH-611
 - Fix activity endpoint panic when server version is not detected, GH-612
 
-# 0.11.12 - 2022-07-05
+## 0.11.12 - 2022-07-05
 
 - Update base docker image (alpine), update deps, GH-558
 - Refactor docker images building, include ARM, GH-568
 
-# 0.11.11 - 2022-03-29
+## 0.11.11 - 2022-03-29
 
 - Auto-detect the query from the query source based on user selection, GH-547
 - Added binary codec base58 as well as improving the help for --binary-codec flag, GH-548
