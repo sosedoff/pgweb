@@ -1,3 +1,9 @@
+# 0.16.2 - 2024-11-02
+
+- `FIX` Build a new Docker image with PostgreSQL 17 support
+- `FIX` Run CI against PostgreSQL 17, GH-758
+- `FIX` Rename master to main branch, GH-750
+
 # 0.16.1 - 2024-09-07
 
 - `FIX` Remove linux/arm/v5 from docker release action, GH-742
