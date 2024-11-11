@@ -445,7 +445,7 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
   results.columns.forEach(function(col) {
     if (col === sortColumn) {
-      cols += "<th class='table-header-col active' data-name='" + col + "'" + "data-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
+      cols += "<th class='table-header-col active' data-name='" + col + "' data-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
     }
     else {
       cols += "<th class='table-header-col' data-name='" + col + "'>" + col + "</th>";
