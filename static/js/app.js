@@ -432,8 +432,7 @@ function buildTable(results, sortColumn, sortOrder, options) {
     $("#results_body").html("<tr><td>No records found</td></tr>");
     if (results.stats) {
       $("#result-rows-count").html(results.stats.query_duration_ms + " ms");
-    }
-    else {
+    } else {
       $("#result-rows-count").html("");
     }
     $("#results").addClass("empty");
@@ -446,8 +445,7 @@ function buildTable(results, sortColumn, sortOrder, options) {
   results.columns.forEach(function(col) {
     if (col === sortColumn) {
       cols += "<th class='table-header-col active' data-name='" + col + "' data-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
-    }
-    else {
+    } else {
       cols += "<th class='table-header-col' data-name='" + col + "'>" + col + "</th>";
     }
   });
