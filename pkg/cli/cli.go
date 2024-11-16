@@ -215,7 +215,7 @@ func startServer() {
 
 		err := router.Run(fmt.Sprintf("%v:%v", options.HTTPHost, options.HTTPPort))
 		if err != nil {
-			fmt.Println("Cant start server:", err)
+			fmt.Println("Can't start server:", err)
 			if strings.Contains(err.Error(), "address already in use") {
 				openPage()
 			}

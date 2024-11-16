@@ -181,7 +181,7 @@ func ParseOptions(args []string) (Options, error) {
 
 	homePath, err := homedir.Dir()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "[WARN] cant detect home dir: %v", err)
+		fmt.Fprintf(os.Stderr, "[WARN] can't detect home dir: %v", err)
 		homePath = os.Getenv("HOME")
 	}
 
