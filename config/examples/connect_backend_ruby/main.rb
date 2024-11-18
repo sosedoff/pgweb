@@ -3,7 +3,7 @@ require "sinatra"
 # Authentication token
 $token = "test"
 
-# List of all availble resources
+# List of all available resources
 $resources = {
   "id1" => "postgres://localhost:5432/db1?sslmode=disable",
   "id2" => "postgres://localhost:5432/db2?sslmode=disable",

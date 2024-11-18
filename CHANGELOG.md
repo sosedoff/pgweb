@@ -374,7 +374,7 @@ Current [release](https://github.com/sosedoff/pgweb/releases) is `0.16.2`.
 ## 0.6.0 - 2015-05-31
 
 - Adds ability to execute only selected SQL query in run command view, [GH-85]
-- Adds ability to delete/truncate table via context meny on sidebar view
+- Adds ability to delete/truncate table via context many on sidebar view
 - Adds ability to export table contents to CSV via context menu on sidebar view
 - Changes sidebar color scheme to a lighter and better looking one
 
@@ -388,7 +388,7 @@ Current [release](https://github.com/sosedoff/pgweb/releases) is `0.16.2`.
 
 ## 0.5.2 - 2015-04-13
 
-- Adds a new endpoint /activity that retuns active queries
+- Adds a new endpoint /activity that returns active queries
 - Adds tab to view active queries
 - Adds column sorting when browsing table contents
 - Fixes SQL query view when switching to table structure view
