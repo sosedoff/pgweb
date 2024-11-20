@@ -430,7 +430,11 @@ function buildTable(results, sortColumn, sortOrder, options) {
   if (results.rows.length == 0) {
     $("#results_header").html("");
     $("#results_body").html("<tr><td>No records found</td></tr>");
-    $("#result-rows-count").html("");
+    if (results.stats) {
+      $("#result-rows-count").html(results.stats.query_duration_ms + " ms");
+    } else {
+      $("#result-rows-count").html("");
+    }
     $("#results").addClass("empty");
     return;
   }
@@ -440,9 +444,8 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
   results.columns.forEach(function(col) {
     if (col === sortColumn) {
-      cols += "<th class='table-header-col active' data-name='" + col + "'" + "data-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
-    }
-    else {
+      cols += "<th class='table-header-col active' data-name='" + col + "' data-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
+    } else {
       cols += "<th class='table-header-col' data-name='" + col + "'>" + col + "</th>";
     }
   });
