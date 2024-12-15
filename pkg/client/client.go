@@ -386,6 +386,10 @@ func (client *Client) TablesStats() (*Result, error) {
 	return client.query(statements.TablesStats)
 }
 
+func (client *Client) ServerSettings() (*Result, error) {
+	return client.query(statements.Settings)
+}
+
 // Returns all active queriers on the server
 func (client *Client) Activity() (*Result, error) {
 	if client.serverType == cockroachType {

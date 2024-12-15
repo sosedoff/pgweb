@@ -99,6 +99,7 @@ function apiCall(method, path, params, cb) {
 
 function getInfo(cb)                        { apiCall("get", "/info", {}, cb); }
 function getConnection(cb)                  { apiCall("get", "/connection", {}, cb); }
+function getServerSettings(cb)              { apiCall("get", "/server_settings", {}, cb); }
 function getSchemas(cb)                     { apiCall("get", "/schemas", {}, cb); }
 function getObjects(cb)                     { apiCall("get", "/objects", {}, cb); }
 function getTables(cb)                      { apiCall("get", "/tables", {}, cb); }
@@ -676,6 +677,17 @@ function showDatabaseStats() {
 
 function downloadDatabaseStats() {
   openInNewWindow("api/tables_stats", { format: "csv", export: "true" });
+}
+
+function showServerSettings() {
+  getServerSettings(function(data) {
+    buildTable(data);
+
+    setCurrentTab("table_content");
+    $("#input").hide();
+    $("#body").prop("class", "full");
+    $("#results").addClass("no-crop");
+  });
 }
 
 function showTableStructure() {
@@ -1279,6 +1291,9 @@ function bindCurrentDatabaseMenu() {
           break;
         case "download_db_stats":
           downloadDatabaseStats();
+          break;
+        case "server_settings":
+          showServerSettings();
           break;
         case "export":
           openInNewWindow("api/export");

@@ -486,6 +486,12 @@ func GetConnectionInfo(c *gin.Context) {
 	successResponse(c, info)
 }
 
+// GetServerSettings renders a list of all server settings
+func GetServerSettings(c *gin.Context) {
+	res, err := DB(c).ServerSettings()
+	serveResult(c, res, err)
+}
+
 // GetActivity renders a list of running queries
 func GetActivity(c *gin.Context) {
 	res, err := DB(c).Activity()
