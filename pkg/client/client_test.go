@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sosedoff/pgweb/pkg/command"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/sosedoff/pgweb/pkg/command"
 )
 
 var (
@@ -717,6 +717,32 @@ func testConnContext(t *testing.T) {
 	assert.Equal(t, "default", result.Mode)
 }
 
+func testServerSettings(t *testing.T) {
+	expectedColumns := []string{
+		"name",
+		"setting",
+		"unit",
+		"category",
+		"short_desc",
+		"extra_desc",
+		"context",
+		"vartype",
+		"source",
+		"min_val",
+		"max_val",
+		"enumvals",
+		"boot_val",
+		"reset_val",
+		"sourcefile",
+		"sourceline",
+		"pending_restart",
+	}
+
+	result, err := testClient.ServerSettings()
+	assert.NoError(t, err)
+	assert.Equal(t, expectedColumns, result.Columns)
+}
+
 func TestAll(t *testing.T) {
 	if onWindows() {
 		t.Log("Unit testing on Windows platform is not supported.")
@@ -756,6 +782,7 @@ func TestAll(t *testing.T) {
 	testDumpExport(t)
 	testTablesStats(t)
 	testConnContext(t)
+	testServerSettings(t)
 
 	teardownClient()
 	teardown(t, true)
