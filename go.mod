@@ -16,6 +16,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.3
 	github.com/tuvistavie/securerandom v0.0.0-20140719024926-15512123a948
+	go.balki.me/anyhttp v0.5.0
 	golang.org/x/crypto v0.9.0
 )
 

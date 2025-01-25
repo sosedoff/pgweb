@@ -39,6 +39,7 @@ type Options struct {
 	OpenTimeout                  int    `long:"open-timeout" description:"Maximum wait time for connection, in seconds" default:"30"`
 	RetryDelay                   uint   `long:"open-retry-delay" description:"Number of seconds to wait before retrying the connection" default:"3"`
 	RetryCount                   uint   `long:"open-retry" description:"Number of times to retry establishing connection" default:"0"`
+	HTTPAddr                     string `long:"address" description:"anyhttp address. See https://pkg.go.dev/go.balki.me/anyhttp#readme-address-syntax" default:""`
 	HTTPHost                     string `long:"bind" description:"HTTP server host" default:"localhost"`
 	HTTPPort                     uint   `long:"listen" description:"HTTP server listen port" default:"8081"`
 	AuthUser                     string `long:"auth-user" description:"HTTP basic auth user"`
