@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -22,6 +23,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/metrics"
 	"github.com/sosedoff/pgweb/pkg/queries"
 	"github.com/sosedoff/pgweb/pkg/util"
+	"go.balki.me/anyhttp"
 )
 
 var (
@@ -194,7 +196,7 @@ func printVersion() {
 	fmt.Println(command.VersionString())
 }
 
-func startServer() {
+func startServer() *anyhttp.ServerCtx {
 	router := gin.New()
 	router.Use(api.RequestLogger(logger))
 	router.Use(gin.Recovery())
@@ -210,18 +212,22 @@ func startServer() {
 	api.SetupMetrics(router)
 
 	fmt.Println("Starting server...")
-	go func() {
-		metrics.SetHealthy(true)
+	address := fmt.Sprintf("%v:%v", options.HTTPHost, options.HTTPPort)
+	if options.HTTPAddr != "" {
+		address = options.HTTPAddr
+	}
 
-		err := router.Run(fmt.Sprintf("%v:%v", options.HTTPHost, options.HTTPPort))
-		if err != nil {
-			fmt.Println("Can't start server:", err)
-			if strings.Contains(err.Error(), "address already in use") {
-				openPage()
-			}
-			os.Exit(1)
+	metrics.SetHealthy(true)
+
+	ctx, err := anyhttp.Serve(address, router.Handler())
+	if err != nil {
+		fmt.Println("Can't start server:", err)
+		if strings.Contains(err.Error(), "address already in use") {
+			openPage()
 		}
-	}()
+		os.Exit(1)
+	}
+	return ctx
 }
 
 func startMetricsServer() {
@@ -234,12 +240,6 @@ func startMetricsServer() {
 	if err != nil {
 		logger.WithError(err).Fatal("unable to start prometheus metrics server")
 	}
-}
-
-func handleSignals() {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	<-c
 }
 
 func openPage() {
@@ -327,7 +327,17 @@ func Run() {
 		go startMetricsServer()
 	}
 
-	startServer()
+	serverCtx := startServer()
+
 	openPage()
-	handleSignals()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	select {
+	case doneErr := <-serverCtx.Done:
+		logger.Infoln("idle server. shutting down error: ", doneErr)
+	case <-c:
+		logger.Infoln("received signal. shutting down")
+		serverCtx.Shutdown(context.TODO())
+	}
 }
