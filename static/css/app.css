@@ -1,3 +1,23 @@
+body {
+  --bs-body-font-size: 0.875rem;
+  --bs-border-radius: 0.25rem;
+}
+
+.btn-sm {
+  --bs-btn-padding-y: 0.3125rem;
+  --bs-btn-padding-x: 0.625rem;
+  --bs-btn-font-size: 0.75rem;
+}
+
+.form-select {
+  padding: .375rem 1.5rem .375rem .75rem;
+  background-position: right 0.25rem center;
+}
+
+.dropdown-menu {
+  font-size: 0.875rem;
+}
+
 #main {
   display: none;
 }
@@ -129,6 +149,10 @@
   font-weight: normal;
   outline: none;
   border: 0px none;
+}
+
+#sidebar .dropdown-menu {
+  line-height: var(--bs-body-line-height);
 }
 
 #sidebar .current-database span.refresh {
@@ -372,10 +396,6 @@
   background: #7eb154;
 }
 
-#input .actions .btn-default:hover {
-  background: #bbb;
-}
-
 #input .actions .btn:last-child {
   margin-right: 0px;
 }
@@ -427,7 +447,6 @@
   font-size: 12px;
   width: 100px;
   float: left;
-  line-height: 30px;
   height: 30px;
   margin-right: 8px;
   outline: none;
@@ -457,11 +476,6 @@
   outline: none;
   float: left;
   margin-right: 8px;
-}
-
-#pagination .filters .btn-default {
-  float: left;
-  outline: none;
 }
 
 #pagination .btn-group {
@@ -585,6 +599,8 @@
 #results_view pre {
   border: 0px none;
   position: relative;
+  padding: 9.5px;
+  background-color: #f5f5f5;
 }
 
 #results_view .copy {
@@ -735,10 +751,6 @@
   display: none;
 }
 
-.bookmarks {
-  display: none;
-}
-
 .connection-settings {
   width: 600px;
   margin: 0px auto;
@@ -785,6 +797,15 @@
 
 .connection-settings form .no-left-padding {
   padding-left: 0;
+}
+
+.connection-settings form .row {
+  padding-bottom: 1rem;
+}
+
+.connection-settings form .col-form-label {
+  text-align: end;
+  font-weight: bolder;
 }
 
 .connection-scheme-group {
