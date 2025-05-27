@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/sosedoff/pgweb/pkg/command"
+	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
 var (
@@ -31,8 +32,9 @@ func SetLogger(l *logrus.Logger) {
 
 func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 	debug := logger.Level > logrus.InfoLevel
+	info := logger.Level >= logrus.InfoLevel
 	logForwardedUser := command.Opts.LogForwardedUser
-
+	logger.SetFormatter(&logrus.JSONFormatter{})
 	return func(c *gin.Context) {
 		start := time.Now()
 		path := c.Request.URL.Path
@@ -58,7 +60,6 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 			"method":      c.Request.Method,
 			"remote_addr": c.ClientIP(),
 			"duration":    latency.String(),
-			"duration_ms": latency.Milliseconds(),
 			"path":        path,
 		}
 
@@ -80,11 +81,15 @@ func RequestLogger(logger *logrus.Logger) gin.HandlerFunc {
 		}
 
 		// Additional fields for debugging
-		if debug {
-			fields["raw_query"] = c.Request.URL.RawQuery
-
-			if c.Request.Method != http.MethodGet {
-				fields["raw_form"] = c.Request.Form
+		if info {
+			if path == "/api/connect" {
+				fields["raw_form"] = shared.SanitizeConnectionString(c.Request.Form.Get("url"))
+			} else if path == "/api/query" {
+				if c.Request.Method != http.MethodGet {
+					fields["raw_form"] = c.Request.Form
+				} else {
+					fields["raw_query"] = c.Request.URL.RawQuery
+				}
 			}
 		}
 

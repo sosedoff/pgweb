@@ -60,7 +60,8 @@ func New() (*Client, error) {
 	str, err := connection.BuildStringFromOptions(command.Opts)
 
 	if command.Opts.Debug && str != "" {
-		fmt.Println("Creating a new client for:", str)
+		sanitizedStr := shared.SanitizeConnectionString(str)
+		fmt.Println("Creating a new client from string for:", sanitizedStr)
 	}
 
 	if err != nil {
@@ -121,7 +122,8 @@ func NewFromUrl(url string, sshInfo *shared.SSHInfo) (*Client, error) {
 	}
 
 	if command.Opts.Debug {
-		fmt.Println("Creating a new client for:", url)
+		sanitizedUrl := shared.SanitizeConnectionString(url)
+		fmt.Println("Creating a new client from url for:", sanitizedUrl)
 	}
 
 	uri, err := neturl.Parse(url)
