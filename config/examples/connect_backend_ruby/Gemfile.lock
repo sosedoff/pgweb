@@ -1,30 +1,43 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    json (2.6.2)
-    mustermann (3.0.0)
+    base64 (0.3.0)
+    json (2.12.2)
+    logger (1.7.0)
+    mustermann (3.0.3)
       ruby2_keywords (~> 0.0.1)
-    nio4r (2.5.8)
-    puma (6.0.0)
+    nio4r (2.7.4)
+    puma (6.6.0)
       nio4r (~> 2.0)
-    rack (2.2.14)
-    rack-protection (3.0.4)
-      rack
+    rack (3.1.16)
+    rack-protection (4.1.1)
+      base64 (>= 0.1.0)
+      logger (>= 1.6.0)
+      rack (>= 3.0.0, < 4)
+    rack-session (2.1.1)
+      base64 (>= 0.1.0)
+      rack (>= 3.0.0)
+    rackup (2.2.1)
+      rack (>= 3)
     ruby2_keywords (0.0.5)
-    sinatra (3.0.4)
+    sinatra (4.1.1)
+      logger (>= 1.6.0)
       mustermann (~> 3.0)
-      rack (~> 2.2, >= 2.2.4)
-      rack-protection (= 3.0.4)
+      rack (>= 3.0.0, < 4)
+      rack-protection (= 4.1.1)
+      rack-session (>= 2.0.0, < 3)
       tilt (~> 2.0)
-    tilt (2.0.11)
+    tilt (2.6.0)
 
 PLATFORMS
   arm64-darwin-21
+  arm64-darwin-24
   x86_64-linux
 
 DEPENDENCIES
   json
   puma
+  rackup
   sinatra
 
 BUNDLED WITH
