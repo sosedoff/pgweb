@@ -15,9 +15,7 @@ RUN go mod download
 COPY Makefile main.go ./
 COPY static/ static/
 COPY pkg/ pkg/
-COPY .git/ .
-RUN make build
-
+RUN go build -ldflags="-X main.commit=render-build -X main.buildTime=$(date -u +%Y-%m-%dT%H:%M:%SZ)" 
 # ------------------------------------------------------------------------------
 # Fetch signing key
 # ------------------------------------------------------------------------------
