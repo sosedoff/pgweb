@@ -42,5 +42,12 @@ COPY --from=build /build/pgweb /usr/bin/pgweb
 RUN useradd --uid 1000 --no-create-home --shell /bin/false pgweb
 USER pgweb
 
-EXPOSE 8081
-ENTRYPOINT ["/usr/bin/pgweb", "--bind=0.0.0.0", "--listen=8081"]
+EXPOSE 8080
+ENTRYPOINT ["/pgweb", "--bind=0.0.0.0", "--listen=8080"]
+
+
+# Set default port and binding
+
+
+# Enable environment variable configuration
+ENV DATABASE_URL="" PGWEB_READONLY=false
