@@ -24,6 +24,8 @@ ADD https://www.postgresql.org/media/keys/ACCC4CF8.asc keyring.asc
 RUN apt-get update && \
     apt-get install -qq --no-install-recommends gpg
 RUN gpg -o keyring.pgp --dearmor keyring.asc
+RUN apt-get update && apt-get install -y git build-essential
+
 
 # ------------------------------------------------------------------------------
 # Release Stage
