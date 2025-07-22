@@ -43,7 +43,9 @@ FROM debian:bullseye-slim
 
 # Environment variables at top level
 ENV DATABASE_URL="" PGWEB_READONLY=false
-
+ENV PGWEB_DATABASE_URL=${DATABASE_URL}
+ENV DATABASE_URL=${DATABASE_URL}
+ENV PGWEB_READONLY=false
 # Configure PostgreSQL repository
 ARG keyring=/usr/share/keyrings/postgresql-archive-keyring.pgp
 COPY --from=keyring /keyring.pgp $keyring
