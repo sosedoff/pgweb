@@ -26,6 +26,9 @@ var (
 	// DbClient represents the active database connection in a single-session mode
 	DbClient *client.Client
 
+	// DbSession represents the active database session in single-session mode
+	DbSession *Session
+
 	// DbSessions represents the mapping for client connections
 	DbSessions *SessionManager
 
@@ -33,23 +36,31 @@ var (
 	QueryStore *queries.Store
 )
 
-// DB returns a database connection from the client context
-func DB(c *gin.Context) *client.Client {
+// DBSession returns a database session from the client context
+func DBSession(c *gin.Context) *Session {
 	if command.Opts.Sessions {
-		return DbSessions.Get(getSessionId(c.Request))
+		return DbSessions.GetSession(getSessionId(c.Request))
 	}
-	return DbClient
+	return DbSession
 }
 
-// setClient sets the database client connection for the sessions
-func setClient(c *gin.Context, newClient *client.Client) error {
+// DB returns a database connection from the client context
+func DB(c *gin.Context) *client.Client {
+	session := DBSession(c)
+	if session == nil {
+		return nil
+	}
+	return session.Client
+}
+
+func setSession(c *gin.Context, newSession *Session) error {
 	currentClient := DB(c)
 	if currentClient != nil {
 		currentClient.Close()
 	}
 
 	if !command.Opts.Sessions {
-		DbClient = newClient
+		DbSession = newSession
 		return nil
 	}
 
@@ -58,7 +69,7 @@ func setClient(c *gin.Context, newClient *client.Client) error {
 		return errSessionRequired
 	}
 
-	DbSessions.Add(sid, newClient)
+	DbSessions.AddSession(sid, newSession)
 	return nil
 }
 
@@ -99,16 +110,6 @@ func ConnectWithBackend(c *gin.Context) {
 		PassHeaders: strings.Split(command.Opts.ConnectHeaders, ","),
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
-
-	// Fetch connection credentials
-	cred, err := backend.FetchCredential(ctx, c.Param("resource"), c)
-	if err != nil {
-		badRequest(c, err)
-		return
-	}
-
 	// Make the new session
 	sid, err := securerandom.Uuid()
 	if err != nil {
@@ -117,21 +118,44 @@ func ConnectWithBackend(c *gin.Context) {
 	}
 	c.Request.Header.Add("x-session-id", sid)
 
-	// Connect to the database
-	cl, err := client.NewFromUrl(cred.DatabaseURL, nil)
-	if err != nil {
-		badRequest(c, err)
-		return
-	}
-	cl.External = true
+	err = setSession(c, &Session{
+		SessionRefresh: func(s *Session) (*Session, error) {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+			defer cancel()
 
-	// Finalize session seetup
-	_, err = cl.Info()
-	if err == nil {
-		err = setClient(c, cl)
-	}
+			if s == nil {
+				s = &Session{}
+			}
+			if s.Client != nil {
+				s.Client.Close()
+			}
+
+			// Fetch connection credentials
+			cred, err := backend.FetchCredential(ctx, c.Param("resource"), c)
+			if err != nil {
+				return s, err
+			}
+
+			s.SessionExpiry = cred.SessionExpiry
+
+			// Connect to the database
+			s.Client, err = client.NewFromUrl(cred.DatabaseURL, nil)
+			if err != nil {
+				return s, err
+			}
+			s.Client.External = true
+
+			// Finalize session setup
+			_, err = s.Client.Info()
+			if err != nil {
+				s.Client.Close()
+				return s, err
+			}
+
+			return s, nil
+		},
+	})
 	if err != nil {
-		cl.Close()
 		badRequest(c, err)
 		return
 	}
@@ -172,7 +196,9 @@ func Connect(c *gin.Context) {
 
 	info, err := cl.Info()
 	if err == nil {
-		err = setClient(c, cl)
+		err = setSession(c, &Session{
+			Client: cl,
+		})
 	}
 	if err != nil {
 		cl.Close()
@@ -265,7 +291,9 @@ func SwitchDb(c *gin.Context) {
 
 	info, err := cl.Info()
 	if err == nil {
-		err = setClient(c, cl)
+		err = setSession(c, &Session{
+			Client: cl,
+		})
 	}
 	if err != nil {
 		cl.Close()
@@ -291,18 +319,19 @@ func Disconnect(c *gin.Context) {
 		return
 	}
 
-	conn := DB(c)
-	if conn == nil {
+	session := DBSession(c)
+	if session == nil {
 		badRequest(c, errNotConnected)
 		return
 	}
 
-	err := conn.Close()
+	err := session.Client.Close()
 	if err != nil {
 		badRequest(c, err)
 		return
 	}
 
+	DbSession = nil
 	DbClient = nil
 	successResponse(c, gin.H{"success": true})
 }
