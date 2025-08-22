@@ -106,6 +106,7 @@ func setup() {
 
 	out, err := exec.Command(
 		testCommands["createdb"],
+		"-w",
 		"-U", serverUser,
 		"-h", serverHost,
 		"-p", serverPort,
@@ -120,6 +121,7 @@ func setup() {
 
 	out, err = exec.Command(
 		testCommands["psql"],
+		"-w",
 		"-U", serverUser,
 		"-h", serverHost,
 		"-p", serverPort,
@@ -148,6 +150,7 @@ func teardownClient() {
 func teardown(t *testing.T, allowFail bool) {
 	output, err := exec.Command(
 		testCommands["dropdb"],
+		"-w",
 		"-U", serverUser,
 		"-h", serverHost,
 		"-p", serverPort,
