@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +28,8 @@ type BackendRequest struct {
 
 // BackendCredential represents the third-party response
 type BackendCredential struct {
-	DatabaseURL string `json:"database_url"`
+	DatabaseURL   string    `json:"database_url"`
+	SessionExpiry time.Time `json:"session_expiry"`
 }
 
 // FetchCredential sends an authentication request to a third-party service

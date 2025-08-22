@@ -99,6 +99,9 @@ func initClient() {
 		exitWithMessage(err.Error())
 	}
 
+	api.DbSession = &api.Session{
+		Client: cl,
+	}
 	api.DbClient = cl
 }
 
@@ -298,8 +301,8 @@ func Run() {
 	initOptions()
 	initClient()
 
-	if api.DbClient != nil {
-		defer api.DbClient.Close()
+	if api.DbSession != nil {
+		defer api.DbSession.Client.Close()
 	}
 
 	if !options.Debug {
@@ -319,6 +322,31 @@ func Run() {
 			api.DbSessions.SetIdleTimeout(time.Minute * time.Duration(command.Opts.ConnectionIdleTimeout))
 			go api.DbSessions.RunPeriodicCleanup()
 		}
+	}
+
+	// TODO: make refresh optional
+	if options.Sessions {
+		go api.DbSessions.RunPeriodicRefresh()
+	} else {
+		go func() {
+			for {
+				if api.DbSession.Client == nil {
+					continue
+				}
+				if api.DbSession.SessionRefresh == nil || api.DbSession.SessionExpiry.IsZero() {
+					continue
+				}
+				newSession, err := api.DbSession.SessionRefresh(api.DbSession)
+				if err != nil {
+					// TODO: better error handling and logging
+					logger.Error("error refreshing sessions:", err)
+					continue
+				}
+				// FIXME: potential data race here
+				api.DbSession = newSession
+				api.DbClient = api.DbSession.Client
+			}
+		}()
 	}
 
 	// Start a separate metrics http server. If metrics addr is not provided, we

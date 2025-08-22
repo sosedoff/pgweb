@@ -16,8 +16,8 @@ func TestSessionManager(t *testing.T) {
 		manager := NewSessionManager(nil)
 		assert.Equal(t, []string{}, manager.IDs())
 
-		manager.sessions["foo"] = &client.Client{}
-		manager.sessions["bar"] = &client.Client{}
+		manager.sessions["foo"] = &Session{Client: &client.Client{}}
+		manager.sessions["bar"] = &Session{Client: &client.Client{}}
 
 		ids := manager.IDs()
 		sort.Strings(ids)
@@ -28,7 +28,7 @@ func TestSessionManager(t *testing.T) {
 		manager := NewSessionManager(nil)
 		assert.Nil(t, manager.Get("foo"))
 
-		manager.sessions["foo"] = &client.Client{}
+		manager.sessions["foo"] = &Session{Client: &client.Client{}}
 		assert.NotNil(t, manager.Get("foo"))
 	})
 
@@ -53,8 +53,8 @@ func TestSessionManager(t *testing.T) {
 
 	t.Run("return len", func(t *testing.T) {
 		manager := NewSessionManager(nil)
-		manager.sessions["foo"] = &client.Client{}
-		manager.sessions["bar"] = &client.Client{}
+		manager.sessions["foo"] = &Session{Client: &client.Client{}}
+		manager.sessions["bar"] = &Session{Client: &client.Client{}}
 
 		assert.Equal(t, 2, manager.Len())
 	})
