@@ -1,5 +1,12 @@
 package connect
 
+import "errors"
+
+var (
+	errBackendConnectError = errors.New("unable to connect to the auth backend")
+	errConnStringRequired  = errors.New("connection string is required")
+)
+
 // Request holds the resource request details
 type Request struct {
 	Resource string            `json:"resource"`

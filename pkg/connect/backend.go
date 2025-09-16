@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -49,7 +48,7 @@ func (be Backend) FetchCredential(ctx context.Context, resource string, headers 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		be.logger.WithField("resource", resource).Error("backend credential fetch failed:", err)
-		return nil, errors.New("unable to connect to the auth backend")
+		return nil, errBackendConnectError
 	}
 	defer resp.Body.Close()
 
@@ -70,7 +69,7 @@ func (be Backend) FetchCredential(ctx context.Context, resource string, headers 
 	}
 
 	if cred.DatabaseURL == "" {
-		return nil, errors.New("connection string is required")
+		return nil, errConnStringRequired
 	}
 
 	return cred, nil
