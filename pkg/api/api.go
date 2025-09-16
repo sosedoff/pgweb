@@ -15,6 +15,7 @@ import (
 	"github.com/sosedoff/pgweb/pkg/bookmarks"
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
+	"github.com/sosedoff/pgweb/pkg/connect"
 	"github.com/sosedoff/pgweb/pkg/connection"
 	"github.com/sosedoff/pgweb/pkg/metrics"
 	"github.com/sosedoff/pgweb/pkg/queries"
@@ -93,7 +94,7 @@ func GetSessions(c *gin.Context) {
 // ConnectWithBackend creates a new connection based on backend resource
 func ConnectWithBackend(c *gin.Context) {
 	// Setup a new backend client
-	backend := Backend{
+	backend := connect.Backend{
 		Endpoint:    command.Opts.ConnectBackend,
 		Token:       command.Opts.ConnectToken,
 		PassHeaders: strings.Split(command.Opts.ConnectHeaders, ","),
@@ -103,7 +104,7 @@ func ConnectWithBackend(c *gin.Context) {
 	defer cancel()
 
 	// Fetch connection credentials
-	cred, err := backend.FetchCredential(ctx, c.Param("resource"), c)
+	cred, err := backend.FetchCredential(ctx, c.Param("resource"), c.Request.Header)
 	if err != nil {
 		badRequest(c, err)
 		return
