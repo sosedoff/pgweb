@@ -93,11 +93,11 @@ func GetSessions(c *gin.Context) {
 
 // ConnectWithBackend creates a new connection based on backend resource
 func ConnectWithBackend(c *gin.Context) {
-	// Setup a new backend client
-	backend := connect.Backend{
-		Endpoint:    command.Opts.ConnectBackend,
-		Token:       command.Opts.ConnectToken,
-		PassHeaders: strings.Split(command.Opts.ConnectHeaders, ","),
+	backend := connect.NewBackend(command.Opts.ConnectBackend, command.Opts.ConnectToken)
+	backend.SetLogger(logger)
+
+	if command.Opts.ConnectHeaders != "" {
+		backend.SetPassHeaders(strings.Split(command.Opts.ConnectHeaders, ","))
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)

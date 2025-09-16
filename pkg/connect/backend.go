@@ -19,7 +19,23 @@ type Backend struct {
 	logger *logrus.Logger
 }
 
-func (be Backend) FetchCredential(ctx context.Context, resource string, headers http.Header) (*Credential, error) {
+func NewBackend(endpoint string, token string) Backend {
+	return Backend{
+		Endpoint: endpoint,
+		Token:    token,
+		logger:   logrus.StandardLogger(),
+	}
+}
+
+func (be *Backend) SetLogger(logger *logrus.Logger) {
+	be.logger = logger
+}
+
+func (be *Backend) SetPassHeaders(headers []string) {
+	be.PassHeaders = headers
+}
+
+func (be *Backend) FetchCredential(ctx context.Context, resource string, headers http.Header) (*Credential, error) {
 	be.logger.WithField("resource", resource).Debug("fetching database credential")
 
 	request := Request{
