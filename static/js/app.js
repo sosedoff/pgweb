@@ -405,6 +405,31 @@ function performRowAction(action, value) {
   }
 }
 
+function editCellValue(context) {
+  var cell = $(context);
+  var originalValue = unescapeHtml(cell.find("div").html());
+  var newValue = prompt("Edit cell value:", originalValue);
+  if (newValue === null) {
+    return; // User cancelled the prompt
+  }
+
+  var rowIdx      = cell.closest("tr").index();
+  var colIdx      = cell.index();
+  var tableName   = $("#results").data("table");
+  var colName     = $("#results_header th").eq(colIdx).data("name");
+  var pkColumn    = $("#results_header th").eq(0).data("name");
+  var pkValue     = $("#results_body tr").eq(rowIdx).find("td").eq(0).text();
+  var updateQuery = `UPDATE ${tableName} SET "${colName}" = '${newValue}' WHERE "${pkColumn}" = '${pkValue}';`;
+
+  executeQuery(updateQuery, function(data) {
+    if (data.error) {
+      alert("Error updating value: " + data.error);
+    } else {
+      cell.find("div").html(escapeHtml(newValue));
+    }
+  });
+}
+
 function sortArrow(direction) {
   switch (direction) {
     case "ASC":
@@ -1257,6 +1282,9 @@ function bindTableHeaderMenu() {
       var menuItem = $(e.target);
 
       switch(menuItem.data("action")) {
+        case "edit_value":
+          editCellValue(context);
+          break;
         case "display_value":
           var value = $(context).text();
           $("#content_modal .content").text(value);
