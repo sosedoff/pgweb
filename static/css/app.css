@@ -8,7 +8,7 @@
   left: 250px;
   right: 0;
   height: 50px;
-  background: #79589f;
+  background: var(--navbar-color);
 }
 
 #nav ul {
@@ -84,7 +84,7 @@
   font-weight: bold;
   font-size: 14px;
   color: #fff;
-  background: #79589f;
+  background: var(--navbar-color);
   z-index: 900;
 }
 
@@ -122,7 +122,7 @@
 
 #sidebar .current-database input.typeahead {
   display: none;
-  background: #79589f;
+  background: var(--navbar-color);
   width: 200px;
   height: 22px;
   color: #fff;
@@ -718,7 +718,7 @@
 }
 
 #edit_connection, #close_connection {
-  background: #79589f;
+  background: var(--navbar-color);
   color: #fff;
   border-color: #fff;
 }

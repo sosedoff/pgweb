@@ -1,0 +1,61 @@
+/* This file contains the main styles for the application, including layout and component styles. */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    background-color: var(--navbar-color, #007bff);
+    padding: 10px;
+}
+
+.navbar img {
+    height: 40px;
+}
+
+.theme-dark {
+    background-color: #343a40;
+    color: white;
+}
+
+.theme-light {
+    background-color: #f8f9fa;
+    color: black;
+}
+
+.container {
+    padding: 20px;
+}
+
+.button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button-primary {
+    background-color: var(--primary-color, #007bff);
+    color: white;
+}
+
+.button-secondary {
+    background-color: var(--secondary-color, #6c757d);
+    color: white;
+}
+
+.card {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 10px;
+}

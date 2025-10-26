@@ -1894,6 +1894,7 @@ $(document).ready(function() {
     });
   });
 
+  loadSettings();
   initEditor();
   addShortcutTooltips();
   bindDatabaseObjectsFilter();

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PGWeb Settings</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link id="theme-stylesheet" rel="stylesheet" href="css/themes/light.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Application Settings</h1>
+        <form id="settings-form">
+            <div class="form-group">
+                <label for="navbar-color">Navbar Color:</label>
+                <input type="color" id="navbar-color" class="form-control" value="#007bff">
+            </div>
+            <div class="form-group">
+                <label for="logo">Logo URL:</label>
+                <input type="text" id="logo" class="form-control" placeholder="Enter logo URL">
+            </div>
+            <div class="form-group">
+                <label for="theme">Theme:</label>
+                <select id="theme" class="form-control">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Settings</button>
+        </form>
+    </div>
+    <script src="js/lib/jquery.js"></script>
+    <script src="js/lib/bootstrap.js"></script>
+    <script src="js/settings.js"></script>
+    <script>
+        $(document).ready(function() {
+            loadSettings();
+            $('#settings-form').on('submit', function(e) {
+                e.preventDefault();
+                saveSettings();
+            });
+        });
+    </script>
+</body>
+</html>
