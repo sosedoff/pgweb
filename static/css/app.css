@@ -74,17 +74,25 @@
   background: #f9f9f9;
 }
 
+/* #sidebar .sidebar-top-wrapper {
+  height: 50px;
+  background: var(--navbar-color);
+} */
+ #sidebar .sidebar-brand {
+  height: 50px;
+  display: none;
+ }
+
 #sidebar .current-database {
   position: fixed;
   left: 0px;
   top: 0px;
   width: 250px;
-  height: 50px;
+  height: 20px;
   line-height: 50px;
   font-weight: bold;
   font-size: 14px;
   color: #fff;
-  background: var(--navbar-color);
   z-index: 900;
 }
 
@@ -280,6 +288,7 @@
   bottom: 0px;
   right: 0px;
   overflow: auto;
+  background-color: #33333312;
 }
 
 #input {

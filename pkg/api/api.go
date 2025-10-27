@@ -8,6 +8,7 @@ import (
 	neturl "net/url"
 	"strings"
 	"time"
+	"io/ioutil"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tuvistavie/securerandom"
@@ -595,6 +596,20 @@ func GetBookmarks(c *gin.Context) {
 	manager := bookmarks.NewManager(command.Opts.BookmarksDir)
 	ids, err := manager.ListIDs()
 	serveResult(c, ids, err)
+}
+
+// GetAppSettings returns the settings.json
+func GetAppSettings(c *gin.Context) {
+	data, err := ioutil.ReadFile("settings.json")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+            "error": "Failed to read settings.json",
+        })
+        return
+	}
+
+	// Send the json content
+    c.Data(http.StatusOK, "application/json", data)
 }
 
 // GetInfo renders the pgweb system information

@@ -19,6 +19,7 @@
   <script type="text/javascript" src="static/js/bootstrap3-typeahead.min.js"></script>
   <script type="text/javascript" src="static/js/app.js"></script>
   <script type="text/javascript" src="static/js/base64.js"></script>
+  <script type="text/javascript" src="static/js/settings.js"></script>
 </head>
 <body>
   <div id="main">
@@ -40,12 +41,17 @@
       </div>
     </div>
     <div id="sidebar">
+      <!-- <div class="sidebar-top-wrapper"> -->
+      <div class="sidebar-brand">
+        <img src="" alt="sidebar-brand">
+      </div>
       <div class="current-database">
         <div class="wrap">
           <i class="fa fa-database"></i> <span class="current-database-name" id="current_database"></span>
           <input class="typeahead" id="database_search" type="text" placeholder="Search database" autocomplete="off" />
           <span class="refresh" id="refresh_tables" title="Refresh tables list"><i class="fa fa-refresh"></i></span>
         </div>
+        <!-- </div> -->
       </div>
       <div class="objects-search">
         <div class="wrap">

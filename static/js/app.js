@@ -111,6 +111,7 @@ function getTablesStats(cb)                 { apiCall("get", "/tables_stats", {}
 function getFunction(id, cb)                { apiCall("get", "/functions/" + id, {}, cb); }
 function getHistory(cb)                     { apiCall("get", "/history", {}, cb); }
 function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
+function getSettings(cb)                    { apiCall("get", "/settings", {}, cb); }
 function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
 function explainQuery(query, cb)            { apiCall("post", "/explain", { query: query }, cb); }
 function analyzeQuery(query, cb)            { apiCall("post", "/analyze", { query: query }, cb); }
@@ -1556,6 +1557,21 @@ function bindContentModalEvents() {
     $("#content_modal pre").html(value);
     $("#content_modal").show();
   })
+}
+
+function loadSettings() {
+  getSettings(function(data) {
+    if (data.error) {
+      console.log("Error while fetching app settings:", data.error);
+      return;
+    }
+
+    if (data) {
+      // Set appSettings in global var
+      // appSettings = data;
+      applySettings(data);
+    }
+  });
 }
 
 $(document).ready(function() {

@@ -20,6 +20,9 @@ func SetupRoutes(router *gin.Engine) {
 
 	root.GET("/", gin.WrapH(GetHome(command.Opts.Prefix)))
 	root.GET("/static/*path", gin.WrapH(GetAssets(command.Opts.Prefix)))
+	root.GET("/logo.png", func(c *gin.Context) {
+		c.File("./static/img/logo.png")
+	})
 	root.GET("/connect/:resource", ConnectWithBackend)
 
 	api := root.Group("/api")
@@ -54,6 +57,7 @@ func SetupRoutes(router *gin.Engine) {
 	api.POST("/analyze", AnalyzeQuery)
 	api.GET("/history", GetHistory)
 	api.GET("/bookmarks", GetBookmarks)
+	api.GET("/settings", GetAppSettings)
 	api.GET("/export", DataExport)
 	api.GET("/local_queries", requireLocalQueries(), GetLocalQueries)
 	api.GET("/local_queries/:id", requireLocalQueries(), RunLocalQuery)

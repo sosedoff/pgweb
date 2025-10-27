@@ -14,12 +14,12 @@ let appSettings = {
 //         appSettings = JSON.parse(data);
 //     }
 // }
-function loadSettings() {
-    $.getJSON('settings.json', function(data) {
-        settings = data;
-        applySettings();
-    });
-}
+// function loadSettings() {
+//     $.getJSON('settings.json', function(data) {
+//         appSettings = data;
+//         applySettings();
+//     });
+// }
 
 // function saveSettings() {
 //     fs.writeFileSync(settingsFilePath, JSON.stringify(appSettings, null, 2));
@@ -29,7 +29,7 @@ function saveSettings() {
         url: 'settings.json',
         method: 'PUT',
         contentType: 'application/json',
-        data: JSON.stringify(settings),
+        data: JSON.stringify(appSettings),
         success: function() {
             console.log('Settings saved successfully.');
         },
@@ -39,10 +39,12 @@ function saveSettings() {
     });
 }
 
-function applySettings() {
-    document.body.style.backgroundColor = appSettings.darkTheme ? '#333' : '#fff';
-    document.querySelector('.navbar').style.backgroundColor = appSettings.navbarColor;
-    document.querySelector('#logo').src = appSettings.logo;
+function applySettings(settings) {
+    // document.body.style.backgroundColor = settings.darkTheme ? '#333' : '#fff';
+    // document.querySelector('.navbar').style.backgroundColor = appSettings.navbarColor;
+    document.documentElement.style.setProperty('--navbar-color', settings.navbarColor);
+    console.log(settings)
+    $('#sidebar .sidebar-brand > img').attr('src', settings.logo);
 }
 
 function setNavbarColor(color) {
@@ -60,9 +62,9 @@ function toggleTheme() {
     saveSettings();
 }
 
-function getSettings() {
-    return appSettings;
-}
+// function getSettings() {
+//     return appSettings;
+// }
 
 // Load settings on startup
 // loadSettings();
