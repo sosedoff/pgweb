@@ -4,7 +4,7 @@
 
 let appSettings = {
     navbarColor: '#79589f',
-    logo: 'default-logo.png',
+    logo: false,
     darkTheme: false
 };
 
@@ -44,7 +44,12 @@ function applySettings(settings) {
     // document.querySelector('.navbar').style.backgroundColor = appSettings.navbarColor;
     document.documentElement.style.setProperty('--navbar-color', settings.navbarColor);
     console.log(settings)
-    $('#sidebar .sidebar-brand > img').attr('src', settings.logo);
+    if (settings.logo) {
+        // Display logo wrapper
+        $('#sidebar .sidebar-brand').css('display', 'block');
+        // Set image link
+        // $('#sidebar .sidebar-brand > img').attr('src', settings.logo);
+    }
 }
 
 function setNavbarColor(color) {

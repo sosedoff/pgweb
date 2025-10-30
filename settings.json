@@ -1,6 +1,6 @@
 {
   "navbarColor": "#000",
-  "logo": "logo.png",
+  "logo": true,
   "theme": "light",
   "darkTheme": true
 }

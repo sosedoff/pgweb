@@ -21,7 +21,7 @@ func SetupRoutes(router *gin.Engine) {
 	root.GET("/", gin.WrapH(GetHome(command.Opts.Prefix)))
 	root.GET("/static/*path", gin.WrapH(GetAssets(command.Opts.Prefix)))
 	root.GET("/logo.png", func(c *gin.Context) {
-		c.File("./static/img/logo.png")
+		c.File("./logo.png")
 	})
 	root.GET("/connect/:resource", ConnectWithBackend)
 
