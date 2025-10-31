@@ -72,16 +72,15 @@
   bottom: 0px;
   box-sizing: border-box;
   background: #f9f9f9;
+  display: flex;
+  flex-direction: column;
 }
 
-/* #sidebar .sidebar-top-wrapper {
-  height: 50px;
-  background: var(--navbar-color);
-} */
 #sidebar .sidebar-brand {
   display: none;
   background: var(--navbar-color);
   height: 50px;
+  flex: none;
 }
 
 #sidebar .sidebar-brand-wrapper {
@@ -90,67 +89,67 @@
   height: 100%;
 }
 
+#sidebar .sidebar-brand small {
+  font-weight: bold;
+  color: white;
+}
+
 #sidebar .sidebar-brand img {
   height: 40px;
 }
 
 #sidebar .current-database {
-  width: 250px;
-  height: 50px;
-  line-height: 50px;
   font-weight: bold;
   font-size: 14px;
-}
-
-#sidebar .current-database .wrap {
-  position: relative;
-  height: 50px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  min-height: 48px;
 }
 
 #sidebar .current-database span.current-database-name {
-  margin-left: 30px;
+  margin-left: 10px;
+  vertical-align: middle;
   display: inline-block;
-  width: 200px;
-  height: 50px;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
+  width: 100%;
+  height: 22px;
 }
 
 #sidebar .current-database i.fa-database {
-  position: absolute;
-  left: 8px;
-  top: 18px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
 }
 
 #sidebar .current-database input.typeahead {
   margin-left: 30px;
   display: inline-block;
-  width: 200px;
-  height: 50px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  background: var(--navbar-color);
+  width: 200px;
+  height: 22px;
+  font-weight: normal;
+  outline: none;
+  border: 0px none;
+  position: absolute;
+  left: 10px;
+  background: #a9a9a959;
 }
 
 #sidebar .current-database input.typeahead {
   display: none;
-  background: var(--navbar-color);
-  width: 200px;
-  height: 22px;
-  color: #fff;
-  font-weight: normal;
-  outline: none;
-  border: 0px none;
 }
 
 #sidebar .current-database span.refresh {
   position: absolute;
-  top: 0px;
-  right: 6px;
+  right: 16px;
   cursor: pointer;
-  color: #fff;
   display: none;
 }
 
@@ -158,16 +157,11 @@
   display: inline-block;
 }
 
-#sidebar .current-database input.typeahead::-webkit-input-placeholder {
-  color: #fff;
-}
-
 #sidebar ul.typeahead {
   position: absolute;
   margin-left: 30px;
   overflow-y: auto;
   max-height: 300px;
-  z-index: 999;
 }
 
 #sidebar ul.typeahead a {
@@ -177,8 +171,6 @@
 
 #sidebar .objects-search {
   width: 250px;
-  height: 30px;
-  overflow: hidden;
 }
 
 #sidebar .objects-search .wrap {
@@ -225,28 +217,20 @@
 
 #sidebar div.tables-list {
   width: 250px;
-  bottom: 130px;
   overflow: auto;
 }
-
-#sidebar div.tables-list .wrap {
-  height: 100%;
-  overflow: auto;
-}
-
 
 #sidebar div.tables-list #tables, #sequences, #objects {
   font-size: 12px;
 }
 
 #sidebar div.table-information {
-  position: fixed;
   width: 250px;
-  left: 0px;
   height: 130px;
-  bottom: 0px;
   box-sizing: border-box;
   cursor: default;
+  flex: none;
+  margin-top: auto;
 }
 
 #sidebar div.table-information .wrap {
