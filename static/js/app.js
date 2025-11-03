@@ -477,10 +477,11 @@ function deleteRow(context) {
 function insertRow() {
   const tableName = $("#results").data("table");
   if (!tableName) {
-    alert("Aucune table sélectionnée !");
+    alert("Please select a table!");
     return;
   }
 
+  // Get the inputs generated in showInsertRow()
   const inputs = $("#insert_row input");
   let columns = [];
   let values = [];
@@ -490,7 +491,7 @@ function insertRow() {
     const val = $(this).val();
 
     columns.push('"' + colName + '"');
-    // Gestion des valeurs nulles / chaînes
+    // Handling NULL values/strings
     if (val === null || val.trim() === "") {
       values.push("NULL");
     } else {
@@ -502,11 +503,13 @@ function insertRow() {
 
   executeQuery(insertQuery, function(data) {
     if (data.error) {
-      alert("Erreur lors de l'insertion : " + data.error);
+      alert("Error while inserting: " + data.error);
     } else {
-      alert("Ligne insérée avec succès !");
+      alert("Row inserted successfully!");
+      // Reload table content to show the new row
       showTableContent();
-      $("#insert_row").html("");
+      // Reset form fields
+      showInsertRow(false);
       $(".insert_row_btn").show();
     }
   });
@@ -622,27 +625,28 @@ function buildTable(results, sortColumn, sortOrder, options) {
   });
 }
 
+// Show the fields to insert new line
 function showInsertRowFromStructure() {
   const tableName = $("#results").data("table");
   if (!tableName) {
-    alert("Aucune table sélectionnée !");
+    alert("Please select a table!");
     return;
   }
 
   getTableStructure(tableName, { type: getCurrentObject().type }, function(data) {
     if (data.error) {
-      alert("Erreur lors de la récupération de la structure : " + data.error);
+      alert("Error when trying to get the structure : " + data.error);
       return;
     }
 
     const columns = data.columns;
     const rows = data.rows || [];
     if (rows.length === 0) {
-      alert("Aucune colonne trouvée pour la table " + tableName);
-      console.warn("Structure reçue :", data);
+      alert("No column found for table " + tableName);
       return;
     }
 
+    // Transform lines in key/value object to improve visibility
     const colObjects = rows.map(row => {
       const obj = {};
       columns.forEach((colName, i) => obj[colName] = row[i]);
@@ -670,17 +674,20 @@ function showInsertRowFromStructure() {
     html += `
       <td>
         <button class="btn btn-success" onclick="insertRowFromInputs('${tableName}')">
+          💾 Insert
         </button>
       </td>
     </tr>`;
 
+    $("#insert_row").show();
     $("#insert_row").html(
-      `<table class="table table-bordered"><tbody>${html}</tbody></table>`
+      `<table class="table table-bordered" style="margin-bottom:0"><tbody>${html}</tbody></table>`
     );
   });
 }
 
 
+// Insert the line in the database from the inputs
 function insertRowFromInputs(tableName) {
   const inputs = $("#insert_row input");
   let columns = [];
@@ -702,21 +709,21 @@ function insertRowFromInputs(tableName) {
 
   executeQuery(insertQuery, function(data) {
     if (data.error) {
-      alert("Erreur lors de l'insertion : " + data.error);
-    } else {
-      alert("Ligne insérée avec succès !");
+      alert("Error while inserting: " + data.error);
+  } else {
+      alert("Row inserted successfully!");
+      showTableContent(); // reload table
     }
   });
 }
-
 
 function setCurrentTab(id) {
   // Pagination should only be visible on rows tab
   if (id != "table_content") {
     $("#body").removeClass("with-pagination");
-    $(".table-row-actions").hide();
+    showInsertRow(false);
   } else {
-    $(".table-row-actions").show();
+    showInsertRow(true);
   }
 
   $("#nav ul li.selected").removeClass("selected");
@@ -724,6 +731,15 @@ function setCurrentTab(id) {
 
   // Persist tab selection into the session storage
   sessionStorage.setItem("tab", id);
+}
+
+function showInsertRow(show) {
+  if (show) {
+    $(".table-row-actions").show();
+  } else {
+    $(".table-row-actions").hide();
+    $("#insert_row").hide();
+  }
 }
 
 function showQueryHistory() {
@@ -831,6 +847,9 @@ function updatePaginator(pagination) {
 }
 
 function showTableContent(sortColumn, sortOrder) {
+  // Hide insert row form
+  showInsertRow(false);
+
   var name = getCurrentObject().name;
 
   if (name.length == 0) {
@@ -1756,6 +1775,7 @@ function bindContentModalEvents() {
   });
 
   $("#results").on("dblclick", "td > div", function() {
+  $("#results").on("dblclick", "td", function() {
     var value = unescapeHtml($(this).html());
     if (!value) return;
 

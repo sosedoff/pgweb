@@ -106,7 +106,13 @@
         </div>
         <div id="input_resize_handler"></div>
       </div>
+
       <div id="output">
+        <div class="table-row-actions">
+          <button type="button" class="btn btn-primary btn-sm insert_row_btn" onclick="showInsertRowFromStructure($('#results').data('table'))"><i class="fa fa-plus"></i>Insert row</button>
+          <div id="insert_row"></div>
+        </div>
+
         <div class="wrapper">
           <table id="results" class="table">
             <thead id="results_header"></thead>
@@ -115,6 +121,7 @@
           <div id="results_view"></div>
         </div>
       </div>
+
       <div id="pagination">
         <form class="filters" action="#" id="rows_filter">
           <span>Search</span>
@@ -344,10 +351,11 @@
   </div>
   <div id="results_row_menu">
     <ul class="dropdown-menu" role="menu">
-      <li><a href="#" data-action="edit_value">Edit Value</a></li>
-      <li><a href="#" data-action="display_value">Display Value</a></li>
-      <li><a href="#" data-action="copy_value">Copy Value</a></li>
-      <li><a href="#" data-action="filter_by_value">Filter Rows By Value</a></li>
+      <li><a href="#" data-action="edit_value"><i class="fa fa-edit"></i> Edit Value</a></li>
+      <li><a href="#" data-action="display_value"><i class="fa fa-expand"></i> Display Value</a></li>
+      <li><a href="#" data-action="copy_value"><i class="fa fa-copy"></i> Copy Value</a></li>
+      <li><a href="#" data-action="delete_row"><i class="fa fa-remove"></i> Delete Row</a></li>
+      <li><a href="#" data-action="filter_by_value"><i class="fa fa-filter"></i> Filter Rows By Value</a></li>
     </ul>
   </div>
   <div id="error_banner"></div>
