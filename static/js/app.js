@@ -408,7 +408,7 @@ function performRowAction(action, value) {
 
 function editCellValue(context) {
   var cell = $(context);
-  var originalValue = unescapeHtml(cell.find("div").html());
+  var originalValue = unescapeHtml(cell.html());
   var newValue = prompt("Edit cell value:", originalValue);
   if (newValue === null) {
     return; // User cancelled the prompt
@@ -426,9 +426,103 @@ function editCellValue(context) {
     if (data.error) {
       alert("Error updating value: " + data.error);
     } else {
-      cell.find("div").html(escapeHtml(newValue));
+      cell.html(escapeHtml(newValue));
     }
   });
+}
+
+function deleteRow(context) {
+  let cell = $(context);
+  let $row = cell.closest("tr");
+  var rowIdx      = $row.index();
+  var colIdx      = cell.index();
+  var tableName   = $("#results").data("table");
+  var colName     = $("#results_header th").eq(colIdx).data("name");
+  var pkColumn    = $("#results_header th").eq(0).data("name");
+  var pkValue     = $("#results_body tr").eq(rowIdx).find("td").eq(0).text();
+
+  if ($row.length === 0) {
+    alert("Unable to find the row to delete.");
+    return;
+  }
+
+  if (!tableName) {
+    alert("Cannot delete row: table name is missing.");
+    return;
+  }
+
+  // Confirm deletion
+  if (!confirm("Are you sure you want to delete the row with value '" + rowIdx + "' from table '" + tableName + "'?")) {
+    return;
+  }
+
+  // Build the SQL query
+  let sql = `DELETE FROM ${tableName} WHERE "${pkColumn}" = '${pkValue}'`;
+
+  // Execute query using pgweb’s existing function
+  executeQuery(sql, function (response) {
+    // If executeQuery follows pgweb's usual convention
+    if (response.error) {
+      alert("Error while deleting: " + response.error);
+      $row.removeClass("deleting").css("opacity", "1");
+    } else {
+      // Remove row visually
+      $row.fadeOut(200, function () {
+        $(this).remove();
+      });
+    }
+  });
+}
+
+function insertRow() {
+  const tableName = $("#results").data("table");
+  if (!tableName) {
+    alert("Aucune table sélectionnée !");
+    return;
+  }
+
+  const inputs = $("#insert_row input");
+  let columns = [];
+  let values = [];
+
+  inputs.each(function() {
+    const colName = $(this).attr("id");
+    const val = $(this).val();
+
+    columns.push('"' + colName + '"');
+    // Gestion des valeurs nulles / chaînes
+    if (val === null || val.trim() === "") {
+      values.push("NULL");
+    } else {
+      values.push("'" + val.replace(/'/g, "''") + "'");
+    }
+  });
+
+  const insertQuery = `INSERT INTO ${tableName} (${columns.join(", ")}) VALUES (${values.join(", ")});`;
+
+  executeQuery(insertQuery, function(data) {
+    if (data.error) {
+      alert("Erreur lors de l'insertion : " + data.error);
+    } else {
+      alert("Ligne insérée avec succès !");
+      showTableContent();
+      $("#insert_row").html("");
+      $(".insert_row_btn").show();
+    }
+  });
+}
+
+function showInsertRow(columns) {
+  let cols = "";
+  columns.forEach(function(col) {
+    cols += "<div class='text-center'>"
+    cols += "<label id='" + col + "'>" + col + "</label>";
+    cols += "<input type='text' class='form-control' id='" + col + "' placeholder='" + col + "' />";
+    cols += "</div>"
+  });
+
+  $("#insert_row").html(cols);
+  $(".insert_row_btn").hide();
 }
 
 function sortArrow(direction) {
@@ -490,7 +584,7 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
     // Add all actual row data here
     for (i in row) {
-      r += "<td data-col='" + i + "'><div>" + escapeHtml(row[i]) + "</div></td>";
+      r += "<td data-col='" + i + "'>" + escapeHtml(row[i]) + "</td>";
     }
 
     // Add row action button
@@ -510,12 +604,119 @@ function buildTable(results, sortColumn, sortOrder, options) {
   } else {
     $("#result-rows-count").html(results.rows.length + " rows");
   }
+
+  $('.insert_row_btn').on("click", function() {
+    let name = getCurrentObject().name;
+
+    if (name.length == 0) {
+      alert("Please select a table!");
+      return;
+    }
+
+    if (getCurrentObject().type == "function") {
+      let definition = data.rows[0][data.columns.indexOf("functiondef")];
+      return
+    }
+
+    showInsertRow(results.columns);
+  });
 }
+
+function showInsertRowFromStructure() {
+  const tableName = $("#results").data("table");
+  if (!tableName) {
+    alert("Aucune table sélectionnée !");
+    return;
+  }
+
+  getTableStructure(tableName, { type: getCurrentObject().type }, function(data) {
+    if (data.error) {
+      alert("Erreur lors de la récupération de la structure : " + data.error);
+      return;
+    }
+
+    const columns = data.columns;
+    const rows = data.rows || [];
+    if (rows.length === 0) {
+      alert("Aucune colonne trouvée pour la table " + tableName);
+      console.warn("Structure reçue :", data);
+      return;
+    }
+
+    const colObjects = rows.map(row => {
+      const obj = {};
+      columns.forEach((colName, i) => obj[colName] = row[i]);
+      return obj;
+    });
+
+    let html = `<tr>`;
+
+    colObjects.forEach(col => {
+      const name = col.column_name;
+      const type = col.data_type;
+      const nullable = col.is_nullable === "NO" ? " (NOT NULL)" : "";
+      const placeholder = `${type}${nullable}`;
+      html += `
+        <td>
+          <input 
+            type="text" 
+            id="${name}" 
+            class="form-control"
+            placeholder="${placeholder}"
+          />
+        </td>`;
+    });
+
+    html += `
+      <td>
+        <button class="btn btn-success" onclick="insertRowFromInputs('${tableName}')">
+        </button>
+      </td>
+    </tr>`;
+
+    $("#insert_row").html(
+      `<table class="table table-bordered"><tbody>${html}</tbody></table>`
+    );
+  });
+}
+
+
+function insertRowFromInputs(tableName) {
+  const inputs = $("#insert_row input");
+  let columns = [];
+  let values = [];
+
+  inputs.each(function() {
+    const colName = $(this).attr("id");
+    const val = $(this).val();
+
+    columns.push(`"${colName}"`);
+    if (val === null || val.trim() === "") {
+      values.push("NULL");
+    } else {
+      values.push("'" + val.replace(/'/g, "''") + "'");
+    }
+  });
+
+  const insertQuery = `INSERT INTO ${tableName} (${columns.join(", ")}) VALUES (${values.join(", ")});`;
+
+  executeQuery(insertQuery, function(data) {
+    if (data.error) {
+      alert("Erreur lors de l'insertion : " + data.error);
+    } else {
+      alert("Ligne insérée avec succès !");
+    }
+  });
+}
+
 
 function setCurrentTab(id) {
   // Pagination should only be visible on rows tab
   if (id != "table_content") {
     $("#body").removeClass("with-pagination");
+    $(".table-row-actions").hide();
+  } else {
+    $(".table-row-actions").show();
   }
 
   $("#nav ul li.selected").removeClass("selected");
@@ -1303,6 +1504,10 @@ function bindTableHeaderMenu() {
           $("select.filter").val("equal");
           $("#table_filter_value").val(colValue);
           $("#rows_filter").submit();
+          break;
+        case "delete_row":
+          deleteRow(context);
+          break;
       }
     }
   });

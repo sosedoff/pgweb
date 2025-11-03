@@ -43,7 +43,6 @@ function applySettings(settings) {
     // document.body.style.backgroundColor = settings.darkTheme ? '#333' : '#fff';
     // document.querySelector('.navbar').style.backgroundColor = appSettings.navbarColor;
     document.documentElement.style.setProperty('--navbar-color', settings.navbarColor);
-    console.log(settings)
     if (settings.logo) {
         // Display logo wrapper
         $('#sidebar .sidebar-brand').css('display', 'block');
