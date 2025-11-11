@@ -95,9 +95,9 @@ jobs:
           fetch-depth: 0
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: v1.57.1
+          version: v2.6.0
 
   fmt:
     name: fmt
