@@ -80,6 +80,19 @@ func Test_readBookmark(t *testing.T) {
 		assert.Equal(t, "", b.Password)
 	})
 
+	t.Run("with ssh options", func(t *testing.T) {
+		b, err := readBookmark("../../data/bookmark_with_ssh.toml")
+		assert.NoError(t, err)
+		assert.NotNil(t, b.SSH)
+
+		sshc := b.SSH
+		assert.Equal(t, "ssh-host", sshc.Host)
+		assert.Equal(t, "ssh-user", sshc.User)
+		assert.Equal(t, "ssh-password", sshc.Password)
+		assert.Equal(t, "/path/to/key-file", sshc.Key)
+		assert.Equal(t, "key-file-password", sshc.KeyPassword)
+	})
+
 	t.Run("invalid ssl", func(t *testing.T) {
 		b, err := readBookmark("../../data/bookmark_invalid_ssl.toml")
 		assert.NoError(t, err)
