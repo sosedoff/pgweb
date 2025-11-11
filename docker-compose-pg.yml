@@ -1,6 +1,4 @@
 ---
-version: "3.9"
-
 x-base: &base
   environment: &env
     POSTGRES_DB: pgweb
@@ -11,6 +9,16 @@ x-base: &base
     interval: 5s
 
 services:
+  postgres18:
+    <<: *base
+    image: postgres:18
+    ports:
+      - 5433:5432
+  postgres17:
+    <<: *base
+    image: postgres:17
+    ports:
+      - 5433:5432
   postgres16:
     <<: *base
     image: postgres:16
