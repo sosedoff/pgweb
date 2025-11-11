@@ -12,7 +12,7 @@ func TestManagerList(t *testing.T) {
 		num int
 		err string
 	}{
-		{"../../data", 3, ""},
+		{"../../data", 4, ""},
 		{"../../data/bookmark.toml", 0, "is not a directory"},
 		{"../../data2", 0, ""},
 		{"", 0, ""},
