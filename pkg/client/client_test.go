@@ -57,7 +57,9 @@ func assertMatches(t *testing.T, expected, src []string) {
 
 func pgVersion() (int, int) {
 	var major, minor int
-	fmt.Sscanf(os.Getenv("PGVERSION"), "%d.%d", &major, &minor)
+	if _, err := fmt.Sscanf(os.Getenv("PGVERSION"), "%d.%d", &major, &minor); err != nil {
+		log.Println("[warn] unable to read value of PGVERSION env var")
+	}
 	return major, minor
 }
 
