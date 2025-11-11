@@ -12,7 +12,7 @@ func TestManagerList(t *testing.T) {
 		num int
 		err string
 	}{
-		{"../../data", 3, ""},
+		{"../../data", 4, ""},
 		{"../../data/bookmark.toml", 0, "is not a directory"},
 		{"../../data2", 0, ""},
 		{"", 0, ""},
@@ -32,7 +32,12 @@ func TestManagerList(t *testing.T) {
 func TestManagerListIDs(t *testing.T) {
 	ids, err := NewManager("../../data").ListIDs()
 	assert.NoError(t, err)
-	assert.Equal(t, []string{"bookmark", "bookmark_invalid_ssl", "bookmark_url"}, ids)
+	assert.Equal(t, []string{
+		"bookmark",
+		"bookmark_invalid_ssl",
+		"bookmark_url",
+		"bookmark_with_ssh",
+	}, ids)
 }
 
 func TestManagerGet(t *testing.T) {
@@ -78,6 +83,19 @@ func Test_readBookmark(t *testing.T) {
 		assert.Equal(t, "", b.Database)
 		assert.Equal(t, "disable", b.SSLMode)
 		assert.Equal(t, "", b.Password)
+	})
+
+	t.Run("with ssh options", func(t *testing.T) {
+		b, err := readBookmark("../../data/bookmark_with_ssh.toml")
+		assert.NoError(t, err)
+		assert.NotNil(t, b.SSH)
+
+		sshc := b.SSH
+		assert.Equal(t, "ssh-host", sshc.Host)
+		assert.Equal(t, "ssh-user", sshc.User)
+		assert.Equal(t, "ssh-password", sshc.Password)
+		assert.Equal(t, "/path/to/key-file", sshc.Key)
+		assert.Equal(t, "key-file-password", sshc.KeyPassword)
 	})
 
 	t.Run("invalid ssl", func(t *testing.T) {
