@@ -32,7 +32,12 @@ func TestManagerList(t *testing.T) {
 func TestManagerListIDs(t *testing.T) {
 	ids, err := NewManager("../../data").ListIDs()
 	assert.NoError(t, err)
-	assert.Equal(t, []string{"bookmark", "bookmark_invalid_ssl", "bookmark_url"}, ids)
+	assert.Equal(t, []string{
+		"bookmark",
+		"bookmark_invalid_ssl",
+		"bookmark_url",
+		"bookmark_with_ssh",
+	}, ids)
 }
 
 func TestManagerGet(t *testing.T) {
