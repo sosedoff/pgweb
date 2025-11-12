@@ -111,6 +111,7 @@ function getTablesStats(cb)                 { apiCall("get", "/tables_stats", {}
 function getFunction(id, cb)                { apiCall("get", "/functions/" + id, {}, cb); }
 function getHistory(cb)                     { apiCall("get", "/history", {}, cb); }
 function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
+function formatQuery(query, cb)             { apiCall("post", "/format", { query: query }, cb); }
 function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
 function explainQuery(query, cb)            { apiCall("post", "/explain", { query: query }, cb); }
 function analyzeQuery(query, cb)            { apiCall("post", "/analyze", { query: query }, cb); }
@@ -873,6 +874,29 @@ function getSubquery(text, cursor) {
   }
 }
 
+function runFormat() {
+  var query = getEditorSelection();
+  if (query.length == 0) {
+    hideQueryProgressMessage();
+    return;
+  }
+
+  formatQuery(query, function(data) {
+    if (data.error) {
+      $("#results_header").html("");
+      $("#results_body").html("<tr><td>ERROR: " + data.error + "</tr></tr>");
+      return;
+    }
+    
+    editor.setValue(data)
+    editor.clearSelection();
+
+    setTimeout(function() {
+      localStorage.setItem("pgweb_query", editor.getValue());
+    }, 1000);
+  });
+}
+
 function runQuery() {
   setCurrentTab("table_query");
   showQueryProgressMessage();
@@ -1067,7 +1091,17 @@ function initEditor() {
     exec: function(editor) {
       runExplain();
     }
-  }]);
+  }, {
+    name: "format_query",
+    bindKey: {
+      win: "Ctrl-F",
+      mac: "Command-F"
+    },
+    exec: function(editor) {
+      formatQuery();
+    }
+  },
+]);
 
   editor.on("change", function() {
     if (writeQueryTimeout) {
@@ -1542,6 +1576,10 @@ $(document).ready(function() {
   $("#table_query").on("click",       function() { showQueryPanel();       });
   $("#table_connection").on("click",  function() { showConnectionPanel();  });
   $("#table_activity").on("click",    function() { showActivityPanel();    });
+
+  $("#format").on("click", function() {
+    runFormat();
+  });
 
   $("#run").on("click", function() {
     runQuery();

@@ -9,9 +9,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cockroachdb/cockroachdb-parser/pkg/sql/sem/tree"
 	"github.com/gin-gonic/gin"
 	"github.com/tuvistavie/securerandom"
 
+	"github.com/mjibson/sqlfmt"
 	"github.com/sosedoff/pgweb/pkg/bookmarks"
 	"github.com/sosedoff/pgweb/pkg/client"
 	"github.com/sosedoff/pgweb/pkg/command"
@@ -308,6 +310,17 @@ func Disconnect(c *gin.Context) {
 	successResponse(c, gin.H{"success": true})
 }
 
+func RunFormat(c *gin.Context) {
+	query := cleanQuery(c.Request.FormValue("query"))
+
+	if query == "" {
+		badRequest(c, errQueryRequired)
+		return
+	}
+
+	FormatQuery(query, c)
+}
+
 // RunQuery executes the query
 func RunQuery(c *gin.Context) {
 	query := cleanQuery(c.Request.FormValue("query"))
@@ -550,6 +563,19 @@ func GetTablesStats(c *gin.Context) {
 	default:
 		badRequest(c, "invalid format")
 	}
+}
+
+func FormatQuery(query string, c *gin.Context) {
+	rawQuery, err := base64.StdEncoding.DecodeString(desanitize64(query))
+	if err == nil {
+		query = string(rawQuery)
+	}
+
+	formattedQuery, err := sqlfmt.FmtSQL(tree.DefaultPrettyCfg(), []string{query})
+	if err != nil {
+		badRequest(c, err)
+	}
+	successResponse(c, formattedQuery)
 }
 
 // HandleQuery runs the database query
