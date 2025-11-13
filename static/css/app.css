@@ -89,11 +89,13 @@
   display: flex;
   align-items: center;
   height: 100%;
+  padding: 10px;
 }
 
 #sidebar .sidebar-brand small {
   font-weight: bold;
   color: white;
+  margin-left: 5px;
 }
 
 #sidebar .sidebar-brand img {
@@ -406,6 +408,7 @@
   padding: 5px;
   display: flex;
   margin-top: 5px;
+  display: none;
 }
 
 #pagination {

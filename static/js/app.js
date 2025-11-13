@@ -452,7 +452,7 @@ function deleteRow(context) {
   }
 
   // Confirm deletion
-  if (!confirm("Are you sure you want to delete the row with value '" + rowIdx + "' from table '" + tableName + "'?")) {
+  if (!confirm("Are you sure you want to delete the row '" + pkValue + "' from table '" + tableName + "'?")) {
     return;
   }
 
@@ -674,7 +674,8 @@ function showInsertRowFromStructure() {
     html += `
       <td>
         <button class="btn btn-success" onclick="insertRowFromInputs('${tableName}')">
-          💾 Insert
+          <i class="fa fa-save"></i>
+          Insert
         </button>
       </td>
     </tr>`;
@@ -847,9 +848,6 @@ function updatePaginator(pagination) {
 }
 
 function showTableContent(sortColumn, sortOrder) {
-  // Hide insert row form
-  showInsertRow(false);
-
   var name = getCurrentObject().name;
 
   if (name.length == 0) {
@@ -1774,7 +1772,6 @@ function bindContentModalEvents() {
     }
   });
 
-  $("#results").on("dblclick", "td > div", function() {
   $("#results").on("dblclick", "td", function() {
     var value = unescapeHtml($(this).html());
     if (!value) return;
