@@ -55,10 +55,9 @@ func (m *SessionManager) Sessions() map[string]*client.Client {
 
 func (m *SessionManager) Get(id string) *client.Client {
 	m.mu.Lock()
-	c := m.sessions[id]
-	m.mu.Unlock()
+	defer m.mu.Unlock()
 
-	return c
+	return m.sessions[id]
 }
 
 func (m *SessionManager) Add(id string, conn *client.Client) {
@@ -85,10 +84,9 @@ func (m *SessionManager) Remove(id string) bool {
 
 func (m *SessionManager) Len() int {
 	m.mu.Lock()
-	sz := len(m.sessions)
-	m.mu.Unlock()
+	defer m.mu.Unlock()
 
-	return sz
+	return len(m.sessions)
 }
 
 func (m *SessionManager) Cleanup() int {
