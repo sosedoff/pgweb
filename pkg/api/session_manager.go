@@ -122,7 +122,7 @@ func (m *SessionManager) RunPeriodicCleanup() {
 }
 
 func (m *SessionManager) staleSessions() []string {
-	m.mu.TryLock()
+	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	now := time.Now()
