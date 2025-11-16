@@ -43,8 +43,12 @@ func (m *SessionManager) IDs() []string {
 
 func (m *SessionManager) Sessions() map[string]*client.Client {
 	m.mu.Lock()
-	sessions := m.sessions
-	m.mu.Unlock()
+	defer m.mu.Unlock()
+
+	sessions := make(map[string]*client.Client, len(m.sessions))
+	for k, v := range m.sessions {
+		sessions[k] = v
+	}
 
 	return sessions
 }
