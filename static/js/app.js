@@ -1912,15 +1912,22 @@ function bindContentModalEvents() {
           );
 
           $("#content_modal .content").html(
-            '<table style="width:100%;border-collapse:collapse;text-align:left;"><tr>' +
-              Object.keys(formatted).map(key =>
-                '<th style="padding:4px;border:1px solid #ddd;white-space:nowrap;">' + key + '</th>'
+            '<table style="width:100%;border-collapse:collapse;font-family:Arial, sans-serif;">' +
+              Object.entries(formatted).map(([key, value]) => {
+                const isFkKey = (key === fkColumn);
+                return (
+                '<tr>' +
+                  '<td style="padding:8px 10px; background:#f3f4f6; font-weight:600; color:#374151; border:1px solid #dddddd75; width:30%;">' + 
+                    (isFkKey ? `<span style="font-weight:600;">${key}</span><span style="margin-left:2px;">🔗</span>` : key) +
+                  '</td>' +
+                  '<td style="padding:8px 10px; background:white; color:#111827; border:1px solid #dddddd75;">' +
+                    (isFkKey ? `<b>${value}</b>` : value) +
+                  '</td>' +
+                '</tr>'
+                );
+              }
               ).join('') +
-            '</tr><tr>' +
-              Object.values(formatted).map(value =>
-                '<td style="padding:4px;border:1px solid #ddd;white-space:nowrap;">' + value + '</td>'
-              ).join('') +
-            '</tr></table>'
+            '</table>'
           );
 
           $("#content_modal").show();
