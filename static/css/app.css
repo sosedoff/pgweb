@@ -76,8 +76,6 @@
   flex-direction: column;
 }
 
-}
-
 #sidebar .sidebar-brand {
   display: none;
   background: var(--navbar-color);
