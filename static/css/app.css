@@ -403,12 +403,14 @@
 
 #output .table-row-actions #insert_row {
   align-items: center;
-  gap: 10px;
-  border-bottom: 1px solid white;
   padding: 5px;
   display: flex;
   margin-top: 5px;
   display: none;
+}
+
+#output .table-row-actions #insert_row .table {
+  background: white;
 }
 
 #pagination {
@@ -495,6 +497,10 @@
   color: #999;
   line-height: 32px;
   height: 32px;
+}
+
+#results_header {
+  background: white;
 }
 
 #results {
