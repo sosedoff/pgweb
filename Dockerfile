@@ -5,7 +5,7 @@ FROM golang:1.24-bullseye AS build
 
 # Set default build argument for CGO_ENABLED
 ARG CGO_ENABLED=0
-ENV CGO_ENABLED ${CGO_ENABLED}
+ENV CGO_ENABLED=${CGO_ENABLED}
 
 WORKDIR /build
 
