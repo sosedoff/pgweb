@@ -1,6 +1,17 @@
 ## Changelog
 
-Current [release](https://github.com/sosedoff/pgweb/releases) is `0.16.2`.
+Current [release](https://github.com/sosedoff/pgweb/releases) is `0.17.0`.
+
+## 0.17.0 - 2025-11-22
+
+- `NEW` Update Dockerfile to use Golang 1.24 image, GH-821
+- `NEW` Bump go crypto package to 0.44.x, GH-820, GH-823
+- `NEW` Add PostgreSQL 18 support to Github Actions, GH-816
+- `NEW` Connect backend refactor, GH-801
+- `NEW` Add server settings view, GH-768
+- `NEW` Add exec time of empty queries, GH-763
+- `FIX` Minor typos, GH-764, GH-786
+- `FIX` Shorten git revision printed in the --version output, GH-770
 
 ## 0.16.2 - 2024-11-02
 
