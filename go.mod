@@ -15,7 +15,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mr-tron/base58 v1.2.0
 	github.com/prometheus/client_golang v1.14.0
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.1
 	github.com/stretchr/testify v1.8.3
 	github.com/tuvistavie/securerandom v0.0.0-20140719024926-15512123a948
 	golang.org/x/crypto v0.45.0
