@@ -1,0 +1,12 @@
+host = "localhost"
+port = 5432
+user = "postgres"
+database = "mydatabase"
+ssl = "disable"
+
+[SSH]
+host = "ssh-host"
+user = "ssh-user"
+password = "ssh-password"
+key = "/path/to/key-file"
+keypassword = "key-file-password"
