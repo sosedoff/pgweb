@@ -8,6 +8,44 @@ var currentObject       = null;
 var autocompleteObjects = [];
 var inputResizing       = false;
 var inputResizeOffset   = null;
+var currentTheme        = localStorage.getItem('pgweb_theme') || 'light';
+
+// ============================================================================
+// Theme Management
+// ============================================================================
+
+function getTheme() {
+  return localStorage.getItem('pgweb_theme') || 'light';
+}
+
+function setTheme(theme) {
+  currentTheme = theme;
+  localStorage.setItem('pgweb_theme', theme);
+
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+
+  // Update ACE editor theme
+  updateEditorTheme();
+}
+
+function toggleTheme() {
+  var newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  setTheme(newTheme);
+}
+
+function updateEditorTheme() {
+  if (!editor) return;
+
+  if (currentTheme === 'dark') {
+    editor.setTheme("ace/theme/supabase_dark");
+  } else {
+    editor.setTheme("ace/theme/tomorrow");
+  }
+}
 
 var filterOptions = {
   "equal":      "= 'DATA'",
@@ -1043,7 +1081,12 @@ function initEditor() {
   editor.completers.push(objectAutocompleter);
 
   editor.setFontSize(13);
-  editor.setTheme("ace/theme/tomorrow");
+  // Set theme based on current preference
+  if (currentTheme === 'dark') {
+    editor.setTheme("ace/theme/supabase_dark");
+  } else {
+    editor.setTheme("ace/theme/tomorrow");
+  }
   editor.setShowPrintMargin(false);
   editor.getSession().setMode("ace/mode/pgsql");
   editor.getSession().setTabSize(2);
@@ -1533,6 +1576,11 @@ function bindContentModalEvents() {
 $(document).ready(function() {
   bindInputResizeEvents();
   bindContentModalEvents();
+
+  // Theme toggle handler
+  $("#theme_toggle").on("click", function() {
+    toggleTheme();
+  });
 
   $("#table_content").on("click",     function() { showTableContent();     });
   $("#table_structure").on("click",   function() { showTableStructure();   });
