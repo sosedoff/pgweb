@@ -1,4 +1,4 @@
-package api
+package connect
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,8 +18,8 @@ func TestBackendFetchCredential(t *testing.T) {
 		name         string
 		backend      Backend
 		resourceName string
-		cred         *BackendCredential
-		reqCtx       *gin.Context
+		cred         *Credential
+		headers      http.Header
 		ctx          func() (context.Context, context.CancelFunc)
 		err          error
 	}{
@@ -33,12 +34,12 @@ func TestBackendFetchCredential(t *testing.T) {
 			ctx: func() (context.Context, context.CancelFunc) {
 				return context.WithTimeout(context.Background(), time.Millisecond*100)
 			},
-			err: errors.New("Unable to connect to the auth backend"),
+			err: errors.New("unable to connect to the auth backend"),
 		},
 		{
 			name:    "Empty response",
 			backend: Backend{Endpoint: "http://localhost:5555/empty-response"},
-			err:     errors.New("Connection string is required"),
+			err:     errors.New("connection string is required"),
 		},
 		{
 			name:    "Missing header",
@@ -51,19 +52,15 @@ func TestBackendFetchCredential(t *testing.T) {
 				Endpoint:    "http://localhost:5555/pass-header",
 				PassHeaders: []string{"x-foo"},
 			},
-			reqCtx: &gin.Context{
-				Request: &http.Request{
-					Header: http.Header{
-						"X-Foo": []string{"bar"},
-					},
-				},
+			headers: http.Header{
+				"X-Foo": []string{"bar"},
 			},
-			cred: &BackendCredential{DatabaseURL: "postgres://hostname/bar"},
+			cred: &Credential{DatabaseURL: "postgres://hostname/bar"},
 		},
 		{
 			name:    "Success",
 			backend: Backend{Endpoint: "http://localhost:5555/success"},
-			cred:    &BackendCredential{DatabaseURL: "postgres://hostname/dbname"},
+			cred:    &Credential{DatabaseURL: "postgres://hostname/dbname"},
 		},
 	}
 
@@ -73,6 +70,8 @@ func TestBackendFetchCredential(t *testing.T) {
 	startTestBackend(srvCtx, "localhost:5555")
 
 	for _, ex := range examples {
+		ex.backend.logger = logrus.StandardLogger()
+
 		t.Run(ex.name, func(t *testing.T) {
 			ctx, cancel := context.WithCancel(context.Background())
 			if ex.ctx != nil {
@@ -80,14 +79,7 @@ func TestBackendFetchCredential(t *testing.T) {
 			}
 			defer cancel()
 
-			reqCtx := ex.reqCtx
-			if reqCtx == nil {
-				reqCtx = &gin.Context{
-					Request: &http.Request{},
-				}
-			}
-
-			cred, err := ex.backend.FetchCredential(ctx, ex.resourceName, reqCtx)
+			cred, err := ex.backend.FetchCredential(ctx, ex.resourceName, ex.headers)
 			assert.Equal(t, ex.err, err)
 			assert.Equal(t, ex.cred, cred)
 		})
@@ -117,7 +109,7 @@ func startTestBackend(ctx context.Context, listenAddr string) {
 	})
 
 	router.POST("/pass-header", func(c *gin.Context) {
-		req := BackendRequest{}
+		req := Request{}
 		if err := c.BindJSON(&req); err != nil {
 			panic(err)
 		}

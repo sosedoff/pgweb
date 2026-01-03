@@ -10,5 +10,6 @@ JOIN
 WHERE
   n.nspname = $1
   AND relname = $2
+  AND contype != 'n'
 ORDER BY
   contype DESC

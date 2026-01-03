@@ -43,18 +43,21 @@ func (m *SessionManager) IDs() []string {
 
 func (m *SessionManager) Sessions() map[string]*client.Client {
 	m.mu.Lock()
-	sessions := m.sessions
-	m.mu.Unlock()
+	defer m.mu.Unlock()
+
+	sessions := make(map[string]*client.Client, len(m.sessions))
+	for k, v := range m.sessions {
+		sessions[k] = v
+	}
 
 	return sessions
 }
 
 func (m *SessionManager) Get(id string) *client.Client {
 	m.mu.Lock()
-	c := m.sessions[id]
-	m.mu.Unlock()
+	defer m.mu.Unlock()
 
-	return c
+	return m.sessions[id]
 }
 
 func (m *SessionManager) Add(id string, conn *client.Client) {
@@ -81,10 +84,9 @@ func (m *SessionManager) Remove(id string) bool {
 
 func (m *SessionManager) Len() int {
 	m.mu.Lock()
-	sz := len(m.sessions)
-	m.mu.Unlock()
+	defer m.mu.Unlock()
 
-	return sz
+	return len(m.sessions)
 }
 
 func (m *SessionManager) Cleanup() int {
@@ -118,7 +120,7 @@ func (m *SessionManager) RunPeriodicCleanup() {
 }
 
 func (m *SessionManager) staleSessions() []string {
-	m.mu.TryLock()
+	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	now := time.Now()

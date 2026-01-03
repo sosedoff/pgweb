@@ -1,11 +1,11 @@
 # ------------------------------------------------------------------------------
 # Builder Stage
 # ------------------------------------------------------------------------------
-FROM golang:1.22-bullseye AS build
+FROM golang:1.25-trixie AS build
 
 # Set default build argument for CGO_ENABLED
 ARG CGO_ENABLED=0
-ENV CGO_ENABLED ${CGO_ENABLED}
+ENV CGO_ENABLED=${CGO_ENABLED}
 
 # Install essential build tools
 RUN apt-get update && apt-get install -y git build-essential
@@ -30,7 +30,7 @@ RUN go build -ldflags="-X main.commit=render-build -X main.buildTime=$(date -u +
 # ------------------------------------------------------------------------------
 # Fetch signing key
 # ------------------------------------------------------------------------------
-FROM debian:bullseye-slim AS keyring
+FROM debian:trixie-slim AS keyring
 ADD https://www.postgresql.org/media/keys/ACCC4CF8.asc keyring.asc
 RUN apt-get update && \
     apt-get install -qq --no-install-recommends gpg && \
@@ -39,7 +39,7 @@ RUN apt-get update && \
 # ------------------------------------------------------------------------------
 # Release Stage
 # ------------------------------------------------------------------------------
-FROM debian:bullseye-slim
+FROM debian:trixie-slim
 
 # Environment variables at top level
 ENV DATABASE_URL="" PGWEB_READONLY=false
@@ -64,6 +64,9 @@ RUN apt-get update && \
 
 # Copy pgweb binary
 COPY --from=build /usr/bin/pgweb /usr/bin/pgweb
+    echo "deb [signed-by=${keyring}] http://apt.postgresql.org/pub/repos/apt/ ${VERSION_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    apt-get update && \
+    apt-get install -qq --no-install-recommends ca-certificates openssl netcat-openbsd curl postgresql-client
 
 # Set permissions
 RUN chmod +x /usr/bin/pgweb
