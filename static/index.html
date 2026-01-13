@@ -13,8 +13,8 @@
   <script type="text/javascript" src="static/js/ace.js"></script>
   <script type="text/javascript" src="static/js/ace-pgsql.js"></script>
   <script type="text/javascript" src="static/js/ext-language_tools.js"></script>
+  <script type="text/javascript" src="static/js/bootstrap.bundle.js"></script>
   <script type="text/javascript" src="static/js/bootstrap-contextmenu.js"></script>
-  <script type="text/javascript" src="static/js/bootstrap-dropdown.js"></script>
   <script type="text/javascript" src="static/js/utils.js"></script>
   <script type="text/javascript" src="static/js/bootstrap3-typeahead.min.js"></script>
   <script type="text/javascript" src="static/js/app.js"></script>
@@ -35,8 +35,8 @@
       </ul>
 
       <div class="connection-actions">
-        <a href="#" id="edit_connection" class="btn btn-default btn-sm"><i class="fa fa-database"></i> Connect</a>
-        <a href="#" id="close_connection" class="btn btn-default btn-sm">Disconnect</a>
+        <a href="#" id="edit_connection" class="btn btn-outline-secondary btn-sm"><i class="fa fa-database"></i> Connect</a>
+        <a href="#" id="close_connection" class="btn btn-outline-secondary btn-sm">Disconnect</a>
       </div>
     </div>
     <div id="sidebar">
@@ -78,8 +78,8 @@
         </div>
         <div class="actions">
           <input type="button" id="run" value="Run Query" class="btn btn-sm btn-primary" />
-          <div id="explain-dropdown" class="btn-group left">
-            <button id="explain-dropdown-toggle" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <div id="explain-dropdown" class="dropdown">
+            <button id="explain-dropdown-toggle" type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
               Explain Query <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
@@ -88,7 +88,7 @@
             </ul>
           </div>
           <div id="load-query-dropdown" class="btn-group left" style="display: none">
-            <button id="load-local-query" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" disabled="disabled">
+            <button id="load-local-query" type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" disabled="disabled">
               Template <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
@@ -97,9 +97,9 @@
           <div id="query_progress">Please wait, query is executing...</div>
           <div class="pull-right">
             <span id="result-rows-count"></span>
-            <input type="button" id="json" value="JSON" class="btn btn-sm btn-default" />
-            <input type="button" id="csv" value="CSV" class="btn btn-sm btn-default" />
-            <input type="button" id="xml" value="XML" class="btn btn-sm btn-default" />
+            <input type="button" id="json" value="JSON" class="btn btn-sm btn-outline-secondary" />
+            <input type="button" id="csv" value="CSV" class="btn btn-sm btn-outline-secondary" />
+            <input type="button" id="xml" value="XML" class="btn btn-sm btn-outline-secondary" />
           </div>
         </div>
         <div id="input_resize_handler"></div>
@@ -116,8 +116,8 @@
       <div id="pagination">
         <form class="filters" action="#" id="rows_filter">
           <span>Search</span>
-          <select class="column form-control"></select>
-          <select class="filter form-control">
+          <select class="column form-select"></select>
+          <select class="filter form-select">
             <option value="">Select filter</option>
             <option value="equal">=</option>
             <option value="not_equal">&ne;</option>
@@ -132,12 +132,12 @@
           </select>
           <input type="text" class="form-control" placeholder="Filter value" id="table_filter_value" />
           <button class="btn btn-primary btn-sm apply-filters" type="submit">Apply</button>
-          <button class="btn btn-default btn-sm reset-filters"><i class="fa fa-times"></i></button>
+          <button class="btn btn-outline-secondary btn-sm reset-filters"><i class="fa fa-times"></i></button>
         </form>
         <div class="btn-group">
-          <button type="button" class="btn btn-default btn-sm prev-page" disabled="disabled"><i class="fa fa-angle-left"></i></button>
-          <button type="button" class="btn btn-default btn-sm page change-limit" title="Click to change row limit"></button>
-          <button type="button" class="btn btn-default btn-sm next-page"><i class="fa fa-angle-right"></i></button>
+          <button type="button" class="btn btn-outline-secondary btn-sm prev-page" disabled="disabled"><i class="fa fa-angle-left"></i></button>
+          <button type="button" class="btn btn-outline-secondary btn-sm page change-limit" title="Click to change row limit"></button>
+          <button type="button" class="btn btn-outline-secondary btn-sm next-page"><i class="fa fa-angle-right"></i></button>
         </div>
         <div class="current-page" data-page="1" data-pages="1">
           <span id="total_records"></span> rows
@@ -168,20 +168,20 @@
       <form role="form" class="form-horizontal" id="connection_form">
         <div class="text-center">
           <div class="btn-group btn-group-sm connection-group-switch">
-            <button type="button" data="scheme" class="btn btn-default" id="connection_scheme">Scheme</button>
-            <button type="button" data="standard" class="btn btn-default active" id="connection_standard">Standard</button>
-            <button type="button" data="ssh" class="btn btn-default" id="connection_ssh">SSH</button>
+            <button type="button" data="scheme" class="btn btn-outline-secondary" id="connection_scheme">Scheme</button>
+            <button type="button" data="standard" class="btn btn-outline-secondary active" id="connection_standard">Standard</button>
+            <button type="button" data="ssh" class="btn btn-outline-secondary" id="connection_ssh">SSH</button>
           </div>
         </div>
 
         <hr/>
 
         <div class="connection-scheme-group">
-          <div class="form-group">
+          <div class="row">
             <div class="col-sm-12">
-              <label>Enter server URL scheme</label>
-              <input type="text" class="form-control" id="connection_url" name="url" autocomplete="off">
-              <p class="help-block">
+              <label class="form-label fw-bolder">Enter server URL scheme</label>
+              <input type="text" class="form-control form-control-sm" id="connection_url" name="url" autocomplete="off">
+              <p class="form-text">
                 URL format: postgres://user:password@host:port/db?sslmode=mode<br/>
                 Read more on PostgreSQL <a href="https://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING" target="_blank">connection string format</a>.
               </p>
@@ -190,54 +190,50 @@
         </div>
 
         <div class="connection-bookmarks-group">
-          <div class="form-group bookmarks">
-            <label class="col-sm-3 control-label">Bookmark</label>
+          <div class="row">
+            <label class="col-sm-3 col-form-label">Bookmark</label>
             <div class="col-sm-9">
-              <select class="form-control" id="connection_bookmarks"></select>
+              <select class="form-control form-control-sm" id="connection_bookmarks"></select>
             </div>
           </div>
         </div>
 
         <div class="connection-standard-group">
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Host</label>
-            <div class="col-sm-9">
-              <div class="row">
-                <div class="col-sm-9 col-xs-9">
-                  <input type="text" id="pg_host" class="form-control" />
-                </div>
-                <div class="col-sm-3 col-xs-3 no-left-padding">
-                  <input type="text" id="pg_port" class="form-control" placeholder="5432" />
-                </div>
+          <div class="row">
+            <label class="col-sm-3 col-form-label">Host</label>
+              <div class="col-sm-6">
+                <input type="text" id="pg_host" class="form-control form-control-sm" />
               </div>
+              <div class="col-sm-3 no-left-padding">
+                <input type="text" id="pg_port" class="form-control form-control-sm" placeholder="5432" />
+              </div>
+          </div>
+
+          <div class="row">
+            <label class="col-sm-3 col-form-label">Username</label>
+            <div class="col-sm-9">
+              <input type="text" id="pg_user" class="form-control form-control-sm" />
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Username</label>
+          <div class="row">
+            <label class="col-sm-3 col-form-label">Password</label>
             <div class="col-sm-9">
-              <input type="text" id="pg_user" class="form-control" />
+              <input type="password" id="pg_password" class="form-control form-control-sm" />
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Password</label>
+          <div class="row">
+            <label class="col-sm-3 col-form-label">Database</label>
             <div class="col-sm-9">
-              <input type="password" id="pg_password" class="form-control" />
+              <input type="text" id="pg_db" class="form-control form-control-sm" />
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Database</label>
+          <div class="row">
+            <label class="col-sm-3 col-form-label">SSL Mode</label>
             <div class="col-sm-9">
-              <input type="text" id="pg_db" class="form-control" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-sm-3 control-label">SSL Mode</label>
-            <div class="col-sm-9">
-              <select class="form-control" id="connection_ssl">
+              <select class="form-select form-select-sm" id="connection_ssl">
                 <option value="disable">disable</option>
                 <option value="require" selected="selected">require</option>
                 <option value="verify-full">verify-full</option>
@@ -251,33 +247,33 @@
 
           <h3 class="text-center">SSH Connection</h3>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Host</label>
+          <div class="row">
+            <label class="col-sm-3 col-form-label">Host</label>
             <div class="col-sm-7">
-              <input type="text" id="ssh_host" class="form-control" />
+              <input type="text" id="ssh_host" class="form-control form-control-sm" />
             </div>
             <div class="col-sm-2 no-left-padding">
-              <input type="text" id="ssh_port" class="form-control" placeholder="22" />
+              <input type="text" id="ssh_port" class="form-control form-control-sm" placeholder="22" />
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Credentials</label>
+          <div class="row">
+            <label class="col-sm-3 col-form-label">Credentials</label>
             <div class="col-sm-5">
-              <input type="text" id="ssh_user" class="form-control" placeholder="Username" />
+              <input type="text" id="ssh_user" class="form-control form-control-sm" placeholder="Username" />
             </div>
             <div class="col-sm-4 no-left-padding">
-              <input type="password" id="ssh_password" class="form-control" placeholder="Password" />
+              <input type="password" id="ssh_password" class="form-control form-control-sm" placeholder="Password" />
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Auth Key</label>
+          <div class="row">
+            <label class="col-sm-3 col-form-label">Auth Key</label>
             <div class="col-sm-5">
-              <input type="text" id="ssh_key" class="form-control" placeholder="Key path" />
+              <input type="text" id="ssh_key" class="form-control form-control-sm" placeholder="Key path" />
             </div>
             <div class="col-sm-4 no-left-padding">
-              <input type="password" id="ssh_key_password" class="form-control" placeholder="Key password" />
+              <input type="password" id="ssh_key_password" class="form-control form-control-sm" placeholder="Key password" />
             </div>
           </div>
 
@@ -286,10 +282,10 @@
 
         <div id="connection_error" class="alert alert-danger"></div>
 
-        <div class="form-group">
-          <div class="col-sm-12">
-            <button type="submit" class="btn btn-block btn-primary open-connection">Connect</button>
-            <button type="button" id="close_connection_window" class="btn btn-block btn-default">Cancel</button>
+        <div class="row">
+          <div class="col-sm-12 d-grid gap-2">
+            <button type="submit" class="btn btn-primary open-connection">Connect</button>
+            <button type="button" id="close_connection_window" class="btn btn-outline-secondary">Cancel</button>
           </div>
         </div>
       </form>
@@ -299,12 +295,12 @@
     <ul class="dropdown-menu" role="menu">
       <li><a href="#" data-action="copy">Copy Table Name</a></li>
       <li><a href="#" data-action="analyze">Analyze Table</a></li>
-      <li class="divider"></li>
+      <li class="dropdown-divider"></li>
       <li><a href="#" data-action="export" data-format="json">Export to JSON</a></li>
       <li><a href="#" data-action="export" data-format="csv">Export to CSV</a></li>
       <li><a href="#" data-action="export" data-format="xml">Export to XML</a></li>
       <li><a href="#" data-action="dump">Export to SQL</a></li>
-      <li class="divider"></li>
+      <li class="dropdown-divider"></li>
       <li><a href="#" data-action="truncate">Truncate Table</a></li>
       <li><a href="#" data-action="delete">Delete Table</a></li>
     </ul>
@@ -314,11 +310,11 @@
       <li><a href="#" data-action="view_def">View Definition</a></li>
       <li><a href="#" data-action="copy">Copy View Name</a></li>
       <li><a href="#" data-action="copy_def">Copy View Definition</a></li>
-      <li class="divider"></li>
+      <li class="dropdown-divider"></li>
       <li><a href="#" data-action="export" data-format="json">Export to JSON</a></li>
       <li><a href="#" data-action="export" data-format="csv">Export to CSV</a></li>
       <li><a href="#" data-action="export" data-format="xml">Export to XML</a></li>
-      <li class="divider"></li>
+      <li class="dropdown-divider"></li>
       <li><a href="#" data-action="delete">Delete View</a></li>
     </ul>
   </div>
@@ -326,9 +322,9 @@
     <ul class="dropdown-menu" role="menu">
       <li><a href="#" data-action="show_db_stats">Show Database Stats</a></li>
       <li><a href="#" data-action="download_db_stats">Download Database Stats</a></li>
-      <li class="divider"></li>
+      <li class="dropdown-divider"></li>
       <li><a href="#" data-action="server_settings">Show Server Settings</a></li>
-      <li class="divider"></li>
+      <li class="dropdown-divider"></li>
       <li><a href="#" data-action="export">Export SQL dump</a></li>
     </ul>
   </div>
