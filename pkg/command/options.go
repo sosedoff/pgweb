@@ -179,14 +179,14 @@ func ParseOptions(args []string) (Options, error) {
 		}
 	}
 
+	if opts.BookmarksDir == "" {
+		opts.BookmarksDir = getPrefixedEnvVar("BOOKMARKS_DIR")
+	}
+
 	homePath, err := homedir.Dir()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[WARN] can't detect home dir: %v", err)
 		homePath = os.Getenv("HOME")
-	}
-
-	if opts.BookmarksDir == "" {
-		opts.BookmarksDir = getPrefixedEnvVar("BOOKMARKS_DIR")
 	}
 
 	if homePath != "" {
