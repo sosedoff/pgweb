@@ -81,6 +81,24 @@ func TestParseOptions(t *testing.T) {
 		assert.Equal(t, "../../data/passfile", opts.Passfile)
 	})
 
+	t.Run("bookmarks dir from env var", func(t *testing.T) {
+		os.Setenv("PGWEB_BOOKMARKS_DIR", "/tmp/my-bookmarks")
+		defer os.Unsetenv("PGWEB_BOOKMARKS_DIR")
+
+		opts, err := ParseOptions([]string{})
+		assert.NoError(t, err)
+		assert.Equal(t, "/tmp/my-bookmarks", opts.BookmarksDir)
+	})
+
+	t.Run("bookmarks dir flag takes precedence over env var", func(t *testing.T) {
+		os.Setenv("PGWEB_BOOKMARKS_DIR", "/tmp/my-bookmarks")
+		defer os.Unsetenv("PGWEB_BOOKMARKS_DIR")
+
+		opts, err := ParseOptions([]string{"--bookmarks-dir", "/tmp/flag-bookmarks"})
+		assert.NoError(t, err)
+		assert.Equal(t, "/tmp/flag-bookmarks", opts.BookmarksDir)
+	})
+
 	t.Run("bookmarks only mode", func(t *testing.T) {
 		_, err := ParseOptions([]string{"--bookmarks-only"})
 		assert.NoError(t, err)

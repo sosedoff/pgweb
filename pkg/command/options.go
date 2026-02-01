@@ -185,6 +185,10 @@ func ParseOptions(args []string) (Options, error) {
 		homePath = os.Getenv("HOME")
 	}
 
+	if opts.BookmarksDir == "" {
+		opts.BookmarksDir = getPrefixedEnvVar("BOOKMARKS_DIR")
+	}
+
 	if homePath != "" {
 		if opts.BookmarksDir == "" {
 			opts.BookmarksDir = filepath.Join(homePath, ".pgweb/bookmarks")
@@ -241,5 +245,6 @@ func AvailableEnvVars() string {
 		"  " + envVarPrefix + "LOCK_SESSION  Lock session to a single database connection",
 		"  " + envVarPrefix + "AUTH_USER     HTTP basic auth username",
 		"  " + envVarPrefix + "AUTH_PASS     HTTP basic auth password",
+		"  " + envVarPrefix + "BOOKMARKS_DIR Overrides default directory for bookmark files",
 	}, "\n")
 }
