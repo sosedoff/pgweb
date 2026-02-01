@@ -179,6 +179,10 @@ func ParseOptions(args []string) (Options, error) {
 		}
 	}
 
+	if opts.BookmarksDir == "" {
+		opts.BookmarksDir = getPrefixedEnvVar("BOOKMARKS_DIR")
+	}
+
 	homePath, err := homedir.Dir()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[WARN] can't detect home dir: %v", err)
@@ -241,5 +245,6 @@ func AvailableEnvVars() string {
 		"  " + envVarPrefix + "LOCK_SESSION  Lock session to a single database connection",
 		"  " + envVarPrefix + "AUTH_USER     HTTP basic auth username",
 		"  " + envVarPrefix + "AUTH_PASS     HTTP basic auth password",
+		"  " + envVarPrefix + "BOOKMARKS_DIR Overrides default directory for bookmark files",
 	}, "\n")
 }
