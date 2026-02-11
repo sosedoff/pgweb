@@ -311,6 +311,15 @@
   padding: 10px;
   height: 50px;
   bottom: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#input .actions .pull-left {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 #input .actions #result-rows-count {
@@ -913,4 +922,10 @@
 
 .ace_autocomplete .ace_active-line {
   background: #eee !important;
+}
+
+.editor-modes {
+  position: absolute;
+  top:5px;
+  right:0px;
 }
