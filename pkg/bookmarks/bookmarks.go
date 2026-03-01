@@ -25,7 +25,7 @@ type Bookmark struct {
 
 // SSHInfoIsEmpty returns true if ssh configuration is not provided
 func (b Bookmark) SSHInfoIsEmpty() bool {
-	return b.SSH == nil || b.SSH.User == "" && b.SSH.Host == "" && b.SSH.Port == ""
+	return b.SSH == nil || (b.SSH.User == "" && b.SSH.Host == "" && b.SSH.Port == "")
 }
 
 // ConvertToOptions returns an options struct from connection details
