@@ -23,6 +23,21 @@ func TestBookmarkSSHInfoIsEmpty(t *testing.T) {
 		assert.True(t, b.SSHInfoIsEmpty())
 	})
 
+	t.Run("only host set", func(t *testing.T) {
+		b := Bookmark{SSH: &shared.SSHInfo{Host: "localhost"}}
+		assert.False(t, b.SSHInfoIsEmpty())
+	})
+
+	t.Run("only port set", func(t *testing.T) {
+		b := Bookmark{SSH: &shared.SSHInfo{Port: "8080"}}
+		assert.False(t, b.SSHInfoIsEmpty())
+	})
+
+	t.Run("only user set", func(t *testing.T) {
+		b := Bookmark{SSH: &shared.SSHInfo{User: "postgres"}}
+		assert.False(t, b.SSHInfoIsEmpty())
+	})
+
 	t.Run("populated", func(t *testing.T) {
 		info := &shared.SSHInfo{
 			Host: "localhost",
