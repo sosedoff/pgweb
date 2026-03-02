@@ -8,6 +8,7 @@ var currentObject       = null;
 var autocompleteObjects = [];
 var inputResizing       = false;
 var inputResizeOffset   = null;
+var advancedSearchActive = false;
 
 var filterOptions = {
   "equal":      "= 'DATA'",
@@ -21,6 +22,12 @@ var filterOptions = {
   "null":       "IS NULL",
   "not_null":   "IS NOT NULL"
 };
+
+// Escape a filter value for inline SQL string literals.
+// Doubles single-quotes to prevent basic SQL injection via filter values.
+function escapeSqlLiteral(val) {
+  return String(val).replace(/'/g, "''");
+}
 
 function getSessionId() {
   var id = sessionStorage.getItem("session_id");
@@ -623,20 +630,26 @@ function showTableContent(sortColumn, sortOrder) {
     sort_order:  sortOrder
   };
 
-  var filter = {
-    column: $(".filters select.column").val(),
-    op:     $(".filters select.filter").val(),
-    input:  $(".filters input").val()
-  };
+  // Advanced search takes precedence over the simple filter
+  if (advancedSearchActive) {
+    var advWhere = $("#advanced_search_panel").data("where");
+    if (advWhere) opts["where"] = advWhere;
+  } else {
+    var filter = {
+      column: $(".filters select.column").val(),
+      op:     $(".filters select.filter").val(),
+      input:  $(".filters input").val()
+    };
 
-  // Apply filtering only if column is selected
-  if (filter.column && filter.op) {
-    var where = [
-      '"' + filter.column + '"',
-      filterOptions[filter.op].replace("DATA", filter.input)
-    ].join(" ");
+    // Apply filtering only if column is selected
+    if (filter.column && filter.op) {
+      var where = [
+        '"' + filter.column + '"',
+        filterOptions[filter.op].replace("DATA", escapeSqlLiteral(filter.input))
+      ].join(" ");
 
-    opts["where"] = where;
+      opts["where"] = where;
+    }
   }
 
   getTableRows(name, opts, function(data) {
@@ -1023,6 +1036,131 @@ function buildTableFilters(name, type) {
       var el = $("<option/>").attr("value", row[0]).text(row[0]);
       $("#pagination select.column").append(el);
     }
+
+    // Sync columns into any existing advanced search rows
+    var colHtml = $("#pagination select.column").html();
+    $("#adv_search_rows .adv-col").each(function() {
+      var prev = $(this).val();
+      $(this).html(colHtml);
+      $(this).val(prev);
+    });
+
+    // Ensure at least one empty row exists in the panel
+    if ($("#adv_search_rows .adv-search-row").length === 0) {
+      $("#adv_search_rows").append(buildAdvancedSearchRow());
+      bindAdvancedOpHandlers();
+    }
+  });
+}
+
+// Build a new advanced search condition row element.
+function buildAdvancedSearchRow() {
+  var colHtml = $("#pagination select.column").html() || "<option value='' selected>Select column</option>";
+
+  var opHtml = [
+    '<option value="">Select filter</option>',
+    '<option value="equal">=</option>',
+    '<option value="not_equal">&ne;</option>',
+    '<option value="greater">&gt;</option>',
+    '<option value="greater_eq">&ge;</option>',
+    '<option value="less">&lt;</option>',
+    '<option value="less_eq">&le;</option>',
+    '<option value="like">LIKE</option>',
+    '<option value="ilike">ILIKE</option>',
+    '<option value="null">IS NULL</option>',
+    '<option value="not_null">IS NOT NULL</option>'
+  ].join("");
+
+  var row = $('<div class="adv-search-row"></div>');
+  row.append('<select class="adv-col form-control">' + colHtml + '</select>');
+  row.append('<select class="adv-op form-control">'  + opHtml  + '</select>');
+  row.append('<input type="text" class="adv-val form-control" placeholder="Value" />');
+  row.append('<button type="button" class="btn btn-default btn-xs adv-remove-row"><i class="fa fa-minus"></i></button>');
+
+  return row;
+}
+
+// Build a combined SQL WHERE clause from all advanced search condition rows.
+function buildAdvancedWhereClause() {
+  var conjunction = $(".adv-conjunction-toggle .btn.active").data("conj") || "AND";
+  var parts = [];
+
+  $("#adv_search_rows .adv-search-row").each(function() {
+    var col = $(this).find(".adv-col").val();
+    var op  = $(this).find(".adv-op").val();
+    var val = $.trim($(this).find(".adv-val").val());
+
+    if (!col || !op) return;
+
+    var template = filterOptions[op];
+    if (!template) return;
+
+    var fragment;
+    if (template.indexOf("DATA") >= 0) {
+      if (val === "") return;
+      fragment = '"' + col + '" ' + template.replace("DATA", escapeSqlLiteral(val));
+    } else {
+      fragment = '"' + col + '" ' + template;
+    }
+
+    parts.push("(" + fragment + ")");
+  });
+
+  if (parts.length === 0) return null;
+  return parts.join(" " + conjunction + " ");
+}
+
+// Apply the advanced search conditions and reload table rows.
+function applyAdvancedSearch() {
+  var where = buildAdvancedWhereClause();
+
+  if (where === null) {
+    alert("Please complete at least one filter condition (column and operator are required).");
+    return;
+  }
+
+  $("#advanced_search_panel").data("where", where);
+  advancedSearchActive = true;
+
+  $("#adv_search_active_badge").show();
+  $("#advanced-search-toggle").addClass("adv-open");
+
+  $(".current-page").data("page", 1);
+  showTableContent();
+}
+
+// Clear the advanced search state and reset the panel to one empty row.
+function resetAdvancedSearch() {
+  advancedSearchActive = false;
+  $("#advanced_search_panel").data("where", null);
+  $("#adv_search_active_badge").hide();
+  $("#advanced-search-toggle").removeClass("adv-open");
+
+  $("#adv_search_rows").empty();
+  $("#adv_search_rows").append(buildAdvancedSearchRow());
+}
+
+// Recalculate #output top offset to account for the advanced panel height.
+function adjustOutputTop() {
+  if ($("#pagination").is(":visible")) {
+    var h = $("#pagination").outerHeight(true);
+    $("#output").css("top", h + "px");
+  }
+}
+
+// Bind operator change handlers for advanced rows (delegated, called once).
+function bindAdvancedOpHandlers() {
+  if ($("#adv_search_rows").data("op-handler-bound")) return;
+  $("#adv_search_rows").data("op-handler-bound", true);
+
+  $("#adv_search_rows").on("change", ".adv-op", function() {
+    var val = $(this).val();
+    var valInput = $(this).closest(".adv-search-row").find(".adv-val");
+    if (val === "null" || val === "not_null") {
+      valInput.hide().val("");
+    } else {
+      valInput.show();
+    }
   });
 }
 
@@ -1270,10 +1408,19 @@ function bindTableHeaderMenu() {
           var colValue = $(context).text();
           var colName  = $("#results_header th").eq(colIdx).data("name");
 
-          $("select.column").val(colName);
-          $("select.filter").val("equal");
-          $("#table_filter_value").val(colValue);
-          $("#rows_filter").submit();
+          if ($("#advanced_search_panel").is(":visible")) {
+            var newRow = buildAdvancedSearchRow();
+            newRow.find(".adv-col").val(colName);
+            newRow.find(".adv-op").val("equal");
+            newRow.find(".adv-val").val(colValue);
+            $("#adv_search_rows").append(newRow);
+          } else {
+            $("select.column").val(colName);
+            $("select.filter").val("equal");
+            $("#table_filter_value").val(colValue);
+            $("#rows_filter").submit();
+          }
+          break;
       }
     }
   });
@@ -1594,6 +1741,7 @@ $(document).ready(function() {
     $(this).addClass("active");
     $(".current-page").data("page", 1);
     $(".filters select, .filters input").val("");
+    resetAdvancedSearch();
 
     if (currentObject.type == "function") {
       sessionStorage.setItem("tab", "table_structure");
@@ -1681,6 +1829,67 @@ $(document).ready(function() {
 
   $("button.reset-filters").on("click", function() {
     $(".filters select, .filters input").val("");
+    resetAdvancedSearch();
+    showTableContent();
+  });
+
+  // ---- Advanced Search ------------------------------------------------
+
+  // Toggle the advanced search panel open/closed
+  $("#advanced-search-toggle").on("click", function() {
+    var panel = $("#advanced_search_panel");
+    if (panel.is(":visible")) {
+      panel.slideUp(150, function() {
+        $("#pagination").removeClass("adv-search-open");
+        adjustOutputTop();
+      });
+      $(this).find("i").removeClass("fa-caret-up").addClass("fa-caret-down");
+    } else {
+      if ($("#adv_search_rows .adv-search-row").length === 0) {
+        $("#adv_search_rows").append(buildAdvancedSearchRow());
+        bindAdvancedOpHandlers();
+      }
+      panel.slideDown(150, function() {
+        $("#pagination").addClass("adv-search-open");
+        adjustOutputTop();
+      });
+      $(this).find("i").removeClass("fa-caret-down").addClass("fa-caret-up");
+    }
+  });
+
+  // Add a new condition row
+  $("#adv-add-condition").on("click", function() {
+    var newRow = buildAdvancedSearchRow();
+    $("#adv_search_rows").append(newRow);
+    newRow.find(".adv-col").focus();
+  });
+
+  // Remove a condition row (clear instead of remove if it's the last row)
+  $("#adv_search_rows").on("click", ".adv-remove-row", function() {
+    var rows = $("#adv_search_rows .adv-search-row");
+    if (rows.length <= 1) {
+      $(this).closest(".adv-search-row").find("select").val("");
+      $(this).closest(".adv-search-row").find("input").val("").show();
+    } else {
+      $(this).closest(".adv-search-row").remove();
+    }
+    adjustOutputTop();
+  });
+
+  // Toggle AND/OR conjunction
+  $(".adv-conjunction-toggle").on("click", "button", function() {
+    $(".adv-conjunction-toggle button").removeClass("active");
+    $(this).addClass("active");
+  });
+
+  // Apply advanced search
+  $("#adv-apply").on("click", function() {
+    applyAdvancedSearch();
+  });
+
+  // Clear advanced search (keep panel open)
+  $("#adv-reset").on("click", function() {
+    resetAdvancedSearch();
     showTableContent();
   });
 
