@@ -137,12 +137,7 @@
         </form>
         <div id="advanced_search_panel" style="display:none;">
           <div class="adv-search-header">
-            <span class="adv-match-label">Match</span>
-            <div class="btn-group btn-group-xs adv-conjunction-toggle">
-              <button type="button" class="btn btn-default active" data-conj="AND">ALL (AND)</button>
-              <button type="button" class="btn btn-default" data-conj="OR">Any (OR)</button>
-            </div>
-            <span class="adv-match-label">of the following conditions:</span>
+            <span class="adv-match-label">Conditions:</span>
           </div>
           <div id="adv_search_rows">
             <!-- Condition rows injected by buildAdvancedSearchRow() -->
@@ -151,6 +146,11 @@
             <button type="button" class="btn btn-default btn-xs" id="adv-add-condition"><i class="fa fa-plus"></i> Add Condition</button>
             <button type="button" class="btn btn-primary btn-sm" id="adv-apply">Apply</button>
             <button type="button" class="btn btn-default btn-sm" id="adv-reset"><i class="fa fa-times"></i> Clear</button>
+            <button type="button" class="btn btn-default btn-sm" id="adv-show-query"><i class="fa fa-code"></i> Show Query</button>
+          </div>
+          <div id="adv_query_display" style="display:none;">
+            <pre id="adv_query_text"></pre>
+            <button type="button" class="btn btn-default btn-xs" id="adv-copy-query"><i class="fa fa-copy"></i> Copy</button>
           </div>
         </div>
         <div class="btn-group">

@@ -1007,3 +1007,83 @@
   vertical-align: middle;
   background-color: #79589f;
 }
+
+/* Per-row AND/OR connector pill */
+.adv-row-conj {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 72px;
+  gap: 2px;
+}
+
+.adv-row-conj-first {
+  justify-content: flex-end;
+}
+
+.adv-row-conj-first span {
+  font-size: 11px;
+  color: #999;
+  font-weight: bold;
+  padding-right: 4px;
+}
+
+.adv-conj-btn {
+  font-size: 10px;
+  padding: 1px 5px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #777;
+  border-radius: 3px;
+  cursor: pointer;
+  line-height: 16px;
+}
+
+.adv-conj-btn.active {
+  background: #79589f;
+  border-color: #79589f;
+  color: #fff;
+}
+
+/* Range input pair */
+.adv-val-range {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
+}
+
+.adv-val-range .adv-val-from,
+.adv-val-range .adv-val-to {
+  flex: 1;
+  min-width: 60px;
+  height: 28px;
+  font-size: 12px;
+  padding: 2px 6px;
+}
+
+.adv-range-sep {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #999;
+}
+
+/* Query preview box */
+#adv_query_display {
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+}
+
+#adv_query_display pre {
+  margin: 0 0 6px 0;
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: #333;
+  max-height: 80px;
+  overflow-y: auto;
+}
