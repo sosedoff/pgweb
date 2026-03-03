@@ -1153,7 +1153,9 @@ function buildAdvancedSearchRow(isFirst) {
       '<input type="text" class="adv-val-to form-control" placeholder="To" />' +
     '</span>'
   );
-  row.append('<button type="button" class="btn btn-default btn-xs adv-remove-row"><i class="fa fa-minus"></i></button>');
+  if (!isFirst) {
+    row.append('<button type="button" class="btn btn-default btn-xs adv-remove-row"><i class="fa fa-minus"></i></button>');
+  }
 
   return row;
 }

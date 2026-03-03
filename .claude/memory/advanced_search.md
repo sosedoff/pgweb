@@ -42,6 +42,9 @@ Multi-condition advanced search panel for the Rows tab. Accessible via an "Advan
 - `adjustOutputTop()` — sets `#output` CSS top to `#pagination` outerHeight
 - `bindAdvancedOpHandlers()` — delegated handler showing correct input variant per operator
 
+## Bug fix (v4b): first row showed unnecessary − delete button
+- `buildAdvancedSearchRow(isFirst)` now only appends the remove button when `isFirst=false`
+
 ## Added in v4: regex operators
 - `"regex": "~ 'DATA'"` and `"iregex": "~* 'DATA'"` added to `filterOptions`
 - Two new options appended to the Pattern `<optgroup>` in `buildAdvancedSearchRow()`
