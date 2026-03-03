@@ -685,6 +685,7 @@ function showTableContent(sortColumn, sortOrder) {
   getTableRows(name, opts, function(data) {
     $("#input").hide();
     $("#body").prop("class", "with-pagination");
+    adjustOutputTop();
 
     buildTable(data, sortColumn, sortOrder);
     setCurrentTab("table_content");

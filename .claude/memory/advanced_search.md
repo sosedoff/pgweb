@@ -1,6 +1,6 @@
 # Advanced Search Feature
 
-## Status: Implemented and working (v2)
+## Status: Implemented and working (v3)
 
 ## What was built
 Multi-condition advanced search panel for the Rows tab. Accessible via an "Advanced" toggle button next to the existing Apply/× buttons.
@@ -41,8 +41,13 @@ Multi-condition advanced search panel for the Rows tab. Accessible via an "Advan
 - `adjustOutputTop()` — sets `#output` CSS top to `#pagination` outerHeight
 - `bindAdvancedOpHandlers()` — delegated handler showing correct input variant per operator
 
+## Bug fix (v3): advanced panel obscuring table rows
+- **Root cause**: `.with-pagination #output { top: 50px !important }` in `app.css` — the `!important` beat jQuery's inline style set by `adjustOutputTop()`
+- **Fix 1**: removed `!important` from that CSS rule so JS inline style wins
+- **Fix 2**: added `adjustOutputTop()` call immediately after `$("#body").prop("class", "with-pagination")` in `showTableContent()` — so offset is recalculated on every table load, not just on panel open/close
+
 ## Key JS edits (app.js)
-- `showTableContent()` — advanced takes precedence over simple filter when `advancedSearchActive`
+- `showTableContent()` — advanced takes precedence over simple filter when `advancedSearchActive`; calls `adjustOutputTop()` after setting `with-pagination` class
 - `buildTableFilters()` — syncs columns into existing advanced rows; passes `isFirst=true`
 - Objects click handler — calls `resetAdvancedSearch()` on table switch
 - `reset-filters` button — calls `resetAdvancedSearch()`
