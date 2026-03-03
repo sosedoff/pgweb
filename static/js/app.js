@@ -41,7 +41,11 @@ var filterOptions = {
   "starts_with":    "LIKE 'DATA%'",
   "ends_with":      "LIKE '%DATA'",
   "istarts_with":   "ILIKE 'DATA%'",
-  "iends_with":     "ILIKE '%DATA'"
+  "iends_with":     "ILIKE '%DATA'",
+
+  // Regex operators
+  "regex":          "~ 'DATA'",
+  "iregex":         "~* 'DATA'"
 };
 
 // Returns the input type required for an operator: "none" | "single" | "list" | "range"
@@ -1120,6 +1124,8 @@ function buildAdvancedSearchRow(isFirst) {
       '<option value="ends_with">Has suffix</option>',
       '<option value="istarts_with">Has prefix (case insensitive)</option>',
       '<option value="iends_with">Has suffix (case insensitive)</option>',
+      '<option value="regex">Matches regex</option>',
+      '<option value="iregex">Matches regex (case insensitive)</option>',
     '</optgroup>'
   ].join("");
 

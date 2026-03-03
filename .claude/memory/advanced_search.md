@@ -1,6 +1,6 @@
 # Advanced Search Feature
 
-## Status: Implemented and working (v3)
+## Status: Implemented and working (v4)
 
 ## What was built
 Multi-condition advanced search panel for the Rows tab. Accessible via an "Advanced" toggle button next to the existing Apply/× buttons.
@@ -21,6 +21,7 @@ Multi-condition advanced search panel for the Rows tab. Accessible via an "Advan
   - Null: `IS NULL`, `IS NOT NULL`
   - Range: `BETWEEN` (From/To inputs), `NOT BETWEEN`
   - Pattern: Contains, Not contains, Has prefix, Has suffix + case-insensitive variants (ILIKE)
+  - Regex: Matches regex (`~`), Matches regex case insensitive (`~*`)
 - **`getOpInputType(op)`** helper: returns `"none" | "single" | "list" | "range"` — controls which input variant is shown
 - **`buildFullQuery()`** — builds full SELECT string using `getCurrentObject().name`
 
@@ -40,6 +41,11 @@ Multi-condition advanced search panel for the Rows tab. Accessible via an "Advan
 - `resetAdvancedSearch()` — clears flag/badge, empties rows, adds `buildAdvancedSearchRow(true)`
 - `adjustOutputTop()` — sets `#output` CSS top to `#pagination` outerHeight
 - `bindAdvancedOpHandlers()` — delegated handler showing correct input variant per operator
+
+## Added in v4: regex operators
+- `"regex": "~ 'DATA'"` and `"iregex": "~* 'DATA'"` added to `filterOptions`
+- Two new options appended to the Pattern `<optgroup>` in `buildAdvancedSearchRow()`
+- No other changes needed — `getOpInputType()` returns `"single"` by default, `buildAdvancedWhereClause()` handles it unchanged
 
 ## Bug fix (v3): advanced panel obscuring table rows
 - **Root cause**: `.with-pagination #output { top: 50px !important }` in `app.css` — the `!important` beat jQuery's inline style set by `adjustOutputTop()`
