@@ -41,7 +41,11 @@ var filterOptions = {
   "starts_with":    "LIKE 'DATA%'",
   "ends_with":      "LIKE '%DATA'",
   "istarts_with":   "ILIKE 'DATA%'",
-  "iends_with":     "ILIKE '%DATA'"
+  "iends_with":     "ILIKE '%DATA'",
+
+  // Regex operators
+  "regex":          "~ 'DATA'",
+  "iregex":         "~* 'DATA'"
 };
 
 // Returns the input type required for an operator: "none" | "single" | "list" | "range"
@@ -685,6 +689,7 @@ function showTableContent(sortColumn, sortOrder) {
   getTableRows(name, opts, function(data) {
     $("#input").hide();
     $("#body").prop("class", "with-pagination");
+    adjustOutputTop();
 
     buildTable(data, sortColumn, sortOrder);
     setCurrentTab("table_content");
@@ -1119,6 +1124,8 @@ function buildAdvancedSearchRow(isFirst) {
       '<option value="ends_with">Has suffix</option>',
       '<option value="istarts_with">Has prefix (case insensitive)</option>',
       '<option value="iends_with">Has suffix (case insensitive)</option>',
+      '<option value="regex">Matches regex</option>',
+      '<option value="iregex">Matches regex (case insensitive)</option>',
     '</optgroup>'
   ].join("");
 
@@ -1146,7 +1153,9 @@ function buildAdvancedSearchRow(isFirst) {
       '<input type="text" class="adv-val-to form-control" placeholder="To" />' +
     '</span>'
   );
-  row.append('<button type="button" class="btn btn-default btn-xs adv-remove-row"><i class="fa fa-minus"></i></button>');
+  if (!isFirst) {
+    row.append('<button type="button" class="btn btn-default btn-xs adv-remove-row"><i class="fa fa-minus"></i></button>');
+  }
 
   return row;
 }

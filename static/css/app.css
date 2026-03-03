@@ -615,7 +615,7 @@
 }
 
 .with-pagination #output {
-  top: 50px !important;
+  top: 50px;
 }
 
 .with-pagination #pagination {
