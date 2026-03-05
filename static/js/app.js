@@ -8,19 +8,60 @@ var currentObject       = null;
 var autocompleteObjects = [];
 var inputResizing       = false;
 var inputResizeOffset   = null;
+var advancedSearchActive = false;
 
 var filterOptions = {
-  "equal":      "= 'DATA'",
-  "not_equal":  "!= 'DATA'",
-  "greater":    "> 'DATA'" ,
-  "greater_eq": ">= 'DATA'",
-  "less":       "< 'DATA'",
-  "less_eq":    "<= 'DATA'",
-  "like":       "LIKE 'DATA'",
-  "ilike":      "ILIKE 'DATA'",
-  "null":       "IS NULL",
-  "not_null":   "IS NOT NULL"
+  // Standard comparison (single value) — also used by simple filter
+  "equal":        "= 'DATA'",
+  "not_equal":    "!= 'DATA'",
+  "greater":      "> 'DATA'",
+  "greater_eq":   ">= 'DATA'",
+  "less":         "< 'DATA'",
+  "less_eq":      "<= 'DATA'",
+  "like":         "LIKE 'DATA'",
+  "ilike":        "ILIKE 'DATA'",
+
+  // NULL checks (no value)
+  "null":         "IS NULL",
+  "not_null":     "IS NOT NULL",
+
+  // List operators — comma-separated values → IN (...)
+  "in":           "IN (DATA)",
+  "not_in":       "NOT IN (DATA)",
+
+  // Range operators — two values
+  "between":      "BETWEEN 'DATA1' AND 'DATA2'",
+  "not_between":  "NOT BETWEEN 'DATA1' AND 'DATA2'",
+
+  // Pattern operators
+  "contains":       "LIKE '%DATA%'",
+  "not_contains":   "NOT LIKE '%DATA%'",
+  "icontains":      "ILIKE '%DATA%'",
+  "not_icontains":  "NOT ILIKE '%DATA%'",
+  "starts_with":    "LIKE 'DATA%'",
+  "ends_with":      "LIKE '%DATA'",
+  "istarts_with":   "ILIKE 'DATA%'",
+  "iends_with":     "ILIKE '%DATA'",
+
+  // Regex operators
+  "regex":          "~ 'DATA'",
+  "iregex":         "~* 'DATA'"
 };
+
+// Returns the input type required for an operator: "none" | "single" | "list" | "range"
+function getOpInputType(op) {
+  if (!op || !filterOptions[op]) return "single";
+  if (op === "null" || op === "not_null")           return "none";
+  if (op === "in"   || op === "not_in")             return "list";
+  if (op === "between" || op === "not_between")     return "range";
+  return "single";
+}
+
+// Escape a filter value for inline SQL string literals.
+// Doubles single-quotes to prevent basic SQL injection via filter values.
+function escapeSqlLiteral(val) {
+  return String(val).replace(/'/g, "''");
+}
 
 function getSessionId() {
   var id = sessionStorage.getItem("session_id");
@@ -623,25 +664,32 @@ function showTableContent(sortColumn, sortOrder) {
     sort_order:  sortOrder
   };
 
-  var filter = {
-    column: $(".filters select.column").val(),
-    op:     $(".filters select.filter").val(),
-    input:  $(".filters input").val()
-  };
+  // Advanced search takes precedence over the simple filter
+  if (advancedSearchActive) {
+    var advWhere = $("#advanced_search_panel").data("where");
+    if (advWhere) opts["where"] = advWhere;
+  } else {
+    var filter = {
+      column: $(".filters select.column").val(),
+      op:     $(".filters select.filter").val(),
+      input:  $(".filters input").val()
+    };
 
-  // Apply filtering only if column is selected
-  if (filter.column && filter.op) {
-    var where = [
-      '"' + filter.column + '"',
-      filterOptions[filter.op].replace("DATA", filter.input)
-    ].join(" ");
+    // Apply filtering only if column is selected
+    if (filter.column && filter.op) {
+      var where = [
+        '"' + filter.column + '"',
+        filterOptions[filter.op].replace("DATA", escapeSqlLiteral(filter.input))
+      ].join(" ");
 
-    opts["where"] = where;
+      opts["where"] = where;
+    }
   }
 
   getTableRows(name, opts, function(data) {
     $("#input").hide();
     $("#body").prop("class", "with-pagination");
+    adjustOutputTop();
 
     buildTable(data, sortColumn, sortOrder);
     setCurrentTab("table_content");
@@ -1023,6 +1071,239 @@ function buildTableFilters(name, type) {
       var el = $("<option/>").attr("value", row[0]).text(row[0]);
       $("#pagination select.column").append(el);
     }
+
+    // Sync columns into any existing advanced search rows
+    var colHtml = $("#pagination select.column").html();
+    $("#adv_search_rows .adv-col").each(function() {
+      var prev = $(this).val();
+      $(this).html(colHtml);
+      $(this).val(prev);
+    });
+
+    // Ensure at least one empty row exists in the panel
+    if ($("#adv_search_rows .adv-search-row").length === 0) {
+      $("#adv_search_rows").append(buildAdvancedSearchRow(true));
+      bindAdvancedOpHandlers();
+    }
+  });
+}
+
+// Build a new advanced search condition row element.
+// isFirst=true omits the AND/OR connector pill and shows a "WHERE" label instead.
+function buildAdvancedSearchRow(isFirst) {
+  var colHtml = $("#pagination select.column").html() || "<option value='' selected>Select column</option>";
+
+  var opHtml = [
+    '<option value="">Select filter</option>',
+    '<optgroup label="Comparison">',
+      '<option value="equal">=</option>',
+      '<option value="not_equal">&lt;&gt;</option>',
+      '<option value="less">&lt;</option>',
+      '<option value="greater">&gt;</option>',
+      '<option value="less_eq">&lt;=</option>',
+      '<option value="greater_eq">&gt;=</option>',
+    '</optgroup>',
+    '<optgroup label="List">',
+      '<option value="in">IN</option>',
+      '<option value="not_in">NOT IN</option>',
+    '</optgroup>',
+    '<optgroup label="Null">',
+      '<option value="null">IS NULL</option>',
+      '<option value="not_null">IS NOT NULL</option>',
+    '</optgroup>',
+    '<optgroup label="Range">',
+      '<option value="between">BETWEEN</option>',
+      '<option value="not_between">NOT BETWEEN</option>',
+    '</optgroup>',
+    '<optgroup label="Pattern">',
+      '<option value="contains">Contains</option>',
+      '<option value="not_contains">Not contains</option>',
+      '<option value="icontains">Contains (case insensitive)</option>',
+      '<option value="not_icontains">Not contains (case insensitive)</option>',
+      '<option value="starts_with">Has prefix</option>',
+      '<option value="ends_with">Has suffix</option>',
+      '<option value="istarts_with">Has prefix (case insensitive)</option>',
+      '<option value="iends_with">Has suffix (case insensitive)</option>',
+      '<option value="regex">Matches regex</option>',
+      '<option value="iregex">Matches regex (case insensitive)</option>',
+    '</optgroup>'
+  ].join("");
+
+  var row = $('<div class="adv-search-row" data-row-conj="AND"></div>');
+
+  if (isFirst) {
+    row.append('<div class="adv-row-conj adv-row-conj-first"><span>WHERE</span></div>');
+  } else {
+    row.append(
+      '<div class="adv-row-conj">' +
+        '<button type="button" class="btn btn-xs adv-conj-btn active" data-conj="AND">AND</button>' +
+        '<button type="button" class="btn btn-xs adv-conj-btn" data-conj="OR">OR</button>' +
+      '</div>'
+    );
+  }
+
+  row.append('<select class="adv-col form-control">' + colHtml + '</select>');
+  row.append('<select class="adv-op form-control">'  + opHtml  + '</select>');
+  row.append('<input type="text" class="adv-val form-control" placeholder="Value" />');
+  row.append('<input type="text" class="adv-val-list form-control" placeholder="val1, val2, val3" style="display:none;" />');
+  row.append(
+    '<span class="adv-val-range" style="display:none;">' +
+      '<input type="text" class="adv-val-from form-control" placeholder="From" />' +
+      '<span class="adv-range-sep">and</span>' +
+      '<input type="text" class="adv-val-to form-control" placeholder="To" />' +
+    '</span>'
+  );
+  if (!isFirst) {
+    row.append('<button type="button" class="btn btn-default btn-xs adv-remove-row"><i class="fa fa-minus"></i></button>');
+  }
+
+  return row;
+}
+
+// Build a combined SQL WHERE clause from all advanced search condition rows.
+function buildAdvancedWhereClause() {
+  var parts = []; // array of {expr, conj}
+
+  $("#adv_search_rows .adv-search-row").each(function() {
+    var col       = $(this).find(".adv-col").val();
+    var op        = $(this).find(".adv-op").val();
+    var rowConj   = $(this).data("row-conj") || "AND";
+    var inputType = getOpInputType(op);
+
+    if (!col || !op) return;
+
+    var template = filterOptions[op];
+    if (!template) return;
+
+    var fragment;
+
+    if (inputType === "none") {
+      fragment = '"' + col + '" ' + template;
+
+    } else if (inputType === "list") {
+      // Read from list input; fall back to single input if user typed there
+      var raw = $.trim($(this).find(".adv-val-list").val()) ||
+                $.trim($(this).find(".adv-val").val());
+      if (!raw) return;
+      var items = raw.split(",").map(function(s) {
+        return "'" + escapeSqlLiteral($.trim(s)) + "'";
+      });
+      fragment = '"' + col + '" ' + template.replace("DATA", items.join(", "));
+
+    } else if (inputType === "range") {
+      // Read from range inputs; fall back to parsing single input as "from,to"
+      var from = $.trim($(this).find(".adv-val-from").val());
+      var to   = $.trim($(this).find(".adv-val-to").val());
+      if (!from || !to) {
+        // Try parsing "val1,val2" or "val1 and val2" from single input
+        var single = $.trim($(this).find(".adv-val").val());
+        var rangeParts = single.split(/\s*(?:,|and)\s*/i);
+        if (rangeParts.length === 2) {
+          from = $.trim(rangeParts[0]);
+          to   = $.trim(rangeParts[1]);
+        }
+      }
+      if (!from || !to) return;
+      fragment = '"' + col + '" ' + template
+        .replace("DATA1", escapeSqlLiteral(from))
+        .replace("DATA2", escapeSqlLiteral(to));
+
+    } else {
+      var val = $.trim($(this).find(".adv-val").val());
+      if (!val) return;
+      fragment = '"' + col + '" ' + template.replace("DATA", escapeSqlLiteral(val));
+    }
+
+    parts.push({ expr: "(" + fragment + ")", conj: rowConj });
+  });
+
+  if (parts.length === 0) return null;
+
+  var sql = parts[0].expr;
+  for (var i = 1; i < parts.length; i++) {
+    sql += " " + parts[i].conj + " " + parts[i].expr;
+  }
+  return sql;
+}
+
+// Apply the advanced search conditions and reload table rows.
+function applyAdvancedSearch() {
+  var where = buildAdvancedWhereClause();
+
+  if (where === null) {
+    alert("Please complete at least one filter condition (column and operator are required).");
+    return;
+  }
+
+  $("#advanced_search_panel").data("where", where);
+  advancedSearchActive = true;
+
+  $("#adv_search_active_badge").show();
+  $("#advanced-search-toggle").addClass("adv-open");
+
+  $(".current-page").data("page", 1);
+  showTableContent();
+}
+
+// Clear the advanced search state and reset the panel to one empty row.
+function resetAdvancedSearch() {
+  advancedSearchActive = false;
+  $("#advanced_search_panel").data("where", null);
+  $("#adv_search_active_badge").hide();
+  $("#advanced-search-toggle").removeClass("adv-open");
+
+  $("#adv_search_rows").empty();
+  $("#adv_search_rows").append(buildAdvancedSearchRow(true));
+}
+
+// Build the full SELECT query string for the current advanced search conditions.
+function buildFullQuery() {
+  var where = buildAdvancedWhereClause();
+  if (!where) return null;
+
+  var table = getCurrentObject().name;
+  var nameParts = table.split(".");
+  var sql;
+  if (nameParts.length === 2) {
+    sql = 'SELECT * FROM "' + nameParts[0] + '"."' + nameParts[1] + '"';
+  } else {
+    sql = 'SELECT * FROM "' + table + '"';
+  }
+  return sql + " WHERE " + where + ";";
+}
+
+// Recalculate #output top offset to account for the advanced panel height.
+function adjustOutputTop() {
+  if ($("#pagination").is(":visible")) {
+    var h = $("#pagination").outerHeight(true);
+    $("#output").css("top", h + "px");
+  }
+}
+
+// Update the visible input controls for an advanced row based on its operator.
+function updateAdvRowInputs(row, op) {
+  var inputType = getOpInputType(op);
+  row.find(".adv-val").toggle(inputType === "single");
+  row.find(".adv-val-list").toggle(inputType === "list");
+  // Use css() for range span so it shows as flex, not block
+  if (inputType === "range") {
+    row.find(".adv-val-range").css("display", "flex");
+  } else {
+    row.find(".adv-val-range").hide();
+  }
+  if (inputType === "none") {
+    row.find(".adv-val, .adv-val-list").val("");
+    row.find(".adv-val-from, .adv-val-to").val("");
+  }
+}
+
+// Bind operator change handlers for advanced rows (delegated, called once).
+function bindAdvancedOpHandlers() {
+  if ($("#adv_search_rows").data("op-handler-bound")) return;
+  $("#adv_search_rows").data("op-handler-bound", true);
+
+  $("#adv_search_rows").on("change", ".adv-op", function() {
+    updateAdvRowInputs($(this).closest(".adv-search-row"), $(this).val());
   });
 }
 
@@ -1270,10 +1551,19 @@ function bindTableHeaderMenu() {
           var colValue = $(context).text();
           var colName  = $("#results_header th").eq(colIdx).data("name");
 
-          $("select.column").val(colName);
-          $("select.filter").val("equal");
-          $("#table_filter_value").val(colValue);
-          $("#rows_filter").submit();
+          if ($("#advanced_search_panel").is(":visible")) {
+            var newRow = buildAdvancedSearchRow();
+            newRow.find(".adv-col").val(colName);
+            newRow.find(".adv-op").val("equal");
+            newRow.find(".adv-val").val(colValue);
+            $("#adv_search_rows").append(newRow);
+          } else {
+            $("select.column").val(colName);
+            $("select.filter").val("equal");
+            $("#table_filter_value").val(colValue);
+            $("#rows_filter").submit();
+          }
+          break;
       }
     }
   });
@@ -1594,6 +1884,7 @@ $(document).ready(function() {
     $(this).addClass("active");
     $(".current-page").data("page", 1);
     $(".filters select, .filters input").val("");
+    resetAdvancedSearch();
 
     if (currentObject.type == "function") {
       sessionStorage.setItem("tab", "table_structure");
@@ -1681,7 +1972,94 @@ $(document).ready(function() {
 
   $("button.reset-filters").on("click", function() {
     $(".filters select, .filters input").val("");
+    resetAdvancedSearch();
     showTableContent();
+  });
+
+  // ---- Advanced Search ------------------------------------------------
+
+  // Toggle the advanced search panel open/closed
+  $("#advanced-search-toggle").on("click", function() {
+    var panel = $("#advanced_search_panel");
+    if (panel.is(":visible")) {
+      panel.slideUp(150, function() {
+        $("#pagination").removeClass("adv-search-open");
+        adjustOutputTop();
+      });
+      $(this).find("i").removeClass("fa-caret-up").addClass("fa-caret-down");
+    } else {
+      if ($("#adv_search_rows .adv-search-row").length === 0) {
+        $("#adv_search_rows").append(buildAdvancedSearchRow(true));
+        bindAdvancedOpHandlers();
+      }
+      panel.slideDown(150, function() {
+        $("#pagination").addClass("adv-search-open");
+        adjustOutputTop();
+      });
+      $(this).find("i").removeClass("fa-caret-down").addClass("fa-caret-up");
+    }
+  });
+
+  // Add a new condition row
+  $("#adv-add-condition").on("click", function() {
+    var newRow = buildAdvancedSearchRow(false);
+    $("#adv_search_rows").append(newRow);
+    newRow.find(".adv-col").focus();
+    adjustOutputTop();
+  });
+
+  // Remove a condition row (clear instead of remove if it's the last row)
+  $("#adv_search_rows").on("click", ".adv-remove-row", function() {
+    var rows = $("#adv_search_rows .adv-search-row");
+    if (rows.length <= 1) {
+      $(this).closest(".adv-search-row").find("select").val("");
+      $(this).closest(".adv-search-row").find("input").val("").show();
+    } else {
+      $(this).closest(".adv-search-row").remove();
+    }
+    adjustOutputTop();
+  });
+
+  // Toggle per-row AND/OR connector
+  $("#adv_search_rows").on("click", ".adv-conj-btn", function() {
+    $(this).closest(".adv-row-conj").find(".adv-conj-btn").removeClass("active");
+    $(this).addClass("active");
+    $(this).closest(".adv-search-row").data("row-conj", $(this).data("conj"));
+  });
+
+  // Apply advanced search
+  $("#adv-apply").on("click", function() {
+    applyAdvancedSearch();
+  });
+
+  // Clear advanced search (keep panel open)
+  $("#adv-reset").on("click", function() {
+    resetAdvancedSearch();
+    $("#adv_query_display").hide();
+    showTableContent();
+  });
+
+  // Show/hide the raw SQL query preview
+  $("#adv-show-query").on("click", function() {
+    var display = $("#adv_query_display");
+    if (display.is(":visible")) {
+      display.slideUp(100, adjustOutputTop);
+      $(this).find("i").removeClass("fa-chevron-up").addClass("fa-code");
+    } else {
+      var sql = buildFullQuery();
+      if (!sql) {
+        alert("No valid conditions to preview. Fill in at least one complete condition.");
+        return;
+      }
+      $("#adv_query_text").text(sql);
+      display.slideDown(100, adjustOutputTop);
+      $(this).find("i").removeClass("fa-code").addClass("fa-chevron-up");
+    }
+  });
+
+  // Copy raw query to clipboard
+  $("#adv-copy-query").on("click", function() {
+    copyToClipboard($("#adv_query_text").text());
   });
 
   // Automatically prefill the filter if it's not set yet

@@ -133,13 +133,33 @@
           <input type="text" class="form-control" placeholder="Filter value" id="table_filter_value" />
           <button class="btn btn-primary btn-sm apply-filters" type="submit">Apply</button>
           <button class="btn btn-default btn-sm reset-filters"><i class="fa fa-times"></i></button>
+          <button class="btn btn-default btn-sm" id="advanced-search-toggle" type="button">Advanced <i class="fa fa-caret-down"></i></button>
         </form>
+        <div id="advanced_search_panel" style="display:none;">
+          <div class="adv-search-header">
+            <span class="adv-match-label">Conditions:</span>
+          </div>
+          <div id="adv_search_rows">
+            <!-- Condition rows injected by buildAdvancedSearchRow() -->
+          </div>
+          <div class="adv-search-footer">
+            <button type="button" class="btn btn-default btn-xs" id="adv-add-condition"><i class="fa fa-plus"></i> Add Condition</button>
+            <button type="button" class="btn btn-primary btn-sm" id="adv-apply">Apply</button>
+            <button type="button" class="btn btn-default btn-sm" id="adv-reset"><i class="fa fa-times"></i> Clear</button>
+            <button type="button" class="btn btn-default btn-sm" id="adv-show-query"><i class="fa fa-code"></i> Show Query</button>
+          </div>
+          <div id="adv_query_display" style="display:none;">
+            <pre id="adv_query_text"></pre>
+            <button type="button" class="btn btn-default btn-xs" id="adv-copy-query"><i class="fa fa-copy"></i> Copy</button>
+          </div>
+        </div>
         <div class="btn-group">
           <button type="button" class="btn btn-default btn-sm prev-page" disabled="disabled"><i class="fa fa-angle-left"></i></button>
           <button type="button" class="btn btn-default btn-sm page change-limit" title="Click to change row limit"></button>
           <button type="button" class="btn btn-default btn-sm next-page"><i class="fa fa-angle-right"></i></button>
         </div>
         <div class="current-page" data-page="1" data-pages="1">
+          <span id="adv_search_active_badge" class="label label-primary" style="display:none;">Advanced Filter Active</span>
           <span id="total_records"></span> rows
         </div>
       </div>
