@@ -1,6 +1,6 @@
 # Advanced Search Feature
 
-## Status: Implemented and working (v4)
+## Status: Implemented and working (v5)
 
 ## What was built
 Multi-condition advanced search panel for the Rows tab. Accessible via an "Advanced" toggle button next to the existing Apply/× buttons.
@@ -40,7 +40,13 @@ Multi-condition advanced search panel for the Rows tab. Accessible via an "Advan
 - `applyAdvancedSearch()` — stores WHERE in panel `.data("where")`, sets flag, reloads
 - `resetAdvancedSearch()` — clears flag/badge, empties rows, adds `buildAdvancedSearchRow(true)`
 - `adjustOutputTop()` — sets `#output` CSS top to `#pagination` outerHeight
-- `bindAdvancedOpHandlers()` — delegated handler showing correct input variant per operator
+- `updateAdvRowInputs(row, op)` — switches visible input variant for a row; uses `.css("display","flex")` for range span (not `.toggle()` which would give `block`)
+- `bindAdvancedOpHandlers()` — delegated `change` handler on `.adv-op`; calls `updateAdvRowInputs()`
+
+## Bug fix (v5): LIST, RANGE, NULL operators not working
+- **Root cause 1**: `.adv-val-range` shown via `.toggle(true)` renders as `display:block`, breaking the flex From/To layout — fixed by using `.css("display","flex")` in new `updateAdvRowInputs()` helper
+- **Root cause 2**: `buildAdvancedWhereClause()` read from `.adv-val-list` / `.adv-val-from/to` but if user typed in the always-visible `.adv-val` fallback was missing — added fallback: LIST reads `.adv-val` if `.adv-val-list` is empty; RANGE parses `"val1, val2"` or `"val1 and val2"` from `.adv-val` if From/To are empty
+- Extracted `updateAdvRowInputs(row, op)` from inline `change` handler for reuse
 
 ## Bug fix (v4b): first row showed unnecessary − delete button
 - `buildAdvancedSearchRow(isFirst)` now only appends the remove button when `isFirst=false`

@@ -1181,7 +1181,9 @@ function buildAdvancedWhereClause() {
       fragment = '"' + col + '" ' + template;
 
     } else if (inputType === "list") {
-      var raw = $.trim($(this).find(".adv-val-list").val());
+      // Read from list input; fall back to single input if user typed there
+      var raw = $.trim($(this).find(".adv-val-list").val()) ||
+                $.trim($(this).find(".adv-val").val());
       if (!raw) return;
       var items = raw.split(",").map(function(s) {
         return "'" + escapeSqlLiteral($.trim(s)) + "'";
@@ -1189,8 +1191,18 @@ function buildAdvancedWhereClause() {
       fragment = '"' + col + '" ' + template.replace("DATA", items.join(", "));
 
     } else if (inputType === "range") {
+      // Read from range inputs; fall back to parsing single input as "from,to"
       var from = $.trim($(this).find(".adv-val-from").val());
       var to   = $.trim($(this).find(".adv-val-to").val());
+      if (!from || !to) {
+        // Try parsing "val1,val2" or "val1 and val2" from single input
+        var single = $.trim($(this).find(".adv-val").val());
+        var rangeParts = single.split(/\s*(?:,|and)\s*/i);
+        if (rangeParts.length === 2) {
+          from = $.trim(rangeParts[0]);
+          to   = $.trim(rangeParts[1]);
+        }
+      }
       if (!from || !to) return;
       fragment = '"' + col + '" ' + template
         .replace("DATA1", escapeSqlLiteral(from))
@@ -1268,21 +1280,30 @@ function adjustOutputTop() {
   }
 }
 
+// Update the visible input controls for an advanced row based on its operator.
+function updateAdvRowInputs(row, op) {
+  var inputType = getOpInputType(op);
+  row.find(".adv-val").toggle(inputType === "single");
+  row.find(".adv-val-list").toggle(inputType === "list");
+  // Use css() for range span so it shows as flex, not block
+  if (inputType === "range") {
+    row.find(".adv-val-range").css("display", "flex");
+  } else {
+    row.find(".adv-val-range").hide();
+  }
+  if (inputType === "none") {
+    row.find(".adv-val, .adv-val-list").val("");
+    row.find(".adv-val-from, .adv-val-to").val("");
+  }
+}
+
 // Bind operator change handlers for advanced rows (delegated, called once).
 function bindAdvancedOpHandlers() {
   if ($("#adv_search_rows").data("op-handler-bound")) return;
   $("#adv_search_rows").data("op-handler-bound", true);
 
   $("#adv_search_rows").on("change", ".adv-op", function() {
-    var row       = $(this).closest(".adv-search-row");
-    var inputType = getOpInputType($(this).val());
-    row.find(".adv-val").toggle(inputType === "single");
-    row.find(".adv-val-list").toggle(inputType === "list");
-    row.find(".adv-val-range").toggle(inputType === "range");
-    if (inputType === "none") {
-      row.find(".adv-val, .adv-val-list").val("");
-      row.find(".adv-val-from, .adv-val-to").val("");
-    }
+    updateAdvRowInputs($(this).closest(".adv-search-row"), $(this).val());
   });
 }
 
