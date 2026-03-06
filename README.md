@@ -7,6 +7,7 @@ Simple web-based and cross platform PostgreSQL database explorer.
 [![Go Report Card](https://goreportcard.com/badge/github.com/sosedoff/pgweb)](https://goreportcard.com/report/github.com/sosedoff/pgweb)
 [![GoDoc](https://godoc.org/github.com/sosedoff/pgweb?status.svg)](https://godoc.org/github.com/sosedoff/pgweb)
 [![Docker Pulls](https://img.shields.io/docker/pulls/sosedoff/pgweb.svg)](https://hub.docker.com/r/sosedoff/pgweb/)
+[![PostgreSQL Health](https://img.releaserun.com/badge/health/postgresql.svg)](https://releaserun.com/badges/postgresql/)
 
 ## Overview
 
