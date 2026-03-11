@@ -101,6 +101,21 @@ func TestParseOptions(t *testing.T) {
 		assert.Equal(t, flagDir, opts.BookmarksDir)
 	})
 
+	t.Run("no connect ui from env var", func(t *testing.T) {
+		os.Setenv("PGWEB_NO_CONNECT_UI", "1")
+		defer os.Unsetenv("PGWEB_NO_CONNECT_UI")
+
+		opts, err := ParseOptions([]string{})
+		assert.NoError(t, err)
+		assert.True(t, opts.DisableConnectUI)
+	})
+
+	t.Run("no connect ui from flag", func(t *testing.T) {
+		opts, err := ParseOptions([]string{"--no-connect-ui"})
+		assert.NoError(t, err)
+		assert.True(t, opts.DisableConnectUI)
+	})
+
 	t.Run("bookmarks only mode", func(t *testing.T) {
 		_, err := ParseOptions([]string{"--bookmarks-only"})
 		assert.NoError(t, err)
