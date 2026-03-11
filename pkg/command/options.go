@@ -48,6 +48,7 @@ type Options struct {
 	Prefix                       string `long:"prefix" description:"Add a url prefix"`
 	ReadOnly                     bool   `long:"readonly" description:"Run database connection in readonly mode"`
 	LockSession                  bool   `long:"lock-session" description:"Lock session to a single database connection"`
+	DisableConnectUI             bool   `long:"no-connect-ui" description:"Disable connect/disconnect buttons in the UI"`
 	Bookmark                     string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
 	BookmarksDir                 string `long:"bookmarks-dir" description:"Overrides default directory for bookmark files to search" default:""`
 	BookmarksOnly                bool   `long:"bookmarks-only" description:"Allow only connections from bookmarks"`
@@ -130,6 +131,10 @@ func ParseOptions(args []string) (Options, error) {
 	if getPrefixedEnvVar("LOCK_SESSION") != "" {
 		opts.LockSession = true
 		opts.Sessions = false
+	}
+
+	if getPrefixedEnvVar("NO_CONNECT_UI") != "" {
+		opts.DisableConnectUI = true
 	}
 
 	if opts.Sessions || opts.ConnectBackend != "" {
@@ -243,6 +248,7 @@ func AvailableEnvVars() string {
 		"  " + envVarPrefix + "URL_PREFIX    HTTP server path prefix",
 		"  " + envVarPrefix + "SESSIONS      Enable multiple database sessions",
 		"  " + envVarPrefix + "LOCK_SESSION  Lock session to a single database connection",
+		"  " + envVarPrefix + "NO_CONNECT_UI Disable connect/disconnect buttons in the UI",
 		"  " + envVarPrefix + "AUTH_USER     HTTP basic auth username",
 		"  " + envVarPrefix + "AUTH_PASS     HTTP basic auth password",
 		"  " + envVarPrefix + "BOOKMARKS_DIR Overrides default directory for bookmark files",
