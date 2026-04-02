@@ -1275,9 +1275,7 @@ function buildHavingRow(isFirst) {
 
   row.append(exprSelect).append(opSelect).append(valInput);
 
-  if (!isFirst) {
-    row.append('<button type="button" class="btn btn-default btn-xs adv-remove-row"><i class="fa fa-minus"></i></button>');
-  }
+  row.append('<button type="button" class="btn btn-default btn-xs adv-remove-row"><i class="fa fa-minus"></i></button>');
 
   return row;
 }
