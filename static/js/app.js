@@ -2303,7 +2303,17 @@ $(document).ready(function() {
   });
 
   $("#agg_having_rows").on("click", ".adv-remove-row", function() {
-    $(this).closest(".adv-search-row").remove();
+    var row = $(this).closest(".adv-search-row");
+    var wasFirst = row.is(":first-child");
+    row.remove();
+    if (wasFirst) {
+      var newFirst = $("#agg_having_rows .adv-search-row").first();
+      if (newFirst.length) {
+        newFirst.find(".adv-row-conj").replaceWith(
+          '<div class="adv-row-conj adv-row-conj-first"><span>WHERE</span></div>'
+        );
+      }
+    }
   });
 
   $("#agg-add-having").on("click", function() {
