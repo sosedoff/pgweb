@@ -948,20 +948,23 @@ function runQuery() {
   }
 
   executeQuery(query, function(data) {
-    buildTable(data);
+    try {
+      buildTable(data);
 
-    hideQueryProgressMessage();
-    $("#input").show();
-    $("#body").removeClass("full");
-    $("#results").data("mode", "query");
+      $("#input").show();
+      $("#body").removeClass("full");
+      $("#results").data("mode", "query");
 
-    if (query.toLowerCase().indexOf("explain") != -1) {
-      $("#results").addClass("no-crop");
-    }
+      if (query.toLowerCase().indexOf("explain") != -1) {
+        $("#results").addClass("no-crop");
+      }
 
-    // Reload objects list if anything was created/deleted
-    if (query.match(/(create|drop)\s/i)) {
-      loadSchemas();
+      // Reload objects list if anything was created/deleted
+      if (query.match(/(create|drop)\s/i)) {
+        loadSchemas();
+      }
+    } finally {
+      hideQueryProgressMessage();
     }
   });
 }
@@ -977,12 +980,15 @@ function runExplain() {
   }
 
   explainQuery(query, function(data) {
-    buildTable(data);
+    try {
+      buildTable(data);
 
-    hideQueryProgressMessage();
-    $("#input").show();
-    $("#body").removeClass("full");
-    $("#results").addClass("no-crop");
+      $("#input").show();
+      $("#body").removeClass("full");
+      $("#results").addClass("no-crop");
+    } finally {
+      hideQueryProgressMessage();
+    }
   });
 }
 
@@ -997,12 +1003,15 @@ function runAnalyze() {
   }
 
   analyzeQuery(query, function(data) {
-    buildTable(data);
+    try {
+      buildTable(data);
 
-    hideQueryProgressMessage();
-    $("#input").show();
-    $("#body").removeClass("full");
-    $("#results").addClass("no-crop");
+      $("#input").show();
+      $("#body").removeClass("full");
+      $("#results").addClass("no-crop");
+    } finally {
+      hideQueryProgressMessage();
+    }
   });
 }
 
@@ -2035,8 +2044,11 @@ function bindContentModalEvents() {
 
   $(window).on("click", function(e) {
     // Automatically hide the modal on any click outside of the modal window
-    if (e.target && !contentModal.contains(e.target)) {
+    if (e.target && !contentModal.contains(e.target) && $("#content_modal").is(":visible")) {
       $("#content_modal").hide();
+      if (editor && $("#table_query").hasClass("selected")) {
+        editor.focus();
+      }
     }
   });
 
