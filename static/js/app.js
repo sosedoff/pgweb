@@ -1243,6 +1243,35 @@ function getAggregateAliases() {
   return aliases;
 }
 
+// Returns an array of {alias, expr} objects where expr is the full aggregate expression
+// (e.g. COUNT(*), SUM("col")) suitable for use in HAVING clauses.
+function getAggregateExprs() {
+  var seen = {};
+  var result = [];
+  $("#agg_expr_rows .agg-expr-row").each(function() {
+    var fn    = $(this).find(".agg-fn").val() || "";
+    var col   = $(this).find(".agg-col").val() || "";
+    var alias = $.trim($(this).find(".agg-alias").val());
+    if (alias === "") {
+      if (fn === "COUNT(*)") {
+        alias = "count";
+      } else {
+        alias = fn.toLowerCase() + (col ? "_" + col : "");
+      }
+    }
+    var base = alias;
+    var n = 2;
+    while (seen[alias]) {
+      alias = base + "_" + n;
+      n++;
+    }
+    seen[alias] = true;
+    var expr = fn === "COUNT(*)" ? "COUNT(*)" : fn + '("' + col + '")';
+    result.push({ alias: alias, expr: expr });
+  });
+  return result;
+}
+
 function buildHavingRow(isFirst) {
   var row = $('<div class="adv-search-row" data-row-conj="AND"></div>');
   if (isFirst) {
@@ -1256,13 +1285,13 @@ function buildHavingRow(isFirst) {
     );
   }
 
-  var aliases = getAggregateAliases();
+  var aggExprs = getAggregateExprs();
   var exprSelect = $('<select class="having-expr form-control"></select>');
-  if (aliases.length === 0) {
+  if (aggExprs.length === 0) {
     exprSelect.append('<option value=""></option>');
   } else {
-    $.each(aliases, function(i, a) {
-      exprSelect.append($('<option></option>').val(a).text(a));
+    $.each(aggExprs, function(i, e) {
+      exprSelect.append($('<option></option>').val(e.expr).text(e.alias));
     });
   }
 
@@ -1281,19 +1310,20 @@ function buildHavingRow(isFirst) {
 }
 
 function updateHavingAliasDropdowns() {
-  var aliases = getAggregateAliases();
+  var aggExprs = getAggregateExprs();
+  var exprVals = aggExprs.map(function(e) { return e.expr; });
   $("#agg_having_rows .adv-search-row").each(function() {
     var sel  = $(this).find(".having-expr");
     var prev = sel.val();
     sel.empty();
-    if (aliases.length === 0) {
+    if (aggExprs.length === 0) {
       sel.append('<option value=""></option>');
     } else {
-      $.each(aliases, function(i, a) {
-        sel.append($('<option></option>').val(a).text(a));
+      $.each(aggExprs, function(i, e) {
+        sel.append($('<option></option>').val(e.expr).text(e.alias));
       });
     }
-    if (prev && aliases.indexOf(prev) !== -1) {
+    if (prev && exprVals.indexOf(prev) !== -1) {
       sel.val(prev);
     }
   });
