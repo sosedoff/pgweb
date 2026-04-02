@@ -1319,12 +1319,9 @@ function buildAggregateSelectClause() {
 }
 
 function buildGroupByClause() {
-  var cols = [];
-  $(".agg-group-col:checked").each(function() {
-    cols.push('"' + $(this).val() + '"');
-  });
+  var cols = $("#agg_group_by_select").val() || [];
   if (cols.length === 0) return null;
-  return "GROUP BY " + cols.join(", ");
+  return "GROUP BY " + cols.map(function(c) { return '"' + c + '"'; }).join(", ");
 }
 
 function buildHavingClause() {
