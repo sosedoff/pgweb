@@ -1179,15 +1179,12 @@ function buildAdvancedSearchRow(isFirst) {
 }
 
 function buildGroupBySection() {
-  var grid = $("#agg_group_by_grid");
-  grid.empty();
+  var sel = $("#agg_group_by_select");
+  sel.empty();
   $("#pagination select.column option").each(function() {
     var val = $(this).val();
     if (!val) return;
-    var label = $("<label>");
-    var cb = $("<input>", { type: "checkbox", class: "agg-group-col", value: val });
-    label.append(cb).append(" " + val);
-    grid.append(label);
+    sel.append($("<option>", { value: val, text: val }));
   });
 }
 
