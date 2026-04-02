@@ -1297,9 +1297,8 @@ function updateHavingAliasDropdowns() {
 
 function buildAggregateSelectClause() {
   var parts = [];
-  $(".agg-group-col:checked").each(function() {
-    parts.push('"' + $(this).val() + '"');
-  });
+  var cols = $("#agg_group_by_select").val() || [];
+  cols.forEach(function(c) { parts.push('"' + c + '"'); });
   var aliases = getAggregateAliases();
   var i = 0;
   $("#agg_expr_rows .agg-expr-row").each(function() {
