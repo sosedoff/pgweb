@@ -1137,20 +1137,15 @@
   margin-bottom: 6px;
 }
 
-.agg-group-by-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
+.agg-group-by-select {
+  height: 90px;
+  font-size: 12px;
 }
 
-.agg-group-by-grid label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: normal;
-  margin: 0;
-  cursor: pointer;
+.agg-group-by-hint {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 3px;
 }
 
 .agg-expr-row {
