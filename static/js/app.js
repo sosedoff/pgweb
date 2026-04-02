@@ -1486,7 +1486,7 @@ function applyAggregate() {
 function resetAggregate() {
   aggregateActive = false;
   $("#agg_active_badge").hide();
-  buildGroupBySection();
+  $("#agg_group_by_select").val([]);
   $("#agg_expr_rows").empty();
   $("#agg_having_rows").empty();
   $("#aggregate_panel").hide();
