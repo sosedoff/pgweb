@@ -1294,9 +1294,8 @@ function updateHavingAliasDropdowns() {
 
 function buildAggregateSelectClause() {
   var parts = [];
-  $(".agg-group-col:checked").each(function() {
-    parts.push('"' + $(this).val() + '"');
-  });
+  var cols = $("#agg_group_by_select").val() || [];
+  cols.forEach(function(c) { parts.push('"' + c + '"'); });
   var aliases = getAggregateAliases();
   var i = 0;
   $("#agg_expr_rows .agg-expr-row").each(function() {
@@ -1316,12 +1315,9 @@ function buildAggregateSelectClause() {
 }
 
 function buildGroupByClause() {
-  var cols = [];
-  $(".agg-group-col:checked").each(function() {
-    cols.push('"' + $(this).val() + '"');
-  });
+  var cols = $("#agg_group_by_select").val() || [];
   if (cols.length === 0) return null;
-  return "GROUP BY " + cols.join(", ");
+  return "GROUP BY " + cols.map(function(c) { return '"' + c + '"'; }).join(", ");
 }
 
 function buildHavingClause() {
@@ -1487,7 +1483,7 @@ function applyAggregate() {
 function resetAggregate() {
   aggregateActive = false;
   $("#agg_active_badge").hide();
-  buildGroupBySection();
+  $("#agg_group_by_select").val([]);
   $("#agg_expr_rows").empty();
   $("#agg_having_rows").empty();
   $("#aggregate_panel").hide();

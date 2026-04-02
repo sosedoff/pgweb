@@ -153,9 +153,8 @@
         <div id="aggregate_panel" style="display:none;">
           <div class="agg-section">
             <div class="agg-section-header">GROUP BY</div>
-            <div id="agg_group_by_grid" class="agg-group-by-grid">
-              <!-- Group-by checkboxes injected by buildGroupBySection() -->
-            </div>
+            <select id="agg_group_by_select" multiple class="form-control agg-group-by-select" aria-label="GROUP BY" aria-describedby="agg-group-by-help"></select>
+            <div class="agg-group-by-hint" id="agg-group-by-help">Hold Ctrl / Cmd to select multiple columns</div>
           </div>
           <div class="agg-section">
             <div class="agg-section-header">
