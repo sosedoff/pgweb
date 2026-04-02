@@ -15,13 +15,13 @@
   margin: 0px;
   padding: 0px;
   height: 50px;
-  display: block;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
 }
 
 #nav ul li {
-  margin: 0px;
-  padding: 0px;
-  float: left;
+  flex-shrink: 0;
   height: 49px;
   line-height: 49px;
   font-size: 13px;
@@ -30,7 +30,6 @@
   font-weight: 500;
   margin: 0 1px;
   cursor: pointer;
-  display: block;
   list-style: none;
   list-style-type: none;
 }
@@ -62,6 +61,25 @@
 
 #nav ul li.selected:first-child {
   border-left: none;
+}
+
+#nav_filter_caution {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: default;
+  pointer-events: none;
+  color: #f5c842;
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.85;
+  padding-right: 160px; /* clear the fixed connection-actions buttons */
+}
+
+#nav_filter_caution .fa {
+  margin-right: 5px;
 }
 
 #sidebar {
