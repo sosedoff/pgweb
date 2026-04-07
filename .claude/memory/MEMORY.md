@@ -12,3 +12,6 @@ go build -o ./bin/pgweb_linux_amd64
 ```
 
 >Output: `bin/pgweb_linux_amd64` (~28MB, ELF 64-bit, statically linked)
+
+- local branch stays local and not to be pushed to remote. Directive is set via .git/hooks/pre-push
+
