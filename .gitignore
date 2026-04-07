@@ -6,3 +6,6 @@ pgweb
 bin
 tmp/
 cover.out
+docs/**
+.worktrees/
+
