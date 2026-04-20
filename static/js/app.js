@@ -139,6 +139,7 @@ function buildSchemaSection(name, objects) {
     "table":             "Tables",
     "view":              "Views",
     "materialized_view": "Materialized Views",
+    "foreign_table":     "Foreign Tables",
     "function":          "Functions",
     "sequence":          "Sequences"
   };
@@ -147,6 +148,7 @@ function buildSchemaSection(name, objects) {
     "table":             '<i class="fa fa-table"></i>',
     "view":              '<i class="fa fa-table"></i>',
     "materialized_view": '<i class="fa fa-table"></i>',
+    "foreign_table":     '<i class="fa fa-table"></i>',
     "function":          '<i class="fa fa-bolt"></i>',
     "sequence":          '<i class="fa fa-circle-o"></i>'
   };
@@ -158,7 +160,7 @@ function buildSchemaSection(name, objects) {
   section += "<div class='schema-name'><i class='fa fa-folder-o'></i><i class='fa fa-folder-open-o'></i> " + name + "</div>";
   section += "<div class='schema-container'>";
 
-  ["table", "view", "materialized_view", "function", "sequence"].forEach(function(group) {
+  ["table", "view", "materialized_view", "foreign_table", "function", "sequence"].forEach(function(group) {
     group_klass = "";
     if (name == "public" && group == "table") group_klass = "expanded";
 
@@ -221,6 +223,7 @@ function loadSchemas() {
       table: [],
       view: [],
       materialized_view: [],
+      foreign_table: [],
       function: [],
       sequence: []
     }
@@ -259,7 +262,7 @@ function loadSchemas() {
       autocompleteObjects = [];
       for (schema in data) {
         for (kind in data[schema]) {
-          if (!(kind == "table" || kind == "view" || kind == "materialized_view" || kind == "function")) {
+          if (!(kind == "table" || kind == "view" || kind == "materialized_view" || kind == "foreign_table" || kind == "function")) {
             continue
           }
 
