@@ -51,6 +51,7 @@ type Options struct {
 	Bookmark                     string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
 	BookmarksDir                 string `long:"bookmarks-dir" description:"Overrides default directory for bookmark files to search" default:""`
 	BookmarksOnly                bool   `long:"bookmarks-only" description:"Allow only connections from bookmarks"`
+	Banner                       string `long:"banner" description:"Message to display on the connection page" default:""`
 	QueriesDir                   string `long:"queries-dir" description:"Overrides default directory for local queries"`
 	DisablePrettyJSON            bool   `long:"no-pretty-json" description:"Disable JSON formatting feature for result export"`
 	DisableSSH                   bool   `long:"no-ssh" description:"Disable database connections via SSH"`

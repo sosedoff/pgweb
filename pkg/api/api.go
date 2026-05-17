@@ -601,6 +601,7 @@ func GetBookmarks(c *gin.Context) {
 func GetInfo(c *gin.Context) {
 	successResponse(c, gin.H{
 		"app": command.Info,
+		"banner": command.Opts.Banner,
 		"features": gin.H{
 			"session_lock":   command.Opts.LockSession,
 			"query_timeout":  command.Opts.QueryTimeout,

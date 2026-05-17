@@ -2659,6 +2659,9 @@ $(document).ready(function() {
 
     appInfo = resp.app;
     appFeatures = resp.features;
+    if (resp.banner) {
+      $("#banner_message").text(resp.banner).show();
+    }
 
     getConnection(function(resp) {
       if (resp.error) {
