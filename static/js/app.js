@@ -819,7 +819,8 @@ function showQueryPanel() {
   editor.focus();
 
   $("#input").show();
-  $("#body").prop("class", "")
+  $("#body").prop("class", "");
+  $("#output").css("top", $("#input").height() + "px");
 }
 
 function showConnectionPanel() {
@@ -938,81 +939,96 @@ function getSubquery(text, cursor) {
 }
 
 function runQuery() {
-  setCurrentTab("table_query");
   showQueryProgressMessage();
+  try {
+    setCurrentTab("table_query");
 
-  var query = getEditorSelection();
-  if (query.length == 0) {
-    hideQueryProgressMessage();
-    return;
-  }
-
-  executeQuery(query, function(data) {
-    try {
-      buildTable(data);
-
-      $("#input").show();
-      $("#body").removeClass("full");
-      $("#results").data("mode", "query");
-
-      if (query.toLowerCase().indexOf("explain") != -1) {
-        $("#results").addClass("no-crop");
-      }
-
-      // Reload objects list if anything was created/deleted
-      if (query.match(/(create|drop)\s/i)) {
-        loadSchemas();
-      }
-    } finally {
+    var query = getEditorSelection();
+    if (query.length == 0) {
       hideQueryProgressMessage();
+      return;
     }
-  });
+
+    executeQuery(query, function(data) {
+      try {
+        buildTable(data);
+
+        $("#input").show();
+        $("#body").removeClass("full");
+        $("#results").data("mode", "query");
+
+        if (query.toLowerCase().indexOf("explain") != -1) {
+          $("#results").addClass("no-crop");
+        }
+
+        // Reload objects list if anything was created/deleted
+        if (query.match(/(create|drop)\s/i)) {
+          loadSchemas();
+        }
+      } finally {
+        hideQueryProgressMessage();
+      }
+    });
+  } catch(e) {
+    hideQueryProgressMessage();
+    throw e;
+  }
 }
 
 function runExplain() {
-  setCurrentTab("table_query");
   showQueryProgressMessage();
+  try {
+    setCurrentTab("table_query");
 
-  var query = getEditorSelection();
-  if (query.length == 0) {
-    hideQueryProgressMessage();
-    return;
-  }
-
-  explainQuery(query, function(data) {
-    try {
-      buildTable(data);
-
-      $("#input").show();
-      $("#body").removeClass("full");
-      $("#results").addClass("no-crop");
-    } finally {
+    var query = getEditorSelection();
+    if (query.length == 0) {
       hideQueryProgressMessage();
+      return;
     }
-  });
+
+    explainQuery(query, function(data) {
+      try {
+        buildTable(data);
+
+        $("#input").show();
+        $("#body").removeClass("full");
+        $("#results").addClass("no-crop");
+      } finally {
+        hideQueryProgressMessage();
+      }
+    });
+  } catch(e) {
+    hideQueryProgressMessage();
+    throw e;
+  }
 }
 
 function runAnalyze() {
-  setCurrentTab("table_query");
   showQueryProgressMessage();
+  try {
+    setCurrentTab("table_query");
 
-  var query = getEditorSelection();
-  if (query.length == 0) {
-    hideQueryProgressMessage();
-    return;
-  }
-
-  analyzeQuery(query, function(data) {
-    try {
-      buildTable(data);
-
-      $("#input").show();
-      $("#body").removeClass("full");
-      $("#results").addClass("no-crop");
-    } finally {
+    var query = getEditorSelection();
+    if (query.length == 0) {
       hideQueryProgressMessage();
+      return;
     }
-  });
+
+    analyzeQuery(query, function(data) {
+      try {
+        buildTable(data);
+
+        $("#input").show();
+        $("#body").removeClass("full");
+        $("#results").addClass("no-crop");
+      } finally {
+        hideQueryProgressMessage();
+      }
+    });
+  } catch(e) {
+    hideQueryProgressMessage();
+    throw e;
+  }
 }
 
 function generateURL(path, params) {
