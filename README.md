@@ -21,7 +21,7 @@ Very easy to use and packs just the right amount of features.
 - Cross-platform: Mac/Linux/Windows (64bit).
 - Simple installation (distributed as a single binary).
 - Zero dependencies.
-- Works with PostgreSQL 9.1+.
+- Works with PostgreSQL 9.6+.
 - Supports native SSH tunnels.
 - Multiple database sessions.
 - Execute and analyze custom SQL queries.
