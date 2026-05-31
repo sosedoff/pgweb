@@ -250,7 +250,7 @@ func SwitchDb(c *gin.Context) {
 		badRequest(c, errInvalidConnString)
 		return
 	}
-	currentURL.Path = name
+	currentURL.Path = "/" + name
 
 	cl, err := client.NewFromUrl(currentURL.String(), nil)
 	if err != nil {
