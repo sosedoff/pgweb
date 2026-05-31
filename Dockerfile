@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 # Builder Stage
 # ------------------------------------------------------------------------------
-FROM golang:1.25-trixie AS build
+FROM golang:1.26-trixie AS build
 
 # Set default build argument for CGO_ENABLED
 ARG CGO_ENABLED=0
@@ -19,30 +19,14 @@ COPY .git/ .
 RUN make build
 
 # ------------------------------------------------------------------------------
-# Fetch signing key
-# ------------------------------------------------------------------------------
-FROM debian:trixie-slim AS keyring
-ADD https://www.postgresql.org/media/keys/ACCC4CF8.asc keyring.asc
-RUN apt-get update && \
-    apt-get install -qq --no-install-recommends gpg
-RUN gpg -o keyring.pgp --dearmor keyring.asc
-
-# ------------------------------------------------------------------------------
 # Release Stage
 # ------------------------------------------------------------------------------
-FROM debian:trixie-slim
-
-ARG keyring=/usr/share/keyrings/postgresql-archive-keyring.pgp
-COPY --from=keyring /keyring.pgp $keyring
-RUN . /etc/os-release && \
-    echo "deb [signed-by=${keyring}] http://apt.postgresql.org/pub/repos/apt/ ${VERSION_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-    apt-get update && \
-    apt-get install -qq --no-install-recommends ca-certificates openssl netcat-openbsd curl postgresql-client
+FROM gcr.io/distroless/static-debian13:nonroot
 
 COPY --from=build /build/pgweb /usr/bin/pgweb
 
-RUN useradd --uid 1000 --no-create-home --shell /bin/false pgweb
-USER pgweb
+USER nonroot
 
 EXPOSE 8081
+
 ENTRYPOINT ["/usr/bin/pgweb", "--bind=0.0.0.0", "--listen=8081"]
