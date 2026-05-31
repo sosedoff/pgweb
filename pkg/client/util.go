@@ -8,7 +8,8 @@ import (
 
 var (
 	// List of keywords that are not allowed in read-only mode
-	reRestrictedKeywords = regexp.MustCompile(`(?mi)\s?(CREATE|INSERT|UPDATE|DROP|DELETE|TRUNCATE|GRANT|OPEN|IMPORT|COPY)\s`)
+	reRestrictedKeywords  = regexp.MustCompile(`(?mi)\s?(CREATE|INSERT|UPDATE|DROP|DELETE|TRUNCATE|GRANT|OPEN|IMPORT|COPY)\s`)
+	reRestrictedFunctions = regexp.MustCompile(`(?mi)(pg_cancel_backend|pg_terminate_backend)\s*\(`)
 
 	// Comment regular expressions
 	reSlashComment = regexp.MustCompile(`(?m)/\*.+\*/`)
@@ -85,7 +86,7 @@ func containsRestrictedKeywords(str string) bool {
 	str = reSlashComment.ReplaceAllString(str, "")
 	str = reDashComment.ReplaceAllString(str, "")
 
-	return reRestrictedKeywords.MatchString(str)
+	return reRestrictedKeywords.MatchString(str) || reRestrictedFunctions.MatchString(str)
 }
 
 func hasBinary(data string, checkLen int) bool {

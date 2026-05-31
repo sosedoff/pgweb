@@ -95,6 +95,32 @@ func TestGetMajorMinorVersion(t *testing.T) {
 	}
 }
 
+func TestContainsRestrictedKeywords(t *testing.T) {
+	examples := []struct {
+		input  string
+		result bool
+	}{
+		{"SELECT 1", false},
+		{"SELECT * FROM users", false},
+		{"CREATE TABLE foo (id int)", true},
+		{"INSERT INTO foo VALUES (1)", true},
+		{"DROP TABLE foo", true},
+		{"DELETE FROM foo", true},
+		{"SELECT pg_cancel_backend(1234)", true},
+		{"SELECT pg_terminate_backend(1234)", true},
+		{"select pg_cancel_backend( 1234 )", true},
+		{"select pg_terminate_backend( 1234 )", true},
+		{"SELECT PG_CANCEL_BACKEND(1234)", true},
+		{"SELECT PG_TERMINATE_BACKEND(1234)", true},
+	}
+
+	for _, ex := range examples {
+		t.Run(ex.input, func(t *testing.T) {
+			assert.Equal(t, ex.result, containsRestrictedKeywords(ex.input))
+		})
+	}
+}
+
 func TestCheckVersionRequirement(t *testing.T) {
 	examples := []struct {
 		client string
