@@ -55,9 +55,9 @@
 			items = 'li:not(.divider)';
 			$menu.attr('style', '')
 				.css(tp)
-				.addClass('open')
 				.on('click.context.data-api', items, $.proxy(this.onItem, this, $(e.currentTarget)))
 				.trigger('shown.bs.context', relatedTarget);
+			$('.dropdown-menu', $menu).addClass('show');
 
 			// Delegating the `closemenu` only on the currently opened menu.
 			// This prevents other opened menus from closing.
@@ -75,15 +75,15 @@
 
 			$menu = this.getMenu();
 
-			if(!$menu.hasClass('open')) return;
+			if(!$('.dropdown-menu', $menu).hasClass('show')) return;
 
 			relatedTarget = { relatedTarget: this };
 			$menu.trigger(evt = $.Event('hide.bs.context', relatedTarget));
 
 			items = 'li:not(.divider)';
-			$menu.removeClass('open')
-				.off('click.context.data-api', items)
+			$menu.off('click.context.data-api', items)
 				.trigger('hidden.bs.context', relatedTarget);
+			$('.dropdown-menu', $menu).removeClass('show')
 
 			$('html')
 				.off('click.context.data-api', $menu.selector);
