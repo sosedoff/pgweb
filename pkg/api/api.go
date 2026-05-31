@@ -143,7 +143,7 @@ func ConnectWithBackend(c *gin.Context) {
 
 // Connect creates a new client connection
 func Connect(c *gin.Context) {
-	if command.Opts.LockSession {
+	if command.Opts.LockSession || command.Opts.DisableConnectUI {
 		badRequest(c, errSessionLocked)
 		return
 	}
@@ -281,7 +281,7 @@ func SwitchDb(c *gin.Context) {
 
 // Disconnect closes the current database connection
 func Disconnect(c *gin.Context) {
-	if command.Opts.LockSession {
+	if command.Opts.LockSession || command.Opts.DisableConnectUI {
 		badRequest(c, errSessionLocked)
 		return
 	}
@@ -483,6 +483,7 @@ func GetConnectionInfo(c *gin.Context) {
 
 	info := res.Format()[0]
 	info["session_lock"] = command.Opts.LockSession
+	info["no_connect_ui"] = command.Opts.DisableConnectUI
 
 	successResponse(c, info)
 }
@@ -603,6 +604,7 @@ func GetInfo(c *gin.Context) {
 		"app": command.Info,
 		"features": gin.H{
 			"session_lock":   command.Opts.LockSession,
+			"no_connect_ui": command.Opts.DisableConnectUI,
 			"query_timeout":  command.Opts.QueryTimeout,
 			"local_queries":  QueryStore != nil,
 			"bookmarks_only": command.Opts.BookmarksOnly,
