@@ -464,7 +464,7 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
     // Add all actual row data here
     for (i in row) {
-      r += "<td data-col='" + i + "'><div>" + escapeHtml(row[i]) + "</div></td>";
+      r += "<td data-type='"+ typeof row[i]+"' data-col='" + i + "'><div>" + escapeHtml(row[i]) + "</div></td>";
     }
 
     // Add row action button
@@ -1247,6 +1247,15 @@ function bindTableHeaderMenu() {
       var isEmpty    = $("#results").hasClass("empty");
       var isAllowed  = browseMode == "browse" || browseMode == "query";
 
+      if ( browseMode == 'browse' ){
+        $('.dropdown-menu li a[data-action="copy_as_insert"]').show();
+        $('.dropdown-menu li a[data-action="copy_as_update"]').show();
+      } else {
+        $('.dropdown-menu li a[data-action="copy_as_insert"]').hide();
+        $('.dropdown-menu li a[data-action="copy_as_update"]').hide();
+      }
+
+
       if (isEmpty || !isAllowed) {
         e.preventDefault();
         this.closemenu();
@@ -1257,6 +1266,12 @@ function bindTableHeaderMenu() {
       var menuItem = $(e.target);
 
       switch(menuItem.data("action")) {
+        case "copy_as_insert":
+          copyAsInsert(context);
+          break;
+      case "copy_as_update":
+          copyAsUpdate(context);
+          break;
         case "display_value":
           var value = $(context).text();
           $("#content_modal .content").text(value);
@@ -1277,6 +1292,81 @@ function bindTableHeaderMenu() {
       }
     }
   });
+}
+
+function copyAsInsert(context){
+  var values = getValuesFromContext(context);
+  var columns = getColumnsFromResults();
+  var tableName = $("#results").data("table");
+  if(tableName === undefined){
+    alert('table must be selected.');
+    return;
+  }
+  var str = "INSERT INTO "+tableName+"("+columns.join(',')+") VALUES("+values.map(function(o){return o.value}).join(",")+")";
+  copyToClipboard(str);
+}
+
+function copyAsUpdate(context){
+  var values = getValuesFromContext(context);
+  var columns = getColumnsFromResults();
+  var tableName = $("#results").data("table");
+  if(tableName === undefined){
+    alert('table must be selected.');
+    return;
+  }
+  var where = [];
+  var set = [];
+  columns.forEach(function(row, index){
+    var val = values[index];
+    set.push(row+"="+val.value);
+    if(val.isNull){
+      where.push(row+" IS "+val.value);
+      return;
+    }
+    where.push(row+"="+val.value);
+  })
+  var str = "UPDATE "+tableName+" SET "+set.join(',')+' WHERE '+ where.join(' AND ');
+  copyToClipboard(str);
+}
+
+function getColumnsFromResults(){
+  let columns = [];
+  $("#results_header th").each(function(){
+    columns.push(this.innerText);
+  })
+  return columns;
+}
+
+function getValuesFromContext(context){
+  let values = [];
+  $(context).parent().children().each(function(){
+    const isNull = $(this).find("span[class*='null']").length;
+    const fieldType = this.dataset["type"] ?? "string";
+    let obj = {isNull:false, value:''};
+    if (isNull){
+      obj.isNull = true;
+      obj.value = 'NULL';
+      values.push(obj);
+      return;
+    }
+    switch (fieldType) {
+      case 'string':
+        obj.value = "'"+this.innerText+"'";
+        values.push(obj);
+        break;
+      case 'number':
+      case 'boolean':
+        obj.value = this.innerText;
+        values.push(obj);
+        break;
+      default:
+        obj.value = this.innerText;
+        values.push(obj);
+        break;
+
+    }
+  })
+  return values;
 }
 
 function bindCurrentDatabaseMenu() {
