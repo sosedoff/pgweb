@@ -148,6 +148,42 @@
   color: #fff;
 }
 
+#sidebar .current-server {
+  position: fixed;
+  left: 0px;
+  top: 50px;
+  width: 250px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 12px;
+  color: #fff;
+  background: #694b8a;
+  z-index: 900;
+}
+
+#sidebar .current-server .wrap {
+  position: relative;
+  height: 30px;
+}
+
+#sidebar .current-server i.fa-hdd-o {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+}
+
+#sidebar .current-server span.current-server-name {
+  margin-left: 30px;
+  display: inline-block;
+  width: 200px;
+  height: 30px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+  cursor: default;
+}
+
 #sidebar ul.typeahead {
   position: absolute;
   margin-left: 30px;
@@ -159,6 +195,18 @@
 #sidebar ul.typeahead a {
   font-size: 13px;
   padding: 3px 10px;
+}
+
+#sidebar.has-server .current-server {
+  display: block;
+}
+
+#sidebar.has-server .objects-search {
+  top: 80px;
+}
+
+#sidebar.has-server div.tables-list {
+  top: 110px;
 }
 
 #sidebar .objects-search {

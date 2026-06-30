@@ -789,3 +789,38 @@ func TestAll(t *testing.T) {
 	teardownClient()
 	teardown(t, true)
 }
+
+func TestServerHost(t *testing.T) {
+	examples := []struct {
+		name     string
+		connStr  string
+		expected string
+	}{
+		{"host and port", "postgres://user:pass@db.example.com:5432/mydb", "db.example.com:5432"},
+		{"host without port", "postgres://user:pass@db.example.com/mydb", "db.example.com"},
+		{"localhost with port", "postgres://localhost:5433/mydb?sslmode=disable", "localhost:5433"},
+		{"ipv4 with port", "postgres://user@10.0.0.5:5432/mydb", "10.0.0.5:5432"},
+		{"empty connection string", "", ""},
+		{"invalid connection string", "://bad", ""},
+	}
+
+	for _, ex := range examples {
+		t.Run(ex.name, func(t *testing.T) {
+			c := Client{ConnectionString: ex.connStr}
+			assert.Equal(t, ex.expected, c.ServerHost())
+		})
+	}
+}
+
+func TestServerName(t *testing.T) {
+	// Without a bookmark it falls back to the connection host:port
+	plain := Client{ConnectionString: "postgres://user:pass@db.example.com:5432/mydb"}
+	assert.Equal(t, "db.example.com:5432", plain.ServerName())
+	assert.Equal(t, "", plain.BookmarkName())
+
+	// With a bookmark the friendly name takes precedence over the host
+	booked := Client{ConnectionString: "postgres://user:pass@postgres-cluster-rw.ecrs-dev-app.svc:5432/mydb"}
+	booked.SetBookmarkName("ecrs-dev-app")
+	assert.Equal(t, "ecrs-dev-app", booked.ServerName())
+	assert.Equal(t, "ecrs-dev-app", booked.BookmarkName())
+}

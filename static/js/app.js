@@ -1410,6 +1410,22 @@ function toggleDatabaseSearch() {
   $("#database_search").toggle();
 }
 
+// setCurrentServer displays the server (host:port) the user is connected to
+// next to the database name, so identical database names on different servers
+// (DEV, QA, STAGE, etc.) can be told apart.
+function setCurrentServer(server) {
+  if (server) {
+    $("#current_server_name").text(server).attr("title", server);
+    $("#current_server").show();
+    $("#sidebar").addClass("has-server");
+  }
+  else {
+    $("#current_server_name").text("").attr("title", "");
+    $("#current_server").hide();
+    $("#sidebar").removeClass("has-server");
+  }
+}
+
 function enableDatabaseSearch(data) {
   var input = $("#database_search");
 
@@ -1758,6 +1774,7 @@ $(document).ready(function() {
     disconnect(function() {
       showConnectionSettings();
       resetTable();
+      setCurrentServer(null);
       $("#close_connection_window").hide();
     });
   });
@@ -1861,6 +1878,7 @@ $(document).ready(function() {
 
         $("#connection_window").hide();
         $("#current_database").text(resp.current_database);
+        setCurrentServer(resp.server);
         $("#main").show();
       }
     });
@@ -1901,6 +1919,7 @@ $(document).ready(function() {
       loadLocalQueries();
 
       $("#current_database").text(resp.current_database);
+      setCurrentServer(resp.server);
       $("#main").show();
 
       if (!appFeatures.session_lock) {
