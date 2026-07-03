@@ -1789,16 +1789,19 @@ $(document).ready(function() {
         $(".connection-scheme-group").show();
         $(".connection-standard-group").hide();
         $(".connection-ssh-group").hide();
+        $(".connection-bookmarks-group").hide();
         return;
       case "standard":
         $(".connection-scheme-group").hide();
         $(".connection-standard-group").show();
         $(".connection-ssh-group").hide();
+        $(".connection-bookmarks-group").show();
         return;
       case "ssh":
         $(".connection-scheme-group").hide();
         $(".connection-standard-group").show();
         $(".connection-ssh-group").show();
+        $(".connection-bookmarks-group").show();
         return;
     }
   });
