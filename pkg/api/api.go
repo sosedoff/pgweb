@@ -181,7 +181,10 @@ func Connect(c *gin.Context) {
 		return
 	}
 
-	successResponse(c, info.Format()[0])
+	formatted := info.Format()[0]
+	formatted["server"] = cl.ServerName()
+
+	successResponse(c, formatted)
 }
 
 func ConnectWithURL(c *gin.Context) (*client.Client, error) {
@@ -258,6 +261,10 @@ func SwitchDb(c *gin.Context) {
 		return
 	}
 
+	// Preserve the originating bookmark name across the database switch so the
+	// UI keeps showing the friendly server label instead of the raw hostname.
+	cl.SetBookmarkName(conn.BookmarkName())
+
 	err = cl.Test()
 	if err != nil {
 		badRequest(c, err)
@@ -276,7 +283,10 @@ func SwitchDb(c *gin.Context) {
 
 	conn.Close()
 
-	successResponse(c, info.Format()[0])
+	formatted := info.Format()[0]
+	formatted["server"] = cl.ServerName()
+
+	successResponse(c, formatted)
 }
 
 // Disconnect closes the current database connection
@@ -483,6 +493,7 @@ func GetConnectionInfo(c *gin.Context) {
 
 	info := res.Format()[0]
 	info["session_lock"] = command.Opts.LockSession
+	info["server"] = conn.ServerName()
 
 	successResponse(c, info)
 }

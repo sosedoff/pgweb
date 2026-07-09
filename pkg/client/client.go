@@ -43,6 +43,7 @@ type Client struct {
 	queryTimeout     time.Duration
 	readonly         bool
 	closed           bool
+	bookmarkName     string
 	External         bool             `json:"external"`
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
@@ -175,6 +176,10 @@ func NewFromBookmark(bookmark *bookmarks.Bookmark) (*Client, error) {
 	if bookmark.ReadOnly {
 		client.readonly = true
 	}
+
+	// Remember the originating bookmark name so it can be shown in the UI as a
+	// friendly server label (more meaningful than a long generated hostname).
+	client.bookmarkName = bookmark.ID
 
 	return client, nil
 }
@@ -677,4 +682,50 @@ func (client *Client) GetConnContext() (*ConnContext, error) {
 	}
 
 	return &connCtx, nil
+}
+
+// ServerHost returns the host (and port, when present) of the database server
+// taken from the current connection string. This represents the server the
+// user connected to and is used for display, so identical database names on
+// different servers (DEV, QA, STAGE, etc.) can be told apart.
+func (client *Client) ServerHost() string {
+	url, err := neturl.Parse(client.ConnectionString)
+	if err != nil {
+		return ""
+	}
+
+	host := url.Hostname()
+	if host == "" {
+		return ""
+	}
+
+	if port := url.Port(); port != "" {
+		return host + ":" + port
+	}
+
+	return host
+}
+
+// ServerName returns a friendly label for the connected server, used for
+// display next to the database name. When the connection was opened from a
+// bookmark, the bookmark name is preferred (it is usually far more meaningful
+// than a long generated hostname); otherwise it falls back to the host:port.
+func (client *Client) ServerName() string {
+	if client.bookmarkName != "" {
+		return client.bookmarkName
+	}
+	return client.ServerHost()
+}
+
+// BookmarkName returns the name of the bookmark used to open the connection,
+// or an empty string when the connection was not opened from a bookmark.
+func (client *Client) BookmarkName() string {
+	return client.bookmarkName
+}
+
+// SetBookmarkName records the originating bookmark name. It is used to carry
+// the bookmark identity over when the connection is rebuilt, e.g. on a
+// database switch.
+func (client *Client) SetBookmarkName(name string) {
+	client.bookmarkName = name
 }
