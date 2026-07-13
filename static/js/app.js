@@ -1903,7 +1903,7 @@ $(document).ready(function() {
       $("#current_database").text(resp.current_database);
       $("#main").show();
 
-      if (!appFeatures.session_lock) {
+      if (!appFeatures.session_lock && !appFeatures.no_connect_ui) {
         $(".connection-actions").show();
       }
     });
