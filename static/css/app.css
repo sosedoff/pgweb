@@ -914,3 +914,12 @@
 .ace_autocomplete .ace_active-line {
   background: #eee !important;
 }
+
+@media (prefers-color-scheme: dark) {
+  html { 
+    filter: invert() hue-rotate(180deg) contrast(0.85);
+  }
+  img {
+    filter: invert() hue-rotate(180deg) contrast(1.177);
+  }
+}
