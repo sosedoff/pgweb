@@ -19,7 +19,7 @@ WITH all_objects AS (
   LEFT JOIN
     pg_catalog.pg_namespace n ON n.oid = c.relnamespace
   WHERE
-    c.relkind IN ('r','v','m','S','s','')
+    c.relkind IN ('r','v','m','S','s','f','')
     AND n.nspname !~ '^pg_(toast|temp)'
     AND n.nspname NOT IN ('information_schema', 'pg_catalog')
     AND has_schema_privilege(n.nspname, 'USAGE')
