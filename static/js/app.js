@@ -41,6 +41,44 @@ function getRowsLimit() {
   return parseInt(localStorage.getItem("rows_limit") || default_rows_limit);
 }
 
+function getThemePreference() {
+  // Check if theme_preference is set
+  var savedTheme = localStorage.getItem("theme_preference");
+  if (savedTheme) {
+    return savedTheme;
+  }
+  // Check system preference
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+  return 'light';
+}
+
+function saveThemePreference(theme) {
+  localStorage.setItem("theme_preference", theme);
+}
+
+function applyThemePreference() {
+  var theme = getThemePreference();
+  var checkbox = document.getElementById("theme-toggle");
+  if (checkbox) {
+    checkbox.checked = (theme === "light"); // Checkbox checked = light theme, unchecked = dark theme
+  }
+}
+
+function updateEditorTheme(theme) {
+  if (!editor) return;
+  if (!theme) {
+    theme = getThemePreference();
+  }
+
+  if (theme === "light") {
+    editor.setTheme("ace/theme/tomorrow");
+  } else {
+    editor.setTheme("ace/theme/one_dark");
+  }
+}
+
 function getPaginationOffset() {
   var page  = $(".current-page").data("page");
   var limit = getRowsLimit();
@@ -1039,11 +1077,13 @@ function initEditor() {
   editor.setOptions({
     enableBasicAutocompletion: true,
     enableLiveAutocompletion: true,
+    highlightActiveLine: false,
+    highlightGutterLine: false,
   });
   editor.completers.push(objectAutocompleter);
 
   editor.setFontSize(13);
-  editor.setTheme("ace/theme/tomorrow");
+  updateEditorTheme(); // Set theme based on current preference
   editor.setShowPrintMargin(false);
   editor.getSession().setMode("ace/mode/pgsql");
   editor.getSession().setTabSize(2);
@@ -1908,5 +1948,31 @@ $(document).ready(function() {
       }
     });
   });
-});
 
+  // Persist theme preference
+  // Priority: localStorage > system preference > default (light)
+  var themeToggle = document.getElementById("theme-toggle");
+  if (themeToggle) {
+    // Apply theme preference on page load
+    applyThemePreference();
+
+    // Save theme preference when user manually changes it
+    themeToggle.addEventListener("change", function() {
+      var theme = this.checked ? "light" : "dark";
+      saveThemePreference(theme);
+      updateEditorTheme(theme); // Update ACE editor theme when user toggles
+    });
+
+    // Listen for system theme changes (if user changes OS theme)
+    if (window.matchMedia) {
+      var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      mediaQuery.addEventListener('change', function(e) {
+        // Only apply system preference if user hasn't manually set a preference
+        if (!localStorage.getItem("theme_preference")) {
+          applyThemePreference();
+          updateEditorTheme(theme); // Update ACE editor theme when system theme changes
+        }
+      });
+    }
+  }
+});
