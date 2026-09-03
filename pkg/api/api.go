@@ -157,6 +157,12 @@ func Connect(c *gin.Context) {
 		cl, err = ConnectWithBookmark(bookmarkID)
 	} else if command.Opts.BookmarksOnly {
 		err = errNotPermitted
+	} else if command.Opts.ConnectBackend != "" {
+		// In connect-backend mode the backend is the only place that's allowed
+		// to decide which database a user connects to. Taking a url straight
+		// from the request here would let a client pick any database the
+		// backend never authorized, bypassing it entirely.
+		err = errNotPermitted
 	} else {
 		cl, err = ConnectWithURL(c)
 	}
