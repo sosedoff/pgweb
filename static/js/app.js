@@ -416,6 +416,69 @@ function sortArrow(direction) {
   }
 }
 
+// Multipliers for sizes like "284 MB" and counts like "12K"
+var sortUnits = {
+  "":      1,
+  "bytes": 1,
+  "kb":    1024,
+  "mb":    Math.pow(1024, 2),
+  "gb":    Math.pow(1024, 3),
+  "tb":    Math.pow(1024, 4),
+  "pb":    Math.pow(1024, 5),
+  "k":     1e3,
+  "m":     1e6
+};
+
+// Returns a number for values like "42", "-1.5", "284 MB" or "12K"
+function parseSortNumber(value) {
+  var match = /^(-?\d+(?:\.\d+)?(?:e[-+]?\d+)?)\s*([a-z]*)$/i.exec($.trim(value));
+  if (!match) return null;
+
+  var unit = match[2].toLowerCase();
+  if (!sortUnits.hasOwnProperty(unit)) return null;
+
+  return parseFloat(match[1]) * sortUnits[unit];
+}
+
+// Sort the rendered rows in the browser, for results that are fully loaded
+function sortTableRows(header, sortOrder) {
+  var colIdx  = header.index();
+  var numeric = true;
+
+  var items = $("#results_body tr").get().map(function(row) {
+    var cell  = $(row).children("td").eq(colIdx).children("div");
+    var value = cell.children("span.null").length ? null : cell.text();
+    var num   = value === null ? null : parseSortNumber(value);
+
+    // Compare as numbers only when every value in the column is a number
+    if (value !== null && num === null) numeric = false;
+
+    return { row: row, value: value, num: num };
+  });
+
+  var collator  = new Intl.Collator(undefined, { numeric: true });
+  var direction = sortOrder === "DESC" ? -1 : 1;
+
+  items.sort(function(a, b) {
+    // Nulls go last in both directions
+    if (a.value === null || b.value === null) {
+      return (a.value === null) - (b.value === null);
+    }
+
+    var result = collator.compare(a.value, b.value);
+
+    // Text breaks ties between big integers that parseFloat rounds to the same number
+    if (numeric) result = a.num - b.num || (a.num < 0 ? -result : result);
+
+    return result * direction;
+  });
+
+  $("#results_body").append(items.map(function(item) { return item.row; }));
+
+  $("#results_header th.active").removeClass("active").removeData("order").find("span.sort-arrow").remove();
+  header.addClass("active").data("order", sortOrder).append("<span class='sort-arrow'>&nbsp;" + sortArrow(sortOrder) + "</span>");
+}
+
 function buildTable(results, sortColumn, sortOrder, options) {
   if (!options) options = {};
   var action = options.action;
@@ -1628,14 +1691,24 @@ $(document).ready(function() {
     performRowAction(action, value);
   })
 
-  $("#results").on("click", "th", function(e) {
-    if (!$("#table_content").hasClass("selected")) return;
-
+  $("#results").on("click", "th.table-header-col", function(e) {
     var sortColumn = $(this).data("name");
     var sortOrder  = $(this).data("order") === "ASC" ? "DESC" : "ASC";
 
-    $(this).data("order", sortOrder);
-    showTableContent(sortColumn, sortOrder);
+    // Rows are paginated, so the database sorts them
+    if ($("#results").data("mode") == "browse") {
+      // Rows stay on screen while another tab loads
+      if (!$("#table_content").hasClass("selected")) return;
+
+      $(this).data("order", sortOrder);
+      showTableContent(sortColumn, sortOrder);
+      return;
+    }
+
+    // Row order is the content of a query plan
+    if (sortColumn == "QUERY PLAN") return;
+
+    sortTableRows($(this), sortOrder);
   });
 
   $("#refresh_tables").on("click", function() {
