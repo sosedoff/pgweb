@@ -558,6 +558,10 @@
   text-transform: uppercase;
 }
 
+#results td.json-cell > div {
+  cursor: zoom-in;
+}
+
 #results td textarea {
   color: #000 !important;
   font-size: 12px;
@@ -643,10 +647,45 @@
   position: relative;
   padding: 8px;
   white-space: break-spaces;
-  background: #fff;
+  background: #fbfcff;
+  color: #263243;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 13px;
+  line-height: 1.55;
   overflow-y: scroll;
   height: 366px;
   box-sizing: border-box;
+}
+
+#content_modal .content .json-key { color: #6d28d9; }
+#content_modal .content .json-string { color: #116b39; }
+#content_modal .content .json-number { color: #14559a; }
+#content_modal .content .json-literal { color: #9a3412; }
+#content_modal .content .json-punctuation { color: #475569; }
+
+#content_modal .json-format {
+  display: none;
+  float: left;
+  margin-right: 8px;
+}
+
+#content_modal .json-format button {
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+#content_modal .json-format button + button {
+  border-left: 0;
+}
+
+#content_modal .json-format button.active {
+  background: #3874d7;
+  border-color: #3874d7;
+  color: #fff;
 }
 
 #content_modal .title {

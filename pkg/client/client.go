@@ -529,10 +529,19 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 	if cols == nil {
 		cols = []string{}
 	}
+	columnTypes, err := rows.ColumnTypes()
+	if err != nil {
+		return nil, err
+	}
+	types := make([]string, len(columnTypes))
+	for i, columnType := range columnTypes {
+		types[i] = columnType.DatabaseTypeName()
+	}
 
 	result := Result{
-		Columns: cols,
-		Rows:    []Row{},
+		Columns:     cols,
+		ColumnTypes: types,
+		Rows:        []Row{},
 	}
 
 	for rows.Next() {

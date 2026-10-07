@@ -42,10 +42,11 @@ type (
 	}
 
 	Result struct {
-		Pagination *Pagination  `json:"pagination,omitempty"`
-		Columns    []string     `json:"columns"`
-		Rows       []Row        `json:"rows"`
-		Stats      *ResultStats `json:"stats,omitempty"`
+		Pagination  *Pagination  `json:"pagination,omitempty"`
+		Columns     []string     `json:"columns"`
+		ColumnTypes []string     `json:"column_types,omitempty"`
+		Rows        []Row        `json:"rows"`
+		Stats       *ResultStats `json:"stats,omitempty"`
 	}
 
 	ResultStats struct {

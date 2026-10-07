@@ -620,6 +620,14 @@ func testResult(t *testing.T) {
 	})
 }
 
+func testJSONColumnTypes(t *testing.T) {
+	result, err := testClient.Query(`SELECT '{"nested":{"value":true}}'::jsonb AS data, '[1,2]'::json AS raw_data, '{"plain":true}'::text AS note`)
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"JSONB", "JSON", "TEXT"}, result.ColumnTypes)
+	assert.Equal(t, `{"nested": {"value": true}}`, result.Rows[0][0])
+	assert.Equal(t, `[1,2]`, result.Rows[0][1])
+}
+
 func testHistory(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		_, err := testClient.Query("SELECT * FROM books WHERE id = 12345")
@@ -779,6 +787,7 @@ func TestAll(t *testing.T) {
 	testTableRowsOrderEscape(t)
 	testFunctions(t)
 	testResult(t)
+	testJSONColumnTypes(t)
 	testHistory(t)
 	testReadOnlyMode(t)
 	testDumpExport(t)

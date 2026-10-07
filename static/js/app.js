@@ -286,10 +286,92 @@ function escapeHtml(str) {
   return "<span class='null'>null</span>";
 }
 
-function unescapeHtml(str){
-  var e = document.createElement("div");
-  e.innerHTML = str;
-  return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+var jsonFormatStorageKey = "pgweb.json_format";
+var jsonFormat = "pretty";
+try {
+  if (localStorage.getItem(jsonFormatStorageKey) === "raw") jsonFormat = "raw";
+} catch (e) {
+  // Private browsing can disable local storage.
+}
+
+function prettyJson(raw) {
+  // Validate the JSON, then format its original tokens so large numbers retain
+  // their exact digits instead of being rounded by JSON.stringify.
+  JSON.parse(raw);
+  var tokens = raw.match(/"(?:\\.|[^"\\])*"|[{}\[\],:]|true|false|null|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/g);
+  var result = "";
+  var depth = 0;
+
+  tokens.forEach(function(token, index) {
+    if (token === "{" || token === "[") {
+      if (tokens[index + 1] === (token === "{" ? "}" : "]")) {
+        result += token;
+      } else {
+        result += token + "\n" + "  ".repeat(++depth);
+      }
+    } else if (token === "}" || token === "]") {
+      if (tokens[index - 1] === (token === "}" ? "{" : "[")) {
+        result += token;
+      } else {
+        result += "\n" + "  ".repeat(--depth) + token;
+      }
+    } else if (token === ",") {
+      result += ",\n" + "  ".repeat(depth);
+    } else if (token === ":") {
+      result += ": ";
+    } else {
+      result += token;
+    }
+  });
+
+  return result;
+}
+
+function highlightJson(element, value) {
+  var tokens = /"(?:\\.|[^"\\])*"|\b(?:true|false|null)\b|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?|[{}\[\],:]/g;
+  var match;
+  var offset = 0;
+  var fragment = document.createDocumentFragment();
+
+  while ((match = tokens.exec(value)) !== null) {
+    fragment.appendChild(document.createTextNode(value.slice(offset, match.index)));
+    var token = match[0];
+    var kind = "punctuation";
+    if (token.charAt(0) === '"') {
+      kind = /^\s*:/.test(value.slice(tokens.lastIndex)) ? "key" : "string";
+    } else if (token === "true" || token === "false" || token === "null") {
+      kind = "literal";
+    } else if (/^-?\d/.test(token)) {
+      kind = "number";
+    }
+    var span = document.createElement("span");
+    span.className = "json-" + kind;
+    span.textContent = token;
+    fragment.appendChild(span);
+    offset = tokens.lastIndex;
+  }
+  fragment.appendChild(document.createTextNode(value.slice(offset)));
+  element.empty().append(fragment);
+}
+
+function showCellContent(value, isJson) {
+  var modal = $("#content_modal");
+  modal.data("rawValue", value).data("isJson", isJson);
+  modal.find(".json-format").toggle(isJson);
+  modal.find(".json-format button").removeClass("active").attr("aria-pressed", "false")
+    .filter("[data-format='" + jsonFormat + "']").addClass("active").attr("aria-pressed", "true");
+
+  var content = modal.find(".content");
+  if (isJson) {
+    try {
+      highlightJson(content, jsonFormat === "pretty" ? prettyJson(value) : value);
+    } catch (e) {
+      content.text(value);
+    }
+  } else {
+    content.text(value);
+  }
+  modal.show();
 }
 
 function getCurrentObject() {
@@ -477,6 +559,17 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
   $("#results_header").html(cols);
   $("#results_body").html(rows);
+
+  $("#results_body tr").each(function(rowIndex) {
+    $(this).children("td[data-col]").each(function(columnIndex) {
+      var value = results.rows[rowIndex][columnIndex];
+      var type = (results.column_types || [])[columnIndex];
+      $(this).data("rawValue", value);
+      if (value !== null && /^(json|jsonb)$/i.test(type || "")) {
+        $(this).addClass("json-cell");
+      }
+    });
+  });
 
   // Show number of rows rendered on the page
   if (results.stats) {
@@ -1258,12 +1351,11 @@ function bindTableHeaderMenu() {
 
       switch(menuItem.data("action")) {
         case "display_value":
-          var value = $(context).text();
-          $("#content_modal .content").text(value);
-          $("#content_modal").show();
+          var cell = $(context);
+          showCellContent(cell.data("rawValue"), cell.hasClass("json-cell"));
           break;
         case "copy_value":
-          copyToClipboard($(context).text());
+          copyToClipboard($(context).data("rawValue"));
           break;
         case "filter_by_value":
           var colIdx   = $(context).data("col");
@@ -1513,7 +1605,7 @@ function bindContentModalEvents() {
   $("#content_modal .content-modal-action").on("click", function() {
     switch ($(this).data("action")) {
       case "copy":
-        copyToClipboard($("#content_modal pre").text());
+        copyToClipboard($("#content_modal").data("rawValue"));
         break;
       case "close":
         $("#content_modal").hide();
@@ -1521,12 +1613,21 @@ function bindContentModalEvents() {
     }
   });
 
-  $("#results").on("dblclick", "td > div", function() {
-    var value = unescapeHtml($(this).html());
-    if (!value) return;
+  $("#content_modal .json-format button").on("click", function() {
+    jsonFormat = $(this).data("format");
+    try {
+      localStorage.setItem(jsonFormatStorageKey, jsonFormat);
+    } catch (e) {
+      // The choice still applies until this page is closed.
+    }
+    showCellContent($("#content_modal").data("rawValue"), true);
+  });
 
-    $("#content_modal pre").html(value);
-    $("#content_modal").show();
+  $("#results").on("dblclick", "td > div", function() {
+    var cell = $(this).parent();
+    var value = cell.data("rawValue");
+    if (value === null || value === undefined || value === "") return;
+    showCellContent(value, cell.hasClass("json-cell"));
   })
 }
 
@@ -1909,4 +2010,3 @@ $(document).ready(function() {
     });
   });
 });
-

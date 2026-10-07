@@ -9,8 +9,20 @@ if (!Array.prototype.forEach) {
 }
 
 function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(String(text)).catch(function() {
+      copyToClipboardFallback(text);
+    });
+    return;
+  }
+
+  copyToClipboardFallback(text);
+}
+
+function copyToClipboardFallback(text) {
   const element = document.createElement("textarea");
-  element.style.display = "none;"
+  element.style.position = "fixed";
+  element.style.left = "-9999px";
   element.value = text;
 
   document.body.appendChild(element);
@@ -25,4 +37,3 @@ function guid() {
   function s4() { return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1); }
   return [s4(), s4(), "-", s4(), "-", s4(), "-", s4(), "-", s4(), s4(), s4()].join("");
 }
-
