@@ -27,11 +27,12 @@ type (
 
 	// RowsOptions contains a list of parameters for table browsing requests
 	RowsOptions struct {
-		Where      string // Custom filter
-		Offset     int    // Number of rows to skip
-		Limit      int    // Number of rows to fetch
-		SortColumn string // Column to sort by
-		SortOrder  string // Sort direction (ASC, DESC)
+		Where      string   // Custom filter
+		Filters    []Filter // Structured column filters, combined with AND
+		Offset     int      // Number of rows to skip
+		Limit      int      // Number of rows to fetch
+		SortColumn string   // Column to sort by
+		SortOrder  string   // Sort direction (ASC, DESC)
 	}
 
 	Pagination struct {

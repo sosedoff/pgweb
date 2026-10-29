@@ -106,6 +106,7 @@
       </div>
       <div id="output">
         <div class="wrapper">
+          <div id="active_filters"></div>
           <table id="results" class="table">
             <thead id="results_header"></thead>
             <tbody id="results_body"></tbody>
@@ -127,13 +128,20 @@
             <option value="less_eq">&le;</option>
             <option value="like">LIKE</option>
             <option value="ilike">ILIKE</option>
+            <option value="in">IN</option>
             <option value="null">IS NULL</option>
             <option value="not_null">NOT NULL</option>
           </select>
           <input type="text" class="form-control" placeholder="Filter value" id="table_filter_value" />
+          <button class="btn btn-default btn-sm add-filter" type="button" title="Add this condition to the active filters"><i class="fa fa-plus"></i> Add Filter</button>
           <button class="btn btn-primary btn-sm apply-filters" type="submit">Apply</button>
-          <button class="btn btn-default btn-sm reset-filters"><i class="fa fa-times"></i></button>
+          <button class="btn btn-default btn-sm reset-filters" type="button" title="Clear all filters"><i class="fa fa-times"></i></button>
         </form>
+        <div class="btn-group btn-group-sm row-actions">
+          <button type="button" class="btn btn-default new-row" title="Insert a new row"><i class="fa fa-plus"></i> New</button>
+          <button type="button" class="btn btn-default edit-row" title="Edit the selected row"><i class="fa fa-pencil"></i> Edit</button>
+          <button type="button" class="btn btn-default delete-row" title="Delete the selected row"><i class="fa fa-trash"></i> Delete</button>
+        </div>
         <div class="btn-group">
           <button type="button" class="btn btn-default btn-sm prev-page" disabled="disabled"><i class="fa fa-angle-left"></i></button>
           <button type="button" class="btn btn-default btn-sm page change-limit" title="Click to change row limit"></button>
@@ -155,6 +163,21 @@
       </div>
     </div>
     <pre class="content"></pre>
+  </div>
+
+  <div id="row_modal">
+    <div class="row-modal-dialog">
+      <div class="row-modal-header">
+        <span class="title"></span>
+        <i class="fa fa-times row-modal-action" data-action="close"></i>
+      </div>
+      <div class="row-modal-body"></div>
+      <div class="row-modal-footer">
+        <span class="row-modal-error"></span>
+        <button type="button" class="btn btn-default btn-sm row-modal-action" data-action="close">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm row-modal-action" data-action="submit">Save</button>
+      </div>
+    </div>
   </div>
 
   <div id="connection_window">

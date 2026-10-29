@@ -420,6 +420,15 @@ func GetTableRows(c *gin.Context) {
 		Where:      c.Request.FormValue("where"),
 	}
 
+	// Structured filters are sent as a JSON array so that multiple conditions
+	// can be combined without building SQL on the frontend.
+	filters, err := parseFilters(c.Request.FormValue("filters"))
+	if err != nil {
+		badRequest(c, err)
+		return
+	}
+	opts.Filters = filters
+
 	res, err := DB(c).TableRows(c.Params.ByName("table"), opts)
 	if err != nil {
 		badRequest(c, err)
@@ -606,6 +615,7 @@ func GetInfo(c *gin.Context) {
 			"query_timeout":  command.Opts.QueryTimeout,
 			"local_queries":  QueryStore != nil,
 			"bookmarks_only": command.Opts.BookmarksOnly,
+			"row_editing":    rowEditingEnabled(),
 		},
 	})
 }

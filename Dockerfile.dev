@@ -1,0 +1,36 @@
+# ------------------------------------------------------------------------------
+# Development image: builds pgweb-plus from local sources.
+#
+# Unlike the release Dockerfile it avoids `ADD <url>` and the PGDG apt
+# repository, so the only network access required is `go mod download`,
+# which honours the HTTP_PROXY/HTTPS_PROXY build arguments.
+# ------------------------------------------------------------------------------
+FROM golang:1.25-trixie AS build
+
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+ARG CGO_ENABLED=0
+ENV CGO_ENABLED=${CGO_ENABLED}
+
+WORKDIR /build
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY main.go ./
+COPY static/ static/
+COPY pkg/ pkg/
+
+RUN go build -ldflags '-s -w' -o /out/pgweb .
+
+# ------------------------------------------------------------------------------
+FROM debian:trixie-slim
+
+COPY --from=build /out/pgweb /usr/bin/pgweb
+
+RUN useradd --uid 1000 --no-create-home --shell /bin/false pgweb
+USER pgweb
+
+EXPOSE 8081
+ENTRYPOINT ["/usr/bin/pgweb", "--bind=0.0.0.0", "--listen=8081"]

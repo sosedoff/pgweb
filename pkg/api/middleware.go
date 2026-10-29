@@ -51,7 +51,7 @@ func dbCheckMiddleware() gin.HandlerFunc {
 // Middleware to inject CORS headers
 func corsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Header("Access-Control-Expose-Headers", "*")
 		c.Header("Access-Control-Allow-Origin", command.Opts.CorsOrigin)
 	}

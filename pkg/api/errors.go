@@ -13,4 +13,7 @@ var (
 	errURLRequired          = errors.New("URL parameter is required")
 	errQueryRequired        = errors.New("Query parameter is required")
 	errDatabaseNameRequired = errors.New("Database name is required")
+	errRowEditingDisabled   = errors.New("Row editing is disabled")
+	errInvalidRowPayload    = errors.New("Invalid row payload")
+	errInvalidFilters       = errors.New("Invalid filters parameter")
 )

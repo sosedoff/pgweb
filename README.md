@@ -28,6 +28,7 @@ Very easy to use and packs just the right amount of features.
 - Table and query data export to CSV/JSON/XML.
 - Query history.
 - Server bookmarks.
+- Inline cell editing, row insert/edit/delete, and multi-column filtering (see [Row editing](#row-editing)).
 
 Visit [WIKI](https://github.com/sosedoff/pgweb/wiki) for more details.
 
@@ -74,6 +75,65 @@ Or set environment variable:
 ```
 PGWEB_SESSIONS=1 pgweb
 ```
+
+## Row editing
+
+Pgweb can modify table data directly from the browser, without writing SQL.
+The feature is enabled by default and only applies to the table rows view.
+
+**Inline cell editing**
+
+Double-click a cell in the rows view to edit it. Press `Enter` to save, `Escape`
+to cancel. Only the edited column is written, and only the affected row is
+refreshed in the grid. An empty input clears a nullable column to `NULL`; use
+the row editor to store an empty string instead.
+
+**Insert, edit and delete rows**
+
+The `New`, `Edit` and `Delete` buttons in the rows toolbar open a form generated
+from the table metadata. `Edit` and `Delete` act on the currently selected row,
+and `Delete` always asks for confirmation and shows a summary of the row.
+Leaving a field empty on a new row lets the column default apply.
+
+**Requirements and limitations**
+
+- A primary key is required to edit or delete a row. Composite keys are supported.
+- Insert is available on any insertable relation, including tables without a primary key.
+- Generated and non-updatable columns are read-only, and `bytea` columns are not editable.
+- Every statement is parameterized, and each operation is limited to a single row.
+
+**Disabling the feature**
+
+Row editing is turned off automatically in `--readonly` mode. It can also be
+disabled explicitly:
+
+```
+pgweb --no-row-editing
+```
+
+Or set environment variable:
+
+```
+PGWEB_NO_ROW_EDITING=1 pgweb
+```
+
+When disabled, the write endpoints return `403` and the UI hides all row actions.
+
+See [docs/row-editing-and-filtering.md](docs/row-editing-and-filtering.md) for
+the API reference, migration notes and performance assessment.
+
+## Multi-column filtering
+
+The rows view supports combining multiple conditions with `AND`. Pick a column,
+an operator and a value, then press `Add Filter` to stack another condition, or
+`Apply` to run the query. Active filters are listed above the table and can be
+removed individually or cleared at once.
+
+Supported operators: `=`, `!=`, `>`, `>=`, `<`, `<=`, `LIKE`, `ILIKE`, `IN`,
+`IS NULL`, `IS NOT NULL`. For `IN`, provide a comma separated list of values.
+
+Filtering is executed by PostgreSQL using parameterized queries, so pagination
+and large tables behave exactly as they do without filters.
 
 ## Testing
 

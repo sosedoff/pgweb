@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -43,6 +44,8 @@ type Client struct {
 	queryTimeout     time.Duration
 	readonly         bool
 	closed           bool
+	metadataMu       sync.RWMutex
+	metadataCache    map[string]*TableMetadata
 	External         bool             `json:"external"`
 	History          []history.Record `json:"history"`
 	ConnectionString string           `json:"connection_string"`
@@ -184,6 +187,7 @@ func (client *Client) init() {
 		client.queryTimeout = time.Second * time.Duration(command.Opts.QueryTimeout)
 	}
 
+	client.metadataCache = map[string]*TableMetadata{}
 	client.setServerVersion()
 }
 
@@ -290,11 +294,16 @@ func (client *Client) Function(id string) (*Result, error) {
 }
 
 func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error) {
-	schema, table := getSchemaAndTable(table)
-	sql := fmt.Sprintf(`SELECT * FROM "%s"."%s"`, schema, table)
+	schema, tableName := getSchemaAndTable(table)
+	sql := fmt.Sprintf(`SELECT * FROM "%s"."%s"`, schema, tableName)
 
-	if opts.Where != "" {
-		sql += fmt.Sprintf(" WHERE %s", opts.Where)
+	where, args, err := client.rowsCondition(table, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if where != "" {
+		sql += fmt.Sprintf(" WHERE %s", where)
 	}
 
 	if opts.SortColumn != "" {
@@ -313,7 +322,40 @@ func (client *Client) TableRows(table string, opts RowsOptions) (*Result, error)
 		sql += fmt.Sprintf(" OFFSET %d", opts.Offset)
 	}
 
-	return client.query(sql)
+	return client.query(sql, args...)
+}
+
+// rowsCondition builds the WHERE clause for table browsing requests.
+//
+// The legacy free-form `where` option is preserved as-is for backwards
+// compatibility, while structured filters are always parameterized.
+func (client *Client) rowsCondition(table string, opts RowsOptions) (string, []interface{}, error) {
+	conditions := []string{}
+
+	if opts.Where != "" {
+		conditions = append(conditions, opts.Where)
+	}
+
+	if len(opts.Filters) == 0 {
+		return strings.Join(conditions, " AND "), nil, nil
+	}
+
+	// Metadata is only required to validate filter column names, so it is
+	// fetched lazily to keep plain table browsing at a single query.
+	meta, err := client.TableMetadata(table)
+	if err != nil {
+		return "", nil, err
+	}
+
+	filterSQL, args, err := buildFilters(opts.Filters, meta, 0)
+	if err != nil {
+		return "", nil, err
+	}
+	if filterSQL != "" {
+		conditions = append(conditions, filterSQL)
+	}
+
+	return strings.Join(conditions, " AND "), args, nil
 }
 
 func (client *Client) EstimatedTableRowsCount(table string, opts RowsOptions) (*Result, error) {
@@ -331,7 +373,7 @@ func (client *Client) EstimatedTableRowsCount(table string, opts RowsOptions) (*
 
 func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, error) {
 	// Return postgres estimated rows count on empty filter
-	if opts.Where == "" && client.serverType == postgresType {
+	if opts.Where == "" && len(opts.Filters) == 0 && client.serverType == postgresType {
 		res, err := client.EstimatedTableRowsCount(table, opts)
 		if err != nil {
 			return nil, err
@@ -345,11 +387,16 @@ func (client *Client) TableRowsCount(table string, opts RowsOptions) (*Result, e
 	schema, tableName := getSchemaAndTable(table)
 	sql := fmt.Sprintf(`SELECT COUNT(1) FROM "%s"."%s"`, schema, tableName)
 
-	if opts.Where != "" {
-		sql += fmt.Sprintf(" WHERE %s", opts.Where)
+	where, args, err := client.rowsCondition(table, opts)
+	if err != nil {
+		return nil, err
 	}
 
-	return client.query(sql)
+	if where != "" {
+		sql += fmt.Sprintf(" WHERE %s", where)
+	}
+
+	return client.query(sql, args...)
 }
 
 func (client *Client) TableInfo(table string) (*Result, error) {

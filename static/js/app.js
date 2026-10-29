@@ -8,6 +8,10 @@ var currentObject       = null;
 var autocompleteObjects = [];
 var inputResizing       = false;
 var inputResizeOffset   = null;
+var currentMetadata     = null;
+var metadataCache       = {};
+var tableFilters        = [];
+var rowModalContext     = null;
 
 var filterOptions = {
   "equal":      "= 'DATA'",
@@ -18,9 +22,30 @@ var filterOptions = {
   "less_eq":    "<= 'DATA'",
   "like":       "LIKE 'DATA'",
   "ilike":      "ILIKE 'DATA'",
+  "in":         "IN (DATA)",
   "null":       "IS NULL",
   "not_null":   "IS NOT NULL"
 };
+
+// Human readable labels for the active filter chips
+var filterLabels = {
+  "equal":      "=",
+  "not_equal":  "\u2260",
+  "greater":    ">",
+  "greater_eq": "\u2265",
+  "less":       "<",
+  "less_eq":    "\u2264",
+  "like":       "LIKE",
+  "ilike":      "ILIKE",
+  "in":         "IN",
+  "null":       "IS NULL",
+  "not_null":   "IS NOT NULL"
+};
+
+// Operators that do not require a value
+function filterOpHasValue(op) {
+  return ["null", "not_null"].indexOf(op) < 0;
+}
 
 function getSessionId() {
   var id = sessionStorage.getItem("session_id");
@@ -59,17 +84,29 @@ function getPagesCount(rowsCount) {
 }
 
 function apiCall(method, path, params, cb) {
+  apiRequest(method, path, { data: params }, cb);
+}
+
+// apiJsonCall sends a JSON encoded body, which is required by the row editing
+// endpoints since they need typed values and explicit nulls.
+function apiJsonCall(method, path, body, cb) {
+  apiRequest(method, path, {
+    data: JSON.stringify(body),
+    contentType: "application/json"
+  }, cb);
+}
+
+function apiRequest(method, path, settings, cb) {
   var timeout = appFeatures.query_timeout;
   if (timeout == null) {
     timeout = 300; // in seconds
   }
 
-  $.ajax({
+  $.ajax($.extend({
     timeout: timeout * 1000, // in milliseconds
     url: "api" + path,
     method: method,
     cache: false,
-    data: params,
     headers: {
       "x-session-id": getSessionId()
     },
@@ -94,7 +131,7 @@ function apiCall(method, path, params, cb) {
       }
       cb(responseText);
     }
-  });
+  }, settings));
 }
 
 function getInfo(cb)                        { apiCall("get", "/info", {}, cb); }
@@ -105,6 +142,10 @@ function getObjects(cb)                     { apiCall("get", "/objects", {}, cb)
 function getTables(cb)                      { apiCall("get", "/tables", {}, cb); }
 function getTableRows(table, opts, cb)      { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
 function getTableStructure(table, opts, cb) { apiCall("get", "/tables/" + table, opts, cb); }
+function getTableMetadata(table, cb)        { apiCall("get", "/tables/" + table + "/metadata", {}, cb); }
+function createTableRow(table, values, cb)  { apiJsonCall("post", "/tables/" + table + "/rows", { values: values }, cb); }
+function updateTableRow(table, key, values, cb) { apiJsonCall("put", "/tables/" + table + "/rows", { key: key, values: values }, cb); }
+function deleteTableRow(table, key, cb)     { apiJsonCall("delete", "/tables/" + table + "/rows", { key: key }, cb); }
 function getTableIndexes(table, cb)         { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
 function getTableConstraints(table, cb)     { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
 function getTablesStats(cb)                 { apiCall("get", "/tables_stats", {}, cb); }
@@ -129,7 +170,19 @@ function showErrorBanner(text) {
     $("#error_banner").fadeOut("fast").text("");
   }, 3000);
 
-  $("#error_banner").text(text).show();
+  $("#error_banner").removeClass("success").text(text).show();
+}
+
+function showSuccessBanner(text) {
+  if (window.errBannerTimeout != null) {
+    clearTimeout(window.errBannerTimeout);
+  }
+
+  window.errBannerTimeout = setTimeout(function() {
+    $("#error_banner").fadeOut("fast").text("").removeClass("success");
+  }, 3000);
+
+  $("#error_banner").addClass("success").text(text).show();
 }
 
 function buildSchemaSection(name, objects) {
@@ -215,6 +268,7 @@ function loadLocalQueries() {
 
 function loadSchemas() {
   $("#objects").html("");
+  resetMetadataCache();
 
   var emptyObjectList = function() {
     return {
@@ -442,6 +496,13 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
   var cols = "";
   var rows = "";
+  var rowKeys = [];
+
+  // Primary key columns are tracked so that the grid rows can be addressed
+  // individually by the inline editor and the row action buttons.
+  var pkColumns = options.pkColumns || [];
+  var pkIndexes = pkColumns.map(function(col) { return results.columns.indexOf(col); });
+  var trackKeys = pkColumns.length > 0 && pkIndexes.indexOf(-1) < 0;
 
   results.columns.forEach(function(col) {
     if (col === sortColumn) {
@@ -462,6 +523,14 @@ function buildTable(results, sortColumn, sortOrder, options) {
   results.rows.forEach(function(row) {
     var r = "";
 
+    if (trackKeys) {
+      var key = {};
+      pkColumns.forEach(function(col, idx) {
+        key[col] = row[pkIndexes[idx]];
+      });
+      rowKeys.push(key);
+    }
+
     // Add all actual row data here
     for (i in row) {
       r += "<td data-col='" + i + "'><div>" + escapeHtml(row[i]) + "</div></td>";
@@ -477,6 +546,14 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
   $("#results_header").html(cols);
   $("#results_body").html(rows);
+  $("#results").data("columns", results.columns);
+
+  // Attach the keys via jQuery data to avoid any HTML attribute escaping issues
+  if (trackKeys) {
+    $("#results_body > tr").each(function(idx) {
+      $(this).data("pk", rowKeys[idx]);
+    });
+  }
 
   // Show number of rows rendered on the page
   if (results.stats) {
@@ -623,32 +700,55 @@ function showTableContent(sortColumn, sortOrder) {
     sort_order:  sortOrder
   };
 
-  var filter = {
-    column: $(".filters select.column").val(),
-    op:     $(".filters select.filter").val(),
-    input:  $(".filters input").val()
-  };
-
-  // Apply filtering only if column is selected
-  if (filter.column && filter.op) {
-    var where = [
-      '"' + filter.column + '"',
-      filterOptions[filter.op].replace("DATA", filter.input)
-    ].join(" ");
-
-    opts["where"] = where;
+  // Structured filters are pushed down to PostgreSQL as parameterized conditions
+  if (tableFilters.length > 0) {
+    opts["filters"] = JSON.stringify(tableFilters);
   }
 
-  getTableRows(name, opts, function(data) {
-    $("#input").hide();
-    $("#body").prop("class", "with-pagination");
+  // Metadata is cached, so this does not add a request per page
+  loadTableMetadata(name, function() {
+    getTableRows(name, opts, function(data) {
+      $("#input").hide();
+      $("#body").prop("class", "with-pagination");
 
-    buildTable(data, sortColumn, sortOrder);
-    setCurrentTab("table_content");
-    updatePaginator(data.pagination);
+      buildTable(data, sortColumn, sortOrder, { pkColumns: editablePrimaryKey() });
+      setCurrentTab("table_content");
+      updatePaginator(data.pagination);
 
-    $("#results").data("mode", "browse").data("table", name);
+      $("#results").data("mode", "browse").data("table", name);
+      updateRowActions();
+    });
   });
+}
+
+// editablePrimaryKey returns the primary key columns of the current table when
+// the table can actually be modified, and an empty list otherwise.
+function editablePrimaryKey() {
+  if (!currentMetadata) return [];
+  if (!currentMetadata.editable) return [];
+  if (!currentMetadata.primary_key || currentMetadata.primary_key.length == 0) return [];
+
+  return currentMetadata.primary_key;
+}
+
+// rowEditingAvailable reports whether the current grid supports row level writes
+function rowEditingAvailable() {
+  return $("#results").data("mode") == "browse" &&
+    $("#table_content").hasClass("selected") &&
+    editablePrimaryKey().length > 0;
+}
+
+function updateRowActions() {
+  var insertable = currentMetadata && currentMetadata.insertable;
+
+  if (!insertable && !rowEditingAvailable()) {
+    $("#pagination .row-actions").hide();
+    return;
+  }
+
+  $("#pagination .row-actions").show();
+  $("#pagination .new-row").prop("disabled", !insertable);
+  $("#pagination .edit-row, #pagination .delete-row").prop("disabled", !rowEditingAvailable());
 }
 
 function showPaginatedTableContent() {
@@ -1007,23 +1107,133 @@ function showFieldNumStats(table, column) {
 }
 
 function buildTableFilters(name, type) {
-  getTableStructure(name, { type: type }, function(data) {
-    if (data.rows.length == 0) {
-      $("#pagination .filters").hide();
-    }
-    else {
-      $("#pagination .filters").show();
+  tableFilters = [];
+  renderActiveFilters();
+
+  loadTableMetadata(name, function(meta) {
+    if (meta) {
+      renderFilterColumns(meta.columns.map(function(col) { return col.name; }));
+      updateRowActions();
+      return;
     }
 
-    $("#pagination select.column").html("<option value='' selected>Select column</option>");
+    // Objects without column metadata (sequences, custom types) fall back to
+    // the structure endpoint so that filtering keeps working as before.
+    getTableStructure(name, { type: type }, function(data) {
+      var columns = [];
 
-    for (var i = 0; i < data.rows.length; i++) {
-      var row = data.rows[i];
+      if (data && data.rows) {
+        columns = data.rows.map(function(row) { return row[0]; });
+      }
 
-      var el = $("<option/>").attr("value", row[0]).text(row[0]);
-      $("#pagination select.column").append(el);
-    }
+      renderFilterColumns(columns);
+      updateRowActions();
+    });
   });
+}
+
+// loadTableMetadata fetches and caches the column metadata for a table. The
+// cache keeps insert/edit forms and filters from re-querying the schema.
+function loadTableMetadata(name, cb) {
+  if (metadataCache[name] !== undefined) {
+    currentMetadata = metadataCache[name];
+    return cb(currentMetadata);
+  }
+
+  getTableMetadata(name, function(data) {
+    var meta = null;
+
+    if (data && !data.error && data.columns && data.columns.length > 0) {
+      meta = data;
+    }
+
+    metadataCache[name] = meta;
+    currentMetadata = meta;
+    cb(meta);
+  });
+}
+
+function resetMetadataCache() {
+  metadataCache = {};
+  currentMetadata = null;
+}
+
+function resetTableFilters() {
+  tableFilters = [];
+  $(".filters select, .filters input").val("");
+  $(".filters input").show();
+  $(".current-page").data("page", 1);
+  renderActiveFilters();
+}
+
+function renderFilterColumns(columns) {
+  if (columns.length == 0) {
+    $("#pagination .filters").hide();
+  }
+  else {
+    $("#pagination .filters").show();
+  }
+
+  var select = $("#pagination select.column");
+  select.html("<option value='' selected>Select column</option>");
+
+  columns.forEach(function(col) {
+    select.append($("<option/>").attr("value", col).text(col));
+  });
+}
+
+// renderActiveFilters draws the list of currently applied conditions above the
+// results grid. The filters array is the single source of truth.
+function renderActiveFilters() {
+  var container = $("#active_filters").empty();
+
+  if (tableFilters.length == 0) {
+    container.hide();
+    return;
+  }
+
+  tableFilters.forEach(function(filter, idx) {
+    var chip = $("<span/>").addClass("filter-chip");
+
+    chip.append($("<span/>").addClass("column").text(filter.column));
+    chip.append($("<span/>").addClass("op").text(filterLabels[filter.op] || filter.op));
+
+    if (filterOpHasValue(filter.op)) {
+      chip.append($("<span/>").addClass("value").text(filter.value));
+    }
+
+    chip.append(
+      $("<i/>").addClass("fa fa-times remove-filter").attr("data-index", idx).attr("title", "Remove this filter")
+    );
+
+    container.append(chip);
+  });
+
+  container.append($("<a/>").addClass("clear-filters").attr("href", "#").text("Clear all"));
+  container.show();
+}
+
+// addFilterFromForm moves the condition built in the toolbar into the active
+// filter list. Returns false when the form is incomplete.
+function addFilterFromForm() {
+  var column = $(".filters select.column").val();
+  var op     = $(".filters select.filter").val();
+  var value  = $.trim($(".filters input").val());
+
+  if (!column || !op) return false;
+
+  if (filterOpHasValue(op) && value == "") {
+    alert("Please specify filter query");
+    return false;
+  }
+
+  tableFilters.push({ column: column, op: op, value: filterOpHasValue(op) ? value : "" });
+
+  $(".filters select, .filters input").val("");
+  $(".filters input").show();
+  renderActiveFilters();
+
+  return true;
 }
 
 var objectAutocompleter = {
@@ -1500,6 +1710,415 @@ function onInputResize(event) {
   resizeInput(computedHeight);
 }
 
+// ----------------------------------------------------------------------------
+// Row editing: inline cell editor and the insert/edit/delete row modal.
+// All write operations go through the parameterized /tables/:table/rows API.
+// ----------------------------------------------------------------------------
+
+function metaColumn(name) {
+  if (!currentMetadata) return null;
+
+  var found = null;
+
+  currentMetadata.columns.forEach(function(col) {
+    if (col.name == name) found = col;
+  });
+
+  return found;
+}
+
+function columnWritable(col) {
+  return !!col && col.updatable && !col.generated;
+}
+
+// Binary columns are not editable as text in v1.0
+function columnEditableType(col) {
+  return !!col && (col.udt_name || "").toLowerCase() != "bytea";
+}
+
+function cellIsNull(td) {
+  return td.find("> div > span.null").length > 0;
+}
+
+function cellColumnName(td) {
+  var columns = $("#results").data("columns") || [];
+  var idx = parseInt(td.data("col"));
+
+  if (isNaN(idx)) return null;
+  return columns[idx];
+}
+
+function rowValuesFromGrid(tr) {
+  var values = {};
+
+  tr.find("> td").each(function() {
+    var name = cellColumnName($(this));
+    if (name == null) return;
+
+    values[name] = cellIsNull($(this)) ? null : $(this).find("> div").text();
+  });
+
+  return values;
+}
+
+// patchRow updates a single grid row in place, avoiding a full table reload
+function patchRow(tr, row) {
+  if (!tr || !row) return;
+
+  tr.find("> td").each(function() {
+    var name = cellColumnName($(this));
+    if (name == null || !(name in row)) return;
+
+    $(this).find("> div").html(escapeHtml(row[name]));
+  });
+
+  // The primary key itself may have been updated
+  var pkColumns = editablePrimaryKey();
+
+  if (pkColumns.length > 0) {
+    var key = {};
+    pkColumns.forEach(function(col) { key[col] = row[col]; });
+    tr.data("pk", key);
+  }
+}
+
+function startCellEdit(td) {
+  if (!rowEditingAvailable()) return false;
+  if (td.hasClass("cell-editing")) return true;
+
+  var name = cellColumnName(td);
+  var col  = metaColumn(name);
+
+  if (!columnWritable(col) || !columnEditableType(col)) return false;
+
+  var tr  = td.closest("tr");
+  var key = tr.data("pk");
+  if (!key) return false;
+
+  var div   = td.find("> div");
+  var value = cellIsNull(td) ? "" : div.text();
+  var input = $("<input/>").attr("type", "text").addClass("cell-editor").val(value);
+
+  input.data("original", value).data("column", name).data("key", key).data("cell", td);
+
+  td.addClass("cell-editing");
+  div.hide();
+  td.append(input);
+  input.focus().select();
+
+  return true;
+}
+
+function finishCellEdit(input, save) {
+  var td  = input.data("cell");
+  var div = td.find("> div");
+
+  function restore() {
+    input.remove();
+    td.removeClass("cell-editing");
+    div.show();
+  }
+
+  var column   = input.data("column");
+  var original = input.data("original");
+  var value    = input.val();
+
+  if (!save || value === original) {
+    restore();
+    return;
+  }
+
+  var col     = metaColumn(column);
+  var payload = {};
+
+  // An empty input clears a nullable column. Use the edit row modal to set an
+  // empty string on a nullable text column.
+  payload[column] = (value === "" && col && col.nullable) ? null : value;
+
+  input.prop("disabled", true);
+
+  updateTableRow($("#results").data("table"), input.data("key"), payload, function(data) {
+    if (data.error) {
+      input.prop("disabled", false).focus();
+      showErrorBanner(data.error);
+      return;
+    }
+
+    restore();
+    patchRow(td.closest("tr"), data.row);
+    td.addClass("cell-modified");
+    showSuccessBanner("Row updated");
+  });
+}
+
+function buildRowForm(mode, values) {
+  var body = $("#row_modal .row-modal-body").empty();
+
+  currentMetadata.columns.forEach(function(col) {
+    var writable = columnWritable(col) && columnEditableType(col);
+
+    // Read-only columns are not worth showing on a new row form
+    if (mode == "insert" && !writable) return;
+
+    var value  = values ? values[col.name] : null;
+    var isNull = (value === null || value === undefined);
+
+    var field = $("<div/>").addClass("field");
+    var label = $("<label/>").text(col.name);
+
+    label.append($("<span/>").addClass("type").text(col.data_type));
+    if (col.primary_key) label.append($("<span/>").addClass("pk").text("PK"));
+    field.append(label);
+
+    var input;
+
+    if ((col.udt_name || "").toLowerCase() == "bool") {
+      input = $("<select/>");
+      // The blank option lets the column default (or the current value) stand
+      input.append($("<option/>").attr("value", "").text(col.default ? "(default)" : "(unset)"));
+      input.append($("<option/>").attr("value", "true").text("true"));
+      input.append($("<option/>").attr("value", "false").text("false"));
+      input.val(isNull ? "" : (String(value) === "true" ? "true" : "false"));
+    }
+    else {
+      input = $("<input/>").attr("type", "text").val(isNull ? "" : String(value));
+      if (col.default) input.attr("placeholder", "default: " + col.default);
+    }
+
+    input.addClass("row-field").attr("data-column", col.name);
+    if (!writable) input.prop("disabled", true);
+    field.append(input);
+
+    if (col.nullable && writable) {
+      var checkbox = $("<input/>").attr("type", "checkbox").addClass("null-checkbox");
+      if (isNull && mode == "edit") checkbox.prop("checked", true);
+
+      field.append(
+        $("<label/>").addClass("null-toggle").append(checkbox).append(document.createTextNode(" NULL"))
+      );
+    }
+
+    body.append(field);
+  });
+}
+
+function buildDeleteSummary(values, key) {
+  var body = $("#row_modal .row-modal-body").empty();
+
+  body.append($("<p/>").text("This will permanently delete the row below. The action cannot be undone."));
+
+  var summary = $("<div/>").addClass("summary");
+  var shown   = 0;
+
+  Object.keys(key).forEach(function(name) {
+    summary.append(
+      $("<div/>").append($("<b/>").text(name + ": ")).append(document.createTextNode(String(key[name])))
+    );
+  });
+
+  Object.keys(values).forEach(function(name) {
+    if (name in key || shown >= 8) return;
+    shown++;
+
+    var value = values[name];
+
+    summary.append(
+      $("<div/>").append($("<b/>").text(name + ": ")).append(document.createTextNode(value === null ? "null" : String(value)))
+    );
+  });
+
+  body.append(summary);
+}
+
+function collectRowValues(mode, original) {
+  var values = {};
+
+  $("#row_modal .field").each(function() {
+    var input = $(this).find(".row-field");
+    if (input.prop("disabled")) return;
+
+    var column = input.attr("data-column");
+    var isNull = $(this).find(".null-checkbox").prop("checked") === true;
+    var value  = isNull ? null : input.val();
+
+    // An unset dropdown means "leave this column alone"
+    if (!isNull && value === "" && input.is("select")) return;
+
+    if (mode == "insert") {
+      // Empty fields are omitted so that column defaults are applied
+      if (!isNull && value === "") return;
+
+      values[column] = value;
+      return;
+    }
+
+    var before = original ? original[column] : undefined;
+    if (before === undefined) before = null;
+    if (before !== null) before = String(before);
+
+    // Only the modified fields are sent
+    if (value === before) return;
+
+    values[column] = value;
+  });
+
+  return values;
+}
+
+function showRowModal(mode) {
+  if (!currentMetadata) return;
+
+  var tr = null, original = null, key = null;
+
+  if (mode != "insert") {
+    tr = $("#results_body > tr.selected");
+
+    if (tr.length != 1) {
+      alert("Please select a row first");
+      return;
+    }
+
+    key = tr.data("pk");
+
+    if (!key) {
+      alert("No primary key detected for this table, rows cannot be modified.");
+      return;
+    }
+
+    original = rowValuesFromGrid(tr);
+  }
+
+  rowModalContext = { mode: mode, tr: tr, original: original, key: key };
+
+  var submit = $("#row_modal .row-modal-action[data-action=submit]");
+  var title  = currentMetadata.schema + "." + currentMetadata.table;
+
+  $("#row_modal .row-modal-error").text("");
+
+  if (mode == "delete") {
+    $("#row_modal .title").text("Delete row from " + title);
+    buildDeleteSummary(original, key);
+    submit.text("Delete").removeClass("btn-primary").addClass("btn-danger");
+  }
+  else {
+    $("#row_modal .title").text((mode == "insert" ? "New row in " : "Edit row in ") + title);
+    buildRowForm(mode, original);
+    submit.text("Save").removeClass("btn-danger").addClass("btn-primary");
+  }
+
+  submit.prop("disabled", false);
+  $("#row_modal").show();
+}
+
+function closeRowModal() {
+  $("#row_modal").hide();
+  $("#row_modal .row-modal-body").empty();
+  rowModalContext = null;
+}
+
+function submitRowModal() {
+  if (!rowModalContext) return;
+
+  var ctx    = rowModalContext;
+  var table  = $("#results").data("table") || getCurrentObject().name;
+  var submit = $("#row_modal .row-modal-action[data-action=submit]").prop("disabled", true);
+
+  function done(data) {
+    submit.prop("disabled", false);
+
+    if (data.error) {
+      $("#row_modal .row-modal-error").text(data.error);
+      return;
+    }
+
+    closeRowModal();
+
+    switch (ctx.mode) {
+      case "insert":
+        showSuccessBanner("Row created");
+        showPaginatedTableContent();
+        break;
+      case "edit":
+        patchRow(ctx.tr, data.row);
+        ctx.tr.find("> td").addClass("cell-modified");
+        showSuccessBanner("Row updated");
+        break;
+      case "delete":
+        ctx.tr.remove();
+        showSuccessBanner("Row deleted");
+        break;
+    }
+  }
+
+  if (ctx.mode == "delete") {
+    deleteTableRow(table, ctx.key, done);
+    return;
+  }
+
+  var values = collectRowValues(ctx.mode, ctx.original);
+
+  if (Object.keys(values).length == 0) {
+    submit.prop("disabled", false);
+    $("#row_modal .row-modal-error").text(ctx.mode == "insert" ? "Please fill in at least one column" : "No changes to save");
+    return;
+  }
+
+  if (ctx.mode == "insert") {
+    createTableRow(table, values, done);
+  }
+  else {
+    updateTableRow(table, ctx.key, values, done);
+  }
+}
+
+function bindRowEditingEvents() {
+  $("#pagination").on("click", ".new-row",    function() { showRowModal("insert"); });
+  $("#pagination").on("click", ".edit-row",   function() { showRowModal("edit");   });
+  $("#pagination").on("click", ".delete-row", function() { showRowModal("delete"); });
+
+  $("#row_modal").on("click", ".row-modal-action", function() {
+    switch ($(this).data("action")) {
+      case "submit":
+        submitRowModal();
+        break;
+      case "close":
+        closeRowModal();
+        break;
+    }
+  });
+
+  $("#row_modal").on("click", function(e) {
+    // Clicking the backdrop closes the modal
+    if (e.target === this) closeRowModal();
+  });
+
+  $("#row_modal").on("change", ".null-checkbox", function() {
+    $(this).closest(".field").find(".row-field").prop("readonly", $(this).prop("checked"));
+  });
+
+  $("#results").on("keydown", "input.cell-editor", function(e) {
+    switch (e.keyCode) {
+      case 13: // enter
+        e.preventDefault();
+        finishCellEdit($(this), true);
+        break;
+      case 27: // escape
+        e.preventDefault();
+        finishCellEdit($(this), false);
+        break;
+    }
+  });
+
+  $("#results").on("blur", "input.cell-editor", function() {
+    // Cancel on focus loss to avoid accidental writes
+    if (!$(this).prop("disabled")) finishCellEdit($(this), false);
+  });
+
+  $("#results").on("click", "input.cell-editor", function(e) {
+    e.stopPropagation();
+  });
+}
+
 function bindContentModalEvents() {
   var contentModal = document.getElementById("content_modal");
 
@@ -1522,6 +2141,9 @@ function bindContentModalEvents() {
   });
 
   $("#results").on("dblclick", "td > div", function() {
+    // Editable cells enter inline edit mode, everything else opens the viewer
+    if (startCellEdit($(this).parent())) return;
+
     var value = unescapeHtml($(this).html());
     if (!value) return;
 
@@ -1533,6 +2155,7 @@ function bindContentModalEvents() {
 $(document).ready(function() {
   bindInputResizeEvents();
   bindContentModalEvents();
+  bindRowEditingEvents();
 
   $("#table_content").on("click",     function() { showTableContent();     });
   $("#table_structure").on("click",   function() { showTableStructure();   });
@@ -1593,7 +2216,7 @@ $(document).ready(function() {
     $("#objects li").removeClass("active");
     $(this).addClass("active");
     $(".current-page").data("page", 1);
-    $(".filters select, .filters input").val("");
+    resetTableFilters();
 
     if (currentObject.type == "function") {
       sessionStorage.setItem("tab", "table_structure");
@@ -1644,17 +2267,31 @@ $(document).ready(function() {
 
   $("#rows_filter").on("submit", function(e) {
     e.preventDefault();
-    $(".current-page").data("page", 1);
 
-    var column = $(this).find("select.column").val();
-    var filter = $(this).find("select.filter").val();
-    var query  = $.trim($(this).find("input").val());
-
-    if (filter && filterOptions[filter].indexOf("DATA") > 0 && query == "") {
-      alert("Please specify filter query");
-      return
+    // Move any condition built in the toolbar into the active filter list
+    if ($(this).find("select.column").val()) {
+      if (!addFilterFromForm()) return;
     }
 
+    $(".current-page").data("page", 1);
+    showTableContent();
+  });
+
+  $("#pagination").on("click", ".add-filter", function() {
+    addFilterFromForm();
+  });
+
+  $("#active_filters").on("click", ".remove-filter", function() {
+    tableFilters.splice($(this).data("index"), 1);
+    renderActiveFilters();
+
+    $(".current-page").data("page", 1);
+    showTableContent();
+  });
+
+  $("#active_filters").on("click", ".clear-filters", function(e) {
+    e.preventDefault();
+    resetTableFilters();
     showTableContent();
   });
 
@@ -1680,7 +2317,7 @@ $(document).ready(function() {
   });
 
   $("button.reset-filters").on("click", function() {
-    $(".filters select, .filters input").val("");
+    resetTableFilters();
     showTableContent();
   });
 

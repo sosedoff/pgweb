@@ -1,0 +1,40 @@
+---
+# Runs a locally built pgweb-plus against the `tda-db` container started by the
+# tda-stack project's docker-compose.yml.
+#
+# Usage:
+#   1. Create a .env file (gitignored) containing:
+#        PGWEB_DATABASE_URL=postgres://user:pass@tda-db:5432/db?sslmode=disable
+#   2. docker compose -f docker-compose.tda.yml up -d --build
+#   3. open http://localhost:8081
+#
+# Behind a corporate proxy, export HTTP_PROXY / HTTPS_PROXY before building.
+services:
+  pgweb:
+    container_name: pgweb-tda
+    image: pgweb-plus:dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
+        NO_PROXY: ${NO_PROXY:-}
+    environment:
+      # Set in .env (gitignored), e.g. postgres://user:pass@tda-db:5432/db?sslmode=disable
+      PGWEB_DATABASE_URL: ${PGWEB_DATABASE_URL:?set PGWEB_DATABASE_URL in .env}
+      PGWEB_ASSETS_DEVMODE: "1"
+    ports:
+      - 8081:8081
+    volumes:
+      # Serve static assets from the bind mount so frontend changes only need a
+      # browser refresh instead of an image rebuild (see PGWEB_ASSETS_DEVMODE).
+      - ./static:/static:ro
+    working_dir: /
+    networks:
+      - tda
+
+networks:
+  tda:
+    external: true
+    name: tda-stack_default

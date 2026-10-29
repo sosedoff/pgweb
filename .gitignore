@@ -6,3 +6,6 @@ pgweb
 bin
 tmp/
 cover.out
+
+# Local Docker-based Go toolchain cache
+.gocache/

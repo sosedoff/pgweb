@@ -914,3 +914,197 @@
 .ace_autocomplete .ace_active-line {
   background: #eee !important;
 }
+
+/* -------------------------------------------------------------------------- */
+/* pgweb-plus: row editing and multi-column filters                           */
+/* -------------------------------------------------------------------------- */
+
+#pagination .row-actions {
+  float: left;
+  display: none;
+  margin-left: 8px;
+}
+
+#pagination .row-actions .btn {
+  outline: none;
+}
+
+#error_banner.success {
+  background-color: #4a8f3c;
+}
+
+#active_filters {
+  display: none;
+  padding: 6px 9px;
+  font-size: 12px;
+  background: #fbfbfb;
+  border-bottom: 1px solid #eae9e9;
+}
+
+#active_filters .filter-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 2px 6px 2px 0px;
+  border: 1px solid #d9d9d9;
+  border-radius: 3px;
+  background: #fff;
+  color: #333;
+  white-space: nowrap;
+}
+
+#active_filters .filter-chip .op {
+  color: #7eb54e;
+  font-weight: bold;
+  margin: 0px 4px;
+}
+
+#active_filters .filter-chip .remove-filter {
+  margin-left: 6px;
+  color: #bbb;
+  cursor: pointer;
+}
+
+#active_filters .filter-chip .remove-filter:hover {
+  color: #be2740;
+}
+
+#active_filters .clear-filters {
+  color: #999;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+#results td.cell-modified > div {
+  box-shadow: inset 2px 0px 0px 0px #7eb54e;
+}
+
+#results td.cell-editing {
+  padding: 0px !important;
+}
+
+#results input.cell-editor {
+  width: 100%;
+  min-width: 120px;
+  border: 1px solid #7eb54e;
+  outline: none;
+  font-size: 12px;
+  line-height: 20px;
+  padding: 1px 8px;
+  margin: 0px;
+  /* normalize.css sets color:inherit on inputs, which picks up the white text
+     of the selected row. Force readable colors regardless of row state. */
+  color: #333 !important;
+  background: #fff !important;
+  -webkit-text-fill-color: #333;
+}
+
+#results input.cell-editor:disabled {
+  color: #999 !important;
+  background: #f2f2f2 !important;
+  -webkit-text-fill-color: #999;
+}
+
+#row_modal {
+  display: none;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+#row_modal .row-modal-dialog {
+  position: relative;
+  width: 560px;
+  max-width: 92%;
+  max-height: 86%;
+  margin: 60px auto;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+#row_modal .row-modal-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid #eee;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+#row_modal .row-modal-header .fa-times {
+  float: right;
+  color: #bbb;
+  cursor: pointer;
+  line-height: 18px;
+}
+
+#row_modal .row-modal-body {
+  padding: 10px 14px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+#row_modal .row-modal-body .field {
+  margin-bottom: 8px;
+}
+
+#row_modal .row-modal-body label {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 2px;
+  font-weight: normal;
+}
+
+#row_modal .row-modal-body label .type {
+  color: #aaa;
+  margin-left: 4px;
+}
+
+#row_modal .row-modal-body label .pk {
+  color: #7eb54e;
+  margin-left: 4px;
+}
+
+#row_modal .row-modal-body input[type=text],
+#row_modal .row-modal-body select {
+  width: 100%;
+  height: 28px;
+  font-size: 12px;
+  padding: 2px 6px;
+  border: 1px solid #ddd;
+  outline: none;
+}
+
+#row_modal .row-modal-body .null-toggle {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+  font-weight: normal;
+}
+
+#row_modal .row-modal-body .summary {
+  font-size: 12px;
+  word-break: break-all;
+}
+
+#row_modal .row-modal-footer {
+  padding: 10px 14px;
+  border-top: 1px solid #eee;
+  text-align: right;
+}
+
+#row_modal .row-modal-footer .btn {
+  margin-left: 6px;
+}
+
+#row_modal .row-modal-error {
+  float: left;
+  color: #be2740;
+  font-size: 12px;
+  line-height: 26px;
+}

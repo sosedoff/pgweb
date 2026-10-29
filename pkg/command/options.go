@@ -47,6 +47,7 @@ type Options struct {
 	Sessions                     bool   `long:"sessions" description:"Enable multiple database sessions"`
 	Prefix                       string `long:"prefix" description:"Add a url prefix"`
 	ReadOnly                     bool   `long:"readonly" description:"Run database connection in readonly mode"`
+	DisableRowEditing            bool   `long:"no-row-editing" description:"Disable table row insert, update and delete operations"`
 	LockSession                  bool   `long:"lock-session" description:"Lock session to a single database connection"`
 	Bookmark                     string `short:"b" long:"bookmark" description:"Bookmark to use for connection. Bookmark files are stored under $HOME/.pgweb/bookmarks/*.toml" default:""`
 	BookmarksDir                 string `long:"bookmarks-dir" description:"Overrides default directory for bookmark files to search" default:""`
@@ -125,6 +126,10 @@ func ParseOptions(args []string) (Options, error) {
 
 	if getPrefixedEnvVar("SESSIONS") != "" {
 		opts.Sessions = true
+	}
+
+	if getPrefixedEnvVar("NO_ROW_EDITING") != "" {
+		opts.DisableRowEditing = true
 	}
 
 	if getPrefixedEnvVar("LOCK_SESSION") != "" {
@@ -246,5 +251,6 @@ func AvailableEnvVars() string {
 		"  " + envVarPrefix + "AUTH_USER     HTTP basic auth username",
 		"  " + envVarPrefix + "AUTH_PASS     HTTP basic auth password",
 		"  " + envVarPrefix + "BOOKMARKS_DIR Overrides default directory for bookmark files",
+		"  " + envVarPrefix + "NO_ROW_EDITING Disable table row insert, update and delete operations",
 	}, "\n")
 }
