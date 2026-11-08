@@ -8,6 +8,7 @@ require (
 	github.com/BurntSushi/toml v1.1.0
 	github.com/ScaleFT/sshkeys v0.0.0-20200327173127-6142f742bca5
 	github.com/gin-gonic/gin v1.11.0
+	github.com/google/uuid v1.6.0
 	github.com/jackc/pgpassfile v1.0.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/jmoiron/sqlx v1.3.5
@@ -17,7 +18,6 @@ require (
 	github.com/prometheus/client_golang v1.19.1
 	github.com/sirupsen/logrus v1.9.1
 	github.com/stretchr/testify v1.11.1
-	github.com/tuvistavie/securerandom v0.0.0-20140719024926-15512123a948
 	golang.org/x/crypto v0.46.0
 )
 
