@@ -8,8 +8,7 @@ on:
 env:
   GO_VERSION: "1.25"
   CGO_ENABLED: 0
-  DOCKER_REPOSITORY: sosedoff/pgweb
-  GHCR_REPOSITORY: sosedoff/pgweb
+  DOCKER_REPOSITORY: keerthym/pgweb
 
 jobs:
   docker-release:
@@ -40,13 +39,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Login to Github Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GH_TOKEN }}
-
       - name: Build and push docker images
         uses: docker/build-push-action@v2
         with:
@@ -55,6 +47,4 @@ jobs:
           tags: |
             ${{ env.DOCKER_REPOSITORY }}:${{ steps.refs.outputs.SOURCE_TAG }}
             ${{ env.DOCKER_REPOSITORY }}:latest
-            ghcr.io/${{ env.GHCR_REPOSITORY }}:${{ steps.refs.outputs.SOURCE_TAG }}
-            ghcr.io/${{ env.GHCR_REPOSITORY }}:latest
           platforms: linux/amd64,linux/arm64,linux/arm/v7
