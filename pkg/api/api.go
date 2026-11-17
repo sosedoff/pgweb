@@ -266,6 +266,9 @@ func SwitchDb(c *gin.Context) {
 
 	info, err := cl.Info()
 	if err == nil {
+		// The new connection goes through the SSH tunnel of the current one.
+		// Hand the tunnel over, otherwise closing the old client tears it down.
+		cl.TakeTunnel(conn)
 		err = setClient(c, cl)
 	}
 	if err != nil {
