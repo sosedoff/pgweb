@@ -4,18 +4,20 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"strings"
 )
 
 // IsPortAvailable returns true if there's no listeners on a given port
 func IsPortAvailable(port int) bool {
-	conn, err := net.Dial("tcp", fmt.Sprintf("127.0.0.1:%v", port))
+	// Try to bind the port instead of dialing it and matching the error text:
+	// the "connection refused" message is OS-specific (Windows reports "actively
+	// refused it"), which made every port look busy there.
+	listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%v", port))
 	if err != nil {
-		return strings.Index(err.Error(), "connection refused") > 0
+		return false
 	}
 
-	conn.Close()
-	return false
+	listener.Close()
+	return true
 }
 
 // FindAvailablePort returns the first available TCP port in the range

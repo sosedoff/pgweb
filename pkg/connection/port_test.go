@@ -4,17 +4,12 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIsPortAvailable(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("FIXME")
-	}
-
 	assert.Equal(t, true, IsPortAvailable(30000))
 
 	serv, err := net.Listen("tcp", "127.0.0.1:30000")
@@ -40,10 +35,6 @@ func TestIsPortAvailable(t *testing.T) {
 }
 
 func TestFindAvailablePort(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("FIXME")
-	}
-
 	port, err := FindAvailablePort(30000, 1)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 30000, port)

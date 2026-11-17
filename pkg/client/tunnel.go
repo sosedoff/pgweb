@@ -127,6 +127,9 @@ func (tunnel *Tunnel) copy(wg *sync.WaitGroup, writer, reader net.Conn) {
 func (tunnel *Tunnel) handleConnection(local net.Conn) {
 	remote, err := tunnel.Client.Dial("tcp", tunnel.targetEndpoint())
 	if err != nil {
+		// Close the local side too, otherwise the database driver waits forever
+		log.Println("Tunnel dial error:", err)
+		local.Close()
 		return
 	}
 
