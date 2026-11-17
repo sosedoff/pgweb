@@ -274,7 +274,13 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Auth Key</label>
             <div class="col-sm-5">
-              <input type="text" id="ssh_key" class="form-control" placeholder="Key path" />
+              <div class="input-group">
+                <input type="text" id="ssh_key" class="form-control" placeholder="Key path" />
+                <span class="input-group-btn">
+                  <button type="button" id="ssh_key_browse" class="btn btn-default" title="Choose a private key file">Browse</button>
+                </span>
+              </div>
+              <input type="file" id="ssh_key_file" style="display: none" />
             </div>
             <div class="col-sm-4 no-left-padding">
               <input type="password" id="ssh_key_password" class="form-control" placeholder="Key password" />

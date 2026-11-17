@@ -59,6 +59,10 @@ func parsePrivateKey(keyPath string, keyPass string) (ssh.Signer, error) {
 		return nil, err
 	}
 
+	return parsePrivateKeyData(buff, keyPass)
+}
+
+func parsePrivateKeyData(buff []byte, keyPass string) (ssh.Signer, error) {
 	signer, err := ssh.ParsePrivateKey(buff)
 	if _, ok := err.(*ssh.PassphraseMissingError); ok {
 		if keyPass == "" {
@@ -73,20 +77,29 @@ func parsePrivateKey(keyPath string, keyPass string) (ssh.Signer, error) {
 func makeConfig(info *shared.SSHInfo) (*ssh.ClientConfig, error) {
 	methods := []ssh.AuthMethod{}
 
-	// Try to use user-provided key, fallback to system default key
-	keyPath := info.Key
-	if keyPath == "" {
-		keyPath = defaultKeyPath()
-	} else {
-		keyPath = expandKeyPath(keyPath)
-	}
+	var key ssh.Signer
+	var err error
 
-	if !fileExists(keyPath) {
-		return nil, fmt.Errorf("ssh public key not found at path %q", keyPath)
+	if info.KeyData != "" {
+		// Key contents were picked in the browser, no file path involved
+		key, err = parsePrivateKeyData([]byte(info.KeyData), info.KeyPassword)
+	} else {
+		// Try to use user-provided key, fallback to system default key
+		keyPath := info.Key
+		if keyPath == "" {
+			keyPath = defaultKeyPath()
+		} else {
+			keyPath = expandKeyPath(keyPath)
+		}
+
+		if !fileExists(keyPath) {
+			return nil, fmt.Errorf("ssh public key not found at path %q", keyPath)
+		}
+
+		key, err = parsePrivateKey(keyPath, info.KeyPassword)
 	}
 
 	// Append public key authentication method
-	key, err := parsePrivateKey(keyPath, info.KeyPassword)
 	if err != nil {
 		return nil, err
 	}

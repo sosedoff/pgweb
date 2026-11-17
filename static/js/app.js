@@ -1803,6 +1803,40 @@ $(document).ready(function() {
     }
   });
 
+  // SSH key file picker. The browser never reveals the real path of a chosen
+  // file, so the key contents are read in memory and sent on connect. Nothing
+  // is stored in the browser.
+  $("#ssh_key_browse").on("click", function() {
+    $("#ssh_key_file").val("").trigger("click");
+  });
+
+  $("#ssh_key_file").on("change", function() {
+    var file = this.files && this.files[0];
+    if (!file) {
+      return;
+    }
+
+    if (file.size > 64 * 1024) {
+      $("#connection_error").text("Selected file is too large to be an SSH private key").show();
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function() {
+      $("#connection_error").hide();
+      $("#ssh_key").data("key-data", reader.result).val(file.name);
+    };
+    reader.onerror = function() {
+      $("#connection_error").text("Unable to read the selected file").show();
+    };
+    reader.readAsText(file);
+  });
+
+  // Typing a path manually discards a previously picked key
+  $("#ssh_key").on("input", function() {
+    $(this).removeData("key-data");
+  });
+
   $("#connection_bookmarks").on("change", function(e) {
     var selection = $(this).val();
 
@@ -1839,8 +1873,17 @@ $(document).ready(function() {
         params["ssh_port"]         = $("#ssh_port").val();
         params["ssh_user"]         = $("#ssh_user").val();
         params["ssh_password"]     = $("#ssh_password").val();
-        params["ssh_key"]          = $("#ssh_key").val();
         params["ssh_key_password"] = $("#ssh_key_password").val()
+
+        // A key picked with the file browser is sent as contents (kept in
+        // memory only), otherwise the typed value is used as a file path.
+        var pickedKey = $("#ssh_key").data("key-data");
+        if (pickedKey) {
+          params["ssh_key_data"] = pickedKey;
+        }
+        else {
+          params["ssh_key"] = $("#ssh_key").val();
+        }
       }
     }
 
