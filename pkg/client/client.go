@@ -568,6 +568,18 @@ func (client *Client) query(query string, args ...interface{}) (*Result, error) 
 	return &result, nil
 }
 
+// TakeTunnel moves the SSH tunnel (if any) from another client to this one.
+// It is used when switching databases: the new client connects through the
+// tunnel opened by the old client, so the old client must not close it.
+func (client *Client) TakeTunnel(from *Client) {
+	if from == nil || from.tunnel == nil {
+		return
+	}
+
+	client.tunnel = from.tunnel
+	from.tunnel = nil
+}
+
 // Close database connection
 func (client *Client) Close() error {
 	if client.closed {
