@@ -12,6 +12,10 @@ type SSHInfo struct {
 	Password    string `json:"password,omitempty"`
 	Key         string `json:"key,omitempty"`
 	KeyPassword string `json:"keypassword,omitempty"`
+
+	// KeyData holds the contents of a private key picked in the browser.
+	// It takes precedence over Key (a file path) and is never serialized.
+	KeyData string `json:"-"`
 }
 
 func (info SSHInfo) String() string {
